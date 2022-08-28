@@ -11,12 +11,6 @@ export function createConnection(filename) {
   })
 }
 
-export async function recreateTable(connection, name, schemaFn) {
-  await connection.schema.dropTableIfExists(name);
-  await connection.schema.createTable(name, (table) => schemaFn(table, connection));
-  return true;
-}
-
 export async function initializeSchema(connection, schema) {
   const tables = schema.filter(({ type }) => !type || type === "table");
 
