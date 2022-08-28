@@ -1,5 +1,5 @@
 export function booleanFormatter(trueValues, falseValues) {
-  return function(value) {
+  return function (value) {
     if (asArray(trueValues).includes(value)) {
       return true;
     } else if (asArray(falseValues).includes(value)) {
@@ -7,7 +7,7 @@ export function booleanFormatter(trueValues, falseValues) {
     } else {
       return null;
     }
-  }
+  };
 }
 
 export function asArray(value) {

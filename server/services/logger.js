@@ -1,5 +1,5 @@
 import { inspect } from "util";
-import { createLogger, format, transports } from "winston"
+import { createLogger, format, transports } from "winston";
 
 export function objectToString(object) {
   return !["string", "number"].includes(typeof object)
@@ -25,9 +25,7 @@ export function getLogger(name, level = process.env.LOG_LEVEL || "info") {
       format.label({ label: name }),
       format.printf(formatLogMessage)
     ),
-    transports: [
-      new transports.Console(),
-    ],
+    transports: [new transports.Console()],
     exitOnError: false,
   });
 }

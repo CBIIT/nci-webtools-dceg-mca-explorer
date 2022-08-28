@@ -6,7 +6,7 @@ export function getConnection(filename) {
     client: "better-sqlite3",
     connection: { filename },
     useNullAsDefault: true,
-  })
+  });
 }
 
 export async function getSamples(connection, query) {

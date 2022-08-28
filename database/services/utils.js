@@ -8,7 +8,7 @@ export function createConnection(filename) {
     client: "better-sqlite3",
     connection: { filename },
     useNullAsDefault: true,
-  })
+  });
 }
 
 export async function initializeSchema(connection, schema) {
@@ -26,7 +26,7 @@ export async function initializeSchema(connection, schema) {
 }
 
 export async function importSources(connection, sources, logger = console) {
-  for (const { table, description, sourcePath,  columns, parseConfig } of sources) {
+  for (const { table, description, sourcePath, columns, parseConfig } of sources) {
     logger.info(`Importing ${sourcePath} => ${table} (${description})`);
     const readStream = createReadStream(sourcePath);
     const records = await createRecordIterator(sourcePath, readStream, { columns, parseConfig, logger });
@@ -55,7 +55,6 @@ export async function createRecordIterator(sourcePath, inputStream, { columns, p
       throw new Error(`Unsupported file extension: ${fileExtension}`);
   }
 }
-
 
 export function createCsvRecordIterator(stream, columns, options = {}, metadata = {}, logger) {
   const parseOptions = {
