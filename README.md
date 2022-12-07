@@ -21,6 +21,7 @@ fetch("/api/query/samples", {
     conditions: [
       ["chromosome", "chr1"],
       ["computedGender", "M"],
+      ["callRate", ">", 0.99],
     ],
   }),
 }).then(async (e) => console.log(await e.json()));
