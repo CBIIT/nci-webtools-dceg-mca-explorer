@@ -19,7 +19,8 @@ fetch("/api/query/samples", {
   headers: { "content-type": "application/json" },
   body: JSON.stringify({
     conditions: [
-      ["chromosome", "chr1"],
+      ["dataset", "in", ["PLCO_GSA_blood_autosomal_mCAs", "PLCO_GSA_blood_mLOY"]],
+      ["chromosome", "in", ["chr1", "chrX"]],
       ["computedGender", "M"],
       ["callRate", ">", 0.99],
     ],
