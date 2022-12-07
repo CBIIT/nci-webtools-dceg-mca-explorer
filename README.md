@@ -9,4 +9,19 @@ A webtool cataloging mosaic chromosomal alterations (mCAs) and interactively exa
 3. In the "server" folder, create an ".env" file based on ".env.example"
 4. In the ".env" file, ensure that DATABASE_PATH refers to the location of "database.db". Eg: ../database/database.db
 5. In the server folder, run "npm start"
-6. Navigate to htttp://localhost:9000/api/ping in the browser to verify the application is running
+6. Navigate to http://localhost:9000/api/ping in the browser to verify the application is running
+
+### Example Query
+
+```js
+fetch("/api/query/samples", {
+  method: "post",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({
+    conditions: [
+      ["chromosome", "chr1"],
+      ["computedGender", "M"],
+    ],
+  }),
+}).then(async (e) => console.log(await e.json()));
+```
