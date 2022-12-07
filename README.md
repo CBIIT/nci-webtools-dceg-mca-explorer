@@ -23,6 +23,7 @@ fetch("/api/query/samples", {
       ["chromosome", "in", ["chr1", "chrX"]],
       ["computedGender", "M"],
       ["callRate", ">", 0.99],
+      ["cf", ">", 0.1],
     ],
   }),
 }).then(async (e) => console.log(await e.json()));
