@@ -38,7 +38,7 @@ export const schema = [
       table.double("eur");
       table.double("asn");
       table.string("ancestry");
-      table.string("callRate1");
+      table.double("callRate1");
       table.boolean("sexDiscordant");
       table.boolean("expectedReplicateDiscordance");
       table.boolean("unexpectedReplicate");
