@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import Router from "express-promise-router";
 import { getStatus, getSamples } from "./query.js";
 
@@ -18,3 +18,5 @@ apiRouter.post("/query/samples", async (request, response) => {
   const samples = await getSamples(connection, query);
   response.json(samples);
 });
+
+

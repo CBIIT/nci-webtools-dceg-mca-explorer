@@ -1,0 +1,18 @@
+.legend {
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+legend {
+  float: none;
+  width: inherit;
+}
+
+.table thead th {
+  border-bottom: 3px solid #dee2e6;
+}
+
+:disabled {
+  cursor: not-allowed;
+  pointer-events: all !important;
+}
