@@ -2,6 +2,13 @@ import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 
 export default function About() {
+  // const circle = document.getElementById("NGCircos")
+  // const currentPath = (window.location.href);
+  // console.log(currentPath)
+  // if (currentPath.includes("about")){
+  //   circle.style.display = "none"
+  // }
+  
   return (
     <Container className="my-4">
       <Card className="shadow">
@@ -36,23 +43,7 @@ export default function About() {
 
           <p>
             Features of Mosaic Tiler include:
-            <ul style={{ listStyle: "none" }}>
-              <li>
-                1) 
-              </li>
-              <li>
-                2)
-              </li>
-              <li>
-                3)
-              </li>
-              <li>
-                4)
-              </li>
-              <li>
-                5) 
-              </li>
-            </ul>
+          
           </p>
 
           <p>

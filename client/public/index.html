@@ -15,8 +15,40 @@
     gtag("js", new Date());
     gtag("config", "UA-62346354-30");
   </script>
+    <link href="./CNV/css/bootstrap.min.css " rel="stylesheet">
+    <link href="./CNV/css/metisMenu.min.css" rel="stylesheet">
+    <link href="./CNV/css/timeline.css" rel="stylesheet">
+    <!-- <link href="css/sb-admin-2.css" rel="stylesheet"> -->
+    <link href="./CNV/css/morris.css" rel="stylesheet">
+    <link href="./CNV/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="./CNV/css/google-code-prettify.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="./CNV/css/bootstrap.min.js"></script>
+    <script src="./CNV/css/metisMenu.min.js"></script>
+    <script src="./CNV/css/raphael-min.js"></script>
+    <script src="./CNV/css/morris.min.js"></script>
+    <!-- <script src="css/sb-admin-2.js"></script> -->
+    <script src="./CNV/css/google-code-prettify.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.map"></script> -->
+   
+    <link src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/css/sb-admin-2.css" rel="stylesheet">
+    </script>
+    <link src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/css/sb-admin-2.min.css"
+      rel="stylesheet">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/startbootstrap-sb-admin-2/4.1.4/js/sb-admin-2.js"
+      crossorigin="anonymous"></script>
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!-- [if lt IE 9]> -->
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 </head>
-
+<style>
+  div svg path {
+    stroke-width: 0px;
+  }
+</style>
 <body class="d-flex flex-column vh-100" react-cloak >
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <header class="flex-grow-0">
@@ -47,7 +79,151 @@
       </div>
     </div>
   </header>
+
   <main id="root" class="d-flex flex-column flex-grow-1 align-items-stretch bg-light"></main>
+  
+    <div id="NGCircos"></div>
+    <script src="./CNV/lib/jquery.js"></script>
+    <script src="./CNV/lib/d3.js"> </script>
+    <script src="./CNV/lib/NGCircos.js"></script>
+    <script src="./CNV/js/BACKGROUND01.js"></script>
+    <script src="./CNV/js/CNV01.js"></script>
+    <script src="./CNV/js/BACKGROUND02.js"></script>
+    <script src="./CNV/js/CNV02.js"></script>
+    <script src="./CNV/js/BACKGROUND03.js"></script>
+    <script src="./CNV/js/CNV03.js"></script>
+    <!-- Genome configuration -->
+    <script>
+      var NGCircosGenome = [      // Configure your own genome here.
+        [
+          ["1", 248956422],
+          ["2", 242193529],
+          ["3", 198295559],
+          ["4", 190214555],
+          ["5", 181538259],
+          ["6", 170805979],
+          ["7", 159345973],
+          ["8", 145138636],
+          ["9", 138394717],
+          ["10", 133797422],
+          ["11", 135086622],
+          ["12", 133275309],
+          ["13", 114364328],
+          ["14", 107043718],
+          ["15", 101991189],
+          ["16", 90338345],
+          ["17", 83257441],
+          ["18", 80373285],
+          ["19", 58617616],
+          ["20", 64444167],
+          ["21", 46709983],
+          ["22", 50818468]
+          //  ["X" , 155270560],
+          //  ["Y" , 59373566]
+        ]
+      ];
+      NGCircos01 = new NGCircos(CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03, NGCircosGenome, {       // Initialize NGCircos.js with "NGCircosGenome" and Main configuration
+        zoom: true,
+        target: "NGCircos",                              // Main configuration "target"
+        svgWidth: 1200,                                  // Main configuration "svgWidth"
+        svgHeight: 900,                                 // Main configuration "svgHeight"
+        svgClassName: "NGCircos",                  // Main configuration "svgClassName"
+        chrPad: 0.02,
+        //outerRadius:300,
+        //compareEventGroupGapRate: 1,
+        //compareEventGroupDistance: 1,
+        CNVMouseEvent: true,
+        CNVMouseClickDisplay: true,
+        CNVMouseClickColor: "red",
+        CNVMouseClickArcOpacity: 1,
+        CNVMouseClickArcStrokeColor: "#F26223",
+        CNVMouseClickArcStrokeWidth: 0,
+        CNVMouseClickTextFromData: "fourth",
+        CNVMouseClickTextOpacity: 1,
+        CNVMouseClickTextColor: "red",
+        CNVMouseClickTextSize: 8,
+        CNVMouseClickTextPostionX: 0,
+        CNVMouseClickTextPostionY: 0,
+        CNVMouseClickTextDrag: true,
+        CNVMouseDownDisplay: true,
+        CNVMouseDownColor: "green",
+        CNVMouseDownArcOpacity: 1,
+        CNVMouseDownArcStrokeColor: "#F26223",
+        CNVMouseDownArcStrokeWidth: 0,
+        CNVMouseEnterDisplay: true,
+        CNVMouseEnterColor: "yellow",
+        CNVMouseEnterArcOpacity: 1,
+        CNVMouseEnterArcStrokeColor: "#F26223",
+        CNVMouseEnterArcStrokeWidth: 0,
+        CNVMouseLeaveDisplay: true,
+        CNVMouseLeaveColor: "pink",
+        CNVMouseLeaveArcOpacity: 1,
+        CNVMouseLeaveArcStrokeColor: "#F26223",
+        CNVMouseLeaveArcStrokeWidth: 0,
+        CNVMouseMoveDisplay: true,
+        CNVMouseMoveColor: "red",
+        CNVMouseMoveArcOpacity: 1,
+        CNVMouseMoveArcStrokeColor: "#F26223",
+        CNVMouseMoveArcStrokeWidth: 0,
+        CNVMouseOutDisplay: true,
+        CNVMouseOutAnimationTime: 500,
+        CNVMouseOutColor: "",//original is red if mouse moved there
+        CNVMouseOutArcOpacity: 1,
+        CNVMouseOutArcStrokeColor: "red",
+        CNVMouseOutArcStrokeWidth: 0,
+        CNVMouseUpDisplay: true,
+        CNVMouseUpColor: "grey",
+        CNVMouseUpArcOpacity: 1,
+        CNVMouseUpArcStrokeColor: "#F26223",
+        CNVMouseUpArcStrokeWidth: 0,
+        CNVMouseOverDisplay: true,
+        CNVMouseOverColor: "red",
+        CNVMouseOverArcOpacity: 1,
+        CNVMouseOverArcStrokeColor: "#F26223",
+        CNVMouseOverArcStrokeWidth: 0,
+      });
+      NGCircos01.draw_genome(NGCircos01.genomeLength);  // NGCircos.js callback
+      NGCircos01.draw_genome(NGCircos01.genomeLength2); // NGCircos2.js callback second time
+    </script>
+    <script src="./CNV/lib/saveSvgAsPng.js"></script>
+    <!-- <script>
+        (function () {
+          var downloadImg = getEle(".download-img"),
+            imgName = getEle("." + NGCircos01.svgClassName);
+          //console.log(imgName)
+          // imgScale = getEle(".img-scale");
+    
+          downloadImg.addEventListener("click", function () {
+            var mySvg = getEle("." + NGCircos01.svgClassName),
+              //iImgScale = parseInt(imgScale.value) || 1,
+              oImgName = imgName.value || NGCircos01.svgClassName;
+    
+            //saveSvgAsPng(mySvg, oImgName+".png", iImgScale);
+            saveSvgAsPng(mySvg, oImgName + ".png");
+          })
+    
+          function getEle(obj) {
+            var d = document;
+            return d.querySelector(obj);
+          }
+        })()
+      </script>
+      <script>
+        function downloadSVGAsText() {
+          const svg = document.querySelector('svg');
+          const svgdata = svg.outerHTML.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg" ')
+          const base64doc = btoa(unescape(encodeURIComponent(svgdata)));
+    
+          const a = document.createElement('a');
+          const e = new MouseEvent('click');
+          a.download = 'download.svg';
+          a.href = 'data:image/svg+xml;base64,' + base64doc;
+          a.dispatchEvent(e);
+        }
+        const downloadSVG = document.querySelector('#downloadSVG');
+        downloadSVG.addEventListener('click', downloadSVGAsText);
+      </script> -->
+
   <footer class="flex-grow-0">
     <div class="bg-primary text-light py-4">
       <div class="container">

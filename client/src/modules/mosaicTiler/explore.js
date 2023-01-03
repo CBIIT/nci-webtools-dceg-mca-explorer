@@ -8,7 +8,7 @@ import ExploreForm from "./explore-form";
 import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 import SelectionPane from "../components/accordion"
-// import CircleChart from "../components/summaryChart/CNV/cnv";
+import CircleChart from "../components/summaryChart/CNV/cnv";
 import {
   SidebarContainer,
   SidebarPanel,
@@ -20,10 +20,16 @@ export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
-
-  const externalScript = "../components/summaryChart/CNV/cnv.html";
-  const statechart = useExternalScript(externalScript);
+  // const circle = document.getElementById("NGCircos")
+  // const currentPath = (window.location.href);
+  // console.log(currentPath)
+  // if (!currentPath.includes("about")){
+  //   circle.style.display = "show"
+  // }
   
+  //const externalScript = "../components/summaryChart/CNV/cnv.html";
+  //const statechart = useExternalScript(externalScript);
+
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
@@ -70,16 +76,15 @@ export default function Explore() {
                   </div>
                 }>
                 <Suspense fallback="Loading...">
-                   {/* <div dangerouslySetInnerHTML={{__html: CircleChart}} /> */}
-                   <div dangerouslySetInnerHTML={{__html: statechart}} />
-                   {/* {form.submitted ? (
+                                  
+                  {form.submitted ? (
                     results()
                   ) : (
-                    <div className="m-2">
-                      Please provide configuration settings for your analysis on
-                      the left panel and click Submit.
-                    </div>
-                  )} */}
+                    <>
+                     {/* <div>{circos}</div> */}
+                     <div dangerouslySetInnerHTML={{__html: CircleChart}} />
+                    </>
+                  )}
                 </Suspense>
               </ErrorBoundary>
             </Card.Body>
