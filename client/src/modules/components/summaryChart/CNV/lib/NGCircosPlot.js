@@ -25,7 +25,7 @@
 *      NGCircos01.draw_genome(NGCircos01.genomeLength);
 *
 **/
-
+import * as d3 from "d3";
 var NGCircos;
 
 (function($){

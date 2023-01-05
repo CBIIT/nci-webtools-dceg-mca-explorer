@@ -8,7 +8,7 @@ import ExploreForm from "./explore-form";
 import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 import SelectionPane from "../components/accordion"
-import CircleChart from "../components/summaryChart/CNV/cnv";
+import CircleChart from "../components/summaryChart/CNV/CirclePlot";
 import {
   SidebarContainer,
   SidebarPanel,
@@ -81,8 +81,8 @@ export default function Explore() {
                     results()
                   ) : (
                     <>
-                     {/* <div>{circos}</div> */}
-                     <div dangerouslySetInnerHTML={{__html: CircleChart}} />
+                    <CircleChart></CircleChart>
+                     {/* <div dangerouslySetInnerHTML={{__html: CircleChart}} /> */}
                     </>
                   )}
                 </Suspense>
