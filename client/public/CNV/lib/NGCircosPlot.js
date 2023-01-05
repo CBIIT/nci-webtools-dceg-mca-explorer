@@ -2517,10 +2517,29 @@ var NGCircos;
 //
 //        }
 //    }
-    //COMPARE
-
-
-            //zhec3
+  
+const backgroundClick = svg.selectAll("path");
+    console.log(d3)
+    //var   a=d3.event.translate[0]+circleCenter / 2
+    //var   b=d3.event.translate[1]+height / 2
+    //svg.attr("transform", "translate(" + a +","+ b + ")scale(" + d3.event.scale + ")");
+    backgroundClick.on("click",function(d){
+      console.log("click",d)
+      //d3.behavior.zoom()
+            //console.log(d3.event.scale)
+      var   svg = d3.select(self.target).append("svg")
+              .attr("width", width)
+              .attr("height", height)
+              .attr("class",svgClassName)
+              .attr("id",svgClassName)
+              .call(
+                   d3.behavior.zoom().on("zoom", function () {
+                    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+              }))
+            .append("g")
+//              .attr("transform", "translate(" + (circleCenter + compareMoveDistance) + "," + height / 2 + ")");
+              .attr("transform", "translate(" + circleCenter + "," + height / 2 + ")");
+      })
 
     }
 }(jQuery));
