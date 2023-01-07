@@ -1,9 +1,13 @@
-import * as NGCircos from './lib/NGCircosPlot'
-import { CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03 } from './data'
 
-export default function  CircosPlot({data, onSelect}) {
+import { useEffect, useRef } from "react";
+import { NGCircos } from './lib/NGCircosPlot'
+import { CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03 } from './data/data'
+
+export default function  CircosPlot({data, options, className, style, onSelect}) {
+    const nodeRef = useRef(null);
+
 // use NGCircos package to create circos plot
-    var NGCircosGenome = [      // Configure your own genome here.
+    const NGCircosGenome = [      // Configure your own genome here.
         [
           ["1", 248956422],
           ["2", 242193529],
@@ -31,7 +35,10 @@ export default function  CircosPlot({data, onSelect}) {
           //  ["Y" , 59373566]
         ]
       ];
-    var NGCircos01 = new NGCircos(CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03, NGCircosGenome, {       // Initialize NGCircos.js with "NGCircosGenome" and Main configuration
+
+    useEffect(() => {
+      if (nodeRef.current ) {
+        var NGCircos01 = new NGCircos(CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03, NGCircosGenome, {       // Initialize NGCircos.js with "NGCircosGenome" and Main configuration
         zoom: true,
         target: "NGCircos",                              // Main configuration "target"
         svgWidth: 1200,                                  // Main configuration "svgWidth"
@@ -93,4 +100,12 @@ export default function  CircosPlot({data, onSelect}) {
       });
       NGCircos01.draw_genome(NGCircos01.genomeLength);  // NGCircos.js callback
       NGCircos01.draw_genome(NGCircos01.genomeLength2); // NGCircos2.js callback second time
+      //console.log(NGCircos01)
+      nodeRef.current.replaceChildren(NGCircos01);
+      }
+    }, [data, options, nodeRef]);
+  
+    
+      //return NGCircos01;
+      return <div ref={nodeRef} className={className} style={style} />;
 }

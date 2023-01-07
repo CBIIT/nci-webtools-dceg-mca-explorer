@@ -7,13 +7,13 @@ function SelectionPane() {
   return (
     <Accordion defaultActiveKey={['0']} alwaysOpen>
       <Accordion.Item eventKey="0">
-        <Accordion.Header>Selection/Filtering Pane</Accordion.Header>
+        <Accordion.Header  style={{ backgroundColor: '#343a40' }}>Selection/Filtering Pane</Accordion.Header>
         <Accordion.Body>
          <FilterGroup></FilterGroup>
         </Accordion.Body>
       </Accordion.Item>
       <Accordion.Item eventKey="1">
-        <Accordion.Header>Compare Groups Pane</Accordion.Header>
+        <Accordion.Header>Compare Groups</Accordion.Header>
         <Accordion.Body>
           <FilterGroup></FilterGroup>
         </Accordion.Body>

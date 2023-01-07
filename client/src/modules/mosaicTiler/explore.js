@@ -14,21 +14,11 @@ import {
   SidebarPanel,
   MainPanel,
 } from "../components/sidebar-container";
-import { useExternalScript } from "./useExternalScript";
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
-  // const circle = document.getElementById("NGCircos")
-  // const currentPath = (window.location.href);
-  // console.log(currentPath)
-  // if (!currentPath.includes("about")){
-  //   circle.style.display = "show"
-  // }
-  
-  //const externalScript = "../components/summaryChart/CNV/cnv.html";
-  //const statechart = useExternalScript(externalScript);
 
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
@@ -75,14 +65,12 @@ export default function Explore() {
                     that the error occured.{" "}
                   </div>
                 }>
-                <Suspense fallback="Loading...">
-                                  
+                <Suspense fallback="Loading...">            
                   {form.submitted ? (
                     results()
                   ) : (
                     <>
-                    <CircleChart></CircleChart>
-                     {/* <div dangerouslySetInnerHTML={{__html: CircleChart}} /> */}
+                    <CircleChart className="mw-100" style={{ maxHeight: "800px" }}></CircleChart>
                     </>
                   )}
                 </Suspense>

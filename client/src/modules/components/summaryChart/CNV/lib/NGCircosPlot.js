@@ -25,14 +25,30 @@
 *      NGCircos01.draw_genome(NGCircos01.genomeLength);
 *
 **/
-import * as d3 from "d3";
-var NGCircos;
+import $ from "jquery";
+const d3 = require('d3');
 
-(function($){
 
-  NGCircos = function(){
+//(function($){
+
+export function NGCircos (){
       var self = this;
-
+      const padding = 10;
+      const width = 600;
+      const height = 600;
+      const dx = 10;
+      const dy = width / (600 + padding);
+      let x0 = Infinity;
+      let x1 = -x0;
+     
+      const svg = d3.svg;
+       console.log(svg)
+        // .attr("viewBox", [(-dy * padding) / 2, x0 - dx, width, height])
+        // .attr("width", width)
+        // .attr("height", height)
+        // .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
+        // .attr("font-family", "sans-serif")
+        // .attr("font-size", 12);
       if(arguments.length >= 2){
             self.argumentsNGCircosSettings=arguments[arguments.length-1];
             self.argumentsNGCircosGenome=arguments[arguments.length-2];
@@ -47,131 +63,7 @@ var NGCircos;
                 }
             }
 
-            self.HEATMAP = new Array();
-            self.HEATMAPConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-                var reg=/^HEATMAP/;
-                if(reg.test(arguments[n][0])){
-                    self.HEATMAPConfig.push(arguments[n][1]);
-                    self.HEATMAP.push(arguments[n][2]);
-                }
-            }
-            
-            self.BUBBLE = new Array();
-            self.BUBBLEConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-              var reg=/^BUBBLE/;
-              if(reg.test(arguments[n][0])){
-                self.BUBBLEConfig.push(arguments[n][1]);
-                self.BUBBLE.push(arguments[n][2]);
-              }
-            }
-            
-            self.GENE = new Array();
-            self.GENEConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-              var reg=/^GENE/;
-              if(reg.test(arguments[n][0])){
-                self.GENEConfig.push(arguments[n][1]);
-                self.GENE.push(arguments[n][2]);
-              }
-            }
-
-            self.SNP = new Array();
-            self.SNPConfig = new Array();
-            self.SNPGraphData = new Array();
-            for (var n=0; n< arguments.length; n++){
-                var reg=/^SNP/;
-                if(reg.test(arguments[n][0])){
-                    self.SNPConfig.push(arguments[n][1]);
-                    self.SNP.push(arguments[n][2]);
-                    if( arguments[n][3] != undefined){
-                      self.SNPGraphData.push(arguments[n][3])
-                    }
-                }
-            }
-            
-            self.LABEL = new Array();
-            self.LABELConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-              var reg=/^LABEL/;
-              if(reg.test(arguments[n][0])){
-                self.LABELConfig.push(arguments[n][1]);
-                self.LABEL.push(arguments[n][2]);
-              }
-            }
-
-            self.LINK = new Array();
-            self.LINKConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-                var reg=/^LINK/;
-                if(reg.test(arguments[n][0])){
-                    self.LINKConfig.push(arguments[n][1]);
-                    self.LINK.push(arguments[n][2]);
-                }
-            }
-            
-            self.CHORD = new Array();
-            self.CHORDConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-              var reg=/^CHORD/;
-              if(reg.test(arguments[n][0])){
-                self.CHORDConfig.push(arguments[n][1]);
-                self.CHORD.push(arguments[n][2]);
-              }
-            }
-
-//            self.COMPARE = new Array();
-//            self.COMPAREConfig = new Array();
-//            for (var n=0; n< arguments.length; n++){
-//              var reg=/^COMPARE/;
-//              if(reg.test(arguments[n][0])){
-//                self.COMPAREConfig.push(arguments[n][1]);
-//                self.COMPARE.push(arguments[n][2]);
-//              }
-//            }
-
-
-            self.HISTOGRAM = new Array();
-            self.HISTOGRAMConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-                var reg=/^HISTOGRAM/;
-                if(reg.test(arguments[n][0])){
-                    self.HISTOGRAMConfig.push(arguments[n][1]);
-                    self.HISTOGRAM.push(arguments[n][2]);
-                }
-            }
-            
-            self.LINE = new Array();
-            self.LINEConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-                var reg=/^LINE/;
-                if(reg.test(arguments[n][0])){
-                    self.LINEConfig.push(arguments[n][1]);
-                    self.LINE.push(arguments[n][2]);
-                }
-            }
-            
-            self.WIG = new Array();
-            self.WIGConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-              var reg=/^WIG/;
-              if(reg.test(arguments[n][0])){
-                self.WIGConfig.push(arguments[n][1]);
-                self.WIG.push(arguments[n][2]);
-              }
-            }
-
-            self.SCATTER = new Array();
-            self.SCATTERConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-                var reg=/^SCATTER/;
-                if(reg.test(arguments[n][0])){
-                    self.SCATTERConfig.push(arguments[n][1]);
-                    self.SCATTER.push(arguments[n][2]);
-                }
-            }
-
+     
             self.BACKGROUND = new Array();
             self.BACKGROUNDConfig = new Array();
             for (var n=0; n< arguments.length; n++){
@@ -201,42 +93,6 @@ var NGCircos;
                 self.LEGEND.push(arguments[n][2]);
               }
             }
-            
-            self.AUXILIARYLINE = new Array();
-            self.AUXILIARYLINEConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-              var reg=/^AUXILIARYLINE/;
-              if(reg.test(arguments[n][0])){
-                self.AUXILIARYLINEConfig.push(arguments[n][1]);
-                self.AUXILIARYLINE.push(arguments[n][2]);
-              }
-            }
-
-            self.ARC = new Array();
-            self.ARCConfig = new Array();
-            for (var n=0; n< arguments.length; n++){
-                var reg=/^ARC/;
-                if(reg.test(arguments[n][0])){
-                    self.ARCConfig.push(arguments[n][1]);
-                    self.ARC.push(arguments[n][2]);
-                }
-            }
-            
-                       
-            //zhec3
-            self.LOLLIPOP = new Array();
-            self.LOLLIPOPConfig = new Array()
-            for (var n=0; n< arguments.length; n++){
-              var reg=/^LOLLIPOP/;
-              if(reg.test(arguments[n][0])){
-                self.LOLLIPOPConfig.push(arguments[n][1]); //New, store the configuration of LOLLIPOP point
-                self.LOLLIPOP.push(arguments[n][2]);   //New, store the information of each LOLLIPOP
-                }
-                
-            }
-          
-            //zhec3
-            
 
       }else{
             document.getElementById(self.settings.target).innerHTML='Arguments Error: at least two arguments must supplied.<br>example: new NGCircos([FUSION01,CNV01,SNP01,]NGCircosGenome,{target : "NGCircos",zoom : true})';
@@ -774,11 +630,12 @@ var NGCircos;
     }
     //console.log(self.initGenome)
     //console.log(self.genomeLabel)
+    //console.log(d3)
     var chord = d3.layout.chord()
       .padding(self.chrPad)
       .sortSubgroups(d3.descending)
       .matrix(genome);
-    
+
     var width = self.svgWidth,
       height = self.svgHeight,
       svgClassName=self.svgClassName,
@@ -818,8 +675,8 @@ var NGCircos;
             //console.log(d3.event.scale)
               zoompos =d3.event.translate[0]
               zoompos2 =d3.event.translate[1]
-              a=d3.event.translate[0]+circleCenter / 2
-              b=d3.event.translate[1]+height / 2
+              var a=d3.event.translate[0]+circleCenter / 2
+              var b=d3.event.translate[1]+height / 2
               svg.attr("transform", "translate(" 
                   + a +","+ b 
                   + ")scale(" + d3.event.scale + ")");
@@ -1049,8 +906,8 @@ var NGCircos;
        d3.select("#zoom_in").on("click", function() {
         clicktimes = clicktimes+1;
         //zoom.scaleBy(svg.transition().duration(750), 1.2);
-             a=zoompos + circleCenter / 2
-             b=zoompos2 + height / 2
+             var a=zoompos + circleCenter / 2
+             var b=zoompos2 + height / 2
             svg.attr("transform", "translate("+ a +","+ b 
                         + ")scale(" + 1.2*clicktimes + ")");
              console.log("zoom in "+d3.event.x+" a: "+a);
@@ -1117,7 +974,7 @@ var NGCircos;
                   })
 
                 if(self.BACKGROUNDsettings.axisShow=="true"){
-                    for(i=1;i<=self.BACKGROUNDsettings.axisNum;i++){
+                    for(var i=1;i<=self.BACKGROUNDsettings.axisNum;i++){
                         svg.append("g").selectAll("path")
                             .data(chord.groups)
                           .enter().append("path")
@@ -1322,8 +1179,8 @@ var NGCircos;
                   .attr("cx", function(d) { return d.legend_x; })
                   .attr("cy", function(d) { return d.legend_y; });
                 
-                textX=parseInt(legend_objects[objecti].legend_x)+parseInt(legend_objects[objecti].legend_circleSize)+self.LEGENDsettings.GapBetweenGraphicText
-                textY=parseInt(legend_objects[objecti].legend_y)+parseInt(legend_objects[objecti].legend_circleSize)/2
+                var textX=parseInt(legend_objects[objecti].legend_x)+parseInt(legend_objects[objecti].legend_circleSize)+self.LEGENDsettings.GapBetweenGraphicText
+                var textY=parseInt(legend_objects[objecti].legend_y)+parseInt(legend_objects[objecti].legend_circleSize)/2
                 svg.append("text")
                  .attr("x", textX)
                  .attr("y", textY)
@@ -1336,13 +1193,13 @@ var NGCircos;
               if(legend_objects[objecti].legend_type == "line"){
                 legend_objects_line[0] = legend_objects[objecti]
 //                console.log(legend_objects_line)
-                start_x=parseInt(legend_objects[objecti].legend_x)-parseInt(legend_objects[objecti].legend_lineWidth)/2
-                end_x=parseInt(legend_objects[objecti].legend_x)+parseInt(legend_objects[objecti].legend_lineWidth)/2
-                start_y=parseInt(legend_objects[objecti].legend_y)
-                end_y=parseInt(legend_objects[objecti].legend_y)
-                data=[[start_x,start_y],[end_x,end_y]]
+                var start_x=parseInt(legend_objects[objecti].legend_x)-parseInt(legend_objects[objecti].legend_lineWidth)/2
+                var end_x=parseInt(legend_objects[objecti].legend_x)+parseInt(legend_objects[objecti].legend_lineWidth)/2
+                var start_y=parseInt(legend_objects[objecti].legend_y)
+                var end_y=parseInt(legend_objects[objecti].legend_y)
+                var data=[[start_x,start_y],[end_x,end_y]]
 //                console.log(data)
-                lineGenerator = d3.svg.line()
+                var lineGenerator = d3.svg.line()
                                   .x(function(d) {
                                       return d[0]
                                   })
@@ -2517,9 +2374,8 @@ var NGCircos;
 //
 //        }
 //    }
-  
+        console.log(chord)
 const backgroundClick = svg.selectAll("path");
-    console.log(d3)
     //var   a=d3.event.translate[0]+circleCenter / 2
     //var   b=d3.event.translate[1]+height / 2
     //svg.attr("transform", "translate(" + a +","+ b + ")scale(" + d3.event.scale + ")");
@@ -2541,5 +2397,6 @@ const backgroundClick = svg.selectAll("path");
               .attr("transform", "translate(" + circleCenter + "," + height / 2 + ")");
       })
 
+      return svg.node();
     }
-}(jQuery));
+//}($));

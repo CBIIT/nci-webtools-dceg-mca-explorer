@@ -16,17 +16,30 @@ a,
   text-decoration: none;
   transition: all 0.1s;
   background-color: transparent;
+  font-weight: 700;
+  font-size: 20px !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  
 
   &:hover,
   &:focus {
     color: $body-color;
-    border-color: transparent;
+    border-color:transparent;
   }
   &.active {
     color: $body-color;
     border-color: transparent;
     border-bottom-color: $primary;
-  }
+    background-color: #2cc799 !important;
+      color: #333c4e !important;
+    
+      button {
+        background-color: white !important;
+        color: black !important;
+        font-weight: 700 !important;
+      }
+    }
 }
 
 .navbar-light {

@@ -1,0 +1,31 @@
+.banner-container {
+  z-index: 0;
+  overflow: hidden;
+  display: block;
+  height: 233px;
+  position: relative;
+
+  .banner-overlay-text {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+a {
+  font-weight: 500;
+}
+
+.card {
+  position: inherit !important;
+  min-width: 300px !important;
+}
+.card-example {
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.card-example::-webkit-scrollbar {
+  display: none;
+}
