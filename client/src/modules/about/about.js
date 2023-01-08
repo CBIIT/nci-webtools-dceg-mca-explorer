@@ -8,7 +8,6 @@ export default function About() {
   // if (currentPath.includes("about")){
   //   circle.style.display = "none"
   // }
-  
   return (
     <Container className="my-4">
       <Card className="shadow">

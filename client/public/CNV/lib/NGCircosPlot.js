@@ -2519,7 +2519,8 @@ var NGCircos;
 //    }
   
 const backgroundClick = svg.selectAll("path");
-    console.log(d3)
+    console.log(svg)
+    console.log(chord)
     //var   a=d3.event.translate[0]+circleCenter / 2
     //var   b=d3.event.translate[1]+height / 2
     //svg.attr("transform", "translate(" + a +","+ b + ")scale(" + d3.event.scale + ")");
@@ -2540,6 +2541,7 @@ const backgroundClick = svg.selectAll("path");
 //              .attr("transform", "translate(" + (circleCenter + compareMoveDistance) + "," + height / 2 + ")");
               .attr("transform", "translate(" + circleCenter + "," + height / 2 + ")");
       })
+      console.log(svg)
 
     }
 }(jQuery));

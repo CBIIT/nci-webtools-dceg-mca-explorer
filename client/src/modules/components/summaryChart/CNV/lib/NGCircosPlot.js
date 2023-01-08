@@ -33,22 +33,7 @@ const d3 = require('d3');
 
 export function NGCircos (){
       var self = this;
-      const padding = 10;
-      const width = 600;
-      const height = 600;
-      const dx = 10;
-      const dy = width / (600 + padding);
-      let x0 = Infinity;
-      let x1 = -x0;
-     
-      const svg = d3.svg;
-       console.log(svg)
-        // .attr("viewBox", [(-dy * padding) / 2, x0 - dx, width, height])
-        // .attr("width", width)
-        // .attr("height", height)
-        // .attr("style", "max-width: 100%; height: auto; height: intrinsic;")
-        // .attr("font-family", "sans-serif")
-        // .attr("font-size", 12);
+  
       if(arguments.length >= 2){
             self.argumentsNGCircosSettings=arguments[arguments.length-1];
             self.argumentsNGCircosGenome=arguments[arguments.length-2];
@@ -2374,8 +2359,8 @@ export function NGCircos (){
 //
 //        }
 //    }
-        console.log(chord)
-const backgroundClick = svg.selectAll("path");
+    console.log(svg)
+    const backgroundClick = svg.selectAll("path");
     //var   a=d3.event.translate[0]+circleCenter / 2
     //var   b=d3.event.translate[1]+height / 2
     //svg.attr("transform", "translate(" + a +","+ b + ")scale(" + d3.event.scale + ")");
@@ -2397,6 +2382,6 @@ const backgroundClick = svg.selectAll("path");
               .attr("transform", "translate(" + circleCenter + "," + height / 2 + ")");
       })
 
-      return svg.node();
+      return svg;
     }
 //}($));

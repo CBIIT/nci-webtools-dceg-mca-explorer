@@ -9,6 +9,8 @@ import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 import SelectionPane from "../components/accordion"
 import CircleChart from "../components/summaryChart/CNV/CirclePlot";
+import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
+import StackTest from "../components/summaryChart/CNV/StackTest"
 import {
   SidebarContainer,
   SidebarPanel,
@@ -70,7 +72,8 @@ export default function Explore() {
                     results()
                   ) : (
                     <>
-                    <CircleChart className="mw-100" style={{ maxHeight: "800px" }}></CircleChart>
+                    <CirclePlotTest></CirclePlotTest>
+                    {/* <CircleChart className="mw-100" style={{ maxHeight: "800px" }}></CircleChart> */}
                     </>
                   )}
                 </Suspense>

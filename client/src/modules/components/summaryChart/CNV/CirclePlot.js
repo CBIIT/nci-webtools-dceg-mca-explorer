@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { NGCircos } from './lib/NGCircosPlot'
 import { CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03 } from './data/data'
+const d3 = require('d3');
 
 export default function  CircosPlot({data, options, className, style, onSelect}) {
     const nodeRef = useRef(null);
@@ -9,7 +10,7 @@ export default function  CircosPlot({data, options, className, style, onSelect})
 // use NGCircos package to create circos plot
     const NGCircosGenome = [      // Configure your own genome here.
         [
-          ["1", 248956422],
+          ["1", 248956422],//number is the total number of genomes in this gene
           ["2", 242193529],
           ["3", 198295559],
           ["4", 190214555],
@@ -100,12 +101,15 @@ export default function  CircosPlot({data, options, className, style, onSelect})
       });
       NGCircos01.draw_genome(NGCircos01.genomeLength);  // NGCircos.js callback
       NGCircos01.draw_genome(NGCircos01.genomeLength2); // NGCircos2.js callback second time
-      //console.log(NGCircos01)
+      //d3.queue().await(NGCircos01)
       nodeRef.current.replaceChildren(NGCircos01);
       }
     }, [data, options, nodeRef]);
   
-    
+
       //return NGCircos01;
-      return <div ref={nodeRef} className={className} style={style} />;
+     return <div ref={nodeRef} className={className} style={style} />;
+     //return  
+    
+  
 }

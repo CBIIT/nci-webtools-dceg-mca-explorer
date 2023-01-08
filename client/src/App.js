@@ -7,9 +7,8 @@ import Home from "./modules/home/home";
 export default function App() {
   const navbarLinks = [
     { path: "/", title: "Home" },
-
     { path: "/mosaic", title: "Mosaic Explore", exact: "true" },
-       { path: "/api", title: "API Access" },
+    { path: "/api", title: "API Access" },
     { path: "/about", title: "About" },
 
   ];
@@ -19,9 +18,10 @@ export default function App() {
       <Router>
         <Navbar links={navbarLinks} className="shadow-sm" />
         <Routes>
+          <Route path="/mosaic" exact='true' element={<Mosaic />} />
           <Route path="/about" element={<About />} />
           <Route path="/" element={<Home />} />
-          <Route path="/mosaic" element={<Mosaic />} />
+
         </Routes>
       </Router>
     </RecoilRoot>

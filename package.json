@@ -34,6 +34,7 @@
   "dependencies": {
     "d3": "^3.5.17",
     "html-react-parser": "^3.0.4",
-    "jquery": "^3.6.3"
+    "jquery": "^3.6.3",
+    "react-circos": "^1.0.0"
   }
 }
