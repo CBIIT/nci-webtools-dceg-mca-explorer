@@ -38,25 +38,28 @@ const GRCh37 = [
   {"id":"chrX","label":"X","color":"#999999","len":155270560},
   {"id":"chrY","label":"Y","color":"#CCCCCC","len":59373566}
 ]
+const size = 750;
 export default function HeatMapTest() {
   return (
     <div >
       <Circos
           layout={layout}
           config={{
+          innerRadius: size / 2 - 50,
+          outerRadius: size / 2 - 30,
           ticks: {
-            display: false,
+            display: true,
             color: "black",
-            spacing: 1,
+            //spacing: 100000,
             labels: false,
-            labelSpacing: 10,
-            labelSuffix: "",
-            labelDenominator: 1,
-            labelDisplay: true,
-            labelSize: "5px",
-            labelColor: "#000000",
-            labelFont: "default",
-            majorSpacing: 1
+            // labelSpacing: 10,
+            // labelSuffix: "",
+            // labelDenominator: 1,
+            // labelDisplay: true,
+            // labelSize: "5px",
+            // labelColor: "yellow",
+            // labelFont: "default",
+            // majorSpacing: 1
           },
            GRCh37,
           labels: {
@@ -64,7 +67,7 @@ export default function HeatMapTest() {
             display: true,
             size: 14,
             color: "#000",
-            radialOffset: 17
+            radialOffset: 28
           }
         }}
        tracks={[
@@ -73,7 +76,7 @@ export default function HeatMapTest() {
             data: loss, 
             config: {
               innerRadius: 0.25,
-              outerRadius: 0.6,
+              outerRadius: 0.5,
               thickness:1,
               margin: 0,
               logScale: true,
@@ -82,8 +85,8 @@ export default function HeatMapTest() {
                 {
                   start: 0,
                   end: 0.6,
-                  color: "#f44336",
-                  opacity: 0.5
+                  color: "#F7D7D0",
+                  opacity: 1
                 }
               ],
               tooltipContent: function(d) {
@@ -95,8 +98,8 @@ export default function HeatMapTest() {
             type: STACK,
             data: loh,
             config: {
-              innerRadius: 0.6,
-              outerRadius: 0.8,
+              innerRadius: 0.5,
+              outerRadius: 0.75,
               thickness:1,
               margin: 0,
               logScale: true,
@@ -105,8 +108,8 @@ export default function HeatMapTest() {
                 {
                   start: 0,
                   end: 0.6,
-                  color: "blue",
-                  opacity: 0.5
+                  color: "#9EC2FD",
+                  opacity: 1
                 }
               ],
               tooltipContent: function(d) {
@@ -118,7 +121,7 @@ export default function HeatMapTest() {
             type: STACK,
             data: gain,
             config: {
-              innerRadius: 0.8,
+              innerRadius: 0.75,
               outerRadius: 1,
               thickness:1,
               margin: 0,
@@ -128,8 +131,8 @@ export default function HeatMapTest() {
                 {
                   start: 0,
                   end: 0.6,
-                  color: "green",
-                  opacity: 0.5
+                  color: "#CFFAE1",
+                  opacity: 1
                 }
               ],
               tooltipContent: function(d) {

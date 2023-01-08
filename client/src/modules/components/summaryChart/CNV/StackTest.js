@@ -24,7 +24,7 @@ const StackTest = () => (
       ticks: {
         display: true,
         labels: false,
-        spacing: 100,
+        spacing: 10000,
       },
     }}
     tracks={[{
