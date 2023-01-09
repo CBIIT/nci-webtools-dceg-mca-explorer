@@ -101,7 +101,7 @@ export default function  CircosPlot({data, options, className, style, onSelect})
       });
       NGCircos01.draw_genome(NGCircos01.genomeLength);  // NGCircos.js callback
       NGCircos01.draw_genome(NGCircos01.genomeLength2); // NGCircos2.js callback second time
-      //d3.queue().await(NGCircos01)
+
       nodeRef.current.replaceChildren(NGCircos01);
       }
     }, [data, options, nodeRef]);

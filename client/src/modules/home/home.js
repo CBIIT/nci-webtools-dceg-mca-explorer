@@ -9,7 +9,7 @@ import "./home.scss";
 export default function Home({links}) {
   return (
     <>
-     <div  style={{ marginTop: '-20px', padding: '0px' }} className="banner-container text-center d-none d-md-block">
+     <div  style={{ marginTop: '-5px', padding: '0px' }} className="banner-container text-center d-none d-md-block">
         <img
           src={genomeImage} alt="genome"
           style={{ width: '100%' , height: '100%'}}></img>
@@ -20,15 +20,14 @@ export default function Home({links}) {
         <Col md="3">
         <Card 
          key ='mosaic'
-        
          style={{width: '20rem',
                   justifyContent: 'center',
                   alignItems: 'center', 
                   border: '1px solid #DADBE6'
                   }} 
               >
-          <Link className="stretched-link" to='/mosaic' >
-                <span className="sr-only">{ ' link'}</span>
+          <Link className="" to='/mosaic' >
+                <span className="sr-only">{ 'link'}</span>
                   <div
                     className="bg-primary rounded-circle"
                     style={{ marginTop: '-40px', padding: '10px' }}>
@@ -51,14 +50,14 @@ export default function Home({links}) {
        </Col>
         <Col md="6">
           <Card 
-         key ='mosaic'
+         key ='about'
          className="mb-5 align-self-center"
          style={{ width: '20rem', 
                   justifyContent: 'center',
                   alignItems: 'center', 
                   border: '1px solid #DADBE6'}} 
               >
-          <Link className="stretched-link" to='/mosaic' >
+          <Link className="" to='/api'>
                 <span className="sr-only">{ ' link'}</span>
                   <div
                     className="bg-primary rounded-circle"
