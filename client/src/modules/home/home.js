@@ -15,9 +15,9 @@ export default function Home({links}) {
           style={{ width: '100%' , height: '100%'}}></img>
       </div>
       <Container fluid className=" py-8 align-middle text-cernter" style={{display: 'block',  width: '100%' }}>
-        <Row sm={1} md={2} className="card-example text-center">
+        <Row sm={1} md={2} className="card-example text-center ">
         <Col md='3'></Col>
-        <Col md="3">
+        <Col md="3" className=" position-relative">
         <Card 
          key ='mosaic'
          style={{width: '20rem',
@@ -26,7 +26,7 @@ export default function Home({links}) {
                   border: '1px solid #DADBE6'
                   }} 
               >
-          <Link className="" to='/mosaic' >
+          <Link className="stretched-link" to='/mosaic' exact='true' key='1' >
                 <span className="sr-only">{ 'link'}</span>
                   <div
                     className="bg-primary rounded-circle"
@@ -48,7 +48,7 @@ export default function Home({links}) {
           </Card.Body>
           </Card>
        </Col>
-        <Col md="6">
+        <Col md="6" className=" position-relative">
           <Card 
          key ='about'
          className="mb-5 align-self-center"
@@ -57,7 +57,7 @@ export default function Home({links}) {
                   alignItems: 'center', 
                   border: '1px solid #DADBE6'}} 
               >
-          <Link className="" to='/api'>
+          <Link  className="stretched-link" to='/api'  key='2'>
                 <span className="sr-only">{ ' link'}</span>
                   <div
                     className="bg-primary rounded-circle"
