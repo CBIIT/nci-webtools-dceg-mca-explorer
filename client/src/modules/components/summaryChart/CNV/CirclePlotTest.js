@@ -17,7 +17,7 @@ const hovertip = (d =>{
 const size = 800;
 export default function HeatMapTest() {
   return (
-    <div >
+    <div className="align-middle text-cernter">
       <Circos
           layout={layout}
           config={{
@@ -142,7 +142,7 @@ export default function HeatMapTest() {
 
               events: {
                 click: function(d, i, nodes, event) {
-                  //console.log(d, i, nodes, event);
+                  console.log("clicking ",d);
                 },
                 // mouseover:
                 // function(d, i, nodes, event) {

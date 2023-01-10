@@ -12,7 +12,7 @@ function SelectionPane() {
          <FilterGroup></FilterGroup>
         </Accordion.Body>
       </Accordion.Item>
-      <Accordion.Item eventKey="1">
+      {/* <Accordion.Item eventKey="1">
         <Accordion.Header>Compare Groups</Accordion.Header>
         <Accordion.Body>
           <FilterGroup></FilterGroup>
@@ -29,7 +29,7 @@ function SelectionPane() {
         <Accordion.Body>
         
         </Accordion.Body>
-      </Accordion.Item>
+      </Accordion.Item> */}
     </Accordion>
   );
 }

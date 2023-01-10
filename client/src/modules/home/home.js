@@ -14,72 +14,14 @@ export default function Home({links}) {
           src={genomeImage} alt="genome"
           style={{ width: '100%' , height: '100%'}}></img>
       </div>
-      <Container fluid className=" py-8 align-middle text-cernter" style={{display: 'block',  width: '100%' }}>
-        <Row sm={1} md={2} className="card-example text-center ">
-        <Col md='3'></Col>
-        <Col md="3" className=" position-relative">
-        <Card 
-         key ='mosaic'
-         style={{width: '20rem',
-                  justifyContent: 'center',
-                  alignItems: 'center', 
-                  border: '1px solid #DADBE6'
-                  }} 
-              >
-          <Link className="stretched-link" to='/mosaic' exact='true' key='1' >
-                <span className="sr-only">{ 'link'}</span>
-                  <div
-                    className="bg-primary rounded-circle"
-                    style={{ marginTop: '-40px', padding: '10px' }}>
-                    <img alt="icon" src={gwasimg} height="55" width="55" />
-                 </div>
-          </Link>
-          <Card.Body >
-            <Card.Title  style={{ color: '#545871', wordSpacing: '100vw' }}>
-               <h2 style={{ fontSize: '1.75rem' }}>
-                  <b>Mosaic Explore</b>
-                </h2></Card.Title>
-              <Card.Text className="text-secondary">
-                <big>some quick example text to build on the card title and make up the
-                bulk of the card's content.
-                </big>
-              </Card.Text>
-            
-          </Card.Body>
-          </Card>
-       </Col>
-        <Col md="6" className=" position-relative">
-          <Card 
-         key ='about'
-         className="mb-5 align-self-center"
-         style={{ width: '20rem', 
-                  justifyContent: 'center',
-                  alignItems: 'center', 
-                  border: '1px solid #DADBE6'}} 
-              >
-          <Link  className="stretched-link" to='/api'  key='2'>
-                <span className="sr-only">{ ' link'}</span>
-                  <div
-                    className="bg-primary rounded-circle"
-                    style={{ marginTop: '-40px', padding: '10px' }}>
-                    <img alt="icon" src={downloadsimg} height="55" width="55" />
-                 </div>
-          </Link>
-          <Card.Body >
-            <Card.Title  style={{ color: '#545871', wordSpacing: '100vw' }}>
-               <h2 style={{ fontSize: '1.75rem' }}>
-                  <b>Access Data</b>
-                </h2></Card.Title>
-              <Card.Text className="text-secondary">
-                <big>some quick example text to build on the card title and make up the
-                bulk of the card's content.
-                </big>
-              </Card.Text>
-            
-          </Card.Body>
-          </Card>
-          </Col>
-          </Row>
+      <Container fluid className=" py-8 align-middle text-cernter" style={{display: 'block',  width: '50%' }}>
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+      sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+      Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi 
+      ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit 
+      in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+      Excepteur sint occaecat cupidatat non proident, sunt in culpa qui 
+      officia deserunt mollit anim id est laborum.
     </Container>
         <div className="bg-white text-center">
         <div
