@@ -84,7 +84,7 @@ export default function Explore() {
                   ) : (
                     <>
                     <h2 style={{textAlign: "center", padding:"20px"}}>Autosomal mCA Distribution</h2>
-                    <div class="row">
+                    <div className="row">
                       <div className="col-1"></div>
                       <div className="col-10">
                         <CirclePlotTest></CirclePlotTest>
