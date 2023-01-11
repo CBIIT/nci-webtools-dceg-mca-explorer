@@ -15,7 +15,7 @@ const hovertip = (d =>{
 })
 
 const size = 800;
-export default function HeatMapTest() {
+export default function CircleTest() {
   return (
     <div className="align-middle text-cernter">
       <Circos
