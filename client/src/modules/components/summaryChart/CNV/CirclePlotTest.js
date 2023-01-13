@@ -7,6 +7,7 @@ import layout from "./layout2.json";
 import loss from "./loss.json";
 import loh from "./loh.json";
 import gain from "./gain.json"
+import unknown from "./unknown.json"
 import band from "./band.json"
 
 //import "./styles.css";
@@ -47,6 +48,32 @@ export default function CircleTest() {
           }
         }}
        tracks={[
+         {
+            type: STACK,
+            data: unknown, 
+            config: {
+              innerRadius: 0.15,
+              outerRadius: 0.25,
+              thickness:-1,
+              margin: 0,
+              strokeWidth: 1,
+              strokeColor:"grey",
+              direction: 'out',
+              logScale: true,
+              color: "grey",
+              backgrounds: [
+                {
+                  start: 0,
+                  end: 0.6,
+                  color: "grey",
+                  opacity: 0.5
+                }
+              ],
+              tooltipContent: function(d) {
+                return hovertip(d)
+              }
+            }
+          },
           {
             type: STACK,
             data: loss, 
