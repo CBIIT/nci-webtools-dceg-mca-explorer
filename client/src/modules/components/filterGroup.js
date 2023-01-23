@@ -6,25 +6,31 @@ import React, { useState } from "react";
 const formState = {
   study: [{ value: 'plco', label: "PLCO" }],
   array: '',
-  sex:'',
-  age:'',
-  ancestry:'',
+  sex: '',
+  age: '',
+  ancestry: '',
   submitted: false,
 };
 
 function FilterGroup() {
- const [selectedOption, setSelectedOption] = useState("none");
- const [form, setForm] = useState(formState);
- const mergeForm = (obj) => setForm({ ...form, ...obj });
+  const [selectedOption, setSelectedOption] = useState("none");
+  const [form, setForm] = useState(formState);
+  const mergeForm = (obj) => setForm({ ...form, ...obj });
 
- function handleSelectChange(name, selection = []) {
-   //console.log(name,selection);
-   mergeForm({[name]:selection})
-   setSelectedOption(selection);
+  function handleSelectChange(name, selection = []) {
+    //console.log(name,selection);
+    mergeForm({ [name]: selection })
+    setSelectedOption(selection);
   }
+
+  function handleChange(event){
+    const { name, value } = event.target;
+    mergeForm({[name]: value})
+  }
+
   return (
-   <Form >
-    <Form.Group className="mb-3" controlId="study">
+    <Form >
+      <Form.Group className="mb-3" controlId="study">
         <Form.Label className="required">Study</Form.Label>
         <Select
           placeholder="No study selected"
@@ -32,12 +38,12 @@ function FilterGroup() {
           isMulti={true}
           value={form.study}
           onChange={(ev) => handleSelectChange("study", ev)}
-           options={[
+          options={[
             { value: "plco", label: "PLCO" }
           ]}
         />
       </Form.Group>
-     <Form.Group className="mb-3" controlId="array">
+      <Form.Group className="mb-3" controlId="array">
         <Form.Label className="required">Array</Form.Label>
         <Select
           placeholder="No Array selected"
@@ -48,8 +54,8 @@ function FilterGroup() {
           options=''
         />
       </Form.Group>
-       <Form.Group className="mb-3" controlId="sex">
-        <Form.Label className="required">Sex</Form.Label>
+      <Form.Group className="mb-3" controlId="sex">
+        <Form.Label>Sex</Form.Label>
         <Select
           placeholder="No sex selected"
           name="sex"
@@ -57,24 +63,23 @@ function FilterGroup() {
           value={form.sex}
           onChange={(ev) => handleSelectChange("sex", ev)}
           options={[
-            { value: "Male", label: "male" },
-            { value: "Female", label: "female"}
+            { value: "male", label: "Male" },
+            { value: "female", label: "Female" }
           ]}
         />
       </Form.Group>
-       <Form.Group className="mb-3" controlId="age">
-        <Form.Label className="required">Age</Form.Label>
-        <Select
+      <Form.Group className="mb-3" controlId="age">
+        <Form.Label>Age</Form.Label>
+        <Form.Control
           placeholder="No age selected"
           name="age"
-          isMulti={true}
+          type="number"
           value={form.age}
-          onChange={(ev) => handleSelectChange("age", ev)}
-          options=''
+          onChange={handleChange}
         />
       </Form.Group>
-       <Form.Group className="mb-3" controlId="ancestry">
-        <Form.Label className="required">Ancestry</Form.Label>
+      <Form.Group className="mb-3" controlId="ancestry">
+        <Form.Label>Ancestry</Form.Label>
         <Select
           placeholder="No ancestry selected"
           name="ancestry"
@@ -83,15 +88,15 @@ function FilterGroup() {
           onChange={(ev) => handleSelectChange("ancestry", ev)}
           options={[
             { value: "mix_eur", label: "ADMIXED_EUR" },
-            { value: "afr", label: "AFR"},
-             { value: "afr_eur", label: "AFR_EUR" },
-            { value: "asn", label: "ASN"},
-             { value: "asn_eur", label: "ASN_EUR" },
-            { value: "eur", label: "EUR"}
+            { value: "afr", label: "AFR" },
+            { value: "afr_eur", label: "AFR_EUR" },
+            { value: "asn", label: "ASN" },
+            { value: "asn_eur", label: "ASN_EUR" },
+            { value: "eur", label: "EUR" }
           ]}
         />
       </Form.Group>
-   </Form>
+    </Form>
   );
 }
 

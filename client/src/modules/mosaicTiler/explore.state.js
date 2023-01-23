@@ -4,7 +4,7 @@ import { query } from "../../services/query";
 export const sampleState = selector({
   key: "explore.fieldState",
   get: ({ get }) => query("api/query", { table: "sample",
-     orderBy: "name",
+     orderBy: "id",
       order: "asc", })
 });
 
@@ -50,28 +50,10 @@ export const resultsState = selector({
   },
 });
 
-export const geneState = selector({
-  key: "explore.geneState",
-  get: ({ get }) => query("api/query", { table: "geneName" }),
-});
-
-export const dataState = selectorFamily({
-  key: "explore.proteinData",
-  get:
-    ({ table, cancer, gene }) =>
-    async (_) =>
-      table && cancer && gene
-        ? query("api/query", {
-            "table": table,
-            "_cancerId:in": cancer,
-            "_geneId": gene,
-          })
-        : [],
-});
 
 export const defaultFormState = {
   openSidebar: true,
-
+  
   submitted: false,
 };
 
