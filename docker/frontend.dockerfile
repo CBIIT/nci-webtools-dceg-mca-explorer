@@ -25,7 +25,7 @@ RUN npm run build \
 WORKDIR /var/www/html
 
 # Add custom httpd configuration
-COPY docker/httpd-cprosite.conf /etc/httpd/conf.d/httpd-cprosite.conf
+COPY docker/httpd-cprosite.conf /etc/httpd/conf.d/httpd-mosaictiler.conf
 
 EXPOSE 80
 EXPOSE 443
