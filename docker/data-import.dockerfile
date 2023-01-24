@@ -16,4 +16,4 @@ RUN npm install
 
 COPY database /app/database/
 
-CMD node startDatabaseImport.js
+#CMD node startDatabaseImport.js
