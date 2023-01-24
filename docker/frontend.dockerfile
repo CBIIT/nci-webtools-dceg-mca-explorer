@@ -19,13 +19,13 @@ RUN npm install --force
 
 COPY client /client/
 
-ARG APP_PATH=/mosaic-tiler
+ARG APPLICATION_PATH=/mosaic-tiler
 
-ENV APP_PATH=${APP_PATH}
+ENV APPLICATION_PATH=${APPLICATION_PATH}
 
 RUN npm run build \
- && mkdir -p /var/www/html/${APP_PATH} \
- && cp -r /client/build/* /var/www/html/${APP_PATH}
+ && mkdir -p /var/www/html/${APPLICATION_PATH} \
+ && cp -r /client/build/* /var/www/html/${APPLICATION_PATH}
 
 WORKDIR /var/www/html
 
