@@ -1,0 +1,31 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: "."
+      dockerfile: "./docker/backend.dockerfile"
+    volumes:
+      - "./server/config.json:/deploy/server/config.json:ro"
+    ports:
+      - "10000:10000"
+
+  frontend:
+    build:
+      context: "."
+      dockerfile: "./docker/frontend.dockerfile"
+    environment:
+      API_HOST: http://backend:10000
+    ports:
+      - "8400:80"
+
+  # to test locally, run:
+  # curl -XPOST "http://localhost:8080/2015-03-31/functions/function/invocations" -d '{}'
+  data-import:
+    build:
+      context: "."
+      dockerfile: "./docker/data-import.dockerfile"
+    env_file: database/.env
+    environment:
+      - DATABASE_HOST=database
+    ports:
+      - "8080:8080"
