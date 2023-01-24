@@ -1,0 +1,34 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: "."
+      dockerfile: "./docker/backend.dockerfile"
+    env_file: server/.env
+    environment:
+      - OPENSEARCH_ENDPOINT=database
+      - OPENSEARCH_USERNAME=admin
+      - OPENSEARCH_PASSWORD=admin
+    ports:
+      - "9000:9000"
+
+  frontend:
+    build:
+      context: "."
+      dockerfile: "./docker/frontend.dockerfile"
+      args:
+        APP_PATH: /mosaic-tiler
+    environment:
+      API_BASE_URL: http://backend:9000
+      APP_PATH: /mosaic-tiler
+    ports:
+      - "3000:80"
+
+  # to start only the database container, run:
+  # docker compose up database
+  # ensure vm.max_map_count is at least 262144
+  database:
+    image: public.ecr.aws/opensearchproject/opensearch
+    ports:
+      - "9200:9200"
+      - "9600:9600"
