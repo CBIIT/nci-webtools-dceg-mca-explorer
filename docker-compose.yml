@@ -5,10 +5,6 @@ services:
       context: "."
       dockerfile: "./docker/backend.dockerfile"
     env_file: server/.env
-    environment:
-      - OPENSEARCH_ENDPOINT=database
-      - OPENSEARCH_USERNAME=admin
-      - OPENSEARCH_PASSWORD=admin
     ports:
       - "9000:9000"
 
@@ -29,6 +25,7 @@ services:
   # ensure vm.max_map_count is at least 262144
   database:
     image: public.ecr.aws/opensearchproject/opensearch
+    env_file: server/.env
     ports:
       - "9200:9200"
       - "9600:9600"
