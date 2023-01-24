@@ -11,6 +11,7 @@
     "html-loader": "^4.2.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
+    "react-circos": "^1.0.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.5.0",
     "react-scripts": "5.0.1",
@@ -44,5 +45,7 @@
   },
   "devDependencies": {
     "sass": "^1.57.0"
-  }
+  },
+  "homepage": "/mosaic-tiler",
+  "proxy": "http://localhost:9000"
 }
