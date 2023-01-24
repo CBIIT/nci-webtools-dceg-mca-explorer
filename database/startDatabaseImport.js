@@ -1,5 +1,7 @@
-export async function importData(env, schema, sources, sourceProvider, logger) {
- 
-  logger.info(`Started methylscape data import`);
-
+export async function importData(logger) {
+  logger.info(`Started mosaic tiler data import`);
 }
+
+importData(console).then((e) => {
+  process.exit(0);
+});
