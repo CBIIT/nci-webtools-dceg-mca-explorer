@@ -11,8 +11,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   const [form, setForm] = useState(formState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 23 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }))
-  console.log(gain)
-
+  
   function handleChange(event) {
     const { name, value } = event.target;
     mergeForm({ [name]: value })
@@ -31,8 +30,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleSelectChange(name, selection = []) {
     //console.log(name,selection);
-    console.log(name)
-    if(name === "chromosomes" && selection.find((option) => option.value === "all")){
+    if(name === "chromosome" && selection.find((option) => option.value === "all")){
+
       selection = chromosomes.slice(1)
     }
     mergeForm({ [name]: selection })
