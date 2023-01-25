@@ -3,22 +3,24 @@ import { query } from "../../services/query";
 
 export const sampleState = selector({
   key: "explore.fieldState",
-  get: ({ get }) => query("api/query", { table: "sample",
-     orderBy: "id",
-      order: "asc", })
+  get: ({ get }) => query("api/query", {
+    table: "sample",
+    orderBy: "id",
+    order: "asc",
+  })
 });
 
 
 export async function getData(params, tumor, gene) {
   var summary;
   var participants
- 
+
   participants = await query("api/query", {
     "table": params.dataset.value,
     "_cancerId:in": tumor,
     "_geneId": gene,
   });
-  
+
   return { summary, participants };
 }
 
@@ -29,23 +31,28 @@ export const resultsState = selector({
     if (!params) return null;
 
     var results = [];
-    console.log("params:",params);
+    console.log("params:", params);
 
-    for (const gene of [params.gene, params.correlatedGene]) {
-      if (!gene) continue;
+    //Get Data Function Here, return array of json documents
 
-      const { summary, participants} = await getData(
-        params,
-        params.cancer.map((e) => e.value),
-        gene.value,
-      );
-      results.push({
-        gene,
-        summary,
-        participants      
-      });
-    }
-   // console.log(results);
+    results.map((e) => {
+      var chromosome = e.chromosome.slice(3)
+
+      if(chromosome === "X")
+        chromosome = 23
+
+      return({
+        ...e,
+        chromosome: chromosome,
+        sexMatch: e.sexMatch === 1 ? "Y" : "N",
+        sexDiscordant: e.sexDiscordant === 1 ? true : false,
+        unexpectedReplicate: e.unexpectedReplicate === 1 ? true : false,
+        mochaAutosomal: e.mochaAutosomal === 1 ? true : false,
+      })
+    })
+    
+
+    // console.log(results);
     return results;
   },
 });
@@ -53,7 +60,7 @@ export const resultsState = selector({
 
 export const defaultFormState = {
   openSidebar: true,
-  
+
   submitted: false,
 };
 

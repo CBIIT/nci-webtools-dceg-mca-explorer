@@ -7,6 +7,7 @@ import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 //import CircleChart from "../components/summaryChart/CNV/CirclePlot";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
+import RangeView from "./rangeView";
 //import StackTest from "../components/summaryChart/CNV/StackTest"
 import {
   SidebarContainer,
@@ -18,7 +19,7 @@ export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
-
+  
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
@@ -45,7 +46,7 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm/>
+              <ExploreForm onSubmit={handleSubmit}/>
             </Card.Body>
           </Card>
 
@@ -67,7 +68,7 @@ export default function Explore() {
                 }>
                 <Suspense fallback="Loading...">
                   {form.submitted ? (
-                    results()
+                    <RangeView/>
                   ) : (
                     <>
                       <h2 style={{ textAlign: "center", padding: "20px" }}>Autosomal mCA Distribution</h2>
