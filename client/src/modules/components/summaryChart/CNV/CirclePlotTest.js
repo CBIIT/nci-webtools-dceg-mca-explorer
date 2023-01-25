@@ -10,9 +10,12 @@ import gain from "./gain.json"
 import unknown from "./unknown.json"
 import band from "./band.json"
 
-//import "./styles.css";
+import "./css/styles.css";
 const hovertip = (d =>{
   return "Value:" + d.value + "<br> Start:" + d.start+"<br> End:"+d.end+"<br> Ancestry:"+d.ancestry+"<br> Sex:"+d.sex;
+})
+const hovercoler = (d =>{
+  console.log(d.block_id)
 })
 
 const size = 800;
@@ -38,7 +41,6 @@ export default function CircleTest() {
             // labelFont: "default",
             // majorSpacing: 1
           },
-         
           labels: {
             position: "center",
             display: true,
@@ -47,7 +49,7 @@ export default function CircleTest() {
             radialOffset: 28
           }
         }}
-       tracks={[
+        tracks={[
          {
             type: STACK,
             data: unknown, 
@@ -71,6 +73,18 @@ export default function CircleTest() {
               ],
               tooltipContent: function(d) {
                 return hovertip(d)
+              },
+              events: {
+              //  'mouseover.alert':
+              //     function(d, i, nodes, event) {
+              //       //alert(d);
+              //       //return hovercoler(d);
+              //   }
+                // ,
+                // click:function(d, i, nodes, event) {
+                //   console.log(d)
+                //     return hovercoler(d);
+                // }
               }
             }
           },
@@ -97,6 +111,15 @@ export default function CircleTest() {
               ],
               tooltipContent: function(d) {
                 return hovertip(d)
+              },
+              events: {
+                // 'mouseover.alert':
+                //   function(d, i, nodes, event) {
+                //     //return hovercoler(d);
+                // },
+                // click:function(d, i, nodes, event) {
+                //     return hovercoler(d);
+                // }
               }
             }
           },
@@ -123,6 +146,16 @@ export default function CircleTest() {
               ],
               tooltipContent: function(d) {
                 return hovertip(d);
+              },
+              events: {
+              //  mouseover:
+              //     function(d, i, nodes, event) {
+              //       return hovercoler(d);
+              //   },
+                // click:function(d, i, nodes, event) {
+                //     return hovercoler(d);
+                // }
+              
               }
             }
           },
@@ -153,8 +186,11 @@ export default function CircleTest() {
               events: {
               //  mouseover:
               //     function(d, i, nodes, event) {
-              //       //console.log(d, i, nodes, event);
-              //   }
+              //       return hovercoler(d);
+              //   },
+                // click:function(d, i, nodes, event) {
+                //     return hovercoler(d);
+                // }
               }
             }
           },
@@ -171,10 +207,13 @@ export default function CircleTest() {
                 click: function(d, i, nodes, event) {
                   console.log("clicking ",d);
                 },
-                // mouseover:
-                // function(d, i, nodes, event) {
-                //   console.log(d, i, nodes, event);
-                // },
+                mouseover:
+                function(d, i, nodes, event) {
+                  //console.log(d.block_id);
+                  //change class="cs-layout" class=d.block_id, fill="grey" to highlight the chromosome
+                  //document.getElementsByClassName()
+
+                }
               },
             },
           }

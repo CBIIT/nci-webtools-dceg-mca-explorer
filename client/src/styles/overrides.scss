@@ -16,3 +16,11 @@ legend {
   cursor: not-allowed;
   pointer-events: all !important;
 }
+
+div svg path {
+  /* stroke-width: 0px; */
+  position: absolute;
+}
+ div svg path:hover {
+   fill: aqua;
+ }
