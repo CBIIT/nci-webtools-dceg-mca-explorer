@@ -9,7 +9,7 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
 import gain from "../components/summaryChart/CNV/gain.json";
 import loss from "../components/summaryChart/CNV/loss.json";
 import loh from "../components/summaryChart/CNV/loh.json";
-import unknown from "../components/summaryChart/CNV/unknown.json";
+import undetermined from "../components/summaryChart/CNV/unknown.json";
 import Table from "../components/table";
 
 export default function RangeView() {
@@ -21,9 +21,9 @@ export default function RangeView() {
     const sortGain = gain.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Gain" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
     const sortLoss = loss.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Loss" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
     const sortLoh = loh.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "LOH" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
-    const sortUnknown = unknown.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Unknown" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
+    const sortUndetermined = undetermined.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Undetermined" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
 
-    const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUnknown)
+    const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined)
 
     const columns = [
         {
@@ -131,16 +131,16 @@ export default function RangeView() {
             hovertemplate: "<br>Value: %{y} %{hovertext} <extra></extra>",
         }
 
-        const unknownScatter = {
-            x: sortUnknown.map((e) => { return (Number(e.block_id)) }),
-            y: sortUnknown.map((e) => { return (Number(e.value)) }),
-            name: "Unknown",
+        const undeterminedScatter = {
+            x: sortUndetermined.map((e) => { return (Number(e.block_id)) }),
+            y: sortUndetermined.map((e) => { return (Number(e.value)) }),
+            name: "Undetermined",
             type: "scatter",
             mode: "markers",
             marker: {
                 color: "rgb(77,77,77)",
             },
-            hovertext: sortUnknown.map((e) => {
+            hovertext: sortUndetermined.map((e) => {
                 var text = "<br>Start: " + e.start;
                 text = text + "<br>End: " + e.end;
                 return text
@@ -148,8 +148,7 @@ export default function RangeView() {
             hovertemplate: "<br>Value: %{y} %{hovertext} <extra></extra>",
         }
 
-        console.log(gainScatter)
-        return ([gainScatter, lossScatter, lohScatter, unknownScatter])
+        return ([gainScatter, lossScatter, lohScatter, undeterminedScatter])
     }
 
     function exportTable() {
@@ -205,7 +204,7 @@ export default function RangeView() {
                             <text textAnchor="middle" x="300" y="60">NEUTRAL</text>
                             {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
                             <text textAnchor="middle" x="375" y="60">LOSS</text>
-                            <text textAnchor="middle" x="450" y="60">UNKNOWN</text>
+                            <text textAnchor="middle" x="470" y="60">UNDETERMINED</text>
                             {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}
                         </svg>
                     </div>
