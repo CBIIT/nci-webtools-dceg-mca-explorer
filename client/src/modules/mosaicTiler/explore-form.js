@@ -1,6 +1,6 @@
 import { Form, Button, Accordion, OverlayTrigger, Tooltip } from "react-bootstrap";
 import Select from "react-select";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { sampleState, formState, defaultFormState } from "./explore.state";
 import { useState } from "react";
 import gain from "../components/summaryChart/CNV/gain.json"
@@ -8,10 +8,11 @@ import gain from "../components/summaryChart/CNV/gain.json"
 export default function ExploreForm({ onSubmit, onReset }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
-  const [form, setForm] = useState(formState);
+  const [form, setForm] = useState(defaultFormState);
+
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 23 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }))
-  
+
   function handleChange(event) {
     const { name, value } = event.target;
     mergeForm({ [name]: value })
@@ -30,7 +31,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleSelectChange(name, selection = []) {
     //console.log(name,selection);
-    if(name === "chromosome" && selection.find((option) => option.value === "all")){
+    if (name === "chromosome" && selection.find((option) => option.value === "all")) {
 
       selection = chromosomes.slice(1)
     }
@@ -109,7 +110,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="cpNum">
-        <Form.Label className="required">State Copy Number Event</Form.Label>
+        <Form.Label className="required">Copy Number State</Form.Label>
         <Form.Control
           name="cpNum"
           type="number"
@@ -121,7 +122,43 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Accordion.Item eventKey="0">
           <Accordion.Header style={{ backgroundColor: '#343a40' }}>Optional Fields</Accordion.Header>
           <Accordion.Body>
+            <Form.Group className="mb-3" controlId="array">
+              <Form.Label>Genotyping Array</Form.Label>
+              <Select
+                placeholder="No array selected"
+                name="array"
+                isMulti={true}
+                value={form.array}
+                onChange={(ev) => handleSelectChange("array", ev)}
+                options={[
+                  { value: "gsa", label: "Global Screening Array" },
+                  { value: "illuminaGlobal", label: "Illumina Global Screening Array" },
+                ]}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="fraction">
+              <Form.Label>Cellular Fraction</Form.Label>
+              <Form.Control
+                name="fraction"
+                type="number"
+                value={form.fraction}
+                onChange={handleChange}
+              />
+            </Form.Group>
 
+            <Form.Group className="mb-3" controlId="algorithm">
+              <Form.Label>Detection Algorithm</Form.Label>
+              <Select
+                placeholder="No algorithm selected"
+                name="algorithm"
+                isMulti={true}
+                value={form.algorithm}
+                onChange={(ev) => handleSelectChange("algorithm", ev)}
+                options={[
+                  { value: "test", label: "Placeholder" },
+                ]}
+              />
+            </Form.Group>
             <Form.Group className="mb-3" controlId="sex">
               <Form.Label>Sex</Form.Label>
               <Select
@@ -161,63 +198,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
                   { value: "ASN", label: "Asian" },
                   { value: "asn_eur", label: "ASN_EUR" },
                   { value: "EUR", label: "European" }
-                ]}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="array">
-              <Form.Label>Genotyping Array</Form.Label>
-              <Select
-                placeholder="No array selected"
-                name="array"
-                isMulti={true}
-                value={form.array}
-                onChange={(ev) => handleSelectChange("array", ev)}
-                options={[
-                  { value: "test", label: "Pladeholder" },
-                ]}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="algorithm">
-              <Form.Label>Detection Algorithm</Form.Label>
-              <Select
-                placeholder="No algorithm selected"
-                name="algorithm"
-                isMulti={true}
-                value={form.algorithm}
-                onChange={(ev) => handleSelectChange("algorithm", ev)}
-                options={[
-                  { value: "test", label: "Pladeholder" },
-                ]}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="algorithm">
-              <Form.Label>Detection Algorithm</Form.Label>
-              <Select
-                placeholder="No algorithm selected"
-                name="algorithm"
-                isMulti={true}
-                value={form.algorithm}
-                onChange={(ev) => handleSelectChange("algorithm", ev)}
-                options={[
-                  { value: "test", label: "Pladeholder" },
-                ]}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="smoking">
-              <Form.Label>Smoking Status</Form.Label>
-              <Select
-                placeholder="No status selected"
-                name="smoking"
-                value={form.smoking}
-                onChange={(ev) => handleSelectChange("smoking", ev)}
-                options={[
-                  { value: "smoker", label: "Smoker" },
-                  { value: "nonSmoker", label: "Non Smoker" },
-                  { value: "formerSmoker", label: "Former Smoker" },
                 ]}
               />
             </Form.Group>

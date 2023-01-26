@@ -2,7 +2,7 @@ import { atom, selector, selectorFamily } from "recoil";
 import { query } from "../../services/query";
 
 export const sampleState = selector({
-  key: "explore.fieldState",
+  key: "explore.sampleState",
   get: ({ get }) => query("api/query", {
     table: "sample",
     orderBy: "id",
@@ -60,7 +60,8 @@ export const resultsState = selector({
 
 export const defaultFormState = {
   openSidebar: true,
-
+  study: {value: "plco", label: "PLCO"},
+  array: { value: "gsa", label: "Global Screening Array" },
   submitted: false,
 };
 
