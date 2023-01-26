@@ -12,7 +12,7 @@ import band from "./band.json"
 
 //import "./styles.css";
 const hovertip = (d =>{
-  return "Value:" + d.value + "<br> Start:" + d.start+"<br> End:"+d.end+"<br> Ancestry:"+d.ancestry+"<br> Sex:"+d.sex;
+  return "<p style='text-align:left'>Value:" + d.value + "<br> Start:" + d.start+"<br> End:"+d.end+"<br> Ancestry:"+d.ancestry+"<br> Sex:"+d.sex+"</p>";
 })
 
 const size = 800;

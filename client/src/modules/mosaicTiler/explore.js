@@ -79,16 +79,16 @@ export default function Explore() {
                           <svg version="1.1" baseProfile="full"
                             width="800" height="250"
                             xlmns="http://www/w3/org/2000/svg">
-                            <rect x={300} y={20} fill="green" width={50} height={25} />
-                            <rect x={375} y={20} fill="blue" width={50} height={25} />
-                            <rect x={450} y={20} fill="red" width={50} height={25} />
-                            <rect x={525} y={20} fill="grey" width={50} height={25} />
-                            <text textAnchor="middle" x="325" y="60">GAIN</text>
+                            <rect x={275} y={20} fill="green" width={50} height={25} />
+                            <rect x={350} y={20} fill="blue" width={50} height={25} />
+                            <rect x={425} y={20} fill="red" width={50} height={25} />
+                            <rect x={500} y={20} fill="grey" width={50} height={25} />
+                            <text textAnchor="middle" x="300" y="60">GAIN</text>
                             {/* <text textAnchor="middle" x="325" y="80"> (503)</text> */}
-                            <text textAnchor="middle" x="400" y="60">NEUTRAL</text>
+                            <text textAnchor="middle" x="375" y="60">NEUTRAL</text>
                             {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
-                            <text textAnchor="middle" x="475" y="60">LOSS</text>
-                            <text textAnchor="middle" x="550" y="60">UNKNOWN</text>
+                            <text textAnchor="middle" x="450" y="60">LOSS</text>
+                            <text textAnchor="middle" x="550" y="60">UNDETERMINED</text>
                             {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}
                           </svg>
                         </div>
