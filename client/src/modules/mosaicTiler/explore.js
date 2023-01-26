@@ -88,7 +88,7 @@ export default function Explore() {
                             <text textAnchor="middle" x="375" y="60">NEUTRAL</text>
                             {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
                             <text textAnchor="middle" x="450" y="60">LOSS</text>
-                            <text textAnchor="middle" x="550" y="60">UNDETERMINED</text>
+                            <text textAnchor="middle" x="540" y="60">UNDETERMINED</text>
                             {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}
                           </svg>
                         </div>
