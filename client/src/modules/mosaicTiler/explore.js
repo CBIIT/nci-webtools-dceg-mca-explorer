@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useState, Text } from "react";
 import { useRecoilState } from "recoil";
-import {Button, OverlayTrigger, Container, Row, Col, Card } from "react-bootstrap";
+import { Button, OverlayTrigger, Container, Row, Col, Card } from "react-bootstrap";
 
 import ExploreForm from "./explore-form";
 import ErrorBoundary from "../components/error-boundary";
@@ -19,7 +19,7 @@ export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
-  
+
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
@@ -46,7 +46,7 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit}/>
+              <ExploreForm onSubmit={handleSubmit} />
             </Card.Body>
           </Card>
 
@@ -68,35 +68,12 @@ export default function Explore() {
                 }>
                 <Suspense fallback="Loading...">
                   {form.submitted ? (
-                    <RangeView/>
+                    <RangeView />
                   ) : (
-                    <>
-                      <h2 style={{ textAlign: "center", padding: "20px" }}>Autosomal mCA Distribution</h2>
-                      <div className="row">
-                        <div className="col-1"></div>
-                        <div className="col-10">
-                          <CirclePlotTest></CirclePlotTest>
-                          <svg version="1.1" baseProfile="full"
-                            width="800" height="250"
-                            xlmns="http://www/w3/org/2000/svg">
-                            <rect x={275} y={20} fill="green" width={50} height={25} />
-                            <rect x={350} y={20} fill="blue" width={50} height={25} />
-                            <rect x={425} y={20} fill="red" width={50} height={25} />
-                            <rect x={500} y={20} fill="grey" width={50} height={25} />
-                            <text textAnchor="middle" x="300" y="60">GAIN</text>
-                            {/* <text textAnchor="middle" x="325" y="80"> (503)</text> */}
-                            <text textAnchor="middle" x="375" y="60">NEUTRAL</text>
-                            {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
-                            <text textAnchor="middle" x="450" y="60">LOSS</text>
-                            <text textAnchor="middle" x="540" y="60">UNDETERMINED</text>
-                            {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}
-                          </svg>
-                        </div>
-                      </div>
-
-                      {/* <CircleChart></CircleChart> */}
-                      {/* <CircleChart className="mw-100" style={{ maxHeight: "800px" }}></CircleChart> */}
-                    </>
+                    <div className="m-2">
+                      Please provide configuration settings on
+                      the left panel and click Submit.
+                    </div>
                   )}
                 </Suspense>
               </ErrorBoundary>
