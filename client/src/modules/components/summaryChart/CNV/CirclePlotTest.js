@@ -18,7 +18,7 @@ const hovertip = (d =>{
 const size = 800;
 export default function CircleTest() {
   return (
-    <div className="align-middle text-cernter">
+    <div className="align-middle text-center">
       <Circos
           layout={layout}
           config={{
