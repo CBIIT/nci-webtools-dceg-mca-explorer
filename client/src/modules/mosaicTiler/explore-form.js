@@ -1,4 +1,4 @@
-import { Form, Button, Accordion, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, defaultFormState } from "./explore.state";
@@ -11,7 +11,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   const [form, setForm] = useState(defaultFormState);
 
   const mergeForm = (obj) => setForm({ ...form, ...obj });
-  const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 23 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }))
+  const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) })).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" })
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -44,9 +44,18 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function isValid() {
-    return form.study && form.chromosome && form.start && form.end && form.types && form.cpNum;
-  }
 
+    if(form.minFraction){
+      if(!form.maxFraction || Number(form.maxFraction) <= Number(form.minFraction))
+        return false
+    }
+    else if(form.maxFraction){
+      if(!form.minFraction || Number(form.maxFraction) <= Number(form.minFraction))
+        return false
+    }
+    return form.study && form.chromosome && form.start && form.end && form.types;
+  }
+  console.log(form)
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="study">
@@ -58,7 +67,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
           value={form.study}
           onChange={(ev) => handleSelectChange("study", ev)}
           options={[
-            { value: "plco", label: "PLCO" }
+            { value: "plco", label: "PLCO" },
+            { value: "ukBioBank", label: "UK Bio Bank" }
           ]}
         />
       </Form.Group>
@@ -73,26 +83,29 @@ export default function ExploreForm({ onSubmit, onReset }) {
           options={chromosomes}
         />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="start">
-        <Form.Label className="required">Event Start Position</Form.Label>
+
+      {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="start">
+        <Form.Label>Event Start Position</Form.Label>
         <Form.Control
           name="start"
           type="number"
           value={form.start}
           onChange={handleChange}
+          min="0"
         />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="end">
-        <Form.Label className="required">Event End Position</Form.Label>
+      </Form.Group> : <></>}
+      {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="end">
+        <Form.Label>Event End Position</Form.Label>
         <Form.Control
           name="end"
           type="number"
           value={form.end}
           onChange={handleChange}
+          min="0"
         />
-      </Form.Group>
+      </Form.Group> : <></>}
       <Form.Group className="mb-3" controlId="types">
-        <Form.Label className="required">mCA Types</Form.Label>
+        <Form.Label className="required">Copy Number State</Form.Label>
         <Select
           placeholder="No types selected"
           name="types"
@@ -101,23 +114,13 @@ export default function ExploreForm({ onSubmit, onReset }) {
           onChange={(ev) => handleSelectChange("types", ev)}
           options={[
             { value: "CN-LOH", label: "CN-LOH" },
-            { value: "mLOX", label: "Loss of X Chromosome" },
-            { value: "mLOY", label: "Loss of Y Chromosome" },
+            { value: "mLOX", label: "Loss of X/Y Chromosome" },
             { value: "Gain", label: "Gain" },
-            { value: "Loss", label: "Loss" },
             { value: "Undetermined", label: "Undetermined" },
           ]}
         />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="cpNum">
-        <Form.Label className="required">Copy Number State</Form.Label>
-        <Form.Control
-          name="cpNum"
-          type="number"
-          value={form.cpNum}
-          onChange={handleChange}
-        />
-      </Form.Group>
+
       <Accordion>
         <Accordion.Item eventKey="0">
           <Accordion.Header style={{ backgroundColor: '#343a40' }}>Optional Fields</Accordion.Header>
@@ -131,8 +134,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 value={form.array}
                 onChange={(ev) => handleSelectChange("array", ev)}
                 options={[
-                  { value: "gsa", label: "Global Screening Array" },
-                  { value: "illuminaGlobal", label: "Illumina Global Screening Array" },
+                  { value: "gsa", label: "Illumina Global Screening Array" },
+                  { value: "oncoArray", label: "Illumina OncoArray Array" },
                 ]}
               />
             </Form.Group>
@@ -201,6 +204,37 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 ]}
               />
             </Form.Group>
+
+
+            <Form.Group controlId="fraction">
+              <Form.Label>Cellular Fraction</Form.Label>
+              <Row>
+                <Col xl={6}>
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="Min percentage"
+                      name="minFraction"
+                      value={form.minFraction}
+                      onChange={handleChange}
+                    />
+                    <InputGroup.Text>%</InputGroup.Text>
+                  </InputGroup>
+                </Col>
+                <Col xl={6}>
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="Max percentage"
+                      name="maxFraction"
+                      value={form.maxFraction}
+                      onChange={handleChange}
+                    />
+                    <InputGroup.Text>%</InputGroup.Text>
+                  </InputGroup>
+                </Col>
+              </Row>
+            </Form.Group>
+
+
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
