@@ -163,7 +163,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="sex">
-              <Form.Label>Sex</Form.Label>
+              <Form.Label>Genotype Sex</Form.Label>
               <Select
                 placeholder="No sex selected"
                 name="sex"
