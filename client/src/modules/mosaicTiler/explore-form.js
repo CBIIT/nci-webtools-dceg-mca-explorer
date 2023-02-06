@@ -53,7 +53,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       if(!form.minFraction || Number(form.maxFraction) <= Number(form.minFraction))
         return false
     }
-    return form.study && form.chromosome && form.start && form.end && form.types;
+    return form.study && form.chromosome && form.types;
   }
   console.log(form)
   return (

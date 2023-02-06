@@ -8,7 +8,7 @@ import Api from "./modules/api/api";
 export default function App() {
   const navbarLinks = [
     { path: "/", title: "Home" },
-    { path: "/mosaic", title: "Mosaic Explore", exact: "true" },
+    { path: "/mosaic", title: "mCA Explorer", exact: "true" },
     { path: "/api", title: "API Access" ,exact: "true" },
     { path: "/about", title: "About",exact: "true"  },
 

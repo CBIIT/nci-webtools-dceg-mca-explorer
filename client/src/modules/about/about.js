@@ -12,7 +12,7 @@ export default function About() {
     <Container className="my-4">
       <Card className="shadow">
         <Card.Body>
-          <h3>About Mosaic Tiler</h3>
+          <h3>About mCA Explorer</h3>
 
           <hr />
 
@@ -41,12 +41,12 @@ export default function About() {
          
 
           <p>
-            Features of Mosaic Tiler include:
+            Features of mCA Explorer include:
           
           </p>
 
           <p>
-            The data from Mosaic Tiler are derived from the{" "}
+            The data from mCA Explorer are derived from the{" "}
             <a
               target="_blank"
               href="https://exploregwas.cancer.gov/plco-atlas/#/"
@@ -57,7 +57,7 @@ export default function About() {
           </p>
 
           <p>
-            Please submit comments and questions regarding Mosaic Tiler to{" "}
+            Please submit comments and questions regarding mCA Explorer to{" "}
             <a
               href="mailto:NCImosaicTilerWebAdmin@mail.nih.gov"
               style={{ fontWeight: "bold" }}>
