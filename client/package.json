@@ -51,6 +51,6 @@
   "devDependencies": {
     "sass": "^1.57.0"
   },
-  "homepage": "/mosaic-tiler",
-  "proxy": "http://localhost:9000/mosaic-tiler"
+  "homepage": "/",
+  "proxy": "http://localhost:9000/"
 }
