@@ -19,7 +19,7 @@ RUN npm install --force
 
 COPY client /client/
 
-ARG APPLICATION_PATH=/mosaic-tiler
+ARG APPLICATION_PATH=/
 
 ENV APPLICATION_PATH=${APPLICATION_PATH}
 
