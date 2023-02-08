@@ -33,9 +33,16 @@ export default function ExploreForm({ onSubmit, onReset }) {
   function handleSelectChange(name, selection = []) {
     //console.log(name,selection);
     if (name === "chromosome" && selection.find((option) => option.value === "all")) {
-
       selection = chromosomes.slice(1)
     }
+
+    if (name === "study" && selection.find((option) => option.value === "all")) {
+      selection = [
+        { value: "plco", label: "PLCO" },
+        { value: "ukBioBank", label: "UK Bio Bank" }
+      ]
+    }
+
     mergeForm({ [name]: selection })
   }
 
@@ -46,12 +53,12 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function isValid() {
 
-    if(form.minFraction){
-      if(!form.maxFraction || Number(form.maxFraction) <= Number(form.minFraction))
+    if (form.minFraction) {
+      if (!form.maxFraction || Number(form.maxFraction) <= Number(form.minFraction))
         return false
     }
-    else if(form.maxFraction){
-      if(!form.minFraction || Number(form.maxFraction) <= Number(form.minFraction))
+    else if (form.maxFraction) {
+      if (!form.minFraction || Number(form.maxFraction) <= Number(form.minFraction))
         return false
     }
     return form.study && form.chromosome && form.types;
@@ -68,6 +75,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           value={form.study}
           onChange={(ev) => handleSelectChange("study", ev)}
           options={[
+            { value: "all", label: "All Studies" },
             { value: "plco", label: "PLCO" },
             { value: "ukBioBank", label: "UK Bio Bank" }
           ]}
