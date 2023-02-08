@@ -6,16 +6,41 @@ import { Tabs, Tab, Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
 
-import gain from "../components/summaryChart/CNV/gain.json";
-import loss from "../components/summaryChart/CNV/loss.json";
-import loh from "../components/summaryChart/CNV/loh.json";
-import undetermined from "../components/summaryChart/CNV/unknown.json";
+//import gain from "../components/summaryChart/CNV/gain.json";
+//import loss from "../components/summaryChart/CNV/loss.json";
+//import loh from "../components/summaryChart/CNV/loh.json";
+//import undetermined from "../components/summaryChart/CNV/unknown.json";
+
+import allloss from "../components/summaryChart/CNV/data/allloss.json";
+import allloh from "../components/summaryChart/CNV/data/allloh.json";
+import allgain from "../components/summaryChart/CNV/data/allgain.json"
+import allundetermined from "../components/summaryChart/CNV/data/allundermined.json"
+
+import plcoloss from "../components/summaryChart/CNV/data/plcoloss.json";
+import plcoloh from "../components/summaryChart/CNV/data/plcoloh.json";
+import plcogain from "../components/summaryChart/CNV/data/plcogain.json"
+import plcoundetermined from "../components/summaryChart/CNV/data/plcoundermined.json"
+
+import ukloss from "../components/summaryChart/CNV/data/UKloss.json";
+import ukloh from "../components/summaryChart/CNV/data/UKloh.json";
+import ukgain from "../components/summaryChart/CNV/data/UKgain.json"
+import ukundetermined from "../components/summaryChart/CNV/data/UKundermined.json"
+
+
 import Table from "../components/table";
 
 export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
     const [tab, setTab] = useState("summary");
-    console.log(form)
+    //console.log(form)
+    //console.log(form.study.length)
+    const study_value = form.study.length ?form.study[0]:form.study
+    const gain = form.study.length == 2? allgain: study_value.value=='plco'?plcogain:ukgain
+    const loss = form.study.length == 2? allloss: study_value.value=='plco'?plcoloss:ukloss
+    const loh = form.study.length == 2? allloh: study_value.value=='plco'?plcoloh:ukloh
+    const undetermined = form.study.length == 2 ? allundetermined : 
+                            study_value.value =='plco'?plcoundetermined:ukundetermined
+    //console.log(loh)
     const chromosomes = form.chromosome.map((e) => e.label)
 
     const sortGain = gain.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Gain" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
@@ -190,7 +215,7 @@ export default function RangeView() {
                 <h2 style={{ textAlign: "center", padding: "20px" }}>Autosomal mCA Distribution</h2>
                 <div className="row justify-content-center">
 
-                    <CirclePlotTest></CirclePlotTest>
+                    <CirclePlotTest loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
                     <div className="text-center">
                         <svg version="1.1" baseProfile="full"
                             width="700" height="100"

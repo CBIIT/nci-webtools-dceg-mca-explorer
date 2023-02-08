@@ -55,7 +55,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
     }
     return form.study && form.chromosome && form.types;
   }
-  console.log(form)
+  //console.log(form)
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="study">

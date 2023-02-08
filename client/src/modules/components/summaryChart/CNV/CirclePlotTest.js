@@ -4,19 +4,33 @@ import Circos, {
   STACK
 } from "react-circos";
 import layout from "./layout2.json";
-import loss from "./loss.json";
-import loh from "./loh.json";
-import gain from "./gain.json"
-import unknown from "./unknown.json"
 import band from "./band.json"
+
+import allloss from "./data/allloss.json";
+import allloh from "./data/allloh.json";
+import allgain from "./data/allgain.json"
+import allunknown from "./data/allundermined.json"
+
+import plcoloss from "./data/plcoloss.json";
+import plcoloh from "./data/plcoloh.json";
+import plcogain from "./data/plcogain.json"
+import plcounknown from "./data/plcoundermined.json"
+
+import ukloss from "./data/UKloss.json";
+import ukloh from "./data/UKloh.json";
+import ukgain from "./data/UKgain.json"
+import ukunknown from "./data/UKundermined.json"
+
 
 //import "./styles.css";
 const hovertip = (d =>{
-  return "<p style='text-align:left'>Value:" + d.value + "<br> Start:" + d.start+"<br> End:"+d.end+"<br> Ancestry:"+d.ancestry+"<br> Sex:"+d.sex+"</p>";
+  return "<p style='text-align:left'>id: " +d.sampleId+ "<br> study: "+ d.dataset+"<br> type: "+d.type+ "<br> cf: "+ d.value + "<br> Start: " + d.start+"<br> End: "+d.end+"<br> Ancestry: "+d.ancestry+"<br> Sex: "+d.sex+"</p>";
 })
-
 const size = 800;
-export default function CircleTest() {
+
+
+export default function CirclePlotTest({loss,loh,gain,undetermined}) {
+  console.log(loh)
   return (
     <div className="align-middle text-center">
       <Circos
@@ -50,11 +64,11 @@ export default function CircleTest() {
        tracks={[
          {
             type: STACK,
-            data: unknown, 
+            data: undetermined, 
             config: {
               innerRadius: 0.15,
               outerRadius: 0.25,
-              thickness:-1,
+              thickness:-1.5,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"grey",
@@ -64,7 +78,7 @@ export default function CircleTest() {
               backgrounds: [
                 {
                   start: 0,
-                  end: 0.6,
+                  end: 1,
                   color: "grey",
                   opacity: 0.5
                 }
@@ -80,7 +94,7 @@ export default function CircleTest() {
             config: {
               innerRadius: 0.25,
               outerRadius: 0.5,
-              thickness:-1,
+              thickness:-1.5,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"red",
@@ -90,7 +104,7 @@ export default function CircleTest() {
               backgrounds: [
                 {
                   start: 0,
-                  end: 0.6,
+                  end: 1,
                   color: "#f8787b",
                   opacity: 0.5
                 }
@@ -106,7 +120,7 @@ export default function CircleTest() {
             config: {
               innerRadius: 0.5,
               outerRadius: 0.75,
-              thickness:-1,
+              thickness:-1.5,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"blue",
@@ -116,7 +130,7 @@ export default function CircleTest() {
               backgrounds: [
                 {
                   start: 0,
-                  end: 0.6,
+                  end: 1,
                   color: "#0095ff",
                   opacity: 0.5
                 }
@@ -132,7 +146,7 @@ export default function CircleTest() {
             config: {
               innerRadius: 0.75,
               outerRadius: 1,
-              thickness:-1,
+              thickness:-1.5,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"green",
@@ -142,7 +156,7 @@ export default function CircleTest() {
               backgrounds: [
                 {
                   start: 0,
-                  end: 0.6,
+                  end: 1,
                   color: "#2fc405",
                   opacity: 0.5,
                 }

@@ -57,6 +57,7 @@ if __name__=="__main__":
             if line[0]!="#": #Title line started with "#"
                 line=line.split("\t")
                 countline = countline +1
+                value = line[3]
                 if countline < totalline:
                     print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\"},")
                 #the last line should not ending with ,
