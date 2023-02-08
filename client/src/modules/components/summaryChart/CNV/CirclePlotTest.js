@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import Circos, {
   HIGHLIGHT,
   STACK
@@ -6,20 +7,20 @@ import Circos, {
 import layout from "./layout2.json";
 import band from "./band.json"
 
-import allloss from "./data/allloss.json";
-import allloh from "./data/allloh.json";
-import allgain from "./data/allgain.json"
-import allunknown from "./data/allundermined.json"
+// import allloss from "./data/allloss.json";
+// import allloh from "./data/allloh.json";
+// import allgain from "./data/allgain.json"
+// import allunknown from "./data/allundermined.json"
 
-import plcoloss from "./data/plcoloss.json";
-import plcoloh from "./data/plcoloh.json";
-import plcogain from "./data/plcogain.json"
-import plcounknown from "./data/plcoundermined.json"
+// import plcoloss from "./data/plcoloss.json";
+// import plcoloh from "./data/plcoloh.json";
+// import plcogain from "./data/plcogain.json"
+// import plcounknown from "./data/plcoundermined.json"
 
-import ukloss from "./data/UKloss.json";
-import ukloh from "./data/UKloh.json";
-import ukgain from "./data/UKgain.json"
-import ukunknown from "./data/UKundermined.json"
+// import ukloss from "./data/UKloss.json";
+// import ukloh from "./data/UKloh.json";
+// import ukgain from "./data/UKgain.json"
+// import ukunknown from "./data/UKundermined.json"
 
 
 //import "./styles.css";
@@ -29,8 +30,24 @@ const hovertip = (d =>{
 const size = 800;
 
 
-export default function CirclePlotTest({loss,loh,gain,undetermined}) {
-  console.log(loh)
+export default function CirclePlotTest(props) {
+  const [circle, setCircle] = useState({
+    loss:props.loss,
+    gain:props.gain,
+    loh:props.loh,
+    undetermined:props.undetermined
+  }
+  );
+  useEffect(() => {
+    setCircle({
+      loss:props.loss,
+      gain:props.gain,
+      loh:props.loh,
+      undetermined:props.undetermined
+    })
+  },[props])
+
+   console.log(circle.loss)
   return (
     <div className="align-middle text-center">
       <Circos
@@ -52,7 +69,6 @@ export default function CirclePlotTest({loss,loh,gain,undetermined}) {
             // labelFont: "default",
             // majorSpacing: 1
           },
-         
           labels: {
             position: "center",
             display: true,
@@ -64,7 +80,7 @@ export default function CirclePlotTest({loss,loh,gain,undetermined}) {
        tracks={[
          {
             type: STACK,
-            data: undetermined, 
+            data: circle.undetermined, 
             config: {
               innerRadius: 0.15,
               outerRadius: 0.25,
@@ -90,7 +106,7 @@ export default function CirclePlotTest({loss,loh,gain,undetermined}) {
           },
           {
             type: STACK,
-            data: loss, 
+            data: circle.loss, 
             config: {
               innerRadius: 0.25,
               outerRadius: 0.5,
@@ -116,7 +132,7 @@ export default function CirclePlotTest({loss,loh,gain,undetermined}) {
           },
            {
             type: STACK,
-            data: loh,
+            data: circle.loh,
             config: {
               innerRadius: 0.5,
               outerRadius: 0.75,
@@ -142,7 +158,7 @@ export default function CirclePlotTest({loss,loh,gain,undetermined}) {
           },
            {
             type: STACK,
-            data: gain,
+            data: circle.gain,
             config: {
               innerRadius: 0.75,
               outerRadius: 1,
