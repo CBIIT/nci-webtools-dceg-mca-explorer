@@ -1,7 +1,7 @@
 import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, defaultFormState } from "./explore.state";
+import { sampleState, formState, loadingState, defaultFormState } from "./explore.state";
 import { useState } from "react";
 import gain from "../components/summaryChart/CNV/gain.json"
 
@@ -9,6 +9,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
+  const [loading, setLoading] = useRecoilState(loadingState);
 
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) })).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" })
