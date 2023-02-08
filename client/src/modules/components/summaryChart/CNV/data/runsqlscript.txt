@@ -1,0 +1,1 @@
+ .read /Users/yaox5/workspace/analysisTools/nci-webtools-dceg-mosaic-tiler/client/src/modules/components/summaryChart/CNV/data/createJson.sql
