@@ -99,7 +99,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           options={[
             { value: "all", label: "All Studies" },
             { value: "plco", label: "PLCO" },
-            { value: "ukBioBank", label: "UK Bio Bank" }
+            { value: "ukBioBank", label: "UK BioBank" }
           ]}
         />
       </Form.Group>
@@ -113,7 +113,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             value={form.plotType}
             onChange={(ev) => handleSelectChange("plotType", ev)}
             options={[
-              { value: "circo", label: "Circo" },
+              { value: "circo", label: "Circos" },
               { value: "static", label: "Static" },
             ]}
           />
