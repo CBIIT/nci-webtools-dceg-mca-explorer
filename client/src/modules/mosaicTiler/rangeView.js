@@ -32,21 +32,23 @@ import Table from "../components/table";
 export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
     const [tab, setTab] = useState("summary");
+
     //console.log(form)
     //console.log(form.study.length)
+
     const study_value = form.study.length ?form.study[0]:form.study
-    const gain = form.study.length == 2? allgain: study_value.value=='plco'?plcogain:ukgain
-    const loss = form.study.length == 2? allloss: study_value.value=='plco'?plcoloss:ukloss
-    const loh = form.study.length == 2? allloh: study_value.value=='plco'?plcoloh:ukloh
-    const undetermined = form.study.length == 2 ? allundetermined : 
-                            study_value.value =='plco'?plcoundetermined:ukundetermined
+    const gain = form.types.find((e) => e.value === "gain") ? form.study.length == 2? allgain: study_value.value=='plco'?plcogain:ukgain : []
+    const loss = form.types.find((e) => e.value === "loss") ? form.study.length == 2? allloss: study_value.value=='plco'?plcoloss:ukloss : []
+    const loh = form.types.find((e) => e.value === "loh") ? form.study.length == 2? allloh: study_value.value=='plco'?plcoloh:ukloh : []
+    const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length == 2 ? allundetermined : 
+                            study_value.value =='plco'?plcoundetermined:ukundetermined : []
     //console.log(loh)
     const chromosomes = form.chromosome.map((e) => e.label)
 
-    const sortGain = gain.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Gain" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
-    const sortLoss = loss.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Loss" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
-    const sortLoh = loh.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "LOH" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
-    const sortUndetermined = undetermined.filter((e) => chromosomes.includes(Number(e.block_id))).map((e) => { return ({ ...e, "type": "Undetermined" }) }).sort((a, b) => Number(a.block_id) - Number(b.block_id))
+    const sortGain = gain.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
+    const sortLoss = loss.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
+    const sortLoh = loh.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
+    const sortUndetermined = undetermined.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
 
     const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined)
 

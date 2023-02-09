@@ -36,6 +36,15 @@ export default function ExploreForm({ onSubmit, onReset }) {
       selection = chromosomes.slice(1)
     }
 
+    if (name === "types" && selection.find((option) => option.value === "all")){
+      selection = [
+        { value: "loh", label: "CN-LOH" },
+        { value: "loss", label: "Loss" },
+        { value: "gain", label: "Gain" },
+        { value: "undetermined", label: "Undetermined" },
+      ]
+    }
+
     if (name === "study" && selection.find((option) => option.value === "all")) {
       selection = [
         { value: "plco", label: "PLCO" },
@@ -53,6 +62,19 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function isValid() {
 
+    if (form.plotType.value === "static" && form.chromosome.length === 0)
+      return false;
+
+    if (form.chromosome.length === 1) {
+
+      if (!form.start || !form.end)
+        return false
+
+      if ((Number(form.start) < 0 || Number(form.end < 0)) || Number(form.start) > Number(form.end))
+        return false
+    }
+
+
     if (form.minFraction) {
       if (!form.maxFraction || Number(form.maxFraction) <= Number(form.minFraction))
         return false
@@ -61,9 +83,9 @@ export default function ExploreForm({ onSubmit, onReset }) {
       if (!form.minFraction || Number(form.maxFraction) <= Number(form.minFraction))
         return false
     }
-    return form.study && form.chromosome && form.types;
+    return form.study && form.types;
   }
-  //console.log(form)
+  console.log(form)
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="study">
@@ -81,7 +103,24 @@ export default function ExploreForm({ onSubmit, onReset }) {
           ]}
         />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="chromosome">
+
+      <Form.Group className="mb-3" controlId="plotType">
+        <Form.Label className="required">Plot Type</Form.Label>
+        <OverlayTrigger overlay={<Tooltip id="plotType_tooltip">Circo plot displays all chromosomes, select Static plot to visualize a subset of chromosomes</Tooltip>}>
+          <Select
+            placeholder="No plot type selected"
+            name="plotType"
+            value={form.plotType}
+            onChange={(ev) => handleSelectChange("plotType", ev)}
+            options={[
+              { value: "circo", label: "Circo" },
+              { value: "static", label: "Static" },
+            ]}
+          />
+        </OverlayTrigger>
+      </Form.Group>
+
+      {form.plotType.value === "static" ? <Form.Group className="mb-3" controlId="chromosome">
         <Form.Label className="required">Chromosome</Form.Label>
         <Select
           placeholder="No chromosome selected"
@@ -91,7 +130,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           onChange={(ev) => handleSelectChange("chromosome", ev)}
           options={chromosomes}
         />
-      </Form.Group>
+      </Form.Group> : <></>}
 
       {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="start">
         <Form.Label>Event Start Position</Form.Label>
@@ -122,10 +161,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
           value={form.types}
           onChange={(ev) => handleSelectChange("types", ev)}
           options={[
-            { value: "CN-LOH", label: "CN-LOH" },
-            { value: "mLOX", label: "Loss of X/Y Chromosome" },
-            { value: "Gain", label: "Gain" },
-            { value: "Undetermined", label: "Undetermined" },
+            { value: "all", label: "All Types" },
+            { value: "loh", label: "CN-LOH" },
+            { value: "loss", label: "Loss" },
+            { value: "gain", label: "Gain" },
+            { value: "undetermined", label: "Undetermined" },
           ]}
         />
       </Form.Group>

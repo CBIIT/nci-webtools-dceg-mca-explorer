@@ -68,6 +68,7 @@ export const defaultFormState = {
   study: {value: "plco", label: "PLCO"},
   array: { value: "gsa", label: "Global Screening Array" },
   chromosome: [],
+  plotType: { value: "circo", label: "Circo" },
   submitted: false,
 };
 
