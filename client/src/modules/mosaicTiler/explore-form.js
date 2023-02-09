@@ -133,7 +133,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       </Form.Group> : <></>}
 
       {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="start">
-        <Form.Label>Event Start Position</Form.Label>
+        <Form.Label className="required">Event Start Position</Form.Label>
         <Form.Control
           name="start"
           type="number"
@@ -143,7 +143,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
         />
       </Form.Group> : <></>}
       {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="end">
-        <Form.Label>Event End Position</Form.Label>
+        <Form.Label className="required">Event End Position</Form.Label>
         <Form.Control
           name="end"
           type="number"
