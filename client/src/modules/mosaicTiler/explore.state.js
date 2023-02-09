@@ -1,6 +1,11 @@
 import { atom, selector, selectorFamily } from "recoil";
 import { query } from "../../services/query";
 
+export const loadingState = atom({
+  key: "analysis.loadingState",
+  default: false,
+});
+
 export const sampleState = selector({
   key: "explore.sampleState",
   get: ({ get }) => query("api/query", {

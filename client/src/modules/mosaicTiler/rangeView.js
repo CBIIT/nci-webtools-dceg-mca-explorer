@@ -52,6 +52,18 @@ export default function RangeView() {
 
     const columns = [
         {
+            accessor: "sampleId",
+            id: "sampleId",
+            label: "sampleId",
+            Header: <b>Sample ID</b>
+        },
+        {
+            accessor: "dataset",
+            id: "dataset",
+            label: "Dataset",
+            Header: <b>Dataset</b>
+        },
+        {
             accessor: "block_id",
             id: "chromosome",
             label: "Chromosome",
@@ -249,7 +261,7 @@ export default function RangeView() {
                         <div className="mx-3">
                             <Table
                                 columns={columns}
-                                defaultSort={[{ id: "chromosome", asc: true }]}
+                                defaultSort={[{ id: "sampleId", asc: true }]}
                                 data={allValues}
                             />
                         </div>
@@ -311,7 +323,7 @@ export default function RangeView() {
                         <div className="mx-3">
                             <Table
                                 columns={columns}
-                                defaultSort={[{ id: "chromosome", asc: true }]}
+                                defaultSort={[{ id: "sampleId", asc: true }]}
                                 data={allValues}
                             />
                         </div>

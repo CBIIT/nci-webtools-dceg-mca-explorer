@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useState, Text } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { loadingState } from "./explore.state";
 import { Button, OverlayTrigger, Container, Row, Col, Card } from "react-bootstrap";
 
 import ExploreForm from "./explore-form";
@@ -8,6 +9,7 @@ import { formState } from "./explore.state";
 //import CircleChart from "../components/summaryChart/CNV/CirclePlot";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
 import RangeView from "./rangeView";
+import Loader from "../components/loader"
 //import StackTest from "../components/summaryChart/CNV/StackTest"
 import {
   SidebarContainer,
@@ -17,6 +19,7 @@ import {
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
+  const loading = useRecoilValue(loadingState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
 
@@ -40,6 +43,7 @@ export default function Explore() {
 
   return (
     <Container className="my-4">
+      <Loader fullscreen show={loading} />
       <SidebarContainer
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
