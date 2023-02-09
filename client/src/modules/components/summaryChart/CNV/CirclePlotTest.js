@@ -47,7 +47,7 @@ export default function CirclePlotTest(props) {
     })
   },[props])
 
-   console.log(circle.loss)
+  // console.log(circle.loss)
   return (
     <div className="align-middle text-center">
       <Circos
