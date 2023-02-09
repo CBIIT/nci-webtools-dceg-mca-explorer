@@ -188,15 +188,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 ]}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="fraction">
-              <Form.Label>Cellular Fraction</Form.Label>
-              <Form.Control
-                name="fraction"
-                type="number"
-                value={form.fraction}
-                onChange={handleChange}
-              />
-            </Form.Group>
 
             <Form.Group className="mb-3" controlId="algorithm">
               <Form.Label>Detection Algorithm</Form.Label>
