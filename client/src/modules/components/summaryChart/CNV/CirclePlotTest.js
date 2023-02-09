@@ -25,7 +25,7 @@ import band from "./band.json"
 
 //import "./styles.css";
 const hovertip = (d =>{
-  return "<p style='text-align:left'>id: " +d.sampleId+ "<br> study: "+ d.dataset+"<br> type: "+d.type+ "<br> cf: "+ d.value + "<br> Start: " + d.start+"<br> End: "+d.end+"<br> Ancestry: "+d.ancestry+"<br> Sex: "+d.sex+"</p>";
+  return "<p style='text-align:left'>Sid: " +d.sampleId+ "<br> Study: "+ d.dataset+"<br> Type: "+d.type+ "<br> CF: "+ d.value + "<br> Start: " + d.start+"<br> End: "+d.end+"<br> Ancestry: "+d.ancestry+"<br> Sex: "+d.sex+"</p>";
 })
 const size = 800;
 
@@ -47,7 +47,7 @@ export default function CirclePlotTest(props) {
     })
   },[props])
 
-   console.log(circle.loss)
+  // console.log(circle.loss)
   return (
     <div className="align-middle text-center">
       <Circos

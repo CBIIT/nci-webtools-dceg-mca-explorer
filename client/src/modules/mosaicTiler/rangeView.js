@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
 import { formState } from "./explore.state";
 import Plot from "react-plotly.js"
@@ -32,7 +32,9 @@ import Table from "../components/table";
 export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
     const [tab, setTab] = useState("summary");
-
+    const [clickedCounter, setClickedCounter] = useState(0);
+    
+    
     //console.log(form)
     //console.log(form.study.length)
 
@@ -43,6 +45,10 @@ export default function RangeView() {
     const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length == 2 ? allundetermined : 
                             study_value.value =='plco'?plcoundetermined:ukundetermined : []
     //console.log(loh)
+    useEffect(() => {
+       setClickedCounter(clickedCounter+1)
+    },[loh])
+    console.log(clickedCounter)
     const chromosomes = form.chromosome.map((e) => e.label)
 
     const sortGain = gain.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
@@ -229,7 +235,7 @@ export default function RangeView() {
                 <h2 style={{ textAlign: "center", padding: "20px" }}>Autosomal mCA Distribution</h2>
                 <div className="row justify-content-center">
 
-                    <CirclePlotTest loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
+                    <CirclePlotTest key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
                     <div className="text-center">
                         <svg version="1.1" baseProfile="full"
                             width="700" height="100"
