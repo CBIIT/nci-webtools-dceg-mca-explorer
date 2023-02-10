@@ -106,7 +106,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
       <Form.Group className="mb-3" controlId="plotType">
         <Form.Label className="required">Plot Type</Form.Label>
-        <OverlayTrigger overlay={<Tooltip id="plotType_tooltip">Circo plot displays all chromosomes, select Static plot to visualize a subset of chromosomes</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="plotType_tooltip">Circos plot displays all chromosomes, select Static plot to visualize a subset of chromosomes</Tooltip>}>
           <Select
             placeholder="No plot type selected"
             name="plotType"
