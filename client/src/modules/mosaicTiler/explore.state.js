@@ -67,7 +67,7 @@ export const defaultFormState = {
   openSidebar: true,
   study: {value: "plco", label: "PLCO"},
   array: { value: "gsa", label: "Global Screening Array" },
-  chromosome: [],
+  chromosome: Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" }),
   plotType: { value: "circo", label: "Circo" },
   submitted: false,
 };
