@@ -113,7 +113,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             value={form.plotType}
             onChange={(ev) => handleSelectChange("plotType", ev)}
             options={[
-              { value: "circo", label: "Circos" },
+              { value: "circos", label: "Circos" },
               { value: "static", label: "Static" },
             ]}
           />
