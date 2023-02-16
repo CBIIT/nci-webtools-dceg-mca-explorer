@@ -9,6 +9,7 @@ export const sources = [
     columns: [
       { sourceName: null, name: "dataset", defaultValue: "PLCO_GSA_blood_autosomal_mCAs" },
       { sourceName: "sample_id", name: "sampleId" },
+      { sourceName: "Sample_ID", name: "sampleId" },
       { sourceName: "computed_gender", name: "computedGender" },
       { sourceName: "chrom", name: "chromosome" },
       { sourceName: "beg_GRCh38", name: "beginGrch38" },
@@ -98,6 +99,7 @@ export const sources = [
     columns: [
       { sourceName: null, name: "dataset", defaultValue: "PLCO_GSA_blood_mLOX" },
       { sourceName: "sample_id", name: "sampleId" },
+      { sourceName: "Sample_ID", name: "sampleId" },
       { sourceName: "computed_gender", name: "computedGender" },
       { sourceName: "chrom", name: "chromosome" },
       { sourceName: "beg_GRCh38", name: "beginGrch38" },
@@ -153,6 +155,7 @@ export const sources = [
     columns: [
       { sourceName: null, name: "dataset", defaultValue: "PLCO_GSA_blood_mLOY" },
       { sourceName: "sample_id", name: "sampleId" },
+      { sourceName: "Sample_ID", name: "sampleId" },
       { sourceName: "computed_gender", name: "computedGender" },
       { sourceName: "chrom", name: "chromosome" },
       { sourceName: "beg_GRCh38", name: "beginGrch38" },
@@ -283,7 +286,7 @@ export const sources = [
       { sourceName: "n_flips", name: "nFlips" },
       { sourceName: "baf_conc", name: "bafConc" },
       { sourceName: "lod_baf_conc", name: "lodBafConc" },
-      { sourceName: "type_FINAL", name: "type" },
+      { sourceName: "type-FINAL", name: "type" },
       { sourceName: "cf_FINAL", name: "cf" },
       { sourceName: "group", name: "group" },
       { sourceName: "SR_Subject_ID", name: "srSubjectId" },
@@ -338,7 +341,7 @@ export const sources = [
       { sourceName: "n_flips", name: "nFlips" },
       { sourceName: "baf_conc", name: "bafConc" },
       { sourceName: "lod_baf_conc", name: "lodBafConc" },
-      { sourceName: "type_FAINL", name: "type" },
+      { sourceName: "type_FINAL", name: "type" },
       { sourceName: "cf_FINAL", name: "cf" },
       { sourceName: "group", name: "group" },
       { sourceName: "SR_Subject_ID", name: "srSubjectId" },
