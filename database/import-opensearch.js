@@ -1,8 +1,8 @@
-const fs = require("fs");
-const fsp = require("fs/promises");
-const readline = require("readline");
+import fs from "fs";
+import readline from "readline";
 
-const { Client } = require("@opensearch-project/opensearch");
+import { Client } from "@opensearch-project/opensearch";
+
 const { ADMIN, PASSWORD, DOMAIN } = process.env;
 const host = `https://${ADMIN}:${PASSWORD}@${DOMAIN}`;
 
@@ -14,13 +14,13 @@ const client = new Client({
 });
 
 const sources = [
-  { path: "data/plcoAuto.json", index: "mcaExplorer" },
-  { path: "data/plcoDenominator.json", index: "mcaExplorer" },
-  { path: "data/plcomLOX.json", index: "mcaExplorer" },
-  { path: "data/plxomLOY.json", index: "mcaExplorer" },
-  { path: "data/ukbbAuto.json", index: "mcaExplorer" },
-  { path: "data/ukbbmLOX.json", index: "mcaExplorer" },
-  { path: "data/ukbbmLOY.json", index: "mcaExplorer" },
+  { path: "data/plcoAuto.json", index: "mcaexplorer" },
+  { path: "data/plcoDenominator.json", index: "mcaexplorer" },
+  { path: "data/plcomLOX.json", index: "mcaexplorer" },
+  { path: "data/plxomLOY.json", index: "mcaexplorer" },
+  { path: "data/ukbbAuto.json", index: "mcaexplorer" },
+  { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
+  { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
 ];
 
 runImport(client, sources)

@@ -49,7 +49,7 @@ async function parseFile(filename, delimitter="\r\n") {
         plcoAuto.map((e) => {
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
-                    "_index": "mcaExplorer",
+                    "_index": "mcaexplorer",
                     "_id": id
                 }
             }) + '\n',
@@ -78,7 +78,7 @@ async function parseFile(filename, delimitter="\r\n") {
         plcoDenominator.map((e) => {
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
-                    "_index": "mcaExplorer",
+                    "_index": "mcaexplorer",
                     "_id": id
                 }
             }) + '\n',
@@ -107,7 +107,7 @@ async function parseFile(filename, delimitter="\r\n") {
         plcomLOX.map((e) => {
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
-                    "_index": "mcaExplorer",
+                    "_index": "mcaexplorer",
                     "_id": id
                 }
             }) + '\n',
@@ -136,7 +136,7 @@ async function parseFile(filename, delimitter="\r\n") {
         plcomLOY.map((e) => {
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
-                    "_index": "mcaExplorer",
+                    "_index": "mcaexplorer",
                     "_id": id
                 }
             }) + '\n',
@@ -165,7 +165,7 @@ async function parseFile(filename, delimitter="\r\n") {
         ukbbmLOX.map((e) => {
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
-                    "_index": "mcaExplorer",
+                    "_index": "mcaexplorer",
                     "_id": id
                 }
             }) + '\n',
@@ -194,7 +194,7 @@ async function parseFile(filename, delimitter="\r\n") {
         ukbbmLOY.map((e) => {
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
-                    "_index": "mcaExplorer",
+                    "_index": "mcaexplorer",
                     "_id": id
                 }
             }) + '\n',
@@ -223,7 +223,7 @@ async function parseFile(filename, delimitter="\r\n") {
         ukbbAuto.map((e) => {
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
-                    "_index": "mcaExplorer",
+                    "_index": "mcaexplorer",
                     "_id": id
                 }
             }) + '\n',

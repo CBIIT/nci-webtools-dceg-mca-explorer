@@ -10,6 +10,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@opensearch-project/opensearch": "^2.2.0",
     "better-sqlite3": "^7.6.2",
     "csv-parse": "^5.3.0",
     "dotenv": "^16.0.1",
