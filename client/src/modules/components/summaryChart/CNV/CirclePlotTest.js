@@ -27,6 +27,10 @@ import band from "./band.json"
 const hovertip = (d =>{
   return "<p style='text-align:left'>Sid: " +d.sampleId+ "<br> Study: "+ d.dataset+"<br> Type: "+d.type+ "<br> Cellular Fraction: "+ d.value + "<br> Start: " + d.start+"<br> End: "+d.end+"<br> Ancestry: "+d.ancestry+"<br> Sex: "+d.sex+"<br> Age: "+" "+"</p>";
 })
+const hovercoler = (d =>{
+  console.log(d.block_id)
+})
+
 const size = 800;
 
 
@@ -77,7 +81,7 @@ export default function CirclePlotTest(props) {
             radialOffset: 28
           }
         }}
-       tracks={[
+        tracks={[
          {
             type: STACK,
             data: circle.undetermined, 
@@ -101,6 +105,18 @@ export default function CirclePlotTest(props) {
               ],
               tooltipContent: function(d) {
                 return hovertip(d)
+              },
+              events: {
+              //  'mouseover.alert':
+              //     function(d, i, nodes, event) {
+              //       //alert(d);
+              //       //return hovercoler(d);
+              //   }
+                // ,
+                // click:function(d, i, nodes, event) {
+                //   console.log(d)
+                //     return hovercoler(d);
+                // }
               }
             }
           },
@@ -127,6 +143,15 @@ export default function CirclePlotTest(props) {
               ],
               tooltipContent: function(d) {
                 return hovertip(d)
+              },
+              events: {
+                // 'mouseover.alert':
+                //   function(d, i, nodes, event) {
+                //     //return hovercoler(d);
+                // },
+                // click:function(d, i, nodes, event) {
+                //     return hovercoler(d);
+                // }
               }
             }
           },
@@ -153,6 +178,16 @@ export default function CirclePlotTest(props) {
               ],
               tooltipContent: function(d) {
                 return hovertip(d);
+              },
+              events: {
+              //  mouseover:
+              //     function(d, i, nodes, event) {
+              //       return hovercoler(d);
+              //   },
+                // click:function(d, i, nodes, event) {
+                //     return hovercoler(d);
+                // }
+              
               }
             }
           },
@@ -183,8 +218,11 @@ export default function CirclePlotTest(props) {
               events: {
               //  mouseover:
               //     function(d, i, nodes, event) {
-              //       //console.log(d, i, nodes, event);
-              //   }
+              //       return hovercoler(d);
+              //   },
+                // click:function(d, i, nodes, event) {
+                //     return hovercoler(d);
+                // }
               }
             }
           },
@@ -201,10 +239,13 @@ export default function CirclePlotTest(props) {
                 click: function(d, i, nodes, event) {
                   console.log("clicking ",d);
                 },
-                // mouseover:
-                // function(d, i, nodes, event) {
-                //   console.log(d, i, nodes, event);
-                // },
+                mouseover:
+                function(d, i, nodes, event) {
+                  //console.log(d.block_id);
+                  //change class="cs-layout" class=d.block_id, fill="grey" to highlight the chromosome
+                  //document.getElementsByClassName()
+
+                }
               },
             },
           }
