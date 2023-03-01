@@ -86,8 +86,8 @@ export default function RangeView() {
         {
             accessor: "value",
             id: "value",
-            label: "Value",
-            Header: <b>Value</b>
+            label: "value",
+            Header: <b>Cellular Fraction</b>
         },
         {
             accessor: "start",
