@@ -32,22 +32,37 @@ const hovercoler = (d =>{
 
 const size = 800;
 
-function changeBackground(track, chromesomeId, event){
+function changeBackground(track, chromesomeId, color){
          for(var t in track){
             const svgDoc = track[t];
             if (svgDoc.nodeName === "g"){
               if (svgDoc.__data__.key === chromesomeId){
                 var s = svgDoc.querySelector('.background')
-                s.setAttribute("fill","aqua")
-                //s.setAttribute("opacity","0.5")
-                s.dispatchEvent(event);
-                svgDoc.dispatchEvent(event);
-              }
-              
+                s.setAttribute("fill",color)
+                s.setAttribute("opacity","0.5")
+                //s.dispatchEvent(new MouseEvent('mouseenter',{bubbles:true}));
+              }           
             }
-          }
-}
+  }}
 
+  function getTrackIndex(idx, trackID){
+    var tidx = 0
+    switch (trackID){
+      case 0:
+        tidx = idx+1;
+        break;
+      case 1: //0,2,3
+        tidx = idx>=1?idx+1:idx;
+        break;
+      case 2://0,1,3
+        tidx = idx==2?3:idx;
+        break;
+      case 3://0,1,2
+        tidx = idx;
+        break;
+    } 
+    return tidx;  
+  }
 
 export default function CirclePlotTest(props) {
 
@@ -115,20 +130,23 @@ export default function CirclePlotTest(props) {
                 [track3,[track0,track1,track2]]
             ]
         )
-        var trackIndex = 0;
-        const colorMap = ['grey','red','blue','green']
+        const trackArray = Array.from(alltracks);
+        const colorMap = ['grey','#f8787b','#0095ff','#2fc405']
         for (let entry of alltracks.entries()){
             const track = entry[0];
             const tracks = entry[1];
-            track.forEach((b,index) => {
+            const trackIndex = trackArray.findIndex(([key,value])=> key===track)
+
+            track.forEach((b) => {
                const bck = b.querySelector(".background");
-               bck.addEventListener('click', () => {
+               bck.addEventListener('mouseover', () => {
                 console.log('mouseover',b.__data__.key);//b.__data__.key is the chromesome id 
-                 tracks.forEach(t => changeBackground(t,b.__data__.key,mouseoverEvent))
+                 tracks.forEach(t => changeBackground(t,b.__data__.key,'aqua'))
                }) 
               bck.addEventListener('mouseout', () => {
-                console.log('mouseout',b.__data__.key);//b.__data__.key is the chromesome id 
-                // tracks.forEach(t => changeBackground(t,b.__data__.key,colorMap[trackIndex]))
+                console.log('mouseout',trackIndex);//b.__data__.key is the chromesome id 
+                
+                tracks.forEach((t,index) => changeBackground(t,b.__data__.key,colorMap[getTrackIndex(index,trackIndex)]))
                })        
             });    
         }}
