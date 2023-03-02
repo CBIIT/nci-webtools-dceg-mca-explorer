@@ -22,5 +22,10 @@ div svg path {
   position: absolute;
 }
  div svg path:hover {
-   fill: aqua;
+  //  fill: aqua;
+  opacity: 1;
  }
+
+.bar{
+  fill: steelblue;
+}

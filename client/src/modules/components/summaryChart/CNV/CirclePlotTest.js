@@ -6,6 +6,8 @@ import Circos, {
 } from "react-circos";
 import layout from "./layout2.json";
 import band from "./band.json"
+import SingleChart from "./SingleChart";
+
 
 // import allloss from "./data/allloss.json";
 // import allloh from "./data/allloh.json";
@@ -26,45 +28,24 @@ import band from "./band.json"
 const hovertip = (d =>{
   return "<p style='text-align:left'>Sid: " +d.sampleId+ "<br> Study: "+ d.dataset+"<br> Type: "+d.type+ "<br> Cellular Fraction: "+ d.value + "<br> Start: " + d.start+"<br> End: "+d.end+"<br> Ancestry: "+d.ancestry+"<br> Sex: "+d.sex+"<br> Age: "+" "+"</p>";
 })
-const hovercoler = (d =>{
-  console.log(d.block_id)
-})
 
 const size = 800;
 
-function changeBackground(track, chromesomeId, color){
+function changeBackground(track, chromesomeId, opacity){
          for(var t in track){
             const svgDoc = track[t];
             if (svgDoc.nodeName === "g"){
               if (svgDoc.__data__.key === chromesomeId){
                 var s = svgDoc.querySelector('.background')
-                s.setAttribute("fill",color)
-                s.setAttribute("opacity","0.5")
-                //s.dispatchEvent(new MouseEvent('mouseenter',{bubbles:true}));
+                //s.setAttribute("fill",color)
+                s.setAttribute("opacity",opacity)
               }           
             }
   }}
 
-  function getTrackIndex(idx, trackID){
-    var tidx = 0
-    switch (trackID){
-      case 0:
-        tidx = idx+1;
-        break;
-      case 1: //0,2,3
-        tidx = idx>=1?idx+1:idx;
-        break;
-      case 2://0,1,3
-        tidx = idx==2?3:idx;
-        break;
-      case 3://0,1,2
-        tidx = idx;
-        break;
-    } 
-    return tidx;  
-  }
-
 export default function CirclePlotTest(props) {
+  const [showChart, setShowChart] = useState(false);
+  const [chromesomeId, setChromesomeId] = useState(0);
 
   const [circle, setCircle] = useState({
     loss:props.loss,
@@ -74,38 +55,8 @@ export default function CirclePlotTest(props) {
   }
   );
 
-   //console.log(loh)
-    const circleRef = useRef(null);
-  
-    // useEffect(() => {
-    //   if(circleRef.current){
-    //     var track0 = circleRef.current.querySelectorAll('.track-0 .block')
-    //     var track1 = circleRef.current.querySelectorAll('.track-1 .block');
-    //     var track2 = circleRef.current.querySelectorAll('.track-2 .block');
-    //     var track3 = circleRef.current.querySelectorAll('.track-3 .block');
-    //     var alltracks = new Map([
-    //             [track0,[track1,track2,track3]],
-    //             [track1,[track0,track2,track3]],
-    //             [track2,[track0,track1,track3]],
-    //             [track3,[track0,track1,track2]]
-    //         ]
-    //     )
-    //     for (let entry of alltracks.entries()){
-    //         const track = entry[0];
-    //         const tracks = entry[1];
-    //         //console.log(track)
-    //         track.forEach((b,index) => {
-    //             const bck = b.querySelector(".background");
-    //          //  console.log(bck)
-    //         //     bck.addEventListener('mouseover', () => {
-    //         //     console.log('clicked',b.__data__.key);//b.__data__.key is the chromesome id 
-    //         //     tracks.forEach(t => changeBackground(t,b.__data__.key,"aqua"))
-               
-    //         // })            
-    //         });    
-    //     }}
-    // },[])
 
+  const circleRef = useRef(null);
 
   useEffect(() => {
     setCircle({
@@ -116,46 +67,48 @@ export default function CirclePlotTest(props) {
     })
   },[props])
 
-  const mouseoverEvent = new Event('mouseover');
-  const handleClick= ()=> {
-  if(circleRef.current){
+
+  const handleEnter= ()=> {
+    if(circleRef.current){
         var track0 = circleRef.current.querySelectorAll('.track-0 .block')
         var track1 = circleRef.current.querySelectorAll('.track-1 .block');
         var track2 = circleRef.current.querySelectorAll('.track-2 .block');
         var track3 = circleRef.current.querySelectorAll('.track-3 .block');
-        var alltracks = new Map([
-                [track0,[track1,track2,track3]],
-                [track1,[track0,track2,track3]],
-                [track2,[track0,track1,track3]],
-                [track3,[track0,track1,track2]]
-            ]
-        )
-        const trackArray = Array.from(alltracks);
-        const colorMap = ['grey','#f8787b','#0095ff','#2fc405']
-        for (let entry of alltracks.entries()){
-            const track = entry[0];
-            const tracks = entry[1];
-            const trackIndex = trackArray.findIndex(([key,value])=> key===track)
-
+        var alltracks = [track0,track1,track2,track3]
+        alltracks.forEach(track => {
             track.forEach((b) => {
                const bck = b.querySelector(".background");
                bck.addEventListener('mouseover', () => {
-                console.log('mouseover',b.__data__.key);//b.__data__.key is the chromesome id 
-                 tracks.forEach(t => changeBackground(t,b.__data__.key,'aqua'))
+                //console.log('mouseover',b.__data__.key);//b.__data__.key is the chromesome id 
+                 alltracks.forEach(t => changeBackground(t,b.__data__.key,1))
                }) 
               bck.addEventListener('mouseout', () => {
-                console.log('mouseout',trackIndex);//b.__data__.key is the chromesome id 
-                
-                tracks.forEach((t,index) => changeBackground(t,b.__data__.key,colorMap[getTrackIndex(index,trackIndex)]))
+                alltracks.forEach((t) => changeBackground(t,b.__data__.key,0.5))
+               }) 
+              bck.addEventListener('click', () => {
+                //console.log("click",b.__data__.key)
+                setShowChart(true);
+                setChromesomeId(b.__data__.key);
                })        
             });    
-        }}
+        })
+    }}
 
-        console.log("click")
-    }
+  const handleBack = ()=>{
+    setShowChart(false);
+  }
   // console.log(circle.loss)
+  
+  const data = [
+    {name: 'A', value:10,total:30,color:'red'},
+    {name: 'B', value:20,total:30,color:'yellow'},
+    {name: 'C', value:15,total:30,color:'green'},
+    {name: 'D', value:5,total:30,color:'grey'}
+]
   return (
-    <div ref={circleRef} className="align-middle text-center"  onClick={handleClick}>
+    <div className="align-middle text-center" >
+      {showChart ? <div  ><SingleChart data={data} width={600} height={400} /><button onClick={handleBack}>back</button></div>:
+    <div ref={circleRef}  onMouseEnter={handleEnter} onClick={handleEnter}>
       <Circos 
           layout={layout}
           config={{
@@ -355,6 +308,7 @@ export default function CirclePlotTest(props) {
         size={size}
       />
        
+    </div>}
     </div>
   );
 }
