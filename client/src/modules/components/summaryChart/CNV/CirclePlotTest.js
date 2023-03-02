@@ -100,10 +100,26 @@ export default function CirclePlotTest(props) {
   // console.log(circle.loss)
   
   const data = [
-    {name: 'A', value:10,total:30,color:'red'},
-    {name: 'B', value:20,total:30,color:'yellow'},
-    {name: 'C', value:15,total:30,color:'green'},
-    {name: 'D', value:5,total:30,color:'grey'}
+    {name: 'A', value:10,type:"GAIN"},
+    {name: 'E', value:18,type:"GAIN"},
+    {name: 'B', value:20,type:"GAIN"},
+    {name: 'C', value:30,type:"GAIN"},
+    {name: 'D', value:40,type:"GAIN"},
+    {name: 'A1', value:10,type:"GAIN"},
+    {name: 'E1', value:18,type:"LOSS"},
+    {name: 'B1', value:20,type:"LOSS"},
+    {name: 'C1', value:30,type:"LOSS"},
+    {name: 'D1', value:40,type:"LOSS"},
+    {name: 'A2', value:10,type:"LOSS"},
+    {name: 'E2', value:18,type:"LOSS"},
+    {name: 'B2', value:20,type:"LOSS"},
+    {name: 'C2', value:30,type:"NEUTRAL"},
+    {name: 'D2', value:40,type:"NEUTRAL"},
+    {name: 'A3', value:10,type:"NEUTRAL"},
+    {name: 'E3', value:18,type:"NEUTRAL"},
+    {name: 'B3', value:20,type:"NEUTRAL"},
+    {name: 'C3', value:30,type:"UNDETERMIND"},
+    {name: 'D3', value:40,type:"UNDETERMIND"},
 ]
   return (
     <div className="align-middle text-center" >

@@ -17,30 +17,56 @@ function SingleChart( props ){
             // .attr("width", width)
             // .attr("height", height)
             // .style("border", "1px solid black")
-    const colorScale = d3.scaleOrdinal().domain(data.map(d=>d.color)).range(d3.schemeCategory10);
-  
+    const colorScale = d3.scaleOrdinal().domain(["value","total"]).range(["green", "blue"]);
+    console.log(colorScale)
     const y = d3.scaleBand().domain(data.map(d => d.name))
-    .range([chartHeight,0]).padding(0.1);
+    .range([0,chartHeight]).padding(0.1);
 
     const x = d3.scaleLinear()
-    .domain([0,d3.max(data, d=>d.total)])
+    .domain([0,d3.max(data, d=>d.value)])
     .range([0,chartWidth]);
 
-    svg
-    .append("g")
-    .attr("transform",`translate(${margin.left},${margin.top})`)
+     const xAxis = d3.axisBottom(x);
+     const yAxis = d3.axisLeft(y);
+
+     const stackLayout = d3.stack().keys(['value','total'])
+     const stackData = stackLayout(data);
+     //console.log(y.bandwidth())
+     svg
     .selectAll("g")
-    .data(d3.stack().keys(["value"])(data))
-    .join("g")
-    .attr("fill",d=>colorScale(d.color))
-    .selectAll("rect")
-    .data(d=>d)
-    .join("rect")
-    .attr('x', d=> x(d[0]))
-    .attr('y',d => y(d.data.name))
-    .attr('width',d=>x(d[1])-x(d[0]))
-    .attr('height',y.bandwidth());
-  },[props.data]);
+     .data(stackData)
+     .join("g")
+     .attr("fill", d=>colorScale(d.key))
+     .selectAll("rect")
+     .data(d=>d)
+     .join("rect")
+     .attr('x', d=> x(d[0]))
+     .attr('y',d => y(d.data.name))
+     .attr('height',y.bandwidth())
+     .attr('width',d => x(d[1])- x(d[0]));
+ 
+      svg.append("g")
+     .attr("transform",`translate(0,${chartHeight})`)
+     .call(xAxis)
+
+     svg.append("g").call(yAxis)
+     },[]);
+ //   svg
+  //   .append("g")
+  //   .attr("transform",`translate(${margin.left},${margin.top})`)
+  //   .selectAll("g")
+  //   .data(d3.stack().keys(["value"])(data))
+  //   .join("g")
+  //   .attr("fill",d=>colorScale(d.color))
+  //   .selectAll("rect")
+  //   .data(d=>d)
+  //   .join("rect")
+  //   .attr('x', d=> x(d[0]))
+  //   .attr('y',d => y(d.data.name))
+  //   .attr('width',d=>x(d[1])-x(d[0]))
+  //   .attr('height',y.bandwidth());
+  //        },[props.data]);
+
 
 
     return (
