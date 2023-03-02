@@ -33,8 +33,7 @@ export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
     const [tab, setTab] = useState("summary");
     const [clickedCounter, setClickedCounter] = useState(0);
-    
-    
+    const [moveCounter, setMoveCounter] = useState(false);
     //console.log(form)
     //console.log(form.study.length)
 
@@ -44,10 +43,11 @@ export default function RangeView() {
     const loh = form.types.find((e) => e.value === "loh") ? form.study.length == 2? allloh: study_value.value=='plco'?plcoloh:ukloh : []
     const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length == 2 ? allundetermined : 
                             study_value.value =='plco'?plcoundetermined:ukundetermined : []
-    //console.log(loh)
+   
     useEffect(() => {
        setClickedCounter(clickedCounter+1)
     },[loh])
+
     console.log(clickedCounter)
     const chromosomes = form.chromosome.map((e) => e.label)
 
@@ -124,7 +124,6 @@ export default function RangeView() {
     ]
 
     function getScatterData() {
-
         const gainScatter = {
             x: sortGain.map((e) => { return (Number(e.block_id)) }),
             y: sortGain.map((e) => { return (Number(e.value)) }),
@@ -216,7 +215,6 @@ export default function RangeView() {
             },
         ];
     }
-
     const defaultConfig = {
         displayModeBar: true,
         toImageButtonOptions: {
@@ -233,8 +231,7 @@ export default function RangeView() {
         <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
             <Tab eventKey="summary" title="Summary">
                 <h2 style={{ textAlign: "center", padding: "20px" }}>Autosomal mCA Distribution</h2>
-                <div className="row justify-content-center">
-
+                <div className="row justify-content-center" >
                     <CirclePlotTest key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
                     <div className="text-center">
                         <svg version="1.1" baseProfile="full"

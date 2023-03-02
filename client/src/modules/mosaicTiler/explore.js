@@ -29,7 +29,7 @@ export default function Explore() {
 
   function handleSubmit(event) {
     setForm({ ...event, submitted: true });
-    console.log("submit", event);
+    //console.log("submit", event);
   }
 
   function handleReset(event) {
