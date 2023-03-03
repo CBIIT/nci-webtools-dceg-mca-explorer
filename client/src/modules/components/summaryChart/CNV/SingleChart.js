@@ -17,19 +17,19 @@ function SingleChart( props ){
             // .attr("width", width)
             // .attr("height", height)
             // .style("border", "1px solid black")
-    const colorScale = d3.scaleOrdinal().domain(["value","total"]).range(["green", "blue"]);
+    const colorScale = d3.scaleOrdinal().domain(["value","end"]).range(["white", "blue"]);
     console.log(colorScale)
     const y = d3.scaleBand().domain(data.map(d => d.name))
-    .range([0,chartHeight]).padding(0.1);
+    .range([0,chartHeight]).padding(0);
 
     const x = d3.scaleLinear()
-    .domain([0,d3.max(data, d=>d.value)])
+    .domain([0,d3.max(data, d=>d.value+d.end)])
     .range([0,chartWidth]);
 
      const xAxis = d3.axisBottom(x);
      const yAxis = d3.axisLeft(y);
 
-     const stackLayout = d3.stack().keys(['value','total'])
+     const stackLayout = d3.stack().keys(['value','end'])
      const stackData = stackLayout(data);
      //console.log(y.bandwidth())
      svg
@@ -42,7 +42,7 @@ function SingleChart( props ){
      .join("rect")
      .attr('x', d=> x(d[0]))
      .attr('y',d => y(d.data.name))
-     .attr('height',y.bandwidth())
+     .attr('height',y.bandwidth()/10)
      .attr('width',d => x(d[1])- x(d[0]));
  
       svg.append("g")
