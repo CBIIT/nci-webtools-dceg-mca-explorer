@@ -129,9 +129,8 @@ export default function CirclePlotTest(props) {
     {name: 0.23, value:30,end:35,type:"GAIN"},
     {name: 0.24, value:40,end:45,type:"GAIN"},
     {name: 0.25, value:0,end:20,type:"GAIN"},
-
-    {name: 0.26, value:0,end:0,type:"LOSS"},
-    {name: 0.27, value:0,end:0,type:"LOSS"},
+    {name: 0.26, value:0,end:10,type:"LOSS"},
+    {name: 0.27, value:0,end:10,type:"LOSS"},
     {name: 0.28, value:0,end:36,type:"LOSS"},
     {name: 0.29, value:20,end:55,type:"LOSS"},
     {name: 0.30, value:20,end:30,type:"LOSS"},
