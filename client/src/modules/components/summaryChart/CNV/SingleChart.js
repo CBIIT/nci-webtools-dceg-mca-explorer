@@ -5,20 +5,7 @@ import React, { useRef, useEffect } from 'react';
 
 function SingleChart( props ){
     const ref = useRef();
-    const typeColor = ((colorArr)=>{
-      console.log(colorArr)
-      if (colorArr[2] == 0 && colorArr[3]  && colorArr[4]== 0)
-        return ["white","green"]
-      else if(colorArr[0] == 0 && colorArr[3]  && colorArr[4]== 0)
-        return ["white","blue"]
-      else if (colorArr[0] == 0 && colorArr[1]  && colorArr[4]== 0)
-      return ["white","red"]
-      else if (colorArr[1] == 0 && colorArr[2]  && colorArr[3]== 0)
-      return ["white","grey"]
-      else 
-        return ["white","green"]
-    })
-    
+
     useEffect(() => {
       const data = props.data;
       const width = 600;
@@ -39,16 +26,16 @@ function SingleChart( props ){
       const group = d3.scaleOrdinal()
         .range([
         
-          { value: "none", end: "green", type: "green"},
-          { value: "none", end: "red", type: "red" },
-          { value: "none", end: "blue", type: "steelblue" },
-           { value: "none", end: "grey", type: "grey" }
+          { start: "white", length: "green", type: "green"},
+          { start: "white", length: "red", type: "red" },
+          { start: "white", length: "blue", type: "blue" },
+           { start: "white", length: "grey", type: "grey" }
         ]);
 
-{   const keys = ["value","end","type"]
+{   const keys = ["start","length","type"]
     console.log(data,keys)
-    y.domain(data.map(d => d.name));
-    x.domain([0, d3.max(data, d => d.value+d.end)]).nice();
+    y.domain(data.map(d => d.ypos));
+    x.domain([0, d3.max(data, d => d.end)]).nice();
     z.domain(keys);
     group.domain(data.map(d => d.type));
 
@@ -62,10 +49,10 @@ function SingleChart( props ){
           .data(d => d)
           .enter()
           .append("rect")
-          .attr("y", d => y(d.data.name))
+          .attr("y", d => y(d.data.ypos))
           .attr("x", d => x(d[0]))
           .attr("height", y.bandwidth())
-          .attr("width", d => x(d[1])-x(d[0]) )
+          .attr("width", d => x(d[1]) )
           .attr("fill", d => group(d.data.type)[e.key]);
       });
       
@@ -78,7 +65,7 @@ function SingleChart( props ){
       .call(d3.axisLeft(y));
   }
 
-     },[]);
+     },[props]);
     return (
       <div >
        <svg ref={ref} width={props.width} height={props.height}></svg>

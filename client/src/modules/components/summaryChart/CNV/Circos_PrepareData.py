@@ -45,6 +45,7 @@ if __name__=="__main__":
         # Prepare data for json format (Figure.js).
         totalline = 0
         countline = 0
+        ypos = 0
         with open(sys.argv[1]) as file:
             for line in file:
                 totalline = totalline+1
@@ -54,15 +55,18 @@ if __name__=="__main__":
         print( "[")
         for line in fh:
             line=line.rstrip(os.linesep)
+            print(line)
             if line[0]!="#": #Title line started with "#"
                 line=line.split("\t")
                 countline = countline +1
+                ypos= ypos+0.01
+                print(ypos)
                 value = line[3]
                 if countline < totalline:
-                    print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\"},")
+                    print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+ypos+"\"},")
                 #the last line should not ending with ,
                 elif  countline == totalline:
-                    print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\"}")
+                    print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+ypos+"\"}")
 
         print( "]")
             
