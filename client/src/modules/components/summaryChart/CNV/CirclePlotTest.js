@@ -121,7 +121,8 @@ export default function CirclePlotTest(props) {
 //     {name: 0.38, value:40,end:50,type:"UNDETERMIND"},
 //     {name: 0.39, value:0,end:30,type:"UNDETERMIND"},
 // ]
-const data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
+let data = []
+data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         ...props.loh.filter(chr=>chr.block_id===chromesomeId),
         ...props.loss.filter(chr=>chr.block_id===chromesomeId),
         ...props.undetermined.filter(chr=>chr.block_id===chromesomeId)
@@ -130,7 +131,7 @@ const data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
 
   return (
     <div className="align-middle text-center" >
-      {showChart ? <div  ><SingleChart data={data}  width={600} height={400} /><button onClick={handleBack}>back</button></div>:
+      {showChart ? <div><SingleChart data={data} chromesomeId={chromesomeId} width={600} height={400} /><button onClick={handleBack}>back</button></div>:
     <div ref={circleRef}  onMouseEnter={handleEnter} onClick={handleEnter}>
       <Circos 
           layout={layout}

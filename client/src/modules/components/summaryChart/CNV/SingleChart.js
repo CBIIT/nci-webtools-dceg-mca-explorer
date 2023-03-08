@@ -15,6 +15,7 @@ function SingleChart( props ){
       const chartHeight = height - margin.top - margin.bottom;
 
       const svg = d3.select(ref.current);
+      svg.selectAll("*").remove();
 
       const y = d3.scaleBand()
         .range([0, height])
@@ -32,6 +33,16 @@ function SingleChart( props ){
            { start: "white", length: "grey", type: "grey" }
         ]);
 
+        const tooltip = ({x,y,info}) => {
+          return (
+            <div className='tooltip' style={{left:x, top:y}}>
+              <p>{info.key}</p>
+              <p>{info.value}</p>
+            </div>
+          )
+        }
+      
+
 {   const keys = ["start","length","type"]
     console.log(data,keys)
     y.domain(data.map(d => d.ypos));
@@ -42,7 +53,7 @@ function SingleChart( props ){
     svg.append("g")
       .selectAll("g")
       .data(d3.stack().keys(keys)(data))
-      .enter().append("g")
+      .enter().append("g") 
       .each(function(e) {
         d3.select(this)
           .selectAll("rect")
@@ -53,8 +64,24 @@ function SingleChart( props ){
           .attr("x", d => x(d[0]))
           .attr("height", y.bandwidth())
           .attr("width", d => x(d[1]) )
-          .attr("fill", d => group(d.data.type)[e.key]);
-      });
+          .attr("fill", d => group(d.data.type)[e.key])
+          ;
+      })
+      .on("mouseover", function(d) {
+        //console.log(d); 
+        // tooltip.style("display", null); 
+        // tooltip.select("text").text(d.y);
+       })
+      .on("mouseout", function() { 
+        //tooltip.style("display", "none"); 
+      })
+       .on("mousemove", function(d) {
+        // var xPosition = d.mouseEvent.x - 15;
+        // var yPosition = d.mouseEvent.y - 25;
+        // tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
+        // tooltip.select("text").text(d.y);
+        });
+    ;
       
 
     svg.append("g")
@@ -65,9 +92,13 @@ function SingleChart( props ){
       .call(d3.axisLeft(y));
   }
 
+
+      
+
      },[props]);
     return (
       <div >
+        <div>Chromosome {props.chromesomeId}</div>
        <svg ref={ref} width={props.width} height={props.height}></svg>
       </div>
     )
