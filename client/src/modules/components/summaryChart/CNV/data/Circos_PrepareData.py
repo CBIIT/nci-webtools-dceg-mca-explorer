@@ -33,7 +33,7 @@ the distribution).
 import sys
 import os
 import copy
-
+import json
 # ------------------------------------
 # constants
 # ------------------------------------
@@ -49,7 +49,16 @@ import copy
 # ------------------------------------
 # Main
 # ------------------------------------
-
+chromelen = {
+    "1": 248956422,"2": 242193529, "3": 198295559, "4": 190214555,
+   "5": 181538259,  "6": 170805979, "7": 159345973,
+   "8": 145138636, "9": 138394717,  "10": 133797422,
+   "11": 135086622,   "12": 133275309, "13": 114364328,
+   "14": 107043718, "15": 101991189, "16": 90338345,  "17": 83257441,
+   "18": 80373285,"19": 58617616, "20": 64444167,   "21": 46709983,
+   "22": 50818468,
+  }
+ 
 if __name__=="__main__":
     if len(sys.argv)==1:
         print("Usage: "+sys.argv[0]+" SCATTER/SNP/ARC/HEATMAP/LINE/HISTOGRAM/LINK/CNV/BUBBLE  SCATTER01.txt/SNP01.txt/ARC01.txt/HEATMAP01.txt/LINE01.txt/HISTOGRAM01.txt/LINK01.txt/CNV01.txt/BUBBLE01.txt > SCATTER01.js/SNP01.js/ARC01.js/HEATMAP01.js/LINE01.js/HISTOGRAM01.js/LINK01.js/CNV01.js/BUBBLE01.js")
@@ -70,17 +79,20 @@ if __name__=="__main__":
             line=line.rstrip(os.linesep)
             if line[0]!="#": #Title line started with "#"
                 line=line.split(",")
-                ypos = ypos +0.1
+                chrome_len=chromelen.get(line[3][3:])
+                xlen=int(line[6])/chrome_len
+                xStart= int(line[4])/chrome_len
+                ypos=ypos+0.1
                 countline = countline +1
                 if countline < totalline:
                     ancentry = "Null" if line[12] =="" else line[12]
                     #dataset, sampleId,computedGender,chromosome, beginGrch38,endGrch38,length,pArm,qArm,nSites,type,cf,ancestry
-                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"value\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,1))+"\"},")
+                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"value\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,3))+"\", \"xstart\": \""+str(round(xStart,3))+"\", \"xlen\": \""+str(round(xlen,3))+"\"},")
                     #print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\"},")
                 #the last line should not ending with ,
                 elif  countline == totalline :
                     #print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\"}")
-                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"cf\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,1))+"\"}")
+                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"cf\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,3))+"\", \"xstart\": \""+str(round(xStart,3))+"\", \"xlen\": \""+str(round(xlen,3))+"\"}")
                   
         print( "]")
             

@@ -3,11 +3,13 @@ import * as d3 from 'd3';
 import { group } from 'd3';
 import React, { useRef, useEffect } from 'react';
 
+
 function SingleChart( props ){
     const ref = useRef();
-
+ 
     useEffect(() => {
       const data = props.data;
+      console.log(data)
       const width = 600;
       const height = 400;
       const margin = {top:20,right:20,bottom:30,left:40}
@@ -26,10 +28,10 @@ function SingleChart( props ){
         .range([0.25, 0.5, 0.75, 1]);
       const group = d3.scaleOrdinal()
         .range([
-          { start: "white", length: "green", type: "green"},
-          { start: "white", length: "blue", type: "blue" },
-          { start: "white", length: "red", type: "red" },
-           { start: "white", length: "grey", type: "grey" }
+          { xstart: "white", xlen: "green", type: "green"},
+          { xstart: "white", xlen: "blue", type: "blue" },
+          { xstart: "white", xlen: "red", type: "red" },
+           { xstart: "white", xlen: "grey", type: "grey" }
         ]);
 
         const tooltip = ({x,y,info}) => {
@@ -42,10 +44,10 @@ function SingleChart( props ){
         }
       
 
-{   const keys = ["start","length","type"]
-    console.log(data,keys)
+{   const keys = ["xstart","xlen","type"]
+   // console.log(data,keys)
     y.domain(data.map(d => d.ypos));
-    x.domain([0, d3.max(data, d => d.end)]).nice();
+    x.domain([0, 1]).nice();
     z.domain(keys);
     group.domain(data.map(d => d.type));
 
@@ -62,9 +64,8 @@ function SingleChart( props ){
           .attr("y", d => y(d.data.ypos))
           .attr("x", d => x(d[0]))
           .attr("height", y.bandwidth())
-          .attr("width", d => x(d[1]) )
-          .attr("fill", d => group(d.data.type)[e.key])
-          ;
+          .attr("width", d => x(d[1]))
+          .attr("fill", d => group(d.data.type)[e.key]);
       })
       .on("mouseover", function(d) {
         //console.log(d); 
