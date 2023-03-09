@@ -33,7 +33,8 @@ export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
     const [tab, setTab] = useState("summary");
     const [clickedCounter, setClickedCounter] = useState(0);
-    const [moveCounter, setMoveCounter] = useState(false);
+    const [chromoId, setChromoId] = useState(-1);
+    const [allValue, setAllValue] = useState([]);
     //console.log(form)
     //console.log(form.study.length)
 
@@ -55,9 +56,13 @@ export default function RangeView() {
     const sortLoss = loss.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
     const sortLoh = loh.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
     const sortUndetermined = undetermined.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
-
     const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined)
-
+   
+    useEffect(() => {
+        const clickedValues = allValues.filter((v) =>v.block_id===chromoId)
+       setAllValue([...clickedValues])
+        console.log("click chromesome",allValue)
+    },[chromoId])
     const columns = [
         {
             accessor: "sampleId",
@@ -201,7 +206,7 @@ export default function RangeView() {
                 columns: columns.map((e) => {
                     return { title: e.label, width: { wpx: 160 } };
                 }),
-                data: allValues.map((e) => {
+                data: (chromoId>=0? allValue:allValues).map((e) => {
                     return [
                         { value: e.block_id },
                         { value: e.type },
@@ -227,12 +232,16 @@ export default function RangeView() {
         displaylogo: false,
         modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
     };
+    const handleClickedChromoId = (id) => {
+        setChromoId(id)
+        console.log("clicked:",id)
+    };
     return (
         <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
             <Tab eventKey="summary" title="Summary">
                 <h2 style={{ textAlign: "center", padding: "20px" }}>Autosomal mCA Distribution</h2>
                 <div className="row justify-content-center" >
-                    <CirclePlotTest key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
+                    <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
                     <div className="text-center">
                         <svg version="1.1" baseProfile="full"
                             width="700" height="100"
@@ -267,7 +276,7 @@ export default function RangeView() {
                             <Table
                                 columns={columns}
                                 defaultSort={[{ id: "sampleId", asc: true }]}
-                                data={allValues}
+                                data= {chromoId>=0? allValue:allValues}
                             />
                         </div>
                     </div>
@@ -329,7 +338,7 @@ export default function RangeView() {
                             <Table
                                 columns={columns}
                                 defaultSort={[{ id: "sampleId", asc: true }]}
-                                data={allValues}
+                                data={chromoId>=0? allValue:allValues}
                             />
                         </div>
                     </div>

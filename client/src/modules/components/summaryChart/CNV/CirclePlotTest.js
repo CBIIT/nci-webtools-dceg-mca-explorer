@@ -57,7 +57,6 @@ export default function CirclePlotTest(props) {
 
 
   const circleRef = useRef(null);
-
   useEffect(() => {
     setCircle({
       loss:props.loss,
@@ -65,10 +64,15 @@ export default function CirclePlotTest(props) {
       loh:props.loh,
       undetermined:props.undetermined
     })
+    //circleRef.current.focus();
   },[props])
 
+  const sendClickedId = (id)=>{
+    props.clickedChromoId(id);
+  }
 
   const handleEnter= ()=> {
+    console.log("handleEnter")
     if(circleRef.current){
         var track0 = circleRef.current.querySelectorAll('.track-0 .block')
         var track1 = circleRef.current.querySelectorAll('.track-1 .block');
@@ -89,6 +93,7 @@ export default function CirclePlotTest(props) {
                 //console.log("click",b.__data__.key)
                 setShowChart(true);
                 setChromesomeId(b.__data__.key);
+                sendClickedId(b.__data__.key);
                })        
             });    
         })
@@ -96,6 +101,7 @@ export default function CirclePlotTest(props) {
 
   const handleBack = ()=>{
     setShowChart(false);
+    sendClickedId(-1);
   }
   // console.log(circle.loss)
 
@@ -131,7 +137,8 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
 
   return (
     <div className="align-middle text-center" >
-      {showChart ? <div><SingleChart data={data} chromesomeId={chromesomeId} width={600} height={400} /><button onClick={handleBack}>back</button></div>:
+      {showChart ? <div><SingleChart data={data} chromesomeId={chromesomeId} width={600} height={400} />
+      <button onClick={handleBack}>back</button></div>:
     <div ref={circleRef}  onMouseEnter={handleEnter} onClick={handleEnter}>
       <Circos 
           layout={layout}

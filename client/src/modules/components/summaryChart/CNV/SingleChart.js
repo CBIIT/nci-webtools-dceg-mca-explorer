@@ -26,10 +26,9 @@ function SingleChart( props ){
         .range([0.25, 0.5, 0.75, 1]);
       const group = d3.scaleOrdinal()
         .range([
-        
           { start: "white", length: "green", type: "green"},
-          { start: "white", length: "red", type: "red" },
           { start: "white", length: "blue", type: "blue" },
+          { start: "white", length: "red", type: "red" },
            { start: "white", length: "grey", type: "grey" }
         ]);
 
@@ -91,10 +90,6 @@ function SingleChart( props ){
     svg.append("g")
       .call(d3.axisLeft(y));
   }
-
-
-      
-
      },[props]);
     return (
       <div >
