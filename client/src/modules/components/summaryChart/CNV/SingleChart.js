@@ -9,7 +9,11 @@ function SingleChart( props ){
  
     useEffect(() => {
       const data = props.data;
-      console.log(data)
+      data.sort((a,b) => a.type===b.type? 
+      (a.start ===b.start? b.end-a.end: b.start-a.start):a.type-b.type)
+      data.forEach((element,index) => {
+        element.ypos = index
+      });
       const width = 600;
       const height = 400;
       const margin = {top:20,right:20,bottom:30,left:40}
