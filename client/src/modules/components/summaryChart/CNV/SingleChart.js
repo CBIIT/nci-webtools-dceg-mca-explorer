@@ -9,14 +9,21 @@ function SingleChart( props ){
  
     useEffect(() => {
       const data = props.data;
+      //console.log(data, props.chromesomeId)
+      let maxLen = 0;
+      //sort the line order, first by type, start and end 
       data.sort((a,b) => a.type===b.type? 
       (a.start ===b.start? b.end-a.end: b.start-a.start):a.type-b.type)
       data.forEach((element,index) => {
         element.ypos = index
+        if (Number(element.end) > maxLen) {
+          maxLen = element.end;
+        }
       });
-      const width = 600;
-      const height = 400;
-      const margin = {top:20,right:20,bottom:30,left:40}
+      console.log(maxLen)
+      const width = props.width;
+      const height = props.height-20;
+      const margin = {top:20,right:20,bottom:20,left:20}
       const chartWidth = width - margin.left -margin.right;
       const chartHeight = height - margin.top - margin.bottom;
 
@@ -86,11 +93,15 @@ function SingleChart( props ){
         // tooltip.select("text").text(d.y);
         });
     ;
-      
+    
+
+    var xscale = d3.scaleLinear()
+            .domain([0,maxLen])
+            .range([0, width]);
 
     svg.append("g")
-      .attr("transform", "translate(0,0)")
-      .call(d3.axisTop(x));
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(xscale));
 
     svg.append("g")
       .call(d3.axisLeft(y));

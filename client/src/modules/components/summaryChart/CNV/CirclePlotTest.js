@@ -103,41 +103,22 @@ export default function CirclePlotTest(props) {
     setShowChart(false);
     sendClickedId(-1);
   }
-  // console.log(circle.loss)
-
-//   const data = [
-//     {name: 0.1, value:0,end:20,type:"GAIN"},
-//     {name: 0.2, value:0,end:25,type:"GAIN"},
-//     {name: 0.22, value:20,end:30,type:"GAIN"},
-//     {name: 0.23, value:30,end:5,type:"GAIN"},
-//     {name: 0.24, value:40,end:45,type:"GAIN"},
-//     {name: 0.25, value:0,end:20,type:"GAIN"},
-//     {name: 0.26, value:0,end:10,type:"LOSS"},
-//     {name: 0.27, value:0,end:10,type:"LOSS"},
-//     {name: 0.28, value:0,end:36,type:"LOSS"},
-//     {name: 0.29, value:20,end:55,type:"LOSS"},
-//     {name: 0.30, value:20,end:30,type:"LOSS"},
-//     {name: 0.31, value:10,end:20,type:"LOSS"},
-//     {name: 0.32, value:30,end:28,type:"LOSS"},
-//     {name: 0.33, value:10,end:30,type:"NEUTRAL"},
-//     {name: 0.34, value:10,end:40,type:"NEUTRAL"},
-//     {name: 0.35, value:0,end:15,type:"NEUTRAL"},
-//     {name: 0.36, value:12,end:20,type:"NEUTRAL"},
-//     {name: 0.37, value:20,end:30,type:"NEUTRAL"},
-//     {name: 0.38, value:40,end:50,type:"UNDETERMIND"},
-//     {name: 0.39, value:0,end:30,type:"UNDETERMIND"},
-// ]
+ 
 let data = []
 data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         ...props.loh.filter(chr=>chr.block_id===chromesomeId),
         ...props.loss.filter(chr=>chr.block_id===chromesomeId),
         ...props.undetermined.filter(chr=>chr.block_id===chromesomeId)
     ]
-   // console.log(data)
+ //   console.log(props.gain.length)
+const thicknessgain = props.gain.length<1000?0:-1.5;
+const thicknessloh =  props.loh.length<1000?0:-1.5;
+const thicknessloss =  props.loss.length<1000?0:-1.5;
+const thicknessundermined =  props.undetermined.length<1000?0:-1.5;
 
   return (
     <div className="align-middle text-center" >
-      {showChart ? <div><SingleChart data={data} chromesomeId={chromesomeId} width={600} height={400} />
+      {showChart ? <div><SingleChart data={data} chromesomeId={chromesomeId} width={800} height={500} />
       <button onClick={handleBack}>back</button></div>:
     <div ref={circleRef}  onMouseEnter={handleEnter} onClick={handleEnter}>
       <Circos 
@@ -174,7 +155,7 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
             config: {
               innerRadius: 0.15,
               outerRadius: 0.25,
-              thickness:-1.5,
+              thickness:thicknessundermined,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"grey",
@@ -212,7 +193,7 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
             config: {
               innerRadius: 0.25,
               outerRadius: 0.5,
-              thickness:-1.5,
+              thickness:thicknessloss,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"red",
@@ -247,7 +228,7 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
             config: {
               innerRadius: 0.5,
               outerRadius: 0.75,
-              thickness:-1.5,
+              thickness:thicknessloh,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"blue",
@@ -283,7 +264,7 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
             config: {
               innerRadius: 0.75,
               outerRadius: 1,
-              thickness:-1.5,
+              thickness:thicknessgain,
               margin: 0,
               strokeWidth: 1,
               strokeColor:"green",
