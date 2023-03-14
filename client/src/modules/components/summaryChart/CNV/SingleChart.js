@@ -4,9 +4,11 @@ import { group } from 'd3';
 import React, { useRef, useEffect } from 'react';
 
 
+
 function SingleChart( props ){
     const ref = useRef();
- 
+
+
     useEffect(() => {
       const data = props.data;
       //console.log(data, props.chromesomeId)
@@ -39,26 +41,22 @@ function SingleChart( props ){
         .range([0.25, 0.5, 0.75, 1]);
       const group = d3.scaleOrdinal()
         .range([
-          { xstart: "white", xlen: "green", type: "green"},
-          { xstart: "white", xlen: "blue", type: "blue" },
-          { xstart: "white", xlen: "red", type: "red" },
-           { xstart: "white", xlen: "grey", type: "grey" }
-        ]);
+          { start: "white", length: "green", type: "green"},
+          { start: "white", length: "blue", type: "blue" },
+          { start: "white", length: "red", type: "red" },
+           { start: "white", length: "grey", type: "grey" }
+        ]);    
+        
+           svg.append("filter")
+           .attr("x","0")
+           .attr("y","0")
+           .attr("id","solid")
+           .append("feFlood").attr("flood-color","yellow")
 
-        const tooltip = ({x,y,info}) => {
-          return (
-            <div className='tooltip' style={{left:x, top:y}}>
-              <p>{info.key}</p>
-              <p>{info.value}</p>
-            </div>
-          )
-        }
-      
-
-{   const keys = ["xstart","xlen","type"]
+{   const keys = ["start","length","type"]
    // console.log(data,keys)
     y.domain(data.map(d => d.ypos));
-    x.domain([0, 1]).nice();
+    x.domain([0, maxLen]).nice();
     z.domain(keys);
     group.domain(data.map(d => d.type));
 
@@ -76,15 +74,31 @@ function SingleChart( props ){
           .attr("x", d => x(d[0]))
           .attr("height", y.bandwidth())
           .attr("width", d => x(d[1]))
-          .attr("fill", d => group(d.data.type)[e.key]);
+          .attr("fill", d => group(d.data.type)[e.key])
+         .on("mouseover", function(event,d) {
+ 
+          svg.append('text')
+            .attr('x',event.layerX)
+            .attr('y',event.layerY-150)
+            .attr("filter","url(#solid)")
+            .attr("id","tooltipbackground")
+            .text(`sampleId: ${d.data.sampleId} \nstart:${d.data.start}`)
+
+           svg.append('text')
+            .attr('id','tooltip')
+            .attr('x',event.layerX)
+            .attr('y',event.layerY-150)
+            .text(`sampleId: ${d.data.sampleId}^start:${d.data.start}`)
+            .style('opacity',1)
+            .style("fill",'blue')
+           
+
+       });
       })
-      .on("mouseover", function(d) {
-        //console.log(d); 
-        // tooltip.style("display", null); 
-        // tooltip.select("text").text(d.y);
-       })
       .on("mouseout", function() { 
-        //tooltip.style("display", "none"); 
+        d3.select('#tooltip').remove();
+        d3.select('#tooltipbackground').remove();
+
       })
        .on("mousemove", function(d) {
         // var xPosition = d.mouseEvent.x - 15;
@@ -105,6 +119,7 @@ function SingleChart( props ){
 
     svg.append("g")
       .call(d3.axisLeft(y));
+
   }
      },[props]);
     return (
