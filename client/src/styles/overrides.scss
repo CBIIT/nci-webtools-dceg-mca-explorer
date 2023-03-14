@@ -30,3 +30,10 @@ div svg path {
   fill: steelblue;
 }
 
+.tooltip{
+  position: absolute;
+  background-color: aqua;
+  border: 1px solid black;
+  border-radius: 5px;
+  pointer-events:none;
+}

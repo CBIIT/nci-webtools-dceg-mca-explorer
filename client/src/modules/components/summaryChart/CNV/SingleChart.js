@@ -53,6 +53,10 @@ function SingleChart( props ){
            .attr("id","solid")
            .append("feFlood").attr("flood-color","yellow")
 
+        const tooltip = d3.select("body").append("div")
+        .attr("class","tooltip")
+        .style("opacity",0)
+
 {   const keys = ["start","length","type"]
    // console.log(data,keys)
     y.domain(data.map(d => d.ypos));
@@ -77,34 +81,21 @@ function SingleChart( props ){
           .attr("fill", d => group(d.data.type)[e.key])
          .on("mouseover", function(event,d) {
  
-          svg.append('text')
-            .attr('x',event.layerX)
-            .attr('y',event.layerY-150)
-            .attr("filter","url(#solid)")
-            .attr("id","tooltipbackground")
-            .text(`sampleId: ${d.data.sampleId} \nstart:${d.data.start}`)
-
-           svg.append('text')
-            .attr('id','tooltip')
-            .attr('x',event.layerX)
-            .attr('y',event.layerY-150)
-            .text(`sampleId: ${d.data.sampleId}^start:${d.data.start}`)
-            .style('opacity',1)
-            .style("fill",'blue')
-           
+          tooltip.transition().duration(200).style("opacity",0.9)
+          tooltip.html("sampleId: "+ d.data.sampleId+"<br/>start: "+d.data.start)
+          .style("left",(event.pageX)+"px")
+          .style("top",(event.pageY-20)+"px")
+         // const tempRect = this+""
+         // console.log(tempRect.contains("white"))
 
        });
       })
       .on("mouseout", function() { 
-        d3.select('#tooltip').remove();
-        d3.select('#tooltipbackground').remove();
-
+     
+        tooltip.transition().duration(500).style("opacity",0)
       })
        .on("mousemove", function(d) {
-        // var xPosition = d.mouseEvent.x - 15;
-        // var yPosition = d.mouseEvent.y - 25;
-        // tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-        // tooltip.select("text").text(d.y);
+    
         });
     ;
     
