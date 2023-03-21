@@ -11,6 +11,7 @@
     "bootstrap-icons": "^1.10.2",
     "d3": "^7.8.2",
     "html-loader": "^4.2.0",
+    "html-to-image": "^1.11.11",
     "plotly.js": "^2.18.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",

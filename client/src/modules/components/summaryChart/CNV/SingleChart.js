@@ -2,12 +2,29 @@
 import * as d3 from 'd3';
 import { group } from 'd3';
 import React, { useRef, useEffect } from 'react';
+import * as htmlToImage from 'html-to-image';
+import { RecoilState } from 'recoil';
+import { brushX } from 'd3';
+import { brushY } from 'd3';
 
 
 
 function SingleChart( props ){
     const ref = useRef();
-
+    const handleDownload = ()=>{
+      console.log(ref.current)
+    
+      htmlToImage.toPng(ref.current, { quality: 0.95, backgroundColor:"white"})
+      .then((dataUrl)=>{
+        var link = document.createElement('a');
+        link.download = 'my-image-name.png';
+        link.href = dataUrl;
+        link.click();
+      }) 
+      .catch(function (error) {
+        console.error('oops, something went wrong!', error);
+  });  
+    }
 
     useEffect(() => {
       const data = props.data;
@@ -22,7 +39,7 @@ function SingleChart( props ){
           maxLen = element.end;
         }
       });
-      console.log(maxLen)
+
       const width = props.width;
       const height = props.height-20;
       const margin = {top:20,right:20,bottom:20,left:20}
@@ -31,7 +48,7 @@ function SingleChart( props ){
 
       const svg = d3.select(ref.current);
       svg.selectAll("*").remove();
-
+     
       const y = d3.scaleBand()
         .range([0, height])
         .padding(0.1);
@@ -47,11 +64,14 @@ function SingleChart( props ){
            { start: "white", length: "grey", type: "grey" }
         ]);    
         
-           svg.append("filter")
-           .attr("x","0")
-           .attr("y","0")
-           .attr("id","solid")
-           .append("feFlood").attr("flood-color","yellow")
+        // Add a clipPath: everything out of this area won't be drawn.
+        var clip = svg.append("defs").append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("width", width )
+        .attr("height", height )
+        .attr("x", 0)
+        .attr("y", 0);
 
         const tooltip = d3.select("body").append("div")
         .attr("class","tooltip")
@@ -66,6 +86,7 @@ function SingleChart( props ){
 
     svg.append("g")
       .selectAll("g")
+      .attr("clip-path", "url(#clip)")
       .data(d3.stack().keys(keys)(data))
       .enter().append("g") 
       .each(function(e) {
@@ -80,14 +101,12 @@ function SingleChart( props ){
           .attr("width", d => x(d[1]))
           .attr("fill", d => group(d.data.type)[e.key])
          .on("mouseover", function(event,d) {
- 
-          tooltip.transition().duration(200).style("opacity",0.9)
-          tooltip.html("sampleId: "+ d.data.sampleId+"<br/>start: "+d.data.start)
-          .style("left",(event.pageX)+"px")
-          .style("top",(event.pageY-20)+"px")
-         // const tempRect = this+""
-         // console.log(tempRect.contains("white"))
-
+          if (!this.outerHTML.includes("white")){
+            tooltip.transition().duration(200).style("opacity",0.9)
+            tooltip.html("sampleId: "+ d.data.sampleId+"<br/>start: "+d.data.start)
+            .style("left",(event.pageX)+"px")
+            .style("top",(event.pageY-20)+"px")
+          }
        });
       })
       .on("mouseout", function() { 
@@ -100,21 +119,58 @@ function SingleChart( props ){
     ;
     
 
-    var xscale = d3.scaleLinear()
-            .domain([0,maxLen])
-            .range([0, width]);
+    var xscale = d3.scaleLinear().domain([0,maxLen]).range([0, width]);
 
     svg.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(xscale));
 
-    svg.append("g")
-      .call(d3.axisLeft(y));
+    var yAxis = svg.append("g").call(d3.axisLeft(y));
+     
+    ////
+        // Add brushing
+    var brushx = d3.brushX()                 // Add the brush feature using the d3.brush function
+      .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+      .on("brush", (e)=>{
+        const selection = (e.selection)
+        const[x0,x1]=selection;
+        svg.selectAll("g").attr("x", d => x(d[0]))
+        svg.select('.brush-y').call(brushy.clear)
+        //console.log("x",x0,x1)
+      })        
+    var brushy = d3.brushY()                 // Add the brush feature using the d3.brush function
+      .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+      .on("end", (e)=>{
+        const selection = (e.selection)
+        const[y0,y1]=selection;
+        y.domain([y0,y1])
+       console.log(y0,y1)
+        //svg.select(".brush-y").call(brushy.move, null) // This remove the grey brush area as soon as the selection has been done
+       //  svg.selectAll("*").remove();
+       //console.log(svg.selectAll('rect'))
+        const yzoom = d3.scaleBand()
+        .range([y0,y1]).padding(0.1);
+         yAxis.transition().duration(1000).call(d3.axisLeft(yzoom))
+        // svg.selectAll("rect")
+        //      .transition().duration(1000)
+        //       .data(d => d)
+        //       .enter()
+        //       .append("rect")
+        //       .attr("y", (d) => {
+        //         console.log(d)
+        //         y(d.data.ypos)
+        //       })
+  
+      }) 
 
+   //svg.append("g").attr("class", "brush-x").call(brushx);
+    svg.append("g").attr("class", "brush-y").call(brushy);
   }
      },[props]);
+
     return (
       <div >
+        <button onClick={handleDownload}>Download</button>
         <div>Chromosome {props.chromesomeId}</div>
        <svg ref={ref} width={props.width} height={props.height}></svg>
       </div>
