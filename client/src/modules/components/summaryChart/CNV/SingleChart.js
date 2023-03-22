@@ -1,29 +1,27 @@
 // BarChart.js
 import * as d3 from 'd3';
-import { group } from 'd3';
-import React, { useRef, useEffect } from 'react';
+import { group, zoom } from 'd3-zoom';
+import React, { useRef, useEffect, useState} from 'react';
 import * as htmlToImage from 'html-to-image';
-import { RecoilState } from 'recoil';
-import { brushX } from 'd3';
-import { brushY } from 'd3';
+import { svg } from 'd3';
 
 
 
 function SingleChart( props ){
     const ref = useRef();
+
     const handleDownload = ()=>{
-      console.log(ref.current)
-    
+      //console.log(ref.current)
       htmlToImage.toPng(ref.current, { quality: 0.95, backgroundColor:"white"})
       .then((dataUrl)=>{
         var link = document.createElement('a');
-        link.download = 'my-image-name.png';
+        link.download = 'chromosome.png';
         link.href = dataUrl;
         link.click();
       }) 
       .catch(function (error) {
         console.error('oops, something went wrong!', error);
-  });  
+     });  
     }
 
     useEffect(() => {
@@ -41,19 +39,20 @@ function SingleChart( props ){
       });
 
       const width = props.width;
-      const height = props.height-20;
       const margin = {top:20,right:20,bottom:20,left:20}
+      const height = props.height- margin.bottom;
       const chartWidth = width - margin.left -margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
+      const chartHeight = height;// - margin.top - margin.bottom;
 
       const svg = d3.select(ref.current);
       svg.selectAll("*").remove();
-     
+
+        
       const y = d3.scaleBand()
-        .range([0, height])
+        .range([ margin.bottom, chartHeight])
         .padding(0.1);
       const x = d3.scaleLinear()
-        .range([0, width]);
+        .range([0, chartWidth]);
       const z = d3.scaleOrdinal()
         .range([0.25, 0.5, 0.75, 1]);
       const group = d3.scaleOrdinal()
@@ -77,7 +76,7 @@ function SingleChart( props ){
         .attr("class","tooltip")
         .style("opacity",0)
 
-{   const keys = ["start","length","type"]
+   const keys = ["start","length","type"]
    // console.log(data,keys)
     y.domain(data.map(d => d.ypos));
     x.domain([0, maxLen]).nice();
@@ -85,8 +84,8 @@ function SingleChart( props ){
     group.domain(data.map(d => d.type));
 
     svg.append("g")
-      .selectAll("g")
       .attr("clip-path", "url(#clip)")
+      .selectAll("g")
       .data(d3.stack().keys(keys)(data))
       .enter().append("g") 
       .each(function(e) {
@@ -116,17 +115,44 @@ function SingleChart( props ){
         tooltip.transition().duration(500).style("opacity",0)
       })
        .on("mousemove", function(d) {
-        });
+        })
     ;
-    
-    var xscale = d3.scaleLinear().domain([0,maxLen]).range([0, width]);
+   
 
-    svg.append("g")
+
+     const handleZoom = zoom().scaleExtent([0.5,10]).on('zoom',handleZoomed);
+
+    function handleZoomed (event) {
+      const transform = event.transform;
+      svg.select('.x-axis').call(d3.axisBottom(x.copy().range([0,width].map(d=>transform.applyX(d)))));
+      svg.select('.y-axis').call(d3.axisLeft(y.copy().range([height,0].map(d=>transform.applyY(d)))));
+      console.log("zoomin")
+       svg.selectAll("rect")
+          .data(d3.stack().keys(keys)(data))
+           .enter()
+
+           .attr("y", d => y(d.data.ypos))
+           .attr("x", d => x(d[0]))
+          .attr("height", y.bandwidth())
+          .attr("width", d => x(d[1]))
+
+    }
+   // svg.call(handleZoom);
+  // var yAxis = svg.append("g").call(d3.axisLeft(y));
+  // var xAxis = svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
+      
+   var xscale = d3.scaleLinear().domain([0,maxLen]).range([0, width]);
+
+   svg.append("g")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(xscale));
 
-    var yAxis = svg.append("g").call(d3.axisLeft(y));
-     
+    // svg.selectAll("rect")
+    //    .call(d3.zoom().on("zoom", (event) => {
+    //    svg.attr("transform", event.transform)
+    // }));
+    // var yAxis = svg.append("g").call(d3.axisLeft(y));
+   // var xAxis = svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
     ////
         // Add brushing
     // var brushx = d3.brushX()                 // Add the brush feature using the d3.brush function
@@ -166,16 +192,59 @@ function SingleChart( props ){
     //   }) 
     // svg.append("g").attr("class", "brush-x").call(brushx);
     // svg.append("g").attr("class", "brush-y").call(brushy);
-  }
+    
+    //   // brush
+    const brush = d3.brush()
+      // .extent([
+      //   [0, 0],
+      //   [width, height],
+      // ])
+      .on("start brush end", (event) => {
+        if (event.selection) {
+          const indexSelection = event.selection.map(xscale.invert);
+          const x0 = event.selection[0][0];
+          const y0 = event.selection[0][1];
+          const x1 = event.selection[1][0];
+          const y1 = event.selection[1][1];
+       
+          const yzoom = d3.scaleBand().range([y0,y1]).padding(0.1);
+          //xAxis.transition().duration(1000).call(d3.axisBottom(x))
+          //yAxis.transition().duration(1000).call(d3.axisLeft(yzoom))
+        }
+      });
+      // svg.append("g").attr("class", "brush").call(brush);
+     
+       var zoomchart = function(event){
+          console.log(event)
+          //var newX = event.transform.rescaleX(x);
+          //var newY = event.transform.rescaleY(y);
+
+          // update axes with these new boundaries
+         // xAxis.call(d3.axisBottom(newX))
+          //yAxis.call(d3.axisLeft(newY))
+          console.log("zoom")
+          //x.range([margin.left, width - margin.right].map(d => event.transform.applyX(d)));
+          //svg.selectAll(".bars rect").attr("x", d => x(d.name)).attr("width", x.bandwidth());
+         // svg.selectAll(".x-axis").call(xAxis);
+        };
+
+      //svg.call(handleZoom)
+        svg.append("text")
+        .attr("x", width/2-50)
+        .attr("y", 11)
+        .attr("text-anchor", "start")
+        .text("Chromosome: "+ props.chromesomeId);
+  
      },[props]);
+
+   
 
     return (
       <div>
-        <div className="mx-3">
+        <div className="mx-5">
           <a href="javascript:void(0)" onClick={handleDownload} style={{ float: 'right' ,justifyContent: "flex-end" }}>Download</a>
         </div>
           <div >
-              <div>Chromosome {props.chromesomeId}</div>
            <svg ref={ref} width={props.width} height={props.height}></svg>
         </div>
       </div>

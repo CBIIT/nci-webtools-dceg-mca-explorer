@@ -214,6 +214,8 @@ export default function RangeView() {
                 }),
                 data: (chromoId>=0? allValue:allValues).map((e) => {
                     return [
+                        { value: e.sampleId},
+                        { value: e.dataset },
                         { value: e.block_id },
                         { value: e.type },
                         { value: e.value },
@@ -246,23 +248,23 @@ export default function RangeView() {
     return (
         <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
             <Tab eventKey="summary" title="Summary">
-                <h2 style={{ textAlign: "center", padding: "20px" }}>Autosomal mCA Distribution</h2>
+                <p style={{ textAlign: "center",marginBottom: "0.5rem",fontWeight: 500 }}>Autosomal mCA Distribution</p>
                 <div className="row justify-content-center" >
                     <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
                     <div className="text-center">
                         <svg version="1.1" baseProfile="full"
                             width="700" height="100"
                             xlmns="http://www/w3/org/2000/svg">
-                            <rect x={200} y={20} fill="green" width={50} height={25} />
-                            <rect x={275} y={20} fill="blue" width={50} height={25} />
-                            <rect x={350} y={20} fill="red" width={50} height={25} />
-                            <rect x={425} y={20} fill="grey" width={50} height={25} />
-                            <text textAnchor="middle" x="225" y="60">GAIN</text>
+                            <rect x={10} y={0} fill="green" width={10} height={10} />
+                            <rect x={10} y={20} fill="blue" width={10} height={10} />
+                            <rect x={10} y={40} fill="red" width={10} height={10} />
+                            <rect x={10} y={60} fill="grey" width={10} height={10} />
+                            <text textAnchor="right" x="30" y="11">GAIN</text>
                             {/* <text textAnchor="middle" x="325" y="80"> (503)</text> */}
-                            <text textAnchor="middle" x="300" y="60">NEUTRAL</text>
+                            <text textAnchor="right" x="30" y="30">NEUTRAL</text>
                             {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
-                            <text textAnchor="middle" x="375" y="60">LOSS</text>
-                            <text textAnchor="middle" x="470" y="60">UNDETERMINED</text>
+                            <text textAnchor="right" x="30" y="50">LOSS</text>
+                            <text textAnchor="right" x="30" y="70">UNDETERMINED</text>
                             {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}
                         </svg>
                     </div>

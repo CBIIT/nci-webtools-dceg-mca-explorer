@@ -16,6 +16,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleChange(event) {
     const { name, value } = event.target;
+    console.log(name, event.target)
     mergeForm({ [name]: value })
   }
 
@@ -103,7 +104,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
           ]}
         />
       </Form.Group>
-
       <Form.Group className="mb-3" controlId="plotType">
         <Form.Label className="required">Plot Type</Form.Label>
         <OverlayTrigger overlay={<Tooltip id="plotType_tooltip">Circos plot displays all chromosomes, select Static plot to visualize a subset of chromosomes</Tooltip>}>
@@ -117,6 +117,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               { value: "static", label: "Static" },
             ]}
           />
+          {/* {isCircos?<Button></Button>} */}
         </OverlayTrigger>
       </Form.Group>
 
@@ -130,7 +131,24 @@ export default function ExploreForm({ onSubmit, onReset }) {
           onChange={(ev) => handleSelectChange("chromosome", ev)}
           options={chromosomes}
         />
-      </Form.Group> : <></>}
+      </Form.Group> : 
+      <Form.Group className="mb-3" controlId="chromosome">
+          <Form.Check
+            inline
+            label="X"
+            name="group1"
+            id={`inline-X-1`}
+            onChange={handleChange}
+          />
+          <Form.Check
+            inline
+            label="Y"
+            name="group1"
+            id={`inline-Y-2`}
+            onChange={handleChange}
+          />
+      </Form.Group>
+      }
 
       {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="start">
         <Form.Label className="required">Event Start Position</Form.Label>
@@ -218,13 +236,37 @@ export default function ExploreForm({ onSubmit, onReset }) {
             </Form.Group>
             <Form.Group className="mb-3" controlId="age">
               <Form.Label>Age</Form.Label>
-              <Form.Control
+              {/* <Form.Control
                 placeholder="No age selected"
                 name="age"
                 type="number"
                 value={form.age}
                 onChange={handleChange}
-              />
+              /> */}
+                <Row>
+                <Col xl={6}>
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="Min age"
+                      name="minAge"
+                      value={form.minFraction}
+                      onChange={handleChange}
+                    />
+                    {/* <InputGroup.Text></InputGroup.Text> */}
+                  </InputGroup>
+                </Col>
+                <Col xl={6}>
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="Max age"
+                      name="maxAge"
+                      value={form.maxFraction}
+                      onChange={handleChange}
+                    />
+                    {/* <InputGroup.Text></InputGroup.Text> */}
+                  </InputGroup>
+                </Col>
+              </Row>
             </Form.Group>
             <Form.Group className="mb-3" controlId="ancestry">
               <Form.Label>Ancestry</Form.Label>
