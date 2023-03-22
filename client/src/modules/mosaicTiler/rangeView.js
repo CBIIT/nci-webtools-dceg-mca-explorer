@@ -126,6 +126,12 @@ export default function RangeView() {
             label: "Sex",
             Header: <b>Sex</b>
         },
+         {
+            accessor: "age",
+            id: "age",
+            label: "Age",
+            Header: <b>Age</b>
+        },
     ]
 
     function getScatterData() {
@@ -215,6 +221,7 @@ export default function RangeView() {
                         { value: e.end },
                         { value: e.ancestry },
                         { value: e.sex },
+                        { value: e.age },
                     ];
                 }),
             },

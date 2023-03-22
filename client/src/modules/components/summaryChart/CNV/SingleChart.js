@@ -100,25 +100,25 @@ function SingleChart( props ){
           .attr("height", y.bandwidth())
           .attr("width", d => x(d[1]))
           .attr("fill", d => group(d.data.type)[e.key])
-         .on("mouseover", function(event,d) {
+          .on("mouseover", function(event,d) {
           if (!this.outerHTML.includes("white")){
             tooltip.transition().duration(200).style("opacity",0.9)
-            tooltip.html("sampleId: "+ d.data.sampleId+"<br/>start: "+d.data.start)
+            tooltip.html("Study: "+d.data.dataset+"<br/>SampleId: "+ d.data.sampleId+"<br/>Start: "+d.data.start
+             +"<br/>End: "+d.data.end+"<br/>Type: "+d.data.type+"<br/>Cellular Fraction:"+d.data.value
+             +"<br/>Ancestry: "+d.data.ancestry+"<br/>Sex: "+d.data.sex
+             +"<br/>Age: "+d.data.age)
             .style("left",(event.pageX)+"px")
             .style("top",(event.pageY-20)+"px")
           }
        });
       })
       .on("mouseout", function() { 
-     
         tooltip.transition().duration(500).style("opacity",0)
       })
        .on("mousemove", function(d) {
-    
         });
     ;
     
-
     var xscale = d3.scaleLinear().domain([0,maxLen]).range([0, width]);
 
     svg.append("g")
@@ -129,50 +129,55 @@ function SingleChart( props ){
      
     ////
         // Add brushing
-    var brushx = d3.brushX()                 // Add the brush feature using the d3.brush function
-      .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-      .on("brush", (e)=>{
-        const selection = (e.selection)
-        const[x0,x1]=selection;
-        svg.selectAll("g").attr("x", d => x(d[0]))
-        svg.select('.brush-y').call(brushy.clear)
-        //console.log("x",x0,x1)
-      })        
-    var brushy = d3.brushY()                 // Add the brush feature using the d3.brush function
-      .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-      .on("end", (e)=>{
-        const selection = (e.selection)
-        const[y0,y1]=selection;
-        y.domain([y0,y1])
-       console.log(y0,y1)
-        //svg.select(".brush-y").call(brushy.move, null) // This remove the grey brush area as soon as the selection has been done
-       //  svg.selectAll("*").remove();
-       //console.log(svg.selectAll('rect'))
-        const yzoom = d3.scaleBand()
-        .range([y0,y1]).padding(0.1);
-         yAxis.transition().duration(1000).call(d3.axisLeft(yzoom))
-        // svg.selectAll("rect")
-        //      .transition().duration(1000)
-        //       .data(d => d)
-        //       .enter()
-        //       .append("rect")
-        //       .attr("y", (d) => {
-        //         console.log(d)
-        //         y(d.data.ypos)
-        //       })
-  
-      }) 
-
-   //svg.append("g").attr("class", "brush-x").call(brushx);
-    svg.append("g").attr("class", "brush-y").call(brushy);
+    // var brushx = d3.brushX()                 // Add the brush feature using the d3.brush function
+    //   .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+    //   .on("brush", (e)=>{
+    //     const selection = (e.selection)
+    //     if(selection != null){
+    //       const[x0,x1]=selection;
+    //       svg.selectAll("g").attr("x", d => x(d[0]))
+    //       svg.select('.brush-y').call(brushy.clear)
+    //       //console.log("x",x0,x1)
+    //     }
+    //   })        
+    // var brushy = d3.brushY()                 // Add the brush feature using the d3.brush function
+    //   .extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+    //   .on("end", (e)=>{
+    //     const selection = (e.selection)
+    //     if(selection != null){
+    //       const[y0,y1]=selection;
+    //       y.domain([y0,y1])
+    //         //svg.select(".brush-y").call(brushy.move, null) // This remove the grey brush area as soon as the selection has been done
+    //       //  svg.selectAll("*").remove();
+    //       //console.log(svg.selectAll('rect'))
+    //         const yzoom = d3.scaleBand()
+    //         .range([y0,y1]).padding(0.1);
+    //         yAxis.transition().duration(1000).call(d3.axisLeft(yzoom))
+    //         // svg.selectAll("rect")
+    //         //      .transition().duration(1000)
+    //         //       .data(d => d)
+    //         //       .enter()
+    //         //       .append("rect")
+    //         //       .attr("y", (d) => {
+    //         //         console.log(d)
+    //         //         y(d.data.ypos)
+    //         //       })     
+    //     }
+    //   }) 
+    // svg.append("g").attr("class", "brush-x").call(brushx);
+    // svg.append("g").attr("class", "brush-y").call(brushy);
   }
      },[props]);
 
     return (
-      <div >
-        <button onClick={handleDownload}>Download</button>
-        <div>Chromosome {props.chromesomeId}</div>
-       <svg ref={ref} width={props.width} height={props.height}></svg>
+      <div>
+        <div className="mx-3">
+          <a href="javascript:void(0)" onClick={handleDownload} style={{ float: 'right' ,justifyContent: "flex-end" }}>Download</a>
+        </div>
+          <div >
+              <div>Chromosome {props.chromesomeId}</div>
+           <svg ref={ref} width={props.width} height={props.height}></svg>
+        </div>
       </div>
     )
 

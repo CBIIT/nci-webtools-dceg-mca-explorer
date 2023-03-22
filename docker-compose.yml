@@ -24,8 +24,10 @@ services:
   # docker compose up database
   # ensure vm.max_map_count is at least 262144
   database:
-    image: public.ecr.aws/opensearchproject/opensearch
-    env_file: server/.env
+    image: opensearchproject/opensearch:latest
+    #env_file: server/.env
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node # Name the cluster
     ports:
-      - "9200:9200"
-      - "9600:9600"
+      - 9200:9200 # REST API
