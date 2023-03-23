@@ -115,14 +115,17 @@ const thicknessgain = props.gain.length<1000?0:-1.5;
 const thicknessloh =  props.loh.length<1000?0:-1.5;
 const thicknessloss =  props.loss.length<1000?0:-1.5;
 const thicknessundermined =  props.undetermined.length<1000?0:-1.5;
+//console.log(props.undetermined)
 
+let layoutAll = !props.chrX || props.chrX==undefined? layout.filter(l=>l.label!=="X") : layout
+layoutAll = !props.chrY|| props.chrY==undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
   return (
     <div className="align-middle text-center" >
       {showChart ? <div><SingleChart data={data} chromesomeId={chromesomeId} width={800} height={500} />
       <button onClick={handleBack}>back</button></div>:
     <div ref={circleRef}  onMouseEnter={handleEnter} onClick={handleEnter}>
       <Circos 
-          layout={layout}
+          layout={layoutAll}
           config={{
           innerRadius: size / 2 - 50,
           outerRadius: size / 2 - 30,

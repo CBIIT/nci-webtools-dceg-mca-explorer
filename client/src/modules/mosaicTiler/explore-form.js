@@ -16,8 +16,12 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleChange(event) {
     const { name, value } = event.target;
-    console.log(name, event.target)
-    mergeForm({ [name]: value })
+    //console.log(name, event.target.checked)
+    if(name=="chrX" || name ==="chrY"){
+        mergeForm({ [name]: event.target.checked})
+    }
+    else
+      mergeForm({ [name]: value })
   }
 
   function handleSubmit(event) {
@@ -86,7 +90,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
     }
     return form.study && form.types;
   }
-  console.log(form)
+  //console.log(form)
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="study">
@@ -136,14 +140,14 @@ export default function ExploreForm({ onSubmit, onReset }) {
           <Form.Check
             inline
             label="X"
-            name="group1"
+            name="chrX"
             id={`inline-X-1`}
             onChange={handleChange}
           />
           <Form.Check
             inline
             label="Y"
-            name="group1"
+            name="chrY"
             id={`inline-Y-2`}
             onChange={handleChange}
           />

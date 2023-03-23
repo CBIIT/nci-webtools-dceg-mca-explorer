@@ -131,4 +131,17 @@
     "label": "22",
     "id": "22"
   }
+  ,
+  {
+    "len": 155270560,
+    "color": "white",
+    "label": "X",
+    "id": "X"
+  },
+  {
+    "len": 59373566,
+    "color": "white",
+    "label": "Y",
+    "id": "Y"
+  }
 ]

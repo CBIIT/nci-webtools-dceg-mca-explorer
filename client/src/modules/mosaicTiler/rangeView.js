@@ -47,7 +47,7 @@ export default function RangeView() {
    
     useEffect(() => {
        setClickedCounter(clickedCounter+1)
-    },[loh])
+    },[form])
 
     console.log(clickedCounter)
     const chromosomes = form.chromosome.map((e) => e.label)
@@ -250,7 +250,7 @@ export default function RangeView() {
             <Tab eventKey="summary" title="Summary">
                 <p style={{ textAlign: "center",marginBottom: "0.5rem",fontWeight: 500 }}>Autosomal mCA Distribution</p>
                 <div className="row justify-content-center" >
-                    <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined}></CirclePlotTest>
+                    <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} ></CirclePlotTest>
                     <div className="text-center">
                         <svg version="1.1" baseProfile="full"
                             width="700" height="100"
