@@ -26,6 +26,7 @@ import ukloh from "../components/summaryChart/CNV/data/UKloh.json";
 import ukgain from "../components/summaryChart/CNV/data/UKgain.json"
 import ukundetermined from "../components/summaryChart/CNV/data/UKundermined.json"
 
+import chrx from "../components/summaryChart/CNV/data/plcoy.json"
 
 import Table from "../components/table";
 
@@ -37,7 +38,6 @@ export default function RangeView() {
     const [allValue, setAllValue] = useState([]);
     //console.log(form)
     //console.log(form.study.length)
-
     const study_value = form.study.length ?form.study[0]:form.study
     const gain = form.types.find((e) => e.value === "gain") ? form.study.length == 2? allgain: study_value.value=='plco'?plcogain:ukgain : []
     const loss = form.types.find((e) => e.value === "loss") ? form.study.length == 2? allloss: study_value.value=='plco'?plcoloss:ukloss : []
@@ -250,7 +250,9 @@ export default function RangeView() {
             <Tab eventKey="summary" title="Summary">
                 <p style={{ textAlign: "center",marginBottom: "0.5rem",fontWeight: 500 }}>Autosomal mCA Distribution</p>
                 <div className="row justify-content-center" >
-                    <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} ></CirclePlotTest>
+                    <div style={{height:800}}>
+                        <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} chrx={chrx} ></CirclePlotTest>
+                    </div>
                     <div className="text-center">
                         <svg version="1.1" baseProfile="full"
                             width="700" height="100"

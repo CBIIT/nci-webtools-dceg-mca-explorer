@@ -79,20 +79,16 @@ if __name__=="__main__":
             line=line.rstrip(os.linesep)
             if line[0]!="#": #Title line started with "#"
                 line=line.split(",")
-                chrome_len=chromelen.get(line[3][3:])
-                xlen=int(line[6])/chrome_len
-                xStart= int(line[4])/chrome_len
-                ypos=ypos+0.1
                 countline = countline +1
                 if countline < totalline:
                     ancentry = "Null" if line[12] =="" else line[12]
                     #dataset, sampleId,computedGender,chromosome, beginGrch38,endGrch38,length,pArm,qArm,nSites,type,cf,ancestry
-                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"value\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,3))+"\", \"xstart\": \""+str(round(xStart,3))+"\", \"xlen\": \""+str(round(xlen,3))+"\"},")
+                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"value\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,3))+"\"},")
                     #print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\"},")
                 #the last line should not ending with ,
                 elif  countline == totalline :
                     #print( "  {\"block_id\": \""+line[0]+"\", \"start\": \""+line[1]+"\", \"end\": \""+line[2]+"\", \"value\": \""+line[3]+"\", \"ancestry\": \""+line[4]+"\", \"sex\": \""+line[5]+"\"}")
-                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"cf\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,3))+"\", \"xstart\": \""+str(round(xStart,3))+"\", \"xlen\": \""+str(round(xlen,3))+"\"}")
+                    print( "{\"block_id\": \""+line[3][3:]+"\",\"dataset\": \""+line[0][0:4]+"\",\"sampleId\": \""+line[1]+"\", \"start\": \""+line[4]+"\", \"end\": \""+line[5]+"\",\"length\": \""+line[6]+"\",\"pArm\": \""+line[7]+"\", \"qArm\": \""+line[8]+"\",\"nSite\": \""+line[9]+"\",\"type\": \""+line[10]+"\",\"cf\": \""+line[11]+"\", \"ancestry\": \""+ancentry+"\", \"sex\": \""+line[2]+"\", \"age\": \""+"Null"+"\", \"ypos\": \""+str(round(ypos,3))+"\"}")
                   
         print( "]")
             

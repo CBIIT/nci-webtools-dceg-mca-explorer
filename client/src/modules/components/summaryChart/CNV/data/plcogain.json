@@ -1,4 +1,7 @@
 [
+{"block_id": "X","dataset": "PLCO","sampleId": "", "start": "0", "end": "0","length": "0","pArm": "", "qArm": "","nSite": "","type": "CN-LOH","cf": "0", "ancestry": "0", "sex": "0", "age": "Null", "ypos": "", "xstart": "", "xlen": ""},
+{"block_id": "Y","dataset": "PLCO","sampleId": "", "start": "0", "end": "0","length": "0","pArm": "", "qArm": "","nSite": "","type": "CN-LOH","cf": "0", "ancestry": "0", "sex": "0", "age": "Null", "ypos": "", "xstart": "", "xlen": ""},
+
 {"block_id": "9","dataset": "PLCO","sampleId": "SB326556_PB93088_H10", "start": "120175347", "end": "138394717","length": "18219370","pArm": "N", "qArm": "T","nSite": "5305","type": "Gain","value": "0.0577", "ancestry": "EUR", "sex": "M", "age": "Null", "ypos": "0.1", "xstart": "0.868", "xlen": "0.132"},
 {"block_id": "6","dataset": "PLCO","sampleId": "SB355977_PB93107_H06", "start": "0", "end": "37663992","length": "37663992","pArm": "T", "qArm": "N","nSite": "8882","type": "Gain","value": "0.0178", "ancestry": "EUR", "sex": "F", "age": "Null", "ypos": "0.2", "xstart": "0.0", "xlen": "0.221"},
 {"block_id": "12","dataset": "PLCO","sampleId": "SB416769_PB93117_H11", "start": "0", "end": "133275309","length": "133275309","pArm": "T", "qArm": "T","nSite": "31885","type": "Gain","value": "0.0283", "ancestry": "EUR", "sex": "M", "age": "Null", "ypos": "0.3", "xstart": "0.0", "xlen": "1.0"},
