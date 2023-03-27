@@ -25,19 +25,40 @@ function SingleChart( props ){
     }
 
     useEffect(() => {
-      const data = props.data;
-      //console.log(data, props.chromesomeId)
+      const data0 =[...props.data]
+      console.log(data0, props.chromesomeId)
       let maxLen = 0;
       //sort the line order, first by type, start and end 
-      data.sort((a,b) => a.type===b.type? 
-      (a.start ===b.start? b.end-a.end: b.start-a.start):a.type-b.type)
-      data.forEach((element,index) => {
+      const lessPrecision = (val, precision = 10) => Math.floor(val / precision);
+      const sort = (a, b) => (lessPrecision(a.start, 10) - lessPrecision(b.start, 10))
+      || (lessPrecision(b.end, 50) - lessPrecision(a.end, 50));
+
+      data0.forEach((element,index) => {
         element.ypos = index
+        element.start=Number(element.start)
+        element.length=Number(element.length)
         if (Number(element.end) > maxLen) {
           maxLen = element.end;
         }
       });
+      data0.sort((a,b) => a.type===b.type? 
+      (a.start===b.start?
+        (a.length ===b.length? a.end-b.end: a.length-b.length):
+        b.start-a.start):
+          a.type-b.type)
 
+      // data0.sort((a,b) => a.type===b.type? 
+      // (a.start ===b.start? b.end-a.end: b.start-a.start):
+      // a.type-b.type)
+      
+ 
+      const data = [  
+        {start:'0',length:'0',type:"Gain"},
+        {start:'0',length:'0',type:"CN-LOH"},
+        {start:'0',length:'0',type:"Loss"},
+        {start:'0',length:'0',type:"Undetermined"},
+        ...data0]
+      console.log(maxLen, props.chromesomeId)
       const width = props.width;
       const margin = {top:20,right:20,bottom:20,left:20}
       const height = props.height- margin.bottom;
@@ -46,23 +67,26 @@ function SingleChart( props ){
 
       const svg = d3.select(ref.current);
       svg.selectAll("*").remove();
-
+      
+    
         
       const y = d3.scaleBand()
         .range([ margin.bottom, chartHeight])
         .padding(0.1);
       const x = d3.scaleLinear()
-        .range([0, chartWidth]);
+        .range([0, width]);
       const z = d3.scaleOrdinal()
         .range([0.25, 0.5, 0.75, 1]);
       const group = d3.scaleOrdinal()
         .range([
-          { start: "white", length: "green", type: "green"},
-          { start: "white", length: "blue", type: "blue" },
-          { start: "white", length: "red", type: "red" },
-           { start: "white", length: "grey", type: "grey" }
-        ]);    
-        
+                 { start: "white", length: "green"},
+                 { start: "white", length: "blue" },
+                  {start: "white", length: "red" },
+                  { start: "white", length: "grey" }
+             ]   
+            )
+        .unknown("white"); 
+
         // Add a clipPath: everything out of this area won't be drawn.
         var clip = svg.append("defs").append("svg:clipPath")
         .attr("id", "clip")
@@ -76,15 +100,21 @@ function SingleChart( props ){
         .attr("class","tooltip")
         .style("opacity",0)
 
-   const keys = ["start","length","type"]
-   // console.log(data,keys)
-    y.domain(data.map(d => d.ypos));
-    x.domain([0, maxLen]).nice();
-    z.domain(keys);
-    group.domain(data.map(d => d.type));
+   const keys = ["start","length"]
 
+
+  const stackedData = d3.stack()
+        .keys(keys)(data);
+    console.log(stackedData,keys)
+
+
+    y.domain(data.map(d => d.ypos));
+    x.domain([0, maxLen])//.nice();
+   // z.domain(keys);
+    group.domain(data.map(d => d.type));
+   
     svg.append("g")
-      .attr("clip-path", "url(#clip)")
+      //.attr("clip-path", "url(#clip)")
       .selectAll("g")
       .data(d3.stack().keys(keys)(data))
       .enter().append("g") 
@@ -98,9 +128,11 @@ function SingleChart( props ){
           .attr("x", d => x(d[0]))
           .attr("height", y.bandwidth())
           .attr("width", d => x(d[1]))
+          //.attr("fill", d=>color(d.data.type))
           .attr("fill", d => group(d.data.type)[e.key])
           .on("mouseover", function(event,d) {
-          if (!this.outerHTML.includes("white")){
+           // console.log(d)
+          //if (!this.outerHTML.includes("white")){
             tooltip.transition().duration(200).style("opacity",0.9)
             tooltip.html("Study: "+d.data.dataset+"<br/>SampleId: "+ d.data.sampleId+"<br/>Start: "+d.data.start
              +"<br/>End: "+d.data.end+"<br/>Type: "+d.data.type+"<br/>Cellular Fraction:"+d.data.value
@@ -108,7 +140,7 @@ function SingleChart( props ){
              +"<br/>Age: "+d.data.age)
             .style("left",(event.pageX)+"px")
             .style("top",(event.pageY-20)+"px")
-          }
+         //}
        });
       })
       .on("mouseout", function() { 
@@ -130,7 +162,6 @@ function SingleChart( props ){
        svg.selectAll("rect")
           .data(d3.stack().keys(keys)(data))
            .enter()
-
            .attr("y", d => y(d.data.ypos))
            .attr("x", d => x(d[0]))
           .attr("height", y.bandwidth())
@@ -141,7 +172,7 @@ function SingleChart( props ){
   // var yAxis = svg.append("g").call(d3.axisLeft(y));
   // var xAxis = svg.append("g").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x));
       
-   var xscale = d3.scaleLinear().domain([0,maxLen]).range([0, width]);
+   var xscale = d3.scaleLinear().domain([0,maxLen]).range([10, width]);
 
    svg.append("g")
       .attr("transform", "translate(0," + height + ")")

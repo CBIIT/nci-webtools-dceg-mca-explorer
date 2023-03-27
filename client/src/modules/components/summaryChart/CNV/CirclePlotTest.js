@@ -140,9 +140,11 @@ let data = []
 data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         ...props.loh.filter(chr=>chr.block_id===chromesomeId),
         ...props.loss.filter(chr=>chr.block_id===chromesomeId),
-        ...props.undetermined.filter(chr=>chr.block_id===chromesomeId)
+        ...props.undetermined.filter(chr=>chr.block_id===chromesomeId),
+        ...props.chrx.filter(chr=>chr.block_id===chromesomeId),
+        // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
     ]
- //   console.log(props.gain.length)
+//console.log(data)
 const thicknessgain = props.gain.length<1000?0:-1.5;
 const thicknessloh =  props.loh.length<1000?0:-1.5;
 const thicknessloss =  props.loss.length<1000?0:-1.5;
