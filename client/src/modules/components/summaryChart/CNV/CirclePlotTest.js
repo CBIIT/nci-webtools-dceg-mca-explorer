@@ -8,6 +8,7 @@ import layout from "./layout2.json";
 import band from "./band.json"
 import SingleChart from "./SingleChart";
 import './css/circos.css'
+import SingleChromosome from "./SingleChromosome";
 
 // import allloss from "./data/allloss.json";
 // import allloh from "./data/allloh.json";
@@ -158,8 +159,9 @@ layoutAll = !props.chrY|| props.chrY==undefined ? layoutAll.filter(l=>l.label!==
     <div className="align-middle text-center" >
         {
         showChart ? 
-          <div>
-              <SingleChart data={data} chromesomeId={chromesomeId} width={800} height={500} />
+          <div className="overlayX">
+            <SingleChromosome data={data} chromesomeId={chromesomeId} width={800} height={750}></SingleChromosome>
+              {/* <SingleChart data={data} chromesomeId={chromesomeId} width={800} height={750} /> */}
               <button onClick={handleBack}>back</button>
           </div>:
           <div>
