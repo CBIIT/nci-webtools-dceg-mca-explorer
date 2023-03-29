@@ -1,35 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import * as htmlToImage from "html-to-image";
-import Plotly from 'plotly.js-dist';
-
-//  const data = [
-//     {
-//       x: [20, 14, 23],
-//       y: ['giraffes', 'orangutans', 'monkeys'],
-//       name: 'SF Zoo',
-//       orientation: 'h',
-//       type: 'bar'
-//     },
-//     {
-//       x: [12, 18, 29],
-//       y: ['giraffes', 'orangutans', 'monkeys'],
-//       name: 'LA Zoo',
-//       orientation: 'h',
-//       type: 'bar'
-//     }
-//   ];
 
 const layout = {
   barmode: 'stack',
-  width: 750,
-  height: 800,
+  width: 800,
+  height: 700,
   margin: { l: 40, r: 20, t: 40, b: 20 },
   xaxis: { fixedrange: false },
   yaxis: { fixedrange: false, visible: false },
   dragmode: 'select',
   selectdirection: 'h',
-   showlegend: false // turn off the legend icon
+  showlegend: false, // turn off the legend icon
+  autosize: true, // disable autosize to fix the x-axis zoom issue
 };
 function SingleChromosome(props) {
   //console.log(props.chromesomeId, props.data)
@@ -101,7 +84,10 @@ function SingleChromosome(props) {
     const updateLayout = (eventData) => {
       const updatedLayout = {
         ...layoutState,
-        xaxis: { ...layoutState.xaxis, range: eventData.range }
+        xaxis: { ...layoutState.xaxis, range: eventData.range },
+        config:{
+            displayModeBar: true,
+        }
       };
       setLayoutState(updatedLayout);
     };
@@ -113,17 +99,20 @@ function SingleChromosome(props) {
       };
       setLayoutState(updatedLayout);
     };
-
-    const plotlyElement = document.getElementById('plotly-div');
-    Plotly.newPlot(plotlyElement, data, layoutState);
-    plotlyElement.on('plotly_relayout', updateLayout);
-    plotlyElement.on('plotly_doubleclick', removeSelection);
-
-    return () => {
-      plotlyElement.removeAllListeners();
-    };
   }, [layoutState,props]);
 
+   const defaultConfig = {
+        displayModeBar: true,
+        toImageButtonOptions: {
+            format: "svg",
+            filename: "plot_export",
+            height: 1000,
+            width: 1000,
+            scale: 1,
+        },
+        displaylogo: false,
+        modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
+    };
   return (
     <div>
       <div className="mx-5">
@@ -132,12 +121,20 @@ function SingleChromosome(props) {
         </a>
       </div>
       <div id="plotly-div">
-      {/* <Plot
+      <Plot
       data={data}
-      layout={layoutState}
+      layout={layout}
       //  onInitialized={handleInitialized}
+       config={{
+                ...defaultConfig,
+                toImageButtonOptions: {
+                ...defaultConfig.toImageButtonOptions,
+                filename: "All_Chromosomes"
+                  },
+           }}
+        useResizeHandler
           style={{ width: '100%', height: '100%' }} 
-     /> */}
+     />
     </div>
     </div>
   );
