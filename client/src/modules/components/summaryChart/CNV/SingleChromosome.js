@@ -2,23 +2,22 @@ import React, { useEffect, useState, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import * as htmlToImage from "html-to-image";
 
-const layout = {
+function SingleChromosome(props) {
+  //console.log(props.chromesomeId, props.data)
+ const ref = useRef();
+  const [layout, setLayout] = useState({
+    title:"Chromosome "+props.chromesomeId,
   barmode: 'stack',
   width: 800,
   height: 700,
   margin: { l: 40, r: 20, t: 40, b: 20 },
   xaxis: { fixedrange: false },
   yaxis: { fixedrange: false, visible: false },
-  dragmode: 'select',
+ // dragmode: 'select',
   selectdirection: 'h',
   showlegend: false, // turn off the legend icon
   autosize: true, // disable autosize to fix the x-axis zoom issue
-};
-function SingleChromosome(props) {
-  //console.log(props.chromesomeId, props.data)
-
-    const ref = useRef();
- const [layoutState, setLayoutState] = useState(layout);
+  });
  var data1 = []
  var data2 = []
  var ydata = []
@@ -62,7 +61,31 @@ function SingleChromosome(props) {
           else if(t === "CN-LOH") return "blue"
           else return "grey"
         }))
-      }}
+      },
+       hovertext: props.data.map((e) => {
+          var text = "Study: " +
+                  e.dataset +
+                  "<br>SampleId: " +
+                  e.sampleId +
+                  "<br>Start: " +
+                  e.start +
+                  "<br>End: " +
+                  e.end +
+                  "<br>Type: " +
+                  e.type +
+                  "<br>Cellular Fraction:" +
+                  e.value +
+                  "<br>Ancestry: " +
+                  e.ancestry +
+                  "<b>Sex: " +
+                  e.sex +
+                  "<br>Age: " +
+                  e.age
+          return text
+      }),
+      hovertemplate: "<br>%{hovertext} <extra></extra>",
+    }
+     
  ]
  //console.log(data,types)
   const handleDownload = () => {
@@ -80,27 +103,6 @@ function SingleChromosome(props) {
       });
   };
 
-   useEffect(() => {
-    const updateLayout = (eventData) => {
-      const updatedLayout = {
-        ...layoutState,
-        xaxis: { ...layoutState.xaxis, range: eventData.range },
-        config:{
-            displayModeBar: true,
-        }
-      };
-      setLayoutState(updatedLayout);
-    };
-
-    const removeSelection = () => {
-      const updatedLayout = {
-        ...layoutState,
-        xaxis: { ...layoutState.xaxis, range: null }
-      };
-      setLayoutState(updatedLayout);
-    };
-  }, [layoutState,props]);
-
    const defaultConfig = {
         displayModeBar: true,
         toImageButtonOptions: {
@@ -113,6 +115,7 @@ function SingleChromosome(props) {
         displaylogo: false,
         modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
     };
+  
   return (
     <div>
       <div className="mx-5">
@@ -129,11 +132,12 @@ function SingleChromosome(props) {
                 ...defaultConfig,
                 toImageButtonOptions: {
                 ...defaultConfig.toImageButtonOptions,
-                filename: "All_Chromosomes"
+                filename: "Chromosome "+props.chromesomeId
                   },
            }}
         useResizeHandler
-          style={{ width: '100%', height: '100%' }} 
+        style={{ width: '100%', height: '100%' }} 
+        ref={ref}
      />
     </div>
     </div>
