@@ -1,4 +1,7 @@
 [
+{"block_id": "X","dataset": "UKBB","sampleId": "", "start": "0", "end": "0","length": "0","pArm": "", "qArm": "","nSite": "","type": "CN-LOH","cf": "0", "ancestry": "0", "sex": "0", "age": "Null", "ypos": "", "xstart": "", "xlen": ""},
+{"block_id": "Y","dataset": "UKBB","sampleId": "", "start": "0", "end": "0","length": "0","pArm": "", "qArm": "","nSite": "","type": "CN-LOH","cf": "0", "ancestry": "0", "sex": "0", "age": "Null", "ypos": "", "xstart": "", "xlen": ""},
+
 {"block_id": "15","dataset": "UKBB","sampleId": "A550465-4195510-082814-466_E07", "start": "19725254", "end": "101991189","length": "82265935","pArm": "C", "qArm": "T","nSite": "20929","type": "Gain","value": "0.0655", "ancestry": "Null", "sex": "F", "age": "Null", "ypos": "0.1", "xstart": "0.193", "xlen": "0.807"},
 {"block_id": "22","dataset": "UKBB","sampleId": "A550465-4195510-082814-466_E07", "start": "16820327", "end": "50818468","length": "33998141","pArm": "N", "qArm": "T","nSite": "10970","type": "Gain","value": "0.0308", "ancestry": "Null", "sex": "F", "age": "Null", "ypos": "0.2", "xstart": "0.331", "xlen": "0.669"},
 {"block_id": "17","dataset": "UKBB","sampleId": "A550465-4195510-082814-467_C04", "start": "26994793", "end": "83257441","length": "56262648","pArm": "N", "qArm": "T","nSite": "15754","type": "Gain","value": "0.0462", "ancestry": "Null", "sex": "M", "age": "Null", "ypos": "0.3", "xstart": "0.324", "xlen": "0.676"},

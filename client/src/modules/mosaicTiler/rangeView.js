@@ -314,7 +314,6 @@ export default function RangeView() {
                                         size: 14,
                                     },
                                     automargin: true,
-
                                 },
                                 scattergap: 0.7,
                                 autosize: true,

@@ -5,11 +5,11 @@ import * as htmlToImage from "html-to-image";
 function SingleChromosome(props) {
   //console.log(props.chromesomeId, props.data)
  const ref = useRef();
-  const [layout, setLayout] = useState({
-    title:"Chromosome "+props.chromesomeId,
+ const layout = {
+  title:"Chromosome "+ props.chromesomeId,
   barmode: 'stack',
-  width: 800,
-  height: 700,
+  width: props.width,
+  height: props.height,
   margin: { l: 40, r: 20, t: 40, b: 20 },
   xaxis: { fixedrange: false },
   yaxis: { fixedrange: false, visible: false },
@@ -17,7 +17,7 @@ function SingleChromosome(props) {
   selectdirection: 'h',
   showlegend: false, // turn off the legend icon
   autosize: true, // disable autosize to fix the x-axis zoom issue
-  });
+  }
  var data1 = []
  var data2 = []
  var ydata = []
@@ -133,7 +133,7 @@ function SingleChromosome(props) {
                 toImageButtonOptions: {
                 ...defaultConfig.toImageButtonOptions,
                 filename: "Chromosome "+props.chromesomeId
-                  },
+              },
            }}
         useResizeHandler
         style={{ width: '100%', height: '100%' }} 

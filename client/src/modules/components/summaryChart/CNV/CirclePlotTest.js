@@ -103,7 +103,7 @@ export default function CirclePlotTest(props) {
         var track1 = circleRef.current.querySelectorAll('.track-1 .block');
         var track2 = circleRef.current.querySelectorAll('.track-2 .block');
         var track3 = circleRef.current.querySelectorAll('.track-3 .block');
-        var trackxy = circleRef.current.querySelectorAll('#chrxy .track-0');
+        //var trackxy = circleRef.current.querySelectorAll('#chrxy .track-0');
         var alltracks = [track0,track1,track2,track3]
         alltracks.forEach(track => {
             track.forEach((b) => {
@@ -210,12 +210,12 @@ layoutAll = !props.chrY|| props.chrY==undefined ? layoutAll.filter(l=>l.label!==
                           return hovertip(d)
                         },
                         events: {
-                          'mouseover.alert':
-                            function(d, i, nodes, event) {
-                              //return hovercoler(d);
+                          mouseover:
+                          function(d, i, nodes, event) {
+                            console.log("mouse over");
                           },
                           click:function(d, i, nodes, event) {
-                              return hovertip(d);
+                              console.log("mouse over");
                           }
                         }
                       }
