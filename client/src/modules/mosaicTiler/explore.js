@@ -6,8 +6,7 @@ import { Button, OverlayTrigger, Container, Row, Col, Card } from "react-bootstr
 import ExploreForm from "./explore-form";
 import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
-//import CircleChart from "../components/summaryChart/CNV/CirclePlot";
-import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
+
 import RangeView from "./rangeView";
 import Loader from "../components/loader"
 //import StackTest from "../components/summaryChart/CNV/StackTest"

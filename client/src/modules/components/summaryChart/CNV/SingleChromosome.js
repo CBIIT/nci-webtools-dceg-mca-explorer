@@ -77,7 +77,7 @@ function SingleChromosome(props) {
                   e.value +
                   "<br>Ancestry: " +
                   e.ancestry +
-                  "<b>Sex: " +
+                  "<br>Sex: " +
                   e.sex +
                   "<br>Age: " +
                   e.age

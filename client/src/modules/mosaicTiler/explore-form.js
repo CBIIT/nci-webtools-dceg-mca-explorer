@@ -2,26 +2,35 @@ import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col 
 import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState } from "./explore.state";
-import { useState } from "react";
-import gain from "../components/summaryChart/CNV/gain.json"
+import { useState,useRef } from "react";
 
 export default function ExploreForm({ onSubmit, onReset }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
   const [loading, setLoading] = useRecoilState(loadingState);
-
+  console.log(form)
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) })).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" })
+  const formRef = useRef();
+  const [isX, setIsX] = useState(false)
+  const [isY, setIsY] = useState(false)
 
   function handleChange(event) {
     const { name, value } = event.target;
-    //console.log(name, event.target.checked)
-    if(name=="chrX" || name ==="chrY"){
-        mergeForm({ [name]: event.target.checked})
+    console.log(name, event.target.checked)
+    if(name==="chrX" ){
+      setIsX(event.target.checked)
+      mergeForm({ [name]: event.target.checked})
+    }
+    else if( name ==="chrY"){
+      setIsY(event.target.checked)
+      mergeForm({ [name]: event.target.checked})
     }
     else
       mergeForm({ [name]: value })
+    
+    console.log(form)
   }
 
   function handleSubmit(event) {
@@ -32,6 +41,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
   function handleReset(event) {
     event.preventDefault();
     setForm(defaultFormState);
+    setIsX(false)
+    setIsY(false)
     if (onReset) onReset(defaultFormState);
   }
 
@@ -92,7 +103,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
   //console.log(form)
   return (
-    <Form onSubmit={handleSubmit} onReset={handleReset}>
+    <Form onSubmit={handleSubmit} onReset={handleReset} >
       <Form.Group className="mb-3" controlId="study">
         <Form.Label className="required">Study</Form.Label>
         <Select
@@ -136,20 +147,24 @@ export default function ExploreForm({ onSubmit, onReset }) {
           options={chromosomes}
         />
       </Form.Group> : 
-      <Form.Group className="mb-3" controlId="chromosome">
-          <Form.Check
+      <Form.Group className="mb-3" controlId="chromosome" >
+          <Form.Check ref={formRef}
+            type="checkbox"
             inline
             label="X"
             name="chrX"
             id={`inline-X-1`}
             onChange={handleChange}
+            checked={isX}
           />
           <Form.Check
+            type="checkbox"
             inline
             label="Y"
             name="chrY"
             id={`inline-Y-2`}
             onChange={handleChange}
+            checked={isY}
           />
       </Form.Group>
       }

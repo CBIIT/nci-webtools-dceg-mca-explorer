@@ -70,6 +70,9 @@ export const defaultFormState = {
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" }),
   plotType: { value: "circos", label: "Circos" },
   submitted: false,
+  chrX: false,
+  chrY: false,
+  types:""
 };
 
 export const formState = atom({

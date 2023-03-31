@@ -6,7 +6,6 @@ import Circos, {
 } from "react-circos";
 import layout from "./layout2.json";
 import band from "./band.json"
-import SingleChart from "./SingleChart";
 import './css/circos.css'
 import SingleChromosome from "./SingleChromosome";
 
@@ -83,7 +82,7 @@ export default function CirclePlotTest(props) {
         alltracks.forEach(track => {
             track.forEach((b) => {
               const bck = b.querySelector(".background");
-              if(b.__data__.key == 'X' || b.__data__.key == 'Y'){
+              if(b.__data__.key === 'X' || b.__data__.key === 'Y'){
                 bck.setAttribute("fill","white")
                 bck.setAttribute("opacity",0)
               }                  
@@ -110,14 +109,14 @@ export default function CirclePlotTest(props) {
                const bck = b.querySelector(".background");
                bck.addEventListener('mouseover', () => {
                 //console.log('mouseover',bck,b.__data__.key);//b.__data__.key is the chromesome id 
-                if(b.__data__.key!="X" && b.__data__.key!="Y"){
+                if(b.__data__.key!=="X" && b.__data__.key!=="Y"){
                    alltracks.forEach(t => changeBackground(t,b.__data__.key,1))
                 } 
                  else
                   alltracks.forEach(t => changeBackground(t,b.__data__.key,0.5))
                }) 
               bck.addEventListener('mouseout', () => {
-                 if(b.__data__.key!="X" && b.__data__.key!="Y") 
+                 if(b.__data__.key!=="X" && b.__data__.key!=="Y") 
                    alltracks.forEach((t) => changeBackground(t,b.__data__.key,0.5))
                   else
                     alltracks.forEach((t) => changeBackground(t,b.__data__.key,0))
@@ -152,8 +151,8 @@ const thicknessloss =  props.loss.length<1000?0:-1.5;
 const thicknessundermined =  props.undetermined.length<1000?0:-1.5;
 //console.log(props.undetermined)
 
-let layoutAll = !props.chrX || props.chrX==undefined? layout.filter(l=>l.label!=="X") : layout
-layoutAll = !props.chrY|| props.chrY==undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
+let layoutAll = !props.chrX || props.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
+layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
   return (
 
     <div className="align-middle text-center" >

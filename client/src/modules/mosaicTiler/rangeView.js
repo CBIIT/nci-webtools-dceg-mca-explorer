@@ -39,11 +39,11 @@ export default function RangeView() {
     //console.log(form)
     //console.log(form.study.length)
     const study_value = form.study.length ?form.study[0]:form.study
-    const gain = form.types.find((e) => e.value === "gain") ? form.study.length == 2? allgain: study_value.value=='plco'?plcogain:ukgain : []
-    const loss = form.types.find((e) => e.value === "loss") ? form.study.length == 2? allloss: study_value.value=='plco'?plcoloss:ukloss : []
-    const loh = form.types.find((e) => e.value === "loh") ? form.study.length == 2? allloh: study_value.value=='plco'?plcoloh:ukloh : []
-    const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length == 2 ? allundetermined : 
-                            study_value.value =='plco'?plcoundetermined:ukundetermined : []
+    const gain = form.types.find((e) => e.value === "gain") ? form.study.length === 2? allgain: study_value.value==='plco'?plcogain:ukgain : []
+    const loss = form.types.find((e) => e.value === "loss") ? form.study.length === 2? allloss: study_value.value==='plco'?plcoloss:ukloss : []
+    const loh = form.types.find((e) => e.value === "loh") ? form.study.length === 2? allloh: study_value.value==='plco'?plcoloh:ukloh : []
+    const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length === 2 ? allundetermined : 
+                            study_value.value ==='plco'?plcoundetermined:ukundetermined : []
    
     useEffect(() => {
        setClickedCounter(clickedCounter+1)
