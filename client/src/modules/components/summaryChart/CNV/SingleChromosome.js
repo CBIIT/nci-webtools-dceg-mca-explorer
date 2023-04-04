@@ -3,9 +3,9 @@ import Plot from 'react-plotly.js';
 import * as htmlToImage from "html-to-image";
 
 function SingleChromosome(props) {
-  //console.log(props.chromesomeId, props.data)
+ // console.log(props.chromesomeId, props.data)
  const ref = useRef();
- const layout = {
+ const [layout, setLayout] = useState({
   title:"Chromosome "+ props.chromesomeId,
   barmode: 'stack',
   width: props.width,
@@ -17,6 +17,17 @@ function SingleChromosome(props) {
   selectdirection: 'h',
   showlegend: false, // turn off the legend icon
   autosize: true, // disable autosize to fix the x-axis zoom issue
+  });
+ const [xMax, setXMax] = useState(); 
+ const [xMin, setXMin] = useState(); 
+
+  function handleRelayout(event) {
+   const { 'xaxis.range[0]': xMin, 'xaxis.range[1]': xMax } = event;
+   setXMax(xMax);
+   setXMin(xMin);
+   console.log(xMax-xMin)
+  //  setGeneLayout({ ...layout, xaxis: { ...xaxis, range } });
+
   }
  var data1 = []
  var data2 = []
@@ -115,13 +126,35 @@ function SingleChromosome(props) {
         displaylogo: false,
         modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
     };
+
+    useEffect(()=>{
+      setLayout({
+        ...layout,
+        title:"Chromosome "+ props.chromesomeId
+      })
+      // async e => {
+      //    // draw genes if zoom is at less than 50 MB
+      //   //setGenes([]);
+      //   //ref.current.drawGenes([]);
+      //   // let zoomRange = Math.abs(xAxis.extent[1] - xAxis.extent[0]);
+      //   // if (zoomRange <= 2e6) {
+      //   //   let genes = await query('genes', {
+      //   //     chromosome: selectedChromosome,
+      //   //     transcription_start: xAxis.extent[0],
+      //   //     transcription_end: xAxis.extent[1]
+      //   //   });
+      //   //   ref.current.drawGenes(genes);
+      //   //   setGenes(genes);
+      //   // }
+      // }
+    },[props.chromesomeId])
   
   return (
     <div>
       <div className="mx-5">
-        <a href="javascript:void(0)" onClick={handleDownload} style={{ float: "right", justifyContent: "flex-end" }}>
+        {/* <a href="javascript:void(0)" onClick={handleDownload} style={{ float: "right", justifyContent: "flex-end" }}>
           Download
-        </a>
+        </a> */}
       </div>
       <div id="plotly-div">
       <Plot
@@ -138,6 +171,7 @@ function SingleChromosome(props) {
         useResizeHandler
         style={{ width: '100%', height: '100%' }} 
         ref={ref}
+        onRelayout={handleRelayout}
      />
     </div>
     </div>
