@@ -5,6 +5,7 @@ import Plot from "react-plotly.js"
 import { Tabs, Tab, Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
+import Legend from "../components/legend";
 
 //import gain from "../components/summaryChart/CNV/gain.json";
 //import loss from "../components/summaryChart/CNV/loss.json";
@@ -253,24 +254,7 @@ export default function RangeView() {
                     <div style={{height:800}}>
                         <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} chrx={chrx} ></CirclePlotTest>
                     </div>
-                    <div className="text-center">
-                        <svg version="1.1" baseProfile="full"
-                            width="700" height="100"
-                            xlmns="http://www/w3/org/2000/svg">
-                            <rect x={10} y={0} fill="green" width={10} height={10} />
-                            <rect x={10} y={20} fill="blue" width={10} height={10} />
-                            <rect x={10} y={40} fill="red" width={10} height={10} />
-                            <rect x={10} y={60} fill="grey" width={10} height={10} />
-                            <text textAnchor="right" x="30" y="11">GAIN</text>
-                            {/* <text textAnchor="middle" x="325" y="80"> (503)</text> */}
-                            <text textAnchor="right" x="30" y="30">NEUTRAL</text>
-                            {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
-                            <text textAnchor="right" x="30" y="50">LOSS</text>
-                            <text textAnchor="right" x="30" y="70">UNDETERMINED</text>
-                            {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}
-                        </svg>
-                    </div>
-
+                    <Legend ></Legend>
                 </div>
                 <Row>
                     <div className="">

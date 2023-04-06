@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import * as htmlToImage from "html-to-image";
+import GenePlot from './GenePlot';
 
 function SingleChromosome(props) {
  // console.log(props.chromesomeId, props.data)
@@ -10,13 +11,13 @@ function SingleChromosome(props) {
   barmode: 'stack',
   width: props.width,
   height: props.height,
-  margin: { l: 40, r: 20, t: 40, b: 20 },
-  xaxis: { fixedrange: false },
-  yaxis: { fixedrange: false, visible: false },
+  margin: { l: 40, r: 20, t: 40, b: 30 },
+  xaxis: {  title:'', showgrid: true,visible:true,showticklabels: true,  zeroline:true, showline: true,},
+  yaxis: { show:false, visible: false,  title: '', showgrid: false, showticklabels: false, zeroline:false, showline: false,},
  // dragmode: 'select',
   selectdirection: 'h',
   showlegend: false, // turn off the legend icon
-  autosize: true, // disable autosize to fix the x-axis zoom issue
+  autosize: false, // disable autosize to fix the x-axis zoom issue
   });
  const [xMax, setXMax] = useState(); 
  const [xMin, setXMin] = useState(); 
@@ -25,7 +26,6 @@ function SingleChromosome(props) {
    const { 'xaxis.range[0]': xMin, 'xaxis.range[1]': xMax } = event;
    setXMax(xMax);
    setXMin(xMin);
-   console.log(xMax-xMin)
   //  setGeneLayout({ ...layout, xaxis: { ...xaxis, range } });
 
   }
@@ -70,7 +70,7 @@ function SingleChromosome(props) {
           if (t === "Loss") return "red"
           else if(t === "Gain") return "green"
           else if(t === "CN-LOH") return "blue"
-          else return "grey"
+          else return "#ABABAB"
         }))
       },
        hovertext: props.data.map((e) => {
@@ -168,11 +168,12 @@ function SingleChromosome(props) {
                 filename: "Chromosome "+props.chromesomeId
               },
            }}
-        useResizeHandler
+       // useResizeHandler
         style={{ width: '100%', height: '100%' }} 
         ref={ref}
         onRelayout={handleRelayout}
      />
+      <GenePlot width={props.width}></GenePlot>
     </div>
     </div>
   );

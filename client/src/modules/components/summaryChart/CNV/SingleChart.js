@@ -4,6 +4,7 @@ import { group, zoom } from "d3-zoom";
 import React, { useRef, useEffect, useState } from "react";
 import * as htmlToImage from "html-to-image";
 import { svg } from "d3";
+import GenePlot from "./GenePlot";
 
 function SingleChart(props) {
   const ref = useRef();
