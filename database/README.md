@@ -6,11 +6,12 @@ A webtool cataloging mosaic chromosomal alterations (mCAs) and interactively exa
 
 1. In the `database` folder, create a `data` folder which contains the `PLCO_GSA_*.txt` datasets
 2. In the `database` folder, run `node opensearch.js` script to create `*.json`
+3. run docker-compose up to start opensearch
    run `node import-opensearch.js`
-3. In the `server` folder, create an `.env` file based on `.env.example`
-4. In the `server/.env` file, ensure that `DATABASE_PATH` refers to the location of `database.db`
-5. In the `server` folder, run `npm start`
-6. Navigate to `http://localhost:9000/api/ping` in the browser to verify the application is running
+4. In the `server` folder, create an `.env` file based on `.env.example`
+5. In the `server/.env` file, ensure that `DATABASE_PATH` refers to the location of `database.db`
+6. In the `server` folder, run `npm start`
+7. Navigate to `http://localhost:9000/api/ping` in the browser to verify the application is running
 
 ### Example Query
 

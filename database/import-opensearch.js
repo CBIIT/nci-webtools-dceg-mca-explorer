@@ -5,7 +5,7 @@ import { Client } from "@opensearch-project/opensearch";
 
 const { ADMIN, PASSWORD, DOMAIN } = process.env;
 //const host = `https://${ADMIN}:${PASSWORD}@${DOMAIN}`;
-const host =`https://admin:admin@localhost:9200`
+const host =`http://admin:admin@localhost:9200`
 const client = new Client({
   node: host,
   ssl: {

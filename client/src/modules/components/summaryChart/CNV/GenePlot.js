@@ -37,17 +37,12 @@ function GenePlot(props) {
 ]
 
   let geneRanges = genes.map(gene => {
-      let horizPadding = 0;
+      let horizPadding = 10000;
       return [gene.start - horizPadding, gene.end + horizPadding, gene];
     });
 
   let packedGeneRanges = packRanges(geneRanges);
-  // packedGeneRanges.forEach((ge,index)=>{
-  //   ge.forEach(e=>{
-  //     console.log(e[2])
-  //   })
-  // })
-  //console.log(packedGeneRanges.length)
+
   const geneHeight =100
   const genePlotHeight = packedGeneRanges.length*geneHeight
   const rowpadding = 20
@@ -122,7 +117,7 @@ function GenePlot(props) {
     }
     shapelist.push(s)
   })
-  console.log(shapelist)
+  //console.log(shapelist)
   const layout = {
    xaxis: {
     },

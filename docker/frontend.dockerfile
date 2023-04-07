@@ -1,13 +1,13 @@
 FROM public.ecr.aws/amazonlinux/amazonlinux:2022
 
 RUN dnf -y update \
- && dnf -y install \
-    gcc-c++ \
-    httpd \
-    make \
-    nodejs \
-    npm \
- && dnf clean all
+   && dnf -y install \
+   gcc-c++ \
+   httpd \
+   make \
+   nodejs \
+   npm \
+   && dnf clean all
 
 RUN mkdir /client
 
@@ -24,8 +24,8 @@ ARG APPLICATION_PATH=/
 ENV APPLICATION_PATH=${APPLICATION_PATH}
 
 RUN npm run build \
- && mkdir -p /var/www/html/${APPLICATION_PATH} \
- && cp -r /client/build/* /var/www/html/${APPLICATION_PATH}
+   && mkdir -p /var/www/html/${APPLICATION_PATH} \
+   && cp -r /client/build/* /var/www/html/${APPLICATION_PATH}
 
 WORKDIR /var/www/html
 
@@ -36,4 +36,4 @@ EXPOSE 80
 EXPOSE 443
 
 CMD rm -rf /run/httpd/* /tmp/httpd* \
- && exec /usr/sbin/httpd -DFOREGROUND
+   && exec /usr/sbin/httpd -DFOREGROUND
