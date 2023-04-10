@@ -8,7 +8,7 @@ async function parseFile(filename, delimitter="\r\n") {
 
     const columns = sources.find((e) => e.sourcePath.includes(filename)).columns;
     const raw = (fs.readFileSync(filePath)).toString();
-
+    //console.log(columns)
     const data = raw.split(delimitter);
     const headers = (data.shift()).split("\t");
     console.log(headers)
@@ -47,6 +47,7 @@ async function parseFile(filename, delimitter="\r\n") {
     try {
         var fd = fs.openSync(path.resolve('data', 'plcoAuto.json'), 'a')
         plcoAuto.map((e) => {
+            e.dataset = 'plco'
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "mcaexplorer",
@@ -76,6 +77,7 @@ async function parseFile(filename, delimitter="\r\n") {
     try {
         var fd = fs.openSync(path.resolve('data', 'plcoDenominator.json'), 'a')
         plcoDenominator.map((e) => {
+            e.dataset = 'plco'
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "mcaexplorer",
@@ -105,6 +107,7 @@ async function parseFile(filename, delimitter="\r\n") {
     try {
         var fd = fs.openSync(path.resolve('data', 'plcomLOX.json'), 'a')
         plcomLOX.map((e) => {
+            e.dataset = 'plco'
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "mcaexplorer",
@@ -134,6 +137,7 @@ async function parseFile(filename, delimitter="\r\n") {
     try {
         var fd = fs.openSync(path.resolve('data', 'plcomLOY.json'), 'a')
         plcomLOY.map((e) => {
+            e.dataset = 'plco'
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "mcaexplorer",
@@ -163,6 +167,7 @@ async function parseFile(filename, delimitter="\r\n") {
     try {
         var fd = fs.openSync(path.resolve('data', 'ukbbmLOX.json'), 'a')
         ukbbmLOX.map((e) => {
+            e.dataset = 'ukbb'
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "mcaexplorer",
@@ -192,6 +197,7 @@ async function parseFile(filename, delimitter="\r\n") {
     try {
         var fd = fs.openSync(path.resolve('data', 'ukbbmLOY.json'), 'a')
         ukbbmLOY.map((e) => {
+            e.dataset = 'ukbb'
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "mcaexplorer",
@@ -221,6 +227,7 @@ async function parseFile(filename, delimitter="\r\n") {
     try {
         var fd = fs.openSync(path.resolve('data', 'ukbbAuto.json'), 'a')
         ukbbAuto.map((e) => {
+            e.dataset = 'ukbb'
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "mcaexplorer",
