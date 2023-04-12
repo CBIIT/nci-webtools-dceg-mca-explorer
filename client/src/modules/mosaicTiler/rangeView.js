@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useRecoilState } from "recoil";
+import axios from "axios";
 import { formState } from "./explore.state";
 import Plot from "react-plotly.js"
 import { Tabs, Tab, Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
 import Legend from "../components/legend";
+
 
 //import gain from "../components/summaryChart/CNV/gain.json";
 //import loss from "../components/summaryChart/CNV/loss.json";
@@ -31,6 +33,7 @@ import chrx from "../components/summaryChart/CNV/data/plcoy.json"
 
 import Table from "../components/table";
 
+
 export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
     const [tab, setTab] = useState("summary");
@@ -39,7 +42,44 @@ export default function RangeView() {
     const [allValue, setAllValue] = useState([]);
     //console.log(form)
     //console.log(form.study.length)
+   
+    const [alldata,setAlldata] = useState([])
+
     const study_value = form.study.length ?form.study[0]:form.study
+    const searchQuery = "dataset:\"ukbb\""; 
+
+    useEffect(() => {
+    if (true) {
+        handleSubmit(searchQuery)
+    } else {
+     
+    }
+  }, [form]);
+    
+
+  async function handleSubmit(query) {
+
+    //setLoading(true)
+    const response = await axios.post("api/opensearch", { search: query })
+
+    const results = {
+
+    //   tabular: processSearch(response.data.tabular),
+    //   neoplasm: processSearch(response.data.neoplasm),
+    //   drug: processSearch(response.data.drug),
+    //   injury: processSearch(response.data.injury)
+    }
+    console.log(response.data)
+    //setLoading(false)
+  
+  }
+
+    // async function opensearch(e) {
+    //     e.preventDefault();
+    //     handleSubmit(input);
+    // }
+
+
     const gain = form.types.find((e) => e.value === "gain") ? form.study.length === 2? allgain: study_value.value==='plco'?plcogain:ukgain : []
     const loss = form.types.find((e) => e.value === "loss") ? form.study.length === 2? allloss: study_value.value==='plco'?plcoloss:ukloss : []
     const loh = form.types.find((e) => e.value === "loh") ? form.study.length === 2? allloh: study_value.value==='plco'?plcoloh:ukloh : []

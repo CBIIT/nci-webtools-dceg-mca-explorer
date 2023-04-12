@@ -54,7 +54,7 @@ async function runImport(client, sources, logger = console) {
       datasource,
       onDocument(doc) {
         return {
-          index: { _index: source.index, _id: doc.id },
+          index: { _index: source.index, _id: source.id },
         };
       },
     });

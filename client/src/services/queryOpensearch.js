@@ -1,24 +1,25 @@
-import { Client } from '@opensearch-project/opensearch';
+//import { Client,OpenSearch } from '@opensearch-project/opensearch';
 
-const host =`http://admin:admin@localhost:9200`
-const client = new Client({
-  node: host,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+// const search = new OpenSearch({
+//   node: `http://admin:admin@localhost:9200`,
+//   index: 'mcaexplorer',
+// });
 
-async function fetchChromosomeData(qstring) {
-  const chr = qstring.chr
-      const { body } = await client.search({
-        index: 'mcaexplorer',
-        body: {
-          query: {
-            match: {
-              "chromosome": chr
-            },
-          },
-        },
-      });
-      return body.hits.hits;
-    }
+// const host =`http://admin:admin@localhost:9200`
+// const client = new Client({
+//   node: host,
+//   index: 'mcaexplorer',
+//   ssl: {
+//     rejectUnauthorized: false,
+//   },
+// });
+
+  // const fetchDataset = async (input) => {
+  //   return fetch(
+  //     `http://admin:admin@localhost:9200?dataset=${input}`
+  //   )
+  //     .then((res) => res.json())
+  //     .then((movieData) => {
+  //       return movieData.hits.hits;
+  //     });
+  // };
