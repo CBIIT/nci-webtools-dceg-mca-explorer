@@ -21,6 +21,7 @@ const sources = [
   { path: "data/ukbbAuto.json", index: "mcaexplorer" },
   { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
   { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
+  { path: "data/combined_gene.json", index: "combinedgene" },
 ];
 
 runImport(client, sources)
