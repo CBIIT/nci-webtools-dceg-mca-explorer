@@ -370,6 +370,22 @@ export const sources = [
       { sourceName: "baf_auto", name: "bafAuto" },
     ],
   },
+  {
+    sourcePath: "data/Combined_Gene_Dataset.tsv",
+    table: "sample",
+    description: "Combined Gene Dataset",
+    columns: [
+      { sourceName: null, name: "dataset", defaultValue: "UKBB_blood_mLOY" },
+      { sourceName: "id", name: "id" },
+      { sourceName: "name", name: "name" },
+      { sourceName: "chromosome", name: "chromosome" },
+      { sourceName: "strand", name: "strand" },
+      { sourceName: "transcription_start", name: "transcriptionStart" },
+      { sourceName: "transcription_end", name: "transcriptionEnd" },
+      { sourceName: "exon_starts", name: "exonStarts" },
+      { sourceName: "exon_ends", name: "exonEnds" },
+    ],
+  },
 ];
 
 export default sources;

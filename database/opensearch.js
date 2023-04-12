@@ -3,7 +3,8 @@ import path from "path";
 
 import { sources } from "./sources.js";
 
-async function parseFile(filename, delimitter="\r\n") {
+
+async function parseFile(filename, delimitter = "\r\n") {
     const filePath = path.resolve("data", filename)
 
     const columns = sources.find((e) => e.sourcePath.includes(filename)).columns;
@@ -23,11 +24,11 @@ async function parseFile(filename, delimitter="\r\n") {
         var jsonLine = {};
         for (let i = 0; i < contentCells.length; i++) {
 
-            if(!columns.find((e) => e.sourceName === headers[i]))
+            if (!columns.find((e) => e.sourceName === headers[i]))
                 console.log(headers[i])
 
             const header = columns.find((e) => e.sourceName === headers[i])
-           
+
             jsonLine[header.name] = contentCells[i];
         }
 
@@ -250,5 +251,38 @@ async function parseFile(filename, delimitter="\r\n") {
             fs.closeSync(fd)
         }
         console.log(`Finish UKBB ukbbAuto import`);
+    }
+
+    const combinedData = await parseFile("Combined_Gene_Dataset.tsv", "\n")
+
+    try {
+        var fd = fs.openSync(path.resolve('data', 'combined_gene.json'), 'a')
+        combinedData.map((e) => {
+            e.dataset = 'combined_gene'
+            e.exonStarts = e.exonStarts.split(",").filter((e) => e !== "")
+            e.exonEnds = e.exonEnds.split(",").filter((e) => e !== "")
+
+            fs.appendFileSync(fd, JSON.stringify({
+                "index": {
+                    "_index": "combinedgene",
+                    "_id": id
+                }
+            }) + '\n',
+                'utf-8'
+            )
+
+            fs.appendFileSync(fd, JSON.stringify(e) + '\n',
+                'utf-8'
+            )
+
+            id++;
+        })
+    } catch (err) {
+        console.log(`${err}`)
+    } finally {
+        if (fd) {
+            fs.closeSync(fd)
+        }
+        console.log(`Finish Combined Gene Dataset import`);
     }
 })();
