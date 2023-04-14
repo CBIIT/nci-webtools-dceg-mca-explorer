@@ -44,11 +44,15 @@ apiRouter.post("/opensearch", async (request, response) => {
   searcharr.push({term:{dataset:study.value}})
 console.log(searcharr)
 const client = new Client({
-  node: 'http://localhost:9200',
-  auth: {
-    username: 'admin',
-    password: 'admin'
-  }
+  //node: 'http://localhost:9200',
+  // auth: {
+  //   username: 'admin',
+  //   password: 'admin'
+  // }
+    node: host,
+    ssl: {
+      rejectUnauthorized: false
+    }
 });
 
  try {
