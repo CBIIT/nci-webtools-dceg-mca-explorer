@@ -94,13 +94,12 @@ const search = request.body.search
 const xMax = search.xMax
 const xMin = search.xMin
 const chr = search.chr
-console.log(search, xMax,chr)
+//console.log(search, xMax,chr)
 const client = new Client({
-  node: 'http://localhost:9200',
-  auth: {
-    username: 'admin',
-    password: 'admin'
-  }
+   node: host,
+    ssl: {
+      rejectUnauthorized: false
+    }
 });
 
  try {
@@ -142,7 +141,7 @@ const client = new Client({
         // }
       }
     });
-    console.log(result.body.hits)
+    //console.log(result.body.hits)
     response.json(result.body.hits.hits)
   } catch (error) {
     console.error(error);
