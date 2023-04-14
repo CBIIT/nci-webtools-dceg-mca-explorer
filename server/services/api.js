@@ -3,7 +3,7 @@ import Router from "express-promise-router";
 import { getStatus, getSamples } from "./query.js";
 import cors from "cors"
 import { Client } from '@opensearch-project/opensearch';
-const { APP_BASE_URL, ADMIN, PASSWORD, DOMAIN } = process.env;
+const {  APPLICATION_NAME,BASE_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_ENDPOINT } = process.env;
 
 
 export const apiRouter = new Router();
@@ -11,7 +11,7 @@ export const apiRouter = new Router();
 apiRouter.use(cors());
 apiRouter.use(express.json());
 
-const host = `http://${ADMIN}:${PASSWORD}@${DOMAIN}`;
+const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
 
 apiRouter.get("/ping", async (request, response) => {
   const { connection } = request.app.locals;
