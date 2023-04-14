@@ -5,6 +5,7 @@ import axios from "axios";
 
 function GenePlot(props) {
  const [genes, setGenes] = useState([]);
+ const [showGene, setShowGene] = useState(false);
 
   useEffect(() => {
     if (true) {
@@ -34,6 +35,9 @@ function GenePlot(props) {
     })
     //setLoading(false)
     setGenes(genearr)
+    if (genearr.length > 0){
+       setShowGene(true)
+    }
     console.log(genearr)
   }
   let geneRanges = genes.map(gene => {
@@ -126,6 +130,7 @@ function GenePlot(props) {
       showgrid: false,
       zeroline: false,
       showticklabels: false,
+      fixedrange:true
     },
     shapes: shapelist,
     height:genePlotHeight,
@@ -136,13 +141,15 @@ function GenePlot(props) {
     margin: { l: 40, r: 20, t: 5, b: 30 },
     
   };
-  
+
+ 
   return (
+    showGene?
     <Plot
       data={data}
       layout={layout}
-    />
-  );
+    />:''
+  )
 }
 
 
