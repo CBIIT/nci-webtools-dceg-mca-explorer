@@ -44,19 +44,17 @@ export default function RangeView() {
     //console.log(form.study.length)
    
     const [alldata,setAlldata] = useState([])
-
-    const study_value = form.study.length ?form.study[0]:form.study
-    const searchQuery = "dataset:\"ukbb\""; 
+ 
+    const study_value = form.study.length==2?form.study:form.study
 
     useEffect(() => {
     if (true) {
-        handleSubmit(searchQuery)
+        handleSubmit(study_value)
     } else {
      
     }
   }, [form]);
     
-
   async function handleSubmit(query) {
 
     //setLoading(true)

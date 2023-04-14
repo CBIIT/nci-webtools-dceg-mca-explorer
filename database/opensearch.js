@@ -260,8 +260,11 @@ async function parseFile(filename, delimitter = "\r\n") {
         combinedData.map((e) => {
             e.dataset = 'combined_gene'
             e.exonStarts = e.exonStarts.split(",").filter((e) => e !== "")
-            e.exonEnds = e.exonEnds.split(",").filter((e) => e !== "")
-
+            e.exonEnds = e.exonEnds.split(",").filter((e) => e !== "" )
+            e.transcriptionStart = Number(e.transcriptionStart)
+            e.transcriptionEnd = Number(e.transcriptionEnd)
+            e.exonEnds = e.exonEnds.map(Number)
+            e.exonStarts = e.exonStarts.map(Number)
             fs.appendFileSync(fd, JSON.stringify({
                 "index": {
                     "_index": "combinedgene",

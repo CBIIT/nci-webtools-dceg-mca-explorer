@@ -72,7 +72,10 @@ export const defaultFormState = {
   submitted: false,
   chrX: false,
   chrY: false,
-  types:""
+  types: [ { value: "loh", label: "CN-LOH" },
+            { value: "loss", label: "Loss" },
+            { value: "gain", label: "Gain" },
+            { value: "undetermined", label: "Undetermined" }]
 };
 
 export const formState = atom({

@@ -18,7 +18,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleChange(event) {
     const { name, value } = event.target;
-    console.log(name, event.target.checked)
+    //console.log(name, event.target.checked)
     if(name==="chrX" ){
       setIsX(event.target.checked)
       mergeForm({ [name]: event.target.checked})
@@ -64,7 +64,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
     if (name === "study" && selection.find((option) => option.value === "all")) {
       selection = [
         { value: "plco", label: "PLCO" },
-        { value: "ukBioBank", label: "UK Bio Bank" }
+        { value: "ukbb", label: "UK Bio Bank" }
       ]
     }
 
@@ -115,7 +115,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           options={[
             { value: "all", label: "All Studies" },
             { value: "plco", label: "PLCO" },
-            { value: "ukBioBank", label: "UK BioBank" }
+            { value: "ukbb", label: "UK BioBank" }
           ]}
         />
       </Form.Group>
