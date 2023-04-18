@@ -13,6 +13,7 @@ apiRouter.use(express.json());
 
 const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
 
+
 apiRouter.get("/ping", async (request, response) => {
   const { connection } = request.app.locals;
   const status = await getStatus(connection);
@@ -34,25 +35,38 @@ apiRouter.post("/opensearch", async (request, response) => {
   //     rejectUnauthorized: false
   //   }
   // })
-  const study = request.body.search
-  const searcharr = []
- //if there is more studies, study is an array, if there is only one, study is json object
-  study.length ? 
-  study.forEach(element => {
-     searcharr.push({term:{dataset:element.value}})
+  const queryString = request.body.search
+  const searchdataset = [{wildcard:{chromosome:"chr*"}}]
+  const searchExclude = []
+  let hasX = false
+  let hasY = false
+ //if there is more studies, queryString is an array, if there is only one, study is json object
+  queryString.length ? 
+  queryString.forEach(element => {
+    element.value === "X" ? hasX = true:''
+    element.value === "Y" ? hasY = true : ''
+    element.label?searchdataset.push({term:{dataset:element.value}}):''
   }):
-  searcharr.push({term:{dataset:study.value}})
-console.log(searcharr)
+  searchdataset.push({match:{dataset:queryString.value}})
+
+if(!hasX && !hasY) 
+  searchExclude.push({ wildcard: { type: 'mLO*' }});
+!hasX && hasY ? searchExclude.push({match:{type:"mLOX"}}):''
+!hasY && hasX ? searchExclude.push({match:{type:"mLOY"}}):''
+console.log(searchdataset," exlcude: ",searchExclude)
 const client = new Client({
-  //node: 'http://localhost:9200',
-  // auth: {
-  //   username: 'admin',
-  //   password: 'admin'
-  // }
-    node: host,
-    ssl: {
-      rejectUnauthorized: false
-    }
+  node: OPENSEARCH_ENDPOINT,
+  auth: {
+    username: OPENSEARCH_USERNAME,
+    password: OPENSEARCH_PASSWORD
+  },
+   ssl: {
+       rejectUnauthorized: false
+   }
+    // node: host,
+    // ssl: {
+    //   rejectUnauthorized: false
+    // }
 });
 
  try {
@@ -60,10 +74,11 @@ const client = new Client({
       index: 'mcaexplorer',
       body: {
         track_total_hits: true,
-        size:10000,
+        size:200000,
         query :{
           bool:{
-            should:searcharr
+            must:searchdataset,
+            must_not: searchExclude
           }
         }
 
@@ -74,7 +89,7 @@ const client = new Client({
         // }
       }
     });
-    //console.log(result.body.hits.hits.length)
+    console.log(result.body.hits.hits.length)
     response.json(result.body.hits.hits)
   } catch (error) {
     console.error(error);
@@ -96,15 +111,24 @@ const xMin = search.xMin
 const chr = search.chr
 //console.log(search, xMax,chr)
 const client = new Client({
-   node: host,
-    ssl: {
-      rejectUnauthorized: false
-    }
-});
+  node: OPENSEARCH_ENDPOINT,
+  auth: {
+    username: OPENSEARCH_USERNAME,
+    password: OPENSEARCH_PASSWORD
+  },
+  ssl: {
+       rejectUnauthorized: false
+   }
 
+  //  node: host,
+  //   ssl: {
+  //     rejectUnauthorized: false
+  //   }
+});
+//console.log(client)
  try {
     const result = await client.search({
-      index: 'combinedgene',
+      index: 'new_geneindex',//new_geneindex is convert position as number
       body: {
         track_total_hits: true,
         size:10000,
@@ -133,12 +157,6 @@ const client = new Client({
            ]
          }
         }
-
-        // query: {
-        //   match: {
-        //     dataset: 'plco'
-        //   }
-        // }
       }
     });
     //console.log(result.body.hits)

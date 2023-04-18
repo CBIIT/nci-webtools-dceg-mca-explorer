@@ -13,7 +13,7 @@ function GenePlot(props) {
     } else {
      
     }
-  }, []);
+  }, [props]);
   async function handleQuery() {
     //setLoading(true)
     const query= {"xMin":props.xMin,"xMax":props.xMax,"chr":props.chr}
@@ -37,6 +37,9 @@ function GenePlot(props) {
     setGenes(genearr)
     if (genearr.length > 0){
        setShowGene(true)
+    }
+    else{
+       setShowGene(false)
     }
     console.log(genearr)
   }

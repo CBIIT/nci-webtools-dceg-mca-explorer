@@ -14,20 +14,20 @@ import Legend from "../components/legend";
 //import loh from "../components/summaryChart/CNV/loh.json";
 //import undetermined from "../components/summaryChart/CNV/unknown.json";
 
-import allloss from "../components/summaryChart/CNV/data/allloss.json";
-import allloh from "../components/summaryChart/CNV/data/allloh.json";
-import allgain from "../components/summaryChart/CNV/data/allgain.json"
-import allundetermined from "../components/summaryChart/CNV/data/allundermined.json"
+// import allloss from "../components/summaryChart/CNV/data/allloss.json";
+// import allloh from "../components/summaryChart/CNV/data/allloh.json";
+// import allgain from "../components/summaryChart/CNV/data/allgain.json"
+// import allundetermined from "../components/summaryChart/CNV/data/allundermined.json"
 
-import plcoloss from "../components/summaryChart/CNV/data/plcoloss.json";
-import plcoloh from "../components/summaryChart/CNV/data/plcoloh.json";
-import plcogain from "../components/summaryChart/CNV/data/plcogain.json"
-import plcoundetermined from "../components/summaryChart/CNV/data/plcoundermined.json"
+// import plcoloss from "../components/summaryChart/CNV/data/plcoloss.json";
+// import plcoloh from "../components/summaryChart/CNV/data/plcoloh.json";
+// import plcogain from "../components/summaryChart/CNV/data/plcogain.json"
+// import plcoundetermined from "../components/summaryChart/CNV/data/plcoundermined.json"
 
-import ukloss from "../components/summaryChart/CNV/data/UKloss.json";
-import ukloh from "../components/summaryChart/CNV/data/UKloh.json";
-import ukgain from "../components/summaryChart/CNV/data/UKgain.json"
-import ukundetermined from "../components/summaryChart/CNV/data/UKundermined.json"
+// import ukloss from "../components/summaryChart/CNV/data/UKloss.json";
+// import ukloh from "../components/summaryChart/CNV/data/UKloh.json";
+// import ukgain from "../components/summaryChart/CNV/data/UKgain.json"
+// import ukundetermined from "../components/summaryChart/CNV/data/UKundermined.json"
 
 import chrx from "../components/summaryChart/CNV/data/plcoy.json"
 
@@ -43,13 +43,23 @@ export default function RangeView() {
     //console.log(form)
     //console.log(form.study.length)
    
-    const [alldata,setAlldata] = useState([])
- 
-    const study_value = form.study.length==2?form.study:form.study
+    const [gain,setGain] = useState([])
+    const [loss,setLoss] = useState([])
+    const [loh,setLoh] = useState([])
+    const [undetermined,setUndetermined] = useState([])
+    const [chrX, setChrX] = useState([])
 
+    const study_value = form.study
+    let query_value = []
+    Array.isArray(study_value)?
+    query_value =[...study_value,form.chrX?{"value":'X'}:'',form.chrY?{"value":'Y'}:'']
+    : query_value =[study_value,form.chrX?{"value":'X'}:'',form.chrY?{"value":'Y'}:'']
+
+
+   // console.log(query_value)
     useEffect(() => {
     if (true) {
-        handleSubmit(study_value)
+        handleSubmit(query_value)
     } else {
      
     }
@@ -59,36 +69,54 @@ export default function RangeView() {
 
     //setLoading(true)
     const response = await axios.post("api/opensearch", { search: query })
-
-    const results = {
-
-    //   tabular: processSearch(response.data.tabular),
-    //   neoplasm: processSearch(response.data.neoplasm),
-    //   drug: processSearch(response.data.drug),
-    //   injury: processSearch(response.data.injury)
-    }
-    console.log(response.data)
-    //setLoading(false)
-  
+    const gainTemp = []
+    const lossTemp = []
+    const lohTemp = []
+    const undeterTemp = []
+    const chrXTemp = []
+    const results = response.data
+    results.forEach(r=>{
+      if (r._source !== null){
+        const d = r._source
+        d.block_id = d.chromosome.substring(3)
+        d.value = d.cf
+        d.start = d.beginGrch38
+        d.end = d.endGrch38
+        if(d.chromosome!="chrX"){
+             if (d.type === "Gain")
+            gainTemp.push(d)
+        else if (d.type === "CN-LOH")
+            lohTemp.push(d)
+        else if (d.type === "Loss")
+            lossTemp.push(d)
+        else if (d.type === "Undetermined")
+            undeterTemp.push(d)
+        }
+        if(form.chrX&&d.chromosome == "chrX"){
+            chrXTemp.push(d)
+        }
+       
+      }
+    })
+   // setLoading(false)
+    setGain(gainTemp)
+    setLoh(lohTemp)
+    setLoss(lossTemp)
+    setUndetermined(undeterTemp)
+    setChrX(chrXTemp)
   }
+ 
+    // const gain = form.types.find((e) => e.value === "gain") ? form.study.length === 2? allgain: study_value.value==='plco'?plcogain:ukgain : []
+    // const loss = form.types.find((e) => e.value === "loss") ? form.study.length === 2? allloss: study_value.value==='plco'?plcoloss:ukloss : []
+    // const loh = form.types.find((e) => e.value === "loh") ? form.study.length === 2? allloh: study_value.value==='plco'?plcoloh:ukloh : []
+    // const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length === 2 ? allundetermined : 
+    //                         study_value.value ==='plco'?plcoundetermined:ukundetermined : []
 
-    // async function opensearch(e) {
-    //     e.preventDefault();
-    //     handleSubmit(input);
-    // }
-
-
-    const gain = form.types.find((e) => e.value === "gain") ? form.study.length === 2? allgain: study_value.value==='plco'?plcogain:ukgain : []
-    const loss = form.types.find((e) => e.value === "loss") ? form.study.length === 2? allloss: study_value.value==='plco'?plcoloss:ukloss : []
-    const loh = form.types.find((e) => e.value === "loh") ? form.study.length === 2? allloh: study_value.value==='plco'?plcoloh:ukloh : []
-    const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length === 2 ? allundetermined : 
-                            study_value.value ==='plco'?plcoundetermined:ukundetermined : []
-   
     useEffect(() => {
        setClickedCounter(clickedCounter+1)
     },[form])
 
-    console.log(clickedCounter)
+    //console.log(clickedCounter)
     const chromosomes = form.chromosome.map((e) => e.label)
 
     const sortGain = gain.filter((e) => chromosomes.includes(Number(e.block_id))).sort((a, b) => Number(a.block_id) - Number(b.block_id))
@@ -100,7 +128,7 @@ export default function RangeView() {
     useEffect(() => {
         const clickedValues = allValues.filter((v) =>v.block_id===chromoId)
        setAllValue([...clickedValues])
-        console.log("click chromesome",allValue)
+      //  console.log("click chromesome",allValue)
     },[chromoId])
     const columns = [
         {
@@ -290,7 +318,7 @@ export default function RangeView() {
                 <p style={{ textAlign: "center",marginBottom: "0.5rem",fontWeight: 500 }}>Autosomal mCA Distribution</p>
                 <div className="row justify-content-center" >
                     <div style={{height:800}}>
-                        <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} chrx={chrx} ></CirclePlotTest>
+                        <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} chrx={chrX} ></CirclePlotTest>
                     </div>
                     <Legend ></Legend>
                 </div>
