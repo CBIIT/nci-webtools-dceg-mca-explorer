@@ -11,8 +11,8 @@ export const apiRouter = new Router();
 apiRouter.use(cors());
 apiRouter.use(express.json());
 
-const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
-
+//const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
+const host = `https://${OPENSEARCH_ENDPOINT}`
 
 apiRouter.get("/ping", async (request, response) => {
   const { connection } = request.app.locals;
@@ -50,7 +50,7 @@ if(!hasX && !hasY)
 !hasY && hasX ? searchExclude.push({match:{type:"mLOY"}}):''
 console.log(searchdataset," exlcude: ",searchExclude)
 const client = new Client({
-  node: OPENSEARCH_ENDPOINT,
+  node: host,
   auth: {
     username: OPENSEARCH_USERNAME,
     password: OPENSEARCH_PASSWORD
@@ -106,7 +106,7 @@ const xMin = search.xMin
 const chr = search.chr
 //console.log(search, xMax,chr)
 const client = new Client({
-  node: OPENSEARCH_ENDPOINT,
+  node: host,
   auth: {
     username: OPENSEARCH_USERNAME,
     password: OPENSEARCH_PASSWORD
