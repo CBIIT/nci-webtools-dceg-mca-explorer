@@ -174,11 +174,7 @@ function SingleChromosome(props) {
         ref={ref}
         onRelayout={handleRelayout}
      />
-<<<<<<< HEAD
-     {xMax-xMin<500000?
-=======
      {xMax-xMin<2000000?
->>>>>>> geneFigure
       <GenePlot width={props.width} xMax={xMax} xMin={xMin} chr={props.chromesomeId}></GenePlot>:''}
     </div>
     </div>
