@@ -63,6 +63,7 @@ export default function RangeView() {
     const lohTemp = [...initialXY]
     const undeterTemp = [...initialXY]
     const chrXTemp = []
+    const chrYTemp = []
     const results = response.data
     console.log(results)
     results.forEach(r=>{
@@ -82,8 +83,12 @@ export default function RangeView() {
         else if (d.type === "Undetermined")
             undeterTemp.push(d)
         }
-        if(form.chrX&&(d.chromosome == "chrX")){
+        if(form.chrX&&(d.type == "mLOX")){
             chrXTemp.push(d)
+        }
+        if(form.chrY&&(d.type == "mLOY")){
+            chrYTemp.push(d)
+            d.block_id = "Y"
         }
        
       }
@@ -94,6 +99,7 @@ export default function RangeView() {
     setLoss(lossTemp)
     setUndetermined(undeterTemp)
     setChrX(chrXTemp)
+    setChrY(chrYTemp)
   }
  
     // const gain = form.types.find((e) => e.value === "gain") ? form.study.length === 2? allgain: study_value.value==='plco'?plcogain:ukgain : []
@@ -308,7 +314,7 @@ export default function RangeView() {
                 <p style={{ textAlign: "center",marginBottom: "0.5rem",fontWeight: 500 }}>Autosomal mCA Distribution</p>
                 <div className="row justify-content-center" >
                     <div style={{height:800}}>
-                        <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} chrx={chrX} ></CirclePlotTest>
+                        <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} chrx={chrX} chry={chrY}></CirclePlotTest>
                     </div>
                     <Legend ></Legend>
                 </div>

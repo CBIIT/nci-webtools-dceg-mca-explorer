@@ -38,7 +38,8 @@ export default function CirclePlotTest(props) {
     gain:props.gain,
     loh:props.loh,
     undetermined:props.undetermined,
-    chrx: props.chrx
+    chrx: props.chrx,
+    chry: props.chry
   }
   );
 
@@ -49,7 +50,8 @@ export default function CirclePlotTest(props) {
       gain:props.gain,
       loh:props.loh,
       undetermined:props.undetermined,
-      chrx: props.chrx
+      chrx: props.chrx,
+      chry: props.chry
     })
     //circleRef.current.focus();
   },[props])
@@ -128,8 +130,10 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         ...props.loss.filter(chr=>chr.block_id===chromesomeId),
         ...props.undetermined.filter(chr=>chr.block_id===chromesomeId),
         ...props.chrx.filter(chr=>chr.block_id===chromesomeId),
+        ...props.chry.filter(chr=>chr.block_id===chromesomeId),
         // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
     ]
+const dataXY = [...props.chrx, ...props.chry] 
 //console.log(data)
 const thicknessgain = props.gain.length<1000?0:-1.5;
 const thicknessloh =  props.loh.length<1000?0:-1.5;
@@ -172,7 +176,7 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
                   tracks={[
                     {
                       type: STACK,
-                      data: circle.chrx, 
+                      data: dataXY, 
                       config: {
                         innerRadius: 0.15,
                         outerRadius: 1,
