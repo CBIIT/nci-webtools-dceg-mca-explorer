@@ -17,8 +17,7 @@ function createApp(env) {
   app.locals.connection = getConnection(env.DATABASE_PATH);
 
   app.use(logRequests());
-  console.log(`${env.BASE_URL}/api`)
-  app.use(`${env.BASE_URL}/api`, apiRouter);
+  app.use("/api", apiRouter);
   app.use(logErrors()); // logErrors should always be last
   return app;
 }
