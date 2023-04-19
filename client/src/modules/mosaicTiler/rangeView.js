@@ -35,6 +35,7 @@ export default function RangeView() {
     const [loh,setLoh] = useState([])
     const [undetermined,setUndetermined] = useState([])
     const [chrX, setChrX] = useState([])
+    const [chrY, setChrY] = useState([])
 
     const study_value = form.study
     let query_value = []
@@ -63,6 +64,7 @@ export default function RangeView() {
     const undeterTemp = [...initialXY]
     const chrXTemp = []
     const results = response.data
+    console.log(results)
     results.forEach(r=>{
       if (r._source !== null){
         const d = r._source
@@ -102,7 +104,7 @@ export default function RangeView() {
 
     useEffect(() => {
        setClickedCounter(clickedCounter+1)
-    },[form])
+    },[gain,loss,loh,undetermined,chrX,chrY])
 
     //console.log(clickedCounter)
     const chromosomes = form.chromosome.map((e) => e.label)
