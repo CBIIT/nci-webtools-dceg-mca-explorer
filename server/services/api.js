@@ -14,6 +14,7 @@ apiRouter.use(express.json());
 //const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
 const host = `https://${OPENSEARCH_ENDPOINT}`
 
+console.log("opensearch host is:",host)
 apiRouter.get("/ping", async (request, response) => {
   const { connection } = request.app.locals;
   const status = await getStatus(connection);
@@ -31,7 +32,7 @@ apiRouter.post("/opensearch", async (request, response) => {
   const { logger } = request.app.locals;
 
   const queryString = request.body.search
-  const searchdataset = [{regexp:{chromosome:'chr[0-9]+'}}]
+  const searchdataset = [{wildcard:{chromosome:'chr*'}}]
   const searchExclude = []
   let hasX = false
   let hasY = false
@@ -40,9 +41,11 @@ apiRouter.post("/opensearch", async (request, response) => {
   queryString.forEach(element => {
     element.value === "X" ? hasX = true:''
     element.value === "Y" ? hasY = true : ''
-    element.label?searchdataset.push({match:{dataset:element.value}}):''
-  }):
-  searchdataset.push({match:{dataset:queryString.value}})
+    element.label?searchdataset.push({term:{dataset:element.value}}):''
+  }):searchdataset.push({match:{dataset:queryString.value}})
+ 
+  // hasX?searchdataset.push({match:{type:"mLOX"}}):''
+  // hasY?searchdataset.push({match:{type:"mLOY"}}):''
 
 if(!hasX && !hasY) 
   searchExclude.push({ wildcard: { type: 'mLO*' }});
@@ -58,10 +61,6 @@ const client = new Client({
    ssl: {
        rejectUnauthorized: false
    }
-    // node: host,
-    // ssl: {
-    //   rejectUnauthorized: false
-    // }
 });
 
  try {
@@ -76,12 +75,6 @@ const client = new Client({
             must_not: searchExclude
           }
         }
-
-        // query: {
-        //   match: {
-        //     dataset: 'plco'
-        //   }
-        // }
       }
     });
     console.log(result.body.hits.hits.length)
