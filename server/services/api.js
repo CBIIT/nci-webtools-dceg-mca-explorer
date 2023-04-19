@@ -29,14 +29,9 @@ apiRouter.post("/query/samples", async (request, response) => {
 
 apiRouter.post("/opensearch", async (request, response) => {
   const { logger } = request.app.locals;
-  // var client = new Client({
-  //   node: host,
-  //   ssl: {
-  //     rejectUnauthorized: false
-  //   }
-  // })
+
   const queryString = request.body.search
-  const searchdataset = [{wildcard:{chromosome:"chr*"}}]
+  const searchdataset = [{regexp:{chromosome:'chr[0-9]+'}}]
   const searchExclude = []
   let hasX = false
   let hasY = false
@@ -45,7 +40,7 @@ apiRouter.post("/opensearch", async (request, response) => {
   queryString.forEach(element => {
     element.value === "X" ? hasX = true:''
     element.value === "Y" ? hasY = true : ''
-    element.label?searchdataset.push({term:{dataset:element.value}}):''
+    element.label?searchdataset.push({match:{dataset:element.value}}):''
   }):
   searchdataset.push({match:{dataset:queryString.value}})
 
