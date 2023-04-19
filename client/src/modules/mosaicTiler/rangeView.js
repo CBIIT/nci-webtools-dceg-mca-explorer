@@ -8,31 +8,18 @@ import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
 import Legend from "../components/legend";
 
-
-//import gain from "../components/summaryChart/CNV/gain.json";
-//import loss from "../components/summaryChart/CNV/loss.json";
-//import loh from "../components/summaryChart/CNV/loh.json";
-//import undetermined from "../components/summaryChart/CNV/unknown.json";
-
-// import allloss from "../components/summaryChart/CNV/data/allloss.json";
-// import allloh from "../components/summaryChart/CNV/data/allloh.json";
-// import allgain from "../components/summaryChart/CNV/data/allgain.json"
-// import allundetermined from "../components/summaryChart/CNV/data/allundermined.json"
-
-// import plcoloss from "../components/summaryChart/CNV/data/plcoloss.json";
-// import plcoloh from "../components/summaryChart/CNV/data/plcoloh.json";
-// import plcogain from "../components/summaryChart/CNV/data/plcogain.json"
-// import plcoundetermined from "../components/summaryChart/CNV/data/plcoundermined.json"
-
-// import ukloss from "../components/summaryChart/CNV/data/UKloss.json";
-// import ukloh from "../components/summaryChart/CNV/data/UKloh.json";
-// import ukgain from "../components/summaryChart/CNV/data/UKgain.json"
-// import ukundetermined from "../components/summaryChart/CNV/data/UKundermined.json"
-
-import chrx from "../components/summaryChart/CNV/data/plcoy.json"
-
 import Table from "../components/table";
 
+  const initialXY= [
+        {"block_id": "X","start": "0", "end": "0","type": "Gain"},
+        {"block_id": "Y", "start": "0", "end": "0","type": "Gain"},
+        {"block_id": "X","start": "0", "end": "0","type": "Loss"},
+        {"block_id": "Y", "start": "0", "end": "0","type": "Loss"},
+        {"block_id": "X","start": "0", "end": "0","type": "CN-LOH"},
+        {"block_id": "Y", "start": "0", "end": "0","type": "CH-LOH"},
+        {"block_id": "X","start": "0", "end": "0","type": "Undetermined"},
+        {"block_id": "Y", "start": "0", "end": "0","type": "Undetermined"},
+  ]
 
 export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
@@ -65,14 +52,15 @@ export default function RangeView() {
     }
   }, [form]);
     
+
   async function handleSubmit(query) {
 
     //setLoading(true)
     const response = await axios.post("api/opensearch", { search: query })
-    const gainTemp = []
-    const lossTemp = []
-    const lohTemp = []
-    const undeterTemp = []
+    const gainTemp = [...initialXY]
+    const lossTemp = [...initialXY]
+    const lohTemp = [...initialXY]
+    const undeterTemp = [...initialXY]
     const chrXTemp = []
     const results = response.data
     results.forEach(r=>{
@@ -92,7 +80,7 @@ export default function RangeView() {
         else if (d.type === "Undetermined")
             undeterTemp.push(d)
         }
-        if(form.chrX&&d.chromosome == "chrX"){
+        if(form.chrX&&(d.chromosome == "chrX")){
             chrXTemp.push(d)
         }
        
