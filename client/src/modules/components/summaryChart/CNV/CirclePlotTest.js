@@ -9,20 +9,6 @@ import band from "./band.json"
 import './css/circos.css'
 import SingleChromosome from "./SingleChromosome";
 
-// import allloss from "./data/allloss.json";
-// import allloh from "./data/allloh.json";
-// import allgain from "./data/allgain.json"
-// import allunknown from "./data/allundermined.json"
-
-// import plcoloss from "./data/plcoloss.json";
-// import plcoloh from "./data/plcoloh.json";
-// import plcogain from "./data/plcogain.json"
-// import plcounknown from "./data/plcoundermined.json"
-
-// import ukloss from "./data/UKloss.json";
-// import ukloh from "./data/UKloh.json";
-// import ukgain from "./data/UKgain.json"
-// import ukunknown from "./data/UKundermined.json"
 
 //import "./styles.css";
 const hovertip = (d =>{

@@ -70,7 +70,8 @@ function SingleChromosome(props) {
           if (t === "Loss") return "red"
           else if(t === "Gain") return "green"
           else if(t === "CN-LOH") return "blue"
-          else return "#ABABAB"
+          else if(t === "Undetermined") return "#ABABAB"
+          else return "red"
         }))
       },
        hovertext: props.data.map((e) => {
@@ -173,7 +174,11 @@ function SingleChromosome(props) {
         ref={ref}
         onRelayout={handleRelayout}
      />
+<<<<<<< HEAD
      {xMax-xMin<500000?
+=======
+     {xMax-xMin<2000000?
+>>>>>>> geneFigure
       <GenePlot width={props.width} xMax={xMax} xMin={xMin} chr={props.chromesomeId}></GenePlot>:''}
     </div>
     </div>

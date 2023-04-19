@@ -4,6 +4,11 @@ import { packRanges } from '../../utils.js'
 import axios from "axios";
 
 function GenePlot(props) {
+<<<<<<< HEAD
+=======
+ const [genes, setGenes] = useState([]);
+ const [showGene, setShowGene] = useState(false);
+>>>>>>> geneFigure
 
 const genes = [
     {name:"CPNE5",transcriptionStart:36740772,transcriptionEnd:36839444,
@@ -44,6 +49,7 @@ const genes = [
   //       handleQuery()
   //   } else {
      
+<<<<<<< HEAD
   //   }
   // }, []);
   // async function handleQuery() {
@@ -69,6 +75,39 @@ const genes = [
   //   setGenes(genearr)
   //   console.log(genearr)
   // }
+=======
+    }
+  }, [props]);
+  async function handleQuery() {
+    //setLoading(true)
+    const query= {"xMin":props.xMin,"xMax":props.xMax,"chr":props.chr}
+    const response = await axios.post("api/opensearch/gene", { search: query })
+    const results = response.data
+    //console.log("genes",results)
+    const genearr = []
+    results.forEach(r=>{
+      if (r._source !== null){
+        const g = r._source
+        g.transcriptionEnd= Number(g.transcriptionEnd)
+        g.transcriptionStart = Number(g.transcriptionStart)
+        g.exonEnds = g.exonEnds.map(Number)
+        g.exonStarts = g.exonStarts.map(Number)
+          genearr.push(r._source)
+      }
+
+      
+    })
+    //setLoading(false)
+    setGenes(genearr)
+    if (genearr.length > 0){
+       setShowGene(true)
+    }
+    else{
+       setShowGene(false)
+    }
+    console.log(genearr)
+  }
+>>>>>>> geneFigure
   let geneRanges = genes.map(gene => {
       let horizPadding = 10000;
       return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
@@ -159,6 +198,7 @@ const genes = [
       showgrid: false,
       zeroline: false,
       showticklabels: false,
+      fixedrange:true
     },
     shapes: shapelist,
     height:genePlotHeight,
@@ -169,13 +209,15 @@ const genes = [
     margin: { l: 40, r: 20, t: 5, b: 30 },
     
   };
-  
+
+ 
   return (
+    showGene?
     <Plot
       data={data}
       layout={layout}
-    />
-  );
+    />:''
+  )
 }
 
 
