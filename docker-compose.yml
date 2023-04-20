@@ -13,11 +13,10 @@ services:
       context: "."
       dockerfile: "./docker/frontend.dockerfile"
       args:
-        APPLICATION_PATH: /mosaic-tiler/
+        APPLICATION_PATH: /
+        BASE_URL: http://backend:9000
     environment:
-      API_BASE_URL: http://backend:9000
-      APPLICATION_PATH: /mosaic-tiler/
-      PUBLIC_URL: /mosaic-tiler/
+      BASE_URL: http://backend:9000
     ports:
       - "3000:80"
 

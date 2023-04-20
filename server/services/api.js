@@ -32,8 +32,10 @@ apiRouter.post("/opensearch", async (request, response) => {
   const { logger } = request.app.locals;
 
   const queryString = request.body.search
-  const searchdataset = [{wildcard:{chromosome:'chr*'}}]
-  const searchExclude = []
+  //serach only rows which has chromosome, this will exclude plcoDenominator
+  const searchdataset = [{terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined',"mLOX","mLOY"]}}]
+  const searchExclude = [{match:{"chromosome":"chrX"}},
+                  {terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined']}}]
   let hasX = false
   let hasY = false
  //if there is more studies, queryString is an array, if there is only one, study is json object
@@ -41,16 +43,20 @@ apiRouter.post("/opensearch", async (request, response) => {
   queryString.forEach(element => {
     element.value === "X" ? hasX = true:''
     element.value === "Y" ? hasY = true : ''
-    element.label?searchdataset.push({term:{dataset:element.value}}):''
+   element.label?searchdataset.push({match:{dataset:element.value}}):''
   }):searchdataset.push({match:{dataset:queryString.value}})
  
   // hasX?searchdataset.push({match:{type:"mLOX"}}):''
   // hasY?searchdataset.push({match:{type:"mLOY"}}):''
 
 if(!hasX && !hasY) 
-  searchExclude.push({ wildcard: { type: 'mLO*' }});
-!hasX && hasY ? searchExclude.push({match:{type:"mLOX"}}):''
-!hasY && hasX ? searchExclude.push({match:{type:"mLOY"}}):''
+  searchExclude.push({ wildcard: { "type.keyword": 'mLO*' }});
+!hasX && hasY ? searchExclude.push({match:{"type.keyword":"mLOX"}}):''
+!hasY && hasX ? searchExclude.push({match:{"type.keyword":"mLOY"}}):''
+
+//in ukbb data, there is chrX with all other types, and will exclude them
+//searchExclude.push({terms:{chromosome:"chrX"}})
+
 console.log(searchdataset," exlcude: ",searchExclude)
 const client = new Client({
   node: host,
@@ -72,8 +78,9 @@ const client = new Client({
         query :{
           bool:{
             must:searchdataset,
-            must_not: searchExclude
+            //must_not: searchExclude
           }
+         
         }
       }
     });
