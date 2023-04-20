@@ -8,7 +8,7 @@ main();
 
 function main(env = process.env) {
   const app = createApp(env);
-  return app.listen(env.PORT, () => app.locals.logger.info(`Application is running on port: ${env.PORT}`));
+  return app.listen(env.API_PORT, () => app.locals.logger.info(`Application is running on port: ${env.API_PORT}`));
 }
 
 function createApp(env) {

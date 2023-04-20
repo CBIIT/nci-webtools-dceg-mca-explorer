@@ -29,7 +29,7 @@ export default function RangeView() {
     const [allValue, setAllValue] = useState([]);
     //console.log(form)
     //console.log(form.study.length)
-
+   
     const [gain,setGain] = useState([])
     const [loss,setLoss] = useState([])
     const [loh,setLoh] = useState([])
