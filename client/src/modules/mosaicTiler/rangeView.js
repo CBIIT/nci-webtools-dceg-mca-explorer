@@ -67,7 +67,7 @@ export default function RangeView() {
     const chrXTemp = []
     const chrYTemp = []
     const results = response.data
-    console.log(response)
+    //console.log(response)
     results.forEach(r=>{
       if (r._source !== null){
         const d = r._source

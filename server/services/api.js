@@ -33,29 +33,35 @@ apiRouter.post("/opensearch", async (request, response) => {
 
   const queryString = request.body.search
   //serach only rows which has chromosome, this will exclude plcoDenominator
-  const searchdataset = [{terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined',"mLOX","mLOY"]}}]
-  const searchExclude = [{match:{"chromosome":"chrX"}},
-                  {terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined']}}]
+  const filterString = {terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined',"mLOX","mLOY"]}}
+  const searchdataset = []
+  const searchExclude = []//{match:{"chromosome":"chrX"}},{terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined']}}
   let hasX = false
   let hasY = false
+  const datasets = []
  //if there is more studies, queryString is an array, if there is only one, study is json object
   queryString.length ? 
   queryString.forEach(element => {
     element.value === "X" ? hasX = true:''
     element.value === "Y" ? hasY = true : ''
-   element.label?searchdataset.push({match:{dataset:element.value}}):''
-  }):searchdataset.push({match:{dataset:queryString.value}})
- 
+    element.label?datasets.push(element.value):''
+    //element.label?searchdataset.push({match:{dataset:element.value}}):''
+  }):datasets.push(queryString.value)
+
+ searchdataset.push({terms:{dataset:datasets}})
   // hasX?searchdataset.push({match:{type:"mLOX"}}):''
   // hasY?searchdataset.push({match:{type:"mLOY"}}):''
 
-if(!hasX && !hasY) 
+if(!hasX && !hasY){
   searchExclude.push({ wildcard: { "type.keyword": 'mLO*' }});
-!hasX && hasY ? searchExclude.push({match:{"type.keyword":"mLOX"}}):''
-!hasY && hasX ? searchExclude.push({match:{"type.keyword":"mLOY"}}):''
-
-//in ukbb data, there is chrX with all other types, and will exclude them
-//searchExclude.push({terms:{chromosome:"chrX"}})
+  searchExclude.push({match:{chromosome:"chrX"}})
+} 
+if(!hasX && hasY ){
+  searchExclude.push({match:{"type.keyword":"mLOX"}})
+}
+if(!hasY && hasX){
+  searchExclude.push({match:{"type.keyword":"mLOY"}})
+}
 
 console.log(searchdataset," exlcude: ",searchExclude)
 const client = new Client({
@@ -77,8 +83,25 @@ const client = new Client({
         size:200000,
         query :{
           bool:{
+            must_not:[...searchExclude,
+              {//in ukbb data, there is chrX with all other types, and will exclude them
+                bool:{
+                  filter:[
+                  {
+                    match:{
+                      chromosome: "chrX"
+                    }
+                  },
+                  {
+                  terms:{
+                    "type.keyword":['Gain','Loss','CN-LOH','Undetermined']
+                  }}
+                  ]
+                }
+              }
+            ],
             must:searchdataset,
-            //must_not: searchExclude
+            filter:filterString
           }
          
         }
