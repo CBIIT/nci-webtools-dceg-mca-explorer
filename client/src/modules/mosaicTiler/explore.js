@@ -41,7 +41,7 @@ export default function Explore() {
   }
 
   return (
-    <Container className="my-4">
+    <Container className="my-3">
       <Loader fullscreen show={loading} />
       <SidebarContainer
         collapsed={!_openSidebar}

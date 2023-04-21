@@ -20,7 +20,7 @@ import Table from "../components/table";
         {"block_id": "X","start": "0", "end": "0","type": "Undetermined"},
         {"block_id": "Y", "start": "0", "end": "0","type": "Undetermined"},
   ]
-
+const chartHeight = 800
 export default function RangeView() {
     const [form, setForm] = useRecoilState(formState);
     const [tab, setTab] = useState("summary");
@@ -29,6 +29,8 @@ export default function RangeView() {
     const [allValue, setAllValue] = useState([]);
     //console.log(form)
     //console.log(form.study.length)
+
+    const [figureHeight, setFigureHeight] = useState(chartHeight)
    
     const [gain,setGain] = useState([])
     const [loss,setLoss] = useState([])
@@ -124,7 +126,7 @@ export default function RangeView() {
     useEffect(() => {
         const clickedValues = allValues.filter((v) =>v.block_id===chromoId)
        setAllValue([...clickedValues])
-      //  console.log("click chromesome",allValue)
+        console.log("click chromesome",allValue)
     },[chromoId])
     const columns = [
         {
@@ -306,15 +308,30 @@ export default function RangeView() {
     };
     const handleClickedChromoId = (id) => {
         setChromoId(id)
-        console.log("clicked:",id)
     };
+
+    const handleheightChange = (newHeight) =>{
+        setFigureHeight(newHeight+chartHeight)
+    }
+    const resetHeight = () =>{
+        setFigureHeight(chartHeight)
+    }
+  
     return (
         <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
             <Tab eventKey="summary" title="Summary">
                 <p style={{ textAlign: "center",marginBottom: "0.5rem",fontWeight: 500 }}>Autosomal mCA Distribution</p>
                 <div className="row justify-content-center" >
-                    <div style={{height:800}}>
-                        <CirclePlotTest clickedChromoId={handleClickedChromoId} key={clickedCounter} loss={loss} loh={loh} gain={gain} undetermined={undetermined} chrX={form.chrX} chrY={form.chrY} chrx={chrX} chry={chrY}></CirclePlotTest>
+                    <div style={{height:figureHeight,left:10}}>
+                        <CirclePlotTest 
+                            clickedChromoId={handleClickedChromoId} 
+                            key={clickedCounter} 
+                            loss={loss} loh={loh} gain={gain} undetermined={undetermined} 
+                            chrX={form.chrX} chrY={form.chrY} chrx={chrX} chry={chrY}
+                            onHeightChange={handleheightChange} 
+                            onResetHeight={resetHeight}
+                            >  
+                        </CirclePlotTest>
                     </div>
                     <Legend ></Legend>
                 </div>

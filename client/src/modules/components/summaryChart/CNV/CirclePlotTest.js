@@ -32,7 +32,7 @@ function changeBackground(track, chromesomeId, opacity){
 export default function CirclePlotTest(props) {
   const [showChart, setShowChart] = useState(false);
   const [chromesomeId, setChromesomeId] = useState(0);
-
+  //console.log(props)
   const [circle, setCircle] = useState({
     loss:props.loss,
     gain:props.gain,
@@ -122,6 +122,7 @@ export default function CirclePlotTest(props) {
   const handleBack = ()=>{
     setShowChart(false);
     sendClickedId(-1);
+    props.onResetHeight();
   }
  
 let data = []
@@ -148,10 +149,12 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
     <div className="align-middle text-center" >
         {
         showChart ? 
-          <div className="overlayX">
-            <SingleChromosome data={data} chromesomeId={chromesomeId} width={800} height={750}></SingleChromosome>
-              {/* <SingleChart data={data} chromesomeId={chromesomeId} width={800} height={750} /> */}
-              <button onClick={handleBack}>back</button>
+          <div className="overlayX" style={{height:1500,left:20}}>
+            <SingleChromosome data={data} chromesomeId={chromesomeId}
+             width={800} height={750} onHeightChange={props.onHeightChange}>
+              
+            </SingleChromosome>
+             <button onClick={handleBack}>back</button>
           </div>:
           <div>
             <div className="overlayX" id="chrxy">

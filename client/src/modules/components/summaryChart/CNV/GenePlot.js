@@ -90,7 +90,7 @@ function GenePlot(props) {
         showarrow: false,
         font: {
           family: 'Arial',
-          size: 12,
+          size: 8,
           color: '#000000',
         },
         xref: 'x',
@@ -103,9 +103,10 @@ function GenePlot(props) {
    })
   })
 })
-  
+  //console.log(props)
+  props.onHeightChange(genePlotHeight)
   const data = geneLine
-
+  
   var shapelist = [];
  // console.log(ypos,pos)
  //the vertical line for each exonStart-exonEnd pair
@@ -133,7 +134,8 @@ function GenePlot(props) {
       showgrid: false,
       zeroline: false,
       showticklabels: false,
-      fixedrange:true
+      fixedrange:true,
+      title:"Gene"
     },
     shapes: shapelist,
     height:genePlotHeight,
