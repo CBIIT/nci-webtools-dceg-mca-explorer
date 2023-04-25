@@ -1,5 +1,7 @@
 database/data
 database/*.db
 database.db
+database/.env
 node_modules
 .env
+data/*

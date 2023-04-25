@@ -14,12 +14,13 @@ function GenePlot(props) {
      
     }
   }, [props]);
+
   async function handleQuery() {
     //setLoading(true)
     const query= {"xMin":props.xMin,"xMax":props.xMax,"chr":props.chr}
     const response = await axios.post("api/opensearch/gene", { search: query })
     const results = response.data
-    //console.log("genes",results)
+   // console.log("genes:",query)
     const genearr = []
     results.forEach(r=>{
       if (r._source !== null){
@@ -30,8 +31,6 @@ function GenePlot(props) {
         g.exonStarts = g.exonStarts.map(Number)
           genearr.push(r._source)
       }
-
-      
     })
     //setLoading(false)
     setGenes(genearr)
@@ -41,10 +40,12 @@ function GenePlot(props) {
     else{
        setShowGene(false)
     }
-    console.log(genearr)
+    //console.log(genearr)
   }
   let geneRanges = genes.map(gene => {
-      let horizPadding = 10000;
+    let horizPadding = 20000;
+      if(genes.length > 20)
+       horizPadding = 40000;
       return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
     });
 
@@ -68,7 +69,7 @@ function GenePlot(props) {
                 x:[e.transcriptionStart,e.transcriptionEnd],
                 y:[genePlotHeight-(yGene+geneHeight/2),genePlotHeight-(yGene+geneHeight/2)],
                 line: {
-                  color: 'grey', // set the line color 
+                  color: '#E0E0E0', // set the line color 
                   width:5
                 },
                 mode: 'lines',
@@ -118,7 +119,7 @@ function GenePlot(props) {
       y0:genePlotHeight-ypos[index]-rowpadding,
       y1:genePlotHeight-(geneHeight+ypos[index])+rowpadding,
       line: {
-          color: 'grey',
+          color: '#BDBDBD',
           width: 2,
           dash: 'solid',
         }

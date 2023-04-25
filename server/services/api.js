@@ -12,7 +12,7 @@ apiRouter.use(cors());
 apiRouter.use(express.json());
 
 //const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
-const host = `https://${OPENSEARCH_ENDPOINT}`
+const host = `http://${OPENSEARCH_ENDPOINT}`
 
 console.log("opensearch host is:",host)
 apiRouter.get("/ping", async (request, response) => {

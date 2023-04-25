@@ -135,11 +135,13 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
     ]
 const dataXY = [...props.chrx, ...props.chry] 
-//console.log(data)
-const thicknessgain = props.gain.length<1000?0:-1.5;
-const thicknessloh =  props.loh.length<1000?0:-1.5;
-const thicknessloss =  props.loss.length<1000?0:-1.5;
-const thicknessundermined =  props.undetermined.length<1000?0:-1.5;
+//console.log("gain:",props.gain.length,"loh:",props.loh.length,
+//"loss:",props.loss.length,"under:",props.undetermined.length)
+const linethickness = -1.75
+const thicknessgain = props.gain.length<1000?0:linethickness;
+const thicknessloh =  props.loh.length<1000?0:-1.9;
+const thicknessloss =  props.loss.length<1000?0:linethickness;
+const thicknessundermined =  props.undetermined.length<1000?0:linethickness;
 //console.log(props.undetermined)
 
 let layoutAll = !props.chrX || props.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
@@ -181,7 +183,7 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
                       type: STACK,
                       data: dataXY, 
                       config: {
-                        innerRadius: 0.15,
+                        innerRadius: 0.05,
                         outerRadius: 1,
                         thickness:thicknessloss,
                         margin: 0,
@@ -249,7 +251,7 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
                     type: STACK,
                     data: circle.undetermined, 
                     config: {
-                      innerRadius: 0.15,
+                      innerRadius: 0.05,
                       outerRadius: 0.25,
                       thickness:thicknessundermined,
                       margin: 0,
@@ -330,7 +332,7 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
                       strokeColor: "blue",
                       direction: 'out',
                       logScale: true,
-                      //color: circle.loh.map(e => "yellow"),
+                       color: "blue",
                       backgrounds: [
                         {
                           start: 0,
@@ -341,16 +343,6 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
                       ],
                       tooltipContent: function(d) {
                         return hovertip(d);
-                      },
-                      events: {
-                      //  mouseover:
-                      //     function(d, i, nodes, event) {
-                      //       return hovercoler(d);
-                      //   },
-                        // click:function(d, i, nodes, event) {
-                        //     return hovercoler(d);
-                        // }
-                      
                       }
                     }
                   },
@@ -377,15 +369,6 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
                       ],
                       tooltipContent: function(d) {
                         return hovertip(d);
-                      },
-                      events: {
-                      //  mouseover:
-                      //     function(d, i, nodes, event) {
-                      //       return hovercoler(d);
-                      //   },
-                        // click:function(d, i, nodes, event) {
-                        //     return hovercoler(d);
-                        // }
                       }
                     }
                   },

@@ -71,28 +71,29 @@ export default function RangeView() {
     results.forEach(r=>{
       if (r._source !== null){
         const d = r._source
-        d.block_id = d.chromosome.substring(3)
-        d.value = d.cf
-        d.start = d.beginGrch38
-        d.end = d.endGrch38
-        if(d.chromosome!="chrX"){
+        if(d.cf != "nan"){
+            d.block_id = d.chromosome.substring(3)
+            d.value = d.cf
+            d.start = d.beginGrch38
+            d.end = d.endGrch38
+            if(d.chromosome!="chrX"){
              if (d.type === "Gain")
-            gainTemp.push(d)
-        else if (d.type === "CN-LOH")
-            lohTemp.push(d)
-        else if (d.type === "Loss")
-            lossTemp.push(d)
-        else if (d.type === "Undetermined")
-            undeterTemp.push(d)
-        }
-        if(form.chrX&&(d.type == "mLOX")){
-            chrXTemp.push(d)
-        }
-        if(form.chrY&&(d.type == "mLOY")){
-            chrYTemp.push(d)
-            d.block_id = "Y"
-        }
-       
+                    gainTemp.push(d)
+                else if (d.type === "CN-LOH")
+                    lohTemp.push(d)
+                else if (d.type === "Loss")
+                    lossTemp.push(d)
+                else if (d.type === "Undetermined")
+                    undeterTemp.push(d)
+                }
+                if(form.chrX&&(d.type == "mLOX")){
+                    chrXTemp.push(d)
+                }
+                if(form.chrY&&(d.type == "mLOY")){
+                    chrYTemp.push(d)
+                    d.block_id = "Y"
+                }
+            }
       }
     })
    // setLoading(false)

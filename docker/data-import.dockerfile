@@ -14,6 +14,8 @@ COPY database/package.json /app/database/
 
 RUN npm install
 
-COPY database /app/database/
+COPY database /app/opensearch.js
 
-CMD node startDatabaseImport.js
+COPY database /app/database/import-opensearch.js
+
+CMD node opensearch.js && node import-opensearch.js
