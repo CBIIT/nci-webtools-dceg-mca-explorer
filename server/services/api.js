@@ -12,7 +12,7 @@ apiRouter.use(cors());
 apiRouter.use(express.json());
 
 //const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
-const host = `http://${OPENSEARCH_ENDPOINT}`
+const host = `https://${OPENSEARCH_ENDPOINT}`
 
 console.log("opensearch host is:",host)
 apiRouter.get("/ping", async (request, response) => {
@@ -146,13 +146,13 @@ const client = new Client({
 //console.log(client)
  try {
     const result = await client.search({
-      index: 'new_geneindex',//new_geneindex is convert position as number
+      index: 'combinedgene',//new_geneindex is convert position as number
       body: {
         track_total_hits: true,
         size:10000,
         query :{
          bool: {
-          must: [
+          filter: [
             {
               range: {
                 transcriptionStart: {
@@ -166,7 +166,9 @@ const client = new Client({
                   lt: xMax
                 }
               }
-            },
+            }
+          ],
+          must:[
             {
               match: {
                 chromosome: chr
