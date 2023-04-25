@@ -13,7 +13,7 @@ function GenePlot(props) {
     } else {
      
     }
-  }, [props]);
+  }, [props.xMin,props.xMax]);
 
   async function handleQuery() {
     //setLoading(true)
