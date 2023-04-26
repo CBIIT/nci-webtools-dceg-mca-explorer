@@ -6,22 +6,24 @@ import axios from "axios";
 function GenePlot(props) {
  const [genes, setGenes] = useState([]);
  const [showGene, setShowGene] = useState(false);
-
+ const [isLoading, setIsLoading] = useState(true);
+ const genearr = []
+ //console.log(props.xMax,props.xMin)
   useEffect(() => {
     if (true) {
-        handleQuery()
+      handleQuery()
     } else {
      
     }
-  }, [props.xMin,props.xMax]);
+  }, [props.xMin]);
 
   async function handleQuery() {
     //setLoading(true)
     const query= {"xMin":props.xMin,"xMax":props.xMax,"chr":props.chr}
     const response = await axios.post("api/opensearch/gene", { search: query })
     const results = response.data
-   // console.log("genes:",query)
-    const genearr = []
+    //console.log("genes:",query)
+   
     results.forEach(r=>{
       if (r._source !== null){
         const g = r._source
@@ -32,16 +34,18 @@ function GenePlot(props) {
           genearr.push(r._source)
       }
     })
-    //setLoading(false)
+    
     setGenes(genearr)
     if (genearr.length > 0){
        setShowGene(true)
+       setIsLoading(false)
     }
     else{
        setShowGene(false)
     }
-    //console.log(genearr)
+    console.log(genearr)
   }
+  //console.log(showGene,isLoading)
   let geneRanges = genes.map(gene => {
     let horizPadding = 20000;
       if(genes.length > 20)
@@ -150,7 +154,7 @@ function GenePlot(props) {
 
  
   return (
-    showGene?
+    !showGene && isLoading ? <p>Loading gene plot ...</p> : !isLoading && showGene ?
     <Plot
       data={data}
       layout={layout}

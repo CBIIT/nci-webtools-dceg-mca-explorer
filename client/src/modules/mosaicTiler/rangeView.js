@@ -57,7 +57,12 @@ export default function RangeView() {
     
 
   async function handleSubmit(query) {
-
+   setGain([])
+   setLoh([])
+   setLoss([])
+   setUndetermined([])
+   setChrX([])
+   setChrY([])
     //setLoading(true)
     const response = await axios.post("api/opensearch", { search: query })
     const gainTemp = [...initialXY]
@@ -97,10 +102,10 @@ export default function RangeView() {
       }
     })
    // setLoading(false)
-    setGain(gainTemp)
-    setLoh(lohTemp)
-    setLoss(lossTemp)
-    setUndetermined(undeterTemp)
+    if (form.types.find((e) => e.value === "gain")) setGain(gainTemp)
+    if (form.types.find((e) => e.value === "loss")) setLoh(lohTemp)
+    if (form.types.find((e) => e.value === "loh"))  setLoss(lossTemp)
+    if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp)
     setChrX(chrXTemp)
     setChrY(chrYTemp)
   }
@@ -307,8 +312,9 @@ export default function RangeView() {
         displaylogo: false,
         modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
     };
-    const handleClickedChromoId = (id) => {
+    const  handleClickedChromoId = async (id) => {
         setChromoId(id)
+        //const response = await axios.post("api/opensearch/chromosome", { search: [...query_value,{chr:id}] })
     };
 
     const handleheightChange = (newHeight) =>{

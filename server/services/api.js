@@ -186,3 +186,48 @@ const client = new Client({
   }
 
 })
+
+apiRouter.post("/opensearch/chromosome", async (request, response) => {
+  const { logger } = request.app.locals;
+  const search = request.body.search
+  const dataset = []
+  const queryString = []
+  search.forEach(element => {
+     //element.label?dataset.push(element.value):''
+    element.label?dataset.push(element.value):''
+    element.chr?queryString.push({match:{chromosome:"chr"+element.chr}}):''
+  })
+  queryString.push({terms:{dataset:dataset}})
+  //console.log(queryString)
+  const client = new Client({
+  node: host,
+  auth: {
+    username: OPENSEARCH_USERNAME,
+    password: OPENSEARCH_PASSWORD
+  },
+   ssl: {
+       rejectUnauthorized: false
+   }
+});
+
+ try {
+    const result = await client.search({
+      index: 'mcaexplorer',
+      body: {
+        track_total_hits: true,
+        size:200000,
+        query :{
+          bool:{
+            must: queryString
+          }
+         
+        }
+      }
+    });
+    console.log(result.body.hits.hits.length)
+    response.json(result.body.hits.hits)
+  } catch (error) {
+    console.error(error);
+  }
+
+})

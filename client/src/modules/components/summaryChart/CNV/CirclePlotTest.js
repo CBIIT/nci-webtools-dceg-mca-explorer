@@ -156,7 +156,7 @@ layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=
              width={800} height={750} onHeightChange={props.onHeightChange}>
               
             </SingleChromosome>
-             <button onClick={handleBack}>back</button>
+             <button onClick={handleBack}>Back</button>
           </div>:
           <div>
             <div className="overlayX" id="chrxy">
