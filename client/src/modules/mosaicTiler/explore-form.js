@@ -1,7 +1,7 @@
 import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, loadingState, defaultFormState } from "./explore.state";
+import { sampleState, formState, loadingState, defaultFormState,resetFormState } from "./explore.state";
 import { useState,useRef } from "react";
 
 export default function ExploreForm({ onSubmit, onReset }) {
@@ -44,6 +44,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
     setIsX(false)
     setIsY(false)
     if (onReset) onReset(defaultFormState);
+    onSubmit(resetFormState);
   }
 
   function handleSelectChange(name, selection = []) {

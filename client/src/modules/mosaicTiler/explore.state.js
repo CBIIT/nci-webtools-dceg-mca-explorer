@@ -78,6 +78,18 @@ export const defaultFormState = {
             { value: "undetermined", label: "Undetermined" }]
 };
 
+export const resetFormState = {
+  openSidebar: true,
+  study: {value: "plco", label: "PLCO"},
+  array: { value: "gsa", label: "Global Screening Array" },
+  chromosome: Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" }),
+  plotType: { value: "circos", label: "Circos" },
+  submitted: false,
+  chrX: false,
+  chrY: false,
+  types: []
+};
+
 export const formState = atom({
   key: "explore.formState",
   default: defaultFormState,
