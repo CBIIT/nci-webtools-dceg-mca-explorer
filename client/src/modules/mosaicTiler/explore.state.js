@@ -75,7 +75,8 @@ export const defaultFormState = {
   types: [ { value: "loh", label: "CN-LOH" },
             { value: "loss", label: "Loss" },
             { value: "gain", label: "Gain" },
-            { value: "undetermined", label: "Undetermined" }]
+            { value: "undetermined", label: "Undetermined" }],
+  compare: false
 };
 
 export const resetFormState = {

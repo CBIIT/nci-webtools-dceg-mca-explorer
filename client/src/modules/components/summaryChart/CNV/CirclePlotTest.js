@@ -8,7 +8,7 @@ import layout from "./layout2.json";
 import band from "./band.json"
 import './css/circos.css'
 import SingleChromosome from "./SingleChromosome";
-
+import {  Row, Col,Button} from "react-bootstrap";
 
 //import "./styles.css";
 const hovertip = (d =>{
@@ -146,18 +146,27 @@ const thicknessundermined =  props.undetermined.length<1000?0:linethickness;
 
 let layoutAll = !props.chrX || props.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
 layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
-  return (
 
+let singleFigWidth = props.compare?450:750 
+return (
     <div className="align-middle text-center" >
         {
         showChart ? 
-          <div className="overlayX" style={{height:1500,left:20}}>
+        <div>
+        <Row className="justify-content-center" >
+          <Col >
             <SingleChromosome data={data} chromesomeId={chromesomeId}
-             width={800} height={750} onHeightChange={props.onHeightChange}>
-              
+             width={singleFigWidth} height={singleFigWidth} onHeightChange={props.onHeightChange}>
             </SingleChromosome>
-             <button onClick={handleBack}>Back</button>
-          </div>:
+            </Col>
+            {props.compare?
+            <Col >
+            <SingleChromosome data={data} chromesomeId={chromesomeId}
+             width={singleFigWidth} height={singleFigWidth} onHeightChange={props.onHeightChange}>
+            </SingleChromosome>
+          </Col>:''}
+          </Row>
+           <Button onClick={handleBack}>Back</Button></div>:
           <div>
             <div className="overlayX" id="chrxy">
                 <Circos 

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Plot from 'react-plotly.js';
 import { packRanges } from '../../utils.js'
 import axios from "axios";
+import Spinner from 'react-bootstrap/Spinner';
 
 function GenePlot(props) {
  const [genes, setGenes] = useState([]);
@@ -154,7 +155,10 @@ function GenePlot(props) {
 
  
   return (
-    !showGene && isLoading ? <p>Loading gene plot ...</p> : !isLoading && showGene ?
+    !showGene && isLoading ?  
+    <Spinner animation="border" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </Spinner> : !isLoading && showGene ?
     <Plot
       data={data}
       layout={layout}

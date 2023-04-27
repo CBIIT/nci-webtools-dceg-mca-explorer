@@ -3,6 +3,7 @@ import Plot from 'react-plotly.js';
 import * as htmlToImage from "html-to-image";
 import GenePlot from './GenePlot';
 
+
 function SingleChromosome(props) {
  // console.log(props.chromesomeId, props.data)
  const ref = useRef();

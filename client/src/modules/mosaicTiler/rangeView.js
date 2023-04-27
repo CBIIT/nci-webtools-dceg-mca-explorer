@@ -312,7 +312,7 @@ export default function RangeView() {
         displaylogo: false,
         modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
     };
-    const  handleClickedChromoId = async (id) => {
+    const  handleClickedChromoId = (id) => {
         setChromoId(id)
         //const response = await axios.post("api/opensearch/chromosome", { search: [...query_value,{chr:id}] })
     };
@@ -335,6 +335,7 @@ export default function RangeView() {
                             key={clickedCounter} 
                             loss={loss} loh={loh} gain={gain} undetermined={undetermined} 
                             chrX={form.chrX} chrY={form.chrY} chrx={chrX} chry={chrY}
+                            compare={form.compare}
                             onHeightChange={handleheightChange} 
                             onResetHeight={resetHeight}
                             >  

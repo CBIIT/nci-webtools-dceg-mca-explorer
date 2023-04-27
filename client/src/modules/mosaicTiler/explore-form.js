@@ -9,12 +9,13 @@ export default function ExploreForm({ onSubmit, onReset }) {
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
   const [loading, setLoading] = useRecoilState(loadingState);
-  console.log(form)
+  //console.log(form)
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) })).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" })
   const formRef = useRef();
   const [isX, setIsX] = useState(false)
   const [isY, setIsY] = useState(false)
+  const [compare, setCompare] = useState(false)
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -25,6 +26,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
     }
     else if( name ==="chrY"){
       setIsY(event.target.checked)
+      mergeForm({ [name]: event.target.checked})
+    }
+    else if(name==="compare" ){
+      console.log("compare:",event.target.checked)
+      setCompare(event.target.checked)
       mergeForm({ [name]: event.target.checked})
     }
     else
@@ -105,6 +111,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   //console.log(form)
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset} >
+    
       <Form.Group className="mb-3" controlId="study">
         <Form.Label className="required">Study</Form.Label>
         <Select
@@ -212,6 +219,15 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Accordion.Item eventKey="0">
           <Accordion.Header style={{ backgroundColor: '#343a40' }}>Optional Fields</Accordion.Header>
           <Accordion.Body>
+            <Form.Check 
+              type="switch"
+              id="compare"
+              name="compare"
+              checked={form.compare.enabled}
+              onChange={handleChange}
+              label="Check this to comparison"
+            />
+            <br></br>
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
               <Select
@@ -340,8 +356,10 @@ export default function ExploreForm({ onSubmit, onReset }) {
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
+     
 
       <div className="m-3 text-end">
+       
         <Button variant="outline-secondary" className="me-1" type="reset">
           Reset
         </Button>
@@ -354,5 +372,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
         </OverlayTrigger>
       </div>
     </Form>
+    
   );
 }
