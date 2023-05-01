@@ -9,10 +9,12 @@ import band from "./band.json"
 import './css/circos.css'
 import SingleChromosome from "./SingleChromosome";
 import {  Row, Col,Button} from "react-bootstrap";
+import { formState } from "../../../mosaicTiler/explore.state";
+import { useRecoilState } from "recoil";
 
 //import "./styles.css";
 const hovertip = (d =>{
-  return "<p style='text-align:left'>Sid: " +d.sampleId+ "<br> Study: "+ d.dataset+"<br> Type: "+d.type+ "<br> Cellular Fraction: "+ d.value + "<br> Start: " + d.start+"<br> End: "+d.end+"<br> Ancestry: "+d.ancestry+"<br> Sex: "+d.sex+"<br> Age: "+" "+"</p>";
+  return "<p style='text-align:left'>Sid: " +d.sampleId+ "<br> Study: "+ d.dataset+"<br> Type: "+d.type+ "<br> Cellular Fraction: "+ d.value + "<br> Start: " + d.start+"<br> End: "+d.end+"<br> Ancestry: "+d.ancestry+"<br> Sex: "+d.computedGender+"<br> Age: "+d.age+" "+"</p>";
 })
 
 const size = 800;
@@ -32,7 +34,8 @@ function changeBackground(track, chromesomeId, opacity){
 export default function CirclePlotTest(props) {
   const [showChart, setShowChart] = useState(false);
   const [chromesomeId, setChromesomeId] = useState(0);
-  //console.log(props)
+  const [form, setForm] = useRecoilState(formState);
+  console.log(form)
   const [circle, setCircle] = useState({
     loss:props.loss,
     gain:props.gain,
@@ -134,6 +137,23 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         ...props.chry.filter(chr=>chr.block_id===chromesomeId),
         // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
     ]
+let dataCompared = []
+const minage =  Number(form.minAge!==undefined?form.minAge:0)
+const maxage =  Number(form.maxAge!==undefined?form.maxAge:1)
+const ancestry = form.ancestry!==undefined?JSON.stringify(form.ancestry):''
+const mincf = Number(form.minFraction)/100.0
+const maxcf = Number(form.maxFraction)/100.0
+const sex = form.sex!=undefined?JSON.stringify(form.sex):""
+
+data.forEach(d=>{
+  if( (d.age !== undefined? Number(d.age) > minage && Number(d.age) < maxage :true) &&
+      (d.computedGender !== undefined? sex.includes(d.computedGender):true) &&
+      (ancestry ==""? true: d.ancestry !== undefined? ancestry.includes(d.ancestry):true) &&
+      (d.cf !== undefined? Number(d.cf) > mincf && Number(d.cf) < maxcf:true)){
+        dataCompared.push(d)
+      }
+})
+console.log(data,dataCompared)
 const dataXY = [...props.chrx, ...props.chry] 
 //console.log("gain:",props.gain.length,"loh:",props.loh.length,
 //"loss:",props.loss.length,"under:",props.undetermined.length)
@@ -147,7 +167,7 @@ const thicknessundermined =  props.undetermined.length<1000?0:linethickness;
 let layoutAll = !props.chrX || props.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
 layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
 
-let singleFigWidth = props.compare?450:750 
+let singleFigWidth = form.compare?400:750 
 return (
     <div className="align-middle text-center" >
         {
@@ -159,9 +179,9 @@ return (
              width={singleFigWidth} height={singleFigWidth} onHeightChange={props.onHeightChange}>
             </SingleChromosome>
             </Col>
-            {props.compare?
+            {form.compare?
             <Col >
-            <SingleChromosome data={data} chromesomeId={chromesomeId}
+            <SingleChromosome data={dataCompared} chromesomeId={chromesomeId}
              width={singleFigWidth} height={singleFigWidth} onHeightChange={props.onHeightChange}>
             </SingleChromosome>
           </Col>:''}

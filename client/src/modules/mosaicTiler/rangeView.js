@@ -335,7 +335,7 @@ export default function RangeView() {
                             key={clickedCounter} 
                             loss={loss} loh={loh} gain={gain} undetermined={undetermined} 
                             chrX={form.chrX} chrY={form.chrY} chrx={chrX} chry={chrY}
-                            compare={form.compare}
+                            
                             onHeightChange={handleheightChange} 
                             onResetHeight={resetHeight}
                             >  

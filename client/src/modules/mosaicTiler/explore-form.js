@@ -29,14 +29,14 @@ export default function ExploreForm({ onSubmit, onReset }) {
       mergeForm({ [name]: event.target.checked})
     }
     else if(name==="compare" ){
-      console.log("compare:",event.target.checked)
+      //console.log("compare:",event.target.checked)
       setCompare(event.target.checked)
       mergeForm({ [name]: event.target.checked})
     }
     else
       mergeForm({ [name]: value })
     
-    console.log(form)
+   // console.log(form)
   }
 
   function handleSubmit(event) {
