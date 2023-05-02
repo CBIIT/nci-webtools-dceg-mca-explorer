@@ -41,8 +41,8 @@ export default function CirclePlotTest(props) {
     gain:props.gain,
     loh:props.loh,
     undetermined:props.undetermined,
-    chrx: props.chrx,
-    chry: props.chry
+    chrx: form.chrX,
+    chry: form.chrY
   }
   );
 
@@ -138,22 +138,22 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
     ]
 let dataCompared = []
-const minage =  Number(form.minAge!==undefined?form.minAge:0)
-const maxage =  Number(form.maxAge!==undefined?form.maxAge:1)
-const ancestry = form.ancestry!==undefined?JSON.stringify(form.ancestry):''
-const mincf = Number(form.minFraction)/100.0
-const maxcf = Number(form.maxFraction)/100.0
-const sex = form.sex!=undefined?JSON.stringify(form.sex):""
-
+const minage =  Number(form.minAge!==null?form.minAge:0)
+const maxage =  Number(form.maxAge!==null?form.maxAge:1)
+const ancestry = form.ancestry.length !==0 ?JSON.stringify(form.ancestry):''
+const mincf = Number(form.minFraction!==null?form.minFraction:0)
+const maxcf = Number(form.maxFraction!==null?form.maxFraction:1)
+const sex = form.sex.length !==0 ?JSON.stringify(form.sex):""
+//console.log(minage,maxage,mincf,maxcf)
 data.forEach(d=>{
   if( (d.age !== undefined? Number(d.age) > minage && Number(d.age) < maxage :true) &&
-      (d.computedGender !== undefined? sex.includes(d.computedGender):true) &&
-      (ancestry ==""? true: d.ancestry !== undefined? ancestry.includes(d.ancestry):true) &&
+      (sex ==='' ? true: d.computedGender !== undefined? sex.includes(d.computedGender):true) &&
+      (ancestry === ''? true: d.ancestry !== undefined? ancestry.includes(d.ancestry):true) &&
       (d.cf !== undefined? Number(d.cf) > mincf && Number(d.cf) < maxcf:true)){
         dataCompared.push(d)
       }
 })
-console.log(data,dataCompared)
+//console.log(data,dataCompared)
 const dataXY = [...props.chrx, ...props.chry] 
 //console.log("gain:",props.gain.length,"loh:",props.loh.length,
 //"loss:",props.loss.length,"under:",props.undetermined.length)
@@ -164,8 +164,8 @@ const thicknessloss =  props.loss.length<1000?0:linethickness;
 const thicknessundermined =  props.undetermined.length<1000?0:linethickness;
 //console.log(props.undetermined)
 
-let layoutAll = !props.chrX || props.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
-layoutAll = !props.chrY|| props.chrY===undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
+let layoutAll = !form.chrX || form.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
+layoutAll = !form.chrY|| form.chrY===undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
 
 let singleFigWidth = form.compare?400:750 
 return (
@@ -173,6 +173,7 @@ return (
         {
         showChart ? 
         <div>
+          <p>Chromosome {chromesomeId}</p>
         <Row className="justify-content-center" >
           <Col >
             <SingleChromosome data={data} chromesomeId={chromesomeId}

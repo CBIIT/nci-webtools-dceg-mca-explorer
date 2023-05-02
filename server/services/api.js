@@ -179,7 +179,7 @@ const client = new Client({
         }
       }
     });
-    //console.log(result.body.hits)
+    console.log(result.body.hits.hits.length)
     response.json(result.body.hits.hits)
   } catch (error) {
     console.error(error);

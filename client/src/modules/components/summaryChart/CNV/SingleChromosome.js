@@ -8,7 +8,7 @@ function SingleChromosome(props) {
  // console.log(props.chromesomeId, props.data)
  const ref = useRef();
  const [layout, setLayout] = useState({
-  title:"Chromosome "+ props.chromesomeId,
+  //title:"Chromosome "+ props.chromesomeId,
   barmode: 'stack',
   width: props.width,
   height: props.height,
@@ -132,7 +132,7 @@ function SingleChromosome(props) {
     useEffect(()=>{
       setLayout({
         ...layout,
-        title:"Chromosome "+ props.chromesomeId
+        //title:"Chromosome "+ props.chromesomeId
       })
       // async e => {
       //    // draw genes if zoom is at less than 50 MB

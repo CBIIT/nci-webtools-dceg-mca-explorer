@@ -79,6 +79,7 @@ export default function RangeView() {
         if(d.cf != "nan"){
             d.block_id = d.chromosome.substring(3)
             d.value = d.cf
+            d.dataset = d.dataset.toUpperCase()
             d.start = d.beginGrch38
             d.end = d.endGrch38
             if(d.chromosome!="chrX"){
@@ -132,7 +133,7 @@ export default function RangeView() {
     useEffect(() => {
         const clickedValues = allValues.filter((v) =>v.block_id===chromoId)
        setAllValue([...clickedValues])
-        console.log("click chromesome",allValue)
+        console.log("click chromesome",allValues)
     },[chromoId])
     const columns = [
         {
@@ -192,7 +193,7 @@ export default function RangeView() {
             Header: <b>Ancestry</b>
         },
         {
-            accessor: "sex",
+            accessor: "computedGender",
             id: "sex",
             label: "Sex",
             Header: <b>Sex</b>
@@ -286,14 +287,14 @@ export default function RangeView() {
                 data: (chromoId>=0? allValue:allValues).map((e) => {
                     return [
                         { value: e.sampleId},
-                        { value: e.dataset },
+                        { value: e.dataset.toUpperCase() },
                         { value: e.block_id },
                         { value: e.type },
                         { value: e.value },
                         { value: e.start },
                         { value: e.end },
                         { value: e.ancestry },
-                        { value: e.sex },
+                        { value: e.computedGender },
                         { value: e.age },
                     ];
                 }),
@@ -334,7 +335,7 @@ export default function RangeView() {
                             clickedChromoId={handleClickedChromoId} 
                             key={clickedCounter} 
                             loss={loss} loh={loh} gain={gain} undetermined={undetermined} 
-                            chrX={form.chrX} chrY={form.chrY} chrx={chrX} chry={chrY}
+                            chrx={chrX} chry={chrY}
                             
                             onHeightChange={handleheightChange} 
                             onResetHeight={resetHeight}

@@ -76,7 +76,14 @@ export const defaultFormState = {
             { value: "loss", label: "Loss" },
             { value: "gain", label: "Gain" },
             { value: "undetermined", label: "Undetermined" }],
-  compare: false
+  compare: false,
+  minAge:null,
+  maxAge:null,
+  algorithm:[],
+  ancestry:[],
+  maxFraction:null,
+  minFraction:null,
+  sex:[]
 };
 
 export const resetFormState = {
@@ -88,7 +95,15 @@ export const resetFormState = {
   submitted: false,
   chrX: false,
   chrY: false,
-  types: []
+  types: [],
+  compare: false,
+  minAge:null,
+  maxAge:null,
+  algorithm:[],
+  ancestry:[],
+  maxFraction:null,
+  minFraction:null,
+  sex:[]
 };
 
 export const formState = atom({

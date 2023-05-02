@@ -43,14 +43,15 @@ function GenePlot(props) {
     }
     else{
        setShowGene(false)
+       setIsLoading(false)
     }
     console.log(genearr)
   }
   //console.log(showGene,isLoading)
   let geneRanges = genes.map(gene => {
-    let horizPadding = 20000;
+    let horizPadding = 20000*2;
       if(genes.length > 20)
-       horizPadding = 40000;
+       horizPadding = 40000*2;
       return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
     });
 

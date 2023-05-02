@@ -19,7 +19,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleChange(event) {
     const { name, value } = event.target;
-    //console.log(name, event.target.checked)
+    console.log(name, value)
     if(name==="chrX" ){
       setIsX(event.target.checked)
       mergeForm({ [name]: event.target.checked})
@@ -36,10 +36,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
     else
       mergeForm({ [name]: value })
     
-   // console.log(form)
+    //console.log(form)
   }
 
   function handleSubmit(event) {
+    console.log(form)
     event.preventDefault();
     if (onSubmit) onSubmit(form);
   }
@@ -49,8 +50,9 @@ export default function ExploreForm({ onSubmit, onReset }) {
     setForm(defaultFormState);
     setIsX(false)
     setIsY(false)
+    setCompare(false)
     if (onReset) onReset(defaultFormState);
-    onSubmit(resetFormState);
+    onSubmit(resetFormState);//clean the plot
   }
 
   function handleSelectChange(name, selection = []) {
@@ -74,7 +76,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
         { value: "ukbb", label: "UK Bio Bank" }
       ]
     }
-
     mergeForm({ [name]: selection })
   }
 
@@ -223,7 +224,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               type="switch"
               id="compare"
               name="compare"
-              checked={form.compare.enabled}
+              checked= {compare}
               onChange={handleChange}
               label="Check this to comparison"
             />
@@ -285,7 +286,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
                     <Form.Control
                       placeholder="Min age"
                       name="minAge"
-                      value={form.minFraction}
+                      value={form.minAge}
                       onChange={handleChange}
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
@@ -296,7 +297,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
                     <Form.Control
                       placeholder="Max age"
                       name="maxAge"
-                      value={form.maxFraction}
+                      value={form.maxAge}
                       onChange={handleChange}
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}

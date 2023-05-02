@@ -28,7 +28,7 @@ export default function Explore() {
 
   function handleSubmit(event) {
     setForm({ ...event, submitted: true });
-    //console.log("submit", event);
+    console.log("submit", event);
   }
 
   function handleReset(event) {
@@ -55,7 +55,7 @@ export default function Explore() {
 
         </SidebarPanel>
         <MainPanel>
-          <Card className="shadow h-100 mb-5 align-self-center">
+          <div className="h-100 mb-5 align-self-center">
             <Card.Body className="p-0">
               <ErrorBoundary
                 fallback={
@@ -81,7 +81,7 @@ export default function Explore() {
                 </Suspense>
               </ErrorBoundary>
             </Card.Body>
-          </Card>
+          </div>
         </MainPanel>
       </SidebarContainer>
     </Container>
