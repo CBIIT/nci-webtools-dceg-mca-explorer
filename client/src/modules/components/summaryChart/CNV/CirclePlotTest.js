@@ -138,11 +138,11 @@ data = [...props.gain.filter(chr=>chr.block_id===chromesomeId),
         // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
     ]
 let dataCompared = []
-const minage =  Number(form.minAge!==null?form.minAge:0)
-const maxage =  Number(form.maxAge!==null?form.maxAge:1)
+const minage =  Number(form.minAge!==''?form.minAge:0)
+const maxage =  Number(form.maxAge!==''?form.maxAge:1)
 const ancestry = form.ancestry.length !==0 ?JSON.stringify(form.ancestry):''
-const mincf = Number(form.minFraction!==null?form.minFraction:0)
-const maxcf = Number(form.maxFraction!==null?form.maxFraction:1)
+const mincf = Number(form.minFraction!==''?form.minFraction/100.0:0)
+const maxcf = Number(form.maxFraction!==''?form.maxFraction/100.0:1)
 const sex = form.sex.length !==0 ?JSON.stringify(form.sex):""
 //console.log(minage,maxage,mincf,maxcf)
 data.forEach(d=>{
@@ -167,7 +167,7 @@ const thicknessundermined =  props.undetermined.length<1000?0:linethickness;
 let layoutAll = !form.chrX || form.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
 layoutAll = !form.chrY|| form.chrY===undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
 
-let singleFigWidth = form.compare?400:750 
+let singleFigWidth = form.compare?350:700 
 return (
     <div className="align-middle text-center" >
         {

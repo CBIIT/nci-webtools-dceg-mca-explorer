@@ -287,7 +287,7 @@ export default function RangeView() {
                 data: (chromoId>=0? allValue:allValues).map((e) => {
                     return [
                         { value: e.sampleId},
-                        { value: e.dataset.toUpperCase() },
+                        { value: e.dataset},
                         { value: e.block_id },
                         { value: e.type },
                         { value: e.value },

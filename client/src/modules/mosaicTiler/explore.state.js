@@ -77,12 +77,12 @@ export const defaultFormState = {
             { value: "gain", label: "Gain" },
             { value: "undetermined", label: "Undetermined" }],
   compare: false,
-  minAge:null,
-  maxAge:null,
+  minAge:'',
+  maxAge:'',
   algorithm:[],
   ancestry:[],
-  maxFraction:null,
-  minFraction:null,
+  maxFraction:'',
+  minFraction:'',
   sex:[]
 };
 
@@ -97,12 +97,12 @@ export const resetFormState = {
   chrY: false,
   types: [],
   compare: false,
-  minAge:null,
-  maxAge:null,
+  minAge:'',
+  maxAge:'',
   algorithm:[],
   ancestry:[],
-  maxFraction:null,
-  minFraction:null,
+  maxFraction:'',
+  minFraction:'',
   sex:[]
 };
 
