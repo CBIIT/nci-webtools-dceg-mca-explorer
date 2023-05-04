@@ -8,6 +8,7 @@ import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest"
 import Legend from "../components/legend";
 
+
 import Table from "../components/table";
 
   const initialXY= [
@@ -27,7 +28,7 @@ export default function RangeView() {
     const [clickedCounter, setClickedCounter] = useState(0);
     const [chromoId, setChromoId] = useState(-1);
     const [allValue, setAllValue] = useState([]);
-    //console.log(form)
+    console.log(form)
     //console.log(form.study.length)
 
     const [figureHeight, setFigureHeight] = useState(chartHeight)
@@ -48,13 +49,18 @@ export default function RangeView() {
 
    // console.log(query_value)
     useEffect(() => {
+   
     if (true) {
         handleSubmit(query_value)
     } else {
      
     }
-  }, [form]);
-    
+  }, []);
+
+   
+//    useEffect(() => {
+//       console.log(form)
+//     }, [form.compare]);
 
   async function handleSubmit(query) {
    setGain([])
@@ -329,7 +335,8 @@ export default function RangeView() {
         <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
             <Tab eventKey="summary" title="Summary">
                 <p style={{ textAlign: "center",marginBottom: "0.5rem",fontWeight: 500 }}>Autosomal mCA Distribution</p>
-                <div className="row justify-content-center" >
+                                 
+                <div className="row justify-content-center" > 
                     <div style={{height:figureHeight,left:10}}>
                         <CirclePlotTest 
                             clickedChromoId={handleClickedChromoId} 

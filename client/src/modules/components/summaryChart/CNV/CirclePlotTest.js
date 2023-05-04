@@ -11,6 +11,7 @@ import SingleChromosome from "./SingleChromosome";
 import {  Row, Col,Button} from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
+import Spinner from 'react-bootstrap/Spinner';
 
 //import "./styles.css";
 const hovertip = (d =>{
@@ -35,7 +36,7 @@ export default function CirclePlotTest(props) {
   const [showChart, setShowChart] = useState(false);
   const [chromesomeId, setChromesomeId] = useState(0);
   const [form, setForm] = useRecoilState(formState);
-  console.log(form)
+  //console.log(form)
   const [circle, setCircle] = useState({
     loss:props.loss,
     gain:props.gain,
@@ -58,6 +59,10 @@ export default function CirclePlotTest(props) {
     })
     //circleRef.current.focus();
   },[props])
+
+  useEffect(() => {
+    console.log(form)
+  },[form.compare])
 
   const sendClickedId = (id)=>{
     props.clickedChromoId(id);
@@ -166,7 +171,7 @@ const thicknessundermined =  props.undetermined.length<1000?0:linethickness;
 
 let layoutAll = !form.chrX || form.chrX===undefined? layout.filter(l=>l.label!=="X") : layout
 layoutAll = !form.chrY|| form.chrY===undefined ? layoutAll.filter(l=>l.label!=="Y") : layoutAll
-
+console.log(form.compare)
 let singleFigWidth = form.compare?350:700 
 return (
     <div className="align-middle text-center" >
@@ -174,7 +179,7 @@ return (
         showChart ? 
         <div>
           <p>Chromosome {chromesomeId}</p>
-        <Row className="justify-content-center" >
+          <Row className="justify-content-center" >
           <Col >
             <SingleChromosome data={data} chromesomeId={chromesomeId}
              width={singleFigWidth} height={singleFigWidth} onHeightChange={props.onHeightChange}>
@@ -187,7 +192,7 @@ return (
             </SingleChromosome>
           </Col>:''}
           </Row>
-           <Button onClick={handleBack}>Back</Button></div>:
+           <Button onClick={handleBack}>Back</Button></div> :
           <div>
             <div className="overlayX" id="chrxy">
                 <Circos 
@@ -429,6 +434,7 @@ return (
                 size={size}
               />
             </div>
+           
           </div>
           }
     </div>

@@ -49,4 +49,14 @@
     right: 0%;
     bottom: 10;
     left: 5%;
+   
+}
+
+.overlaySpinner{
+    position: absolute;
+    z-index: -1;
+    top: 40%;
+    right: 0%;
+    bottom: 10;
+    left: 5%;
 }

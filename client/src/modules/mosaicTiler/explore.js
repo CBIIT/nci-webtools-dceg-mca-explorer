@@ -30,6 +30,10 @@ export default function Explore() {
     setForm({ ...event, submitted: true });
     console.log("submit", event);
   }
+  function handleCompare(event) {
+    setForm({...form,compare:event.compare});
+    //console.log(event)
+  }
 
   function handleReset(event) {
     setForm(event);
@@ -49,10 +53,9 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit} />
+              <ExploreForm onSubmit={handleSubmit} onCompare={handleCompare} />
             </Card.Body>
           </Card>
-
         </SidebarPanel>
         <MainPanel>
           <div className="h-100 mb-5 align-self-center">

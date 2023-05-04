@@ -2,9 +2,9 @@ import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col 
 import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState,resetFormState } from "./explore.state";
-import { useState,useRef } from "react";
+import { useState,useRef,useEffect } from "react";
 
-export default function ExploreForm({ onSubmit, onReset }) {
+export default function ExploreForm({ onSubmit, onReset,onCompare }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
@@ -19,7 +19,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleChange(event) {
     const { name, value } = event.target;
-    console.log(name, value)
+    //console.log(name, value)
     if(name==="chrX" ){
       setIsX(event.target.checked)
       mergeForm({ [name]: event.target.checked})
@@ -29,18 +29,16 @@ export default function ExploreForm({ onSubmit, onReset }) {
       mergeForm({ [name]: event.target.checked})
     }
     else if(name==="compare" ){
-      //console.log("compare:",event.target.checked)
       setCompare(event.target.checked)
-      mergeForm({ [name]: event.target.checked})
+      mergeForm({ [name]: event.target.checked}) 
+      onCompare({compare:event.target.checked})   
     }
     else
       mergeForm({ [name]: value })
-    
-    //console.log(form)
   }
+  
 
   function handleSubmit(event) {
-    console.log(form)
     event.preventDefault();
     if (onSubmit) onSubmit(form);
   }
@@ -111,7 +109,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
   //console.log(form)
   return (
-    <Form onSubmit={handleSubmit} onReset={handleReset} >
+    <Form onSubmit={handleSubmit} onReset={handleReset}  >
     
       <Form.Group className="mb-3" controlId="study">
         <Form.Label className="required">Study</Form.Label>
@@ -220,14 +218,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Accordion.Item eventKey="0">
           <Accordion.Header style={{ backgroundColor: '#343a40' }}>Optional Fields</Accordion.Header>
           <Accordion.Body>
-            <Form.Check 
-              type="switch"
-              id="compare"
-              name="compare"
-              checked= {compare}
-              onChange={handleChange}
-              label="Check this to comparison"
-            />
             <br></br>
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
@@ -352,8 +342,15 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 </Col>
               </Row>
             </Form.Group>
-
-
+            <br></br>
+            <Form.Check 
+              type="switch"
+              id="compare"
+              name="compare"
+              checked= {compare}
+              onChange={handleChange}
+              label="Check this to comparison"
+            />
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
