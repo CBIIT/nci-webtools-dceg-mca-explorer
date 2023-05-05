@@ -12,7 +12,7 @@ function SingleChromosome(props) {
   barmode: 'stack',
   width: props.width,
   height: props.height,
-  margin: { l: 40, r: 20, t: 40, b: 30 },
+  margin: { l: 10, r: 0, t: 40, b: 30 },
   xaxis: {  title:'', showgrid: true,visible:true,showticklabels: true,  zeroline:true, showline: true,},
   yaxis: { show:false, visible: false,  title: '', showgrid: false, showticklabels: false, zeroline:false, showline: false,},
  // dragmode: 'select',
@@ -152,12 +152,6 @@ function SingleChromosome(props) {
     },[props.chromesomeId])
   
   return (
-    <div>
-      <div className="mx-5">
-        {/* <a href="javascript:void(0)" onClick={handleDownload} style={{ float: "right", justifyContent: "flex-end" }}>
-          Download
-        </a> */}
-      </div>
       <div id="plotly-div">
       <Plot
       data={data}
@@ -182,7 +176,7 @@ function SingleChromosome(props) {
         
       </GenePlot>:''}
     </div>
-    </div>
+
   );
 }
 

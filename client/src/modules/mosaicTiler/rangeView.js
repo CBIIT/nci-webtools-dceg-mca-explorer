@@ -55,7 +55,11 @@ export default function RangeView() {
     } else {
      
     }
-  }, []);
+  }, [ form.counterSubmitted
+    //form.study,form.types,form.chrX,form.chrY,form.submitted,form.chromosome,
+    // form.sex,form.array,form.maxAge,form.minAge,form.maxFraction,form.minFraction,
+    // form.ancestry,form.algorithm
+]);
 
    
 //    useEffect(() => {

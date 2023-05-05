@@ -21,14 +21,22 @@ export default function Explore() {
   const loading = useRecoilValue(loadingState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
-
+  const [counter,setCounter] =useState(0)
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
 
+  useEffect(() => {
+    setCounter(form.counterSubmitted)
+  });
+
   function handleSubmit(event) {
-    setForm({ ...event, submitted: true });
-    console.log("submit", event);
+    setForm({ ...event, submitted: true, counterSubmitted:counter+1 });
+    //console.log("submit",  form.counterSubmitted);
+  }
+  function handleFilter(event) {
+    setForm({ ...event,submitted: true,counterSubmitted:form.counterSubmitted});
+    //console.log("Filter: ", form.counterSubmitted)
   }
   function handleCompare(event) {
     setForm({...form,compare:event.compare});
@@ -53,7 +61,7 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit} onCompare={handleCompare} />
+              <ExploreForm onSubmit={handleSubmit} onCompare={handleCompare} onFilter={handleFilter} />
             </Card.Body>
           </Card>
         </SidebarPanel>

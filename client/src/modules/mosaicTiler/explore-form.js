@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState,resetFormState } from "./explore.state";
 import { useState,useRef,useEffect } from "react";
 
-export default function ExploreForm({ onSubmit, onReset,onCompare }) {
+export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
@@ -108,6 +108,12 @@ export default function ExploreForm({ onSubmit, onReset,onCompare }) {
     return form.study && form.types;
   }
   //console.log(form)
+  function handleFilter(event){
+    event.preventDefault();
+    onFilter(form)
+   // onSubmit(form)
+  }
+ 
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}  >
     
@@ -343,20 +349,33 @@ export default function ExploreForm({ onSubmit, onReset,onCompare }) {
               </Row>
             </Form.Group>
             <br></br>
-            <Form.Check 
-              type="switch"
-              id="compare"
-              name="compare"
-              checked= {compare}
-              onChange={handleChange}
-              label="Check this to comparison"
-            />
+            <Row>
+              <Col>
+                <Form.Check 
+                  type="switch"
+                  id="compare"
+                  name="compare"
+                  checked= {compare}
+                  onChange={handleChange}
+                  label="Check this to comparison"
+                />
+            </Col>
+            <Col >
+            <Button variant="outline-secondary" className="me-1" 
+             type="button" onClick={handleFilter}>
+              Update
+            </Button>
+             <Button variant="outline-secondary" className="me-1" type="button">
+              Clear
+            </Button>
+            </Col>
+            </Row>
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
      
 
-      <div className="m-3 text-end">
+      <div className="m-3">
        
         <Button variant="outline-secondary" className="me-1" type="reset">
           Reset

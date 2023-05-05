@@ -160,9 +160,10 @@ function GenePlot(props) {
     <Spinner animation="border" role="status">
       <span className="visually-hidden">Loading...</span>
     </Spinner> : !isLoading && showGene ?
-    <Plot
+    <Plot 
       data={data}
       layout={layout}
+      style={{ width: '100%', height: '100%',display:'block' }} 
     />:''
   )
 }

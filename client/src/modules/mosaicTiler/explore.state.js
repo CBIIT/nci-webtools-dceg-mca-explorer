@@ -83,7 +83,8 @@ export const defaultFormState = {
   ancestry:[],
   maxFraction:'',
   minFraction:'',
-  sex:[]
+  sex:[],
+  counterSubmitted:0
 };
 
 export const resetFormState = {
@@ -103,7 +104,8 @@ export const resetFormState = {
   ancestry:[],
   maxFraction:'',
   minFraction:'',
-  sex:[]
+  sex:[],
+  counterSubmitted:0
 };
 
 export const formState = atom({
