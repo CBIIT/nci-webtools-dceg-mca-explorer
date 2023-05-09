@@ -37,7 +37,8 @@ export default function CirclePlotTest(props) {
   const [chromesomeId, setChromesomeId] = useState(0);
   const [form, setForm] = useRecoilState(formState);
   const [dataFilter, setDataFilter] = useState([])
-  //console.log(form)
+ //console.log(form.chromosome)
+ 
   const [circle, setCircle] = useState({
     loss:props.loss,
     gain:props.gain,
@@ -89,6 +90,7 @@ export default function CirclePlotTest(props) {
         // call api or anything
         changeXYbackcolor()
      });
+
   const handleEnter= ()=> {
     console.log("handleEnter")
     if(circleRef.current){
@@ -120,6 +122,10 @@ export default function CirclePlotTest(props) {
                 setShowChart(true);
                 setChromesomeId(b.__data__.key);
                 sendClickedId(b.__data__.key);
+                const cid = "chr"+b.__data__.key
+                const chrid = form.chromosome.filter(c=>c.value===cid)
+                console.log(form.chromosome,chrid)
+                setForm({ ...form,chromosome:chrid});
                })        
             });    
         })
@@ -147,13 +153,18 @@ const ancestry = form.ancestry.length !==0 ?JSON.stringify(form.ancestry):''
 const mincf = Number(form.minFraction!==''?form.minFraction/100.0:0)
 const maxcf = Number(form.maxFraction!==''?form.maxFraction/100.0:1)
 const sex = form.sex.length !==0 ?JSON.stringify(form.sex):""
+const start = Number(form.start!==''?form.start:0)
+const end = Number(form.end!==''?form.end:9999999999) 
 //console.log(minage,maxage,mincf,maxcf)
 let dataCompared = []
 data.forEach(d=>{
   if( (d.age !== undefined? Number(d.age) > minage && Number(d.age) < maxage :true) &&
       (sex ==='' ? true: d.computedGender !== undefined? sex.includes(d.computedGender):true) &&
       (ancestry === ''? true: d.ancestry !== undefined? ancestry.includes(d.ancestry):true) &&
-      (d.cf !== undefined? Number(d.cf) > mincf && Number(d.cf) < maxcf:true)){
+      (d.cf !== undefined? Number(d.cf) > mincf && Number(d.cf) < maxcf:true)
+      && (Number(d.start) >= start && Number(d.end) <= end )
+      ){
+        console.log(d)
         dataCompared.push(d)
       }
   })

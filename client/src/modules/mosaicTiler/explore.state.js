@@ -84,7 +84,9 @@ export const defaultFormState = {
   maxFraction:'',
   minFraction:'',
   sex:[],
-  counterSubmitted:0
+  counterSubmitted:0,
+  start:'',
+  end:''
 };
 
 export const resetFormState = {
@@ -105,7 +107,9 @@ export const resetFormState = {
   maxFraction:'',
   minFraction:'',
   sex:[],
-  counterSubmitted:0
+  counterSubmitted:0,
+  start:'',
+  end:''
 };
 
 export const formState = atom({

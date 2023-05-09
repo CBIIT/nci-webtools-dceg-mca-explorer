@@ -113,6 +113,9 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
     onFilter(form)
    // onSubmit(form)
   }
+  useEffect(()=>{
+    console.log(form.chromosome)
+  },[form.chromosome])
  
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}  >
@@ -181,27 +184,6 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
           />
       </Form.Group>
       }
-
-      {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="start">
-        <Form.Label className="required">Event Start Position</Form.Label>
-        <Form.Control
-          name="start"
-          type="number"
-          value={form.start}
-          onChange={handleChange}
-          min="0"
-        />
-      </Form.Group> : <></>}
-      {form.chromosome.length === 1 ? <Form.Group className="mb-3" controlId="end">
-        <Form.Label className="required">Event End Position</Form.Label>
-        <Form.Control
-          name="end"
-          type="number"
-          value={form.end}
-          onChange={handleChange}
-          min="0"
-        />
-      </Form.Group> : <></>}
       <Form.Group className="mb-3" controlId="types">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Select
@@ -224,7 +206,26 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
         <Accordion.Item eventKey="0">
           <Accordion.Header style={{ backgroundColor: '#343a40' }}>Optional Fields</Accordion.Header>
           <Accordion.Body>
-            <br></br>
+              {form.chromosome.length >=0 ? <Form.Group className="mb-3" controlId="start">
+                <Form.Label className="required">Event Start Position</Form.Label>
+                <Form.Control
+                name="start"
+                type="number"
+                value={form.start}
+                onChange={handleChange}
+                min="0"
+              />
+            </Form.Group> : <></>}
+            {form.chromosome.length >=0 ? <Form.Group className="mb-3" controlId="end">
+              <Form.Label className="required">Event End Position</Form.Label>
+              <Form.Control
+                name="end"
+                type="number"
+                value={form.end}
+                onChange={handleChange}
+                min="0"
+              />
+            </Form.Group> : <></>}
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
               <Select

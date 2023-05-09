@@ -141,9 +141,8 @@ export default function RangeView() {
     const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined)
    
     useEffect(() => {
-        const clickedValues = allValues.filter((v) =>v.block_id===chromoId)
+       const clickedValues = allValues.filter((v) =>v.block_id===chromoId)
        setAllValue([...clickedValues])
-        console.log("click chromesome",allValues)
     },[chromoId])
     const columns = [
         {
