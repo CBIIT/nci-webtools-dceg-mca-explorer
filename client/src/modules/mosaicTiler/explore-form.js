@@ -1,42 +1,44 @@
 import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, loadingState, defaultFormState,resetFormState } from "./explore.state";
-import { useState,useRef,useEffect } from "react";
+import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
+import { useState, useRef, useEffect } from "react";
 
-export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
+export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
   const [loading, setLoading] = useRecoilState(loadingState);
   //console.log(form)
   const mergeForm = (obj) => setForm({ ...form, ...obj });
-  const chromosomes = [{ value: "all", label: "All Chromosomes" }].concat(Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) })).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" })
+  const chromosomes = [{ value: "all", label: "All Chromosomes" }]
+    .concat(
+      Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
+        return { value: "chr" + i, label: i };
+      })
+    )
+    .concat({ value: "chrX", label: "X" })
+    .concat({ value: "chrY", label: "Y" });
   const formRef = useRef();
-  const [isX, setIsX] = useState(false)
-  const [isY, setIsY] = useState(false)
-  const [compare, setCompare] = useState(false)
+  const [isX, setIsX] = useState(false);
+  const [isY, setIsY] = useState(false);
+  const [compare, setCompare] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
     //console.log(name, value)
-    if(name==="chrX" ){
-      setIsX(event.target.checked)
-      mergeForm({ [name]: event.target.checked})
-    }
-    else if( name ==="chrY"){
-      setIsY(event.target.checked)
-      mergeForm({ [name]: event.target.checked})
-    }
-    else if(name==="compare" ){
-      setCompare(event.target.checked)
-      mergeForm({ [name]: event.target.checked}) 
-      onCompare({compare:event.target.checked})   
-    }
-    else
-      mergeForm({ [name]: value })
+    if (name === "chrX") {
+      setIsX(event.target.checked);
+      mergeForm({ [name]: event.target.checked });
+    } else if (name === "chrY") {
+      setIsY(event.target.checked);
+      mergeForm({ [name]: event.target.checked });
+    } else if (name === "compare") {
+      setCompare(event.target.checked);
+      mergeForm({ [name]: event.target.checked });
+      onCompare({ compare: event.target.checked });
+    } else mergeForm({ [name]: value });
   }
-  
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -46,80 +48,68 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
   function handleReset(event) {
     event.preventDefault();
     setForm(defaultFormState);
-    setIsX(false)
-    setIsY(false)
-    setCompare(false)
+    setIsX(false);
+    setIsY(false);
+    setCompare(false);
     if (onReset) onReset(defaultFormState);
-    onSubmit(resetFormState);//clean the plot
+    onSubmit(resetFormState); //clean the plot
   }
 
   function handleSelectChange(name, selection = []) {
     //console.log(name,selection);
     if (name === "chromosome" && selection.find((option) => option.value === "all")) {
-      selection = chromosomes.slice(1)
+      selection = chromosomes.slice(1);
     }
 
-    if (name === "types" && selection.find((option) => option.value === "all")){
+    if (name === "types" && selection.find((option) => option.value === "all")) {
       selection = [
         { value: "loh", label: "CN-LOH" },
         { value: "loss", label: "Loss" },
         { value: "gain", label: "Gain" },
         { value: "undetermined", label: "Undetermined" },
-      ]
+      ];
     }
 
     if (name === "study" && selection.find((option) => option.value === "all")) {
       selection = [
         { value: "plco", label: "PLCO" },
-        { value: "ukbb", label: "UK Bio Bank" }
-      ]
+        { value: "ukbb", label: "UK Bio Bank" },
+      ];
     }
-    mergeForm({ [name]: selection })
+    mergeForm({ [name]: selection });
   }
 
   // avoid loading all samples as Select options
-  function filterSamples(value, limit = 100) {
-
-  }
+  function filterSamples(value, limit = 100) {}
 
   function isValid() {
-
-    if (form.plotType.value === "static" && form.chromosome.length === 0)
-      return false;
+    if (form.plotType.value === "static" && form.chromosome.length === 0) return false;
 
     if (form.chromosome.length === 1) {
+      if (!form.start || !form.end) return false;
 
-      if (!form.start || !form.end)
-        return false
-
-      if ((Number(form.start) < 0 || Number(form.end < 0)) || Number(form.start) > Number(form.end))
-        return false
+      if (Number(form.start) < 0 || Number(form.end < 0) || Number(form.start) > Number(form.end)) return false;
     }
-
 
     if (form.minFraction) {
-      if (!form.maxFraction || Number(form.maxFraction) <= Number(form.minFraction))
-        return false
-    }
-    else if (form.maxFraction) {
-      if (!form.minFraction || Number(form.maxFraction) <= Number(form.minFraction))
-        return false
+      if (!form.maxFraction || Number(form.maxFraction) <= Number(form.minFraction)) return false;
+    } else if (form.maxFraction) {
+      if (!form.minFraction || Number(form.maxFraction) <= Number(form.minFraction)) return false;
     }
     return form.study && form.types;
   }
   //console.log(form)
-  function handleFilter(event){
+  function handleFilter(event) {
     event.preventDefault();
-    onFilter(form)
-   // onSubmit(form)
+    onFilter(form);
+    // onSubmit(form)
   }
-  useEffect(()=>{
-    console.log(form.chromosome)
-  },[form.chromosome])
- 
+  useEffect(() => {
+    console.log(form.chromosome);
+  }, [form.chromosome]);
+
   return (
-    <Form onSubmit={handleSubmit} onReset={handleReset}  >
-    
+    <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="study">
         <Form.Label className="required">Study</Form.Label>
         <Select
@@ -131,13 +121,18 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
           options={[
             { value: "all", label: "All Studies" },
             { value: "plco", label: "PLCO" },
-            { value: "ukbb", label: "UK BioBank" }
+            { value: "ukbb", label: "UK BioBank" },
           ]}
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="plotType">
         <Form.Label className="required">Plot Type</Form.Label>
-        <OverlayTrigger overlay={<Tooltip id="plotType_tooltip">Circos plot displays all chromosomes, select Static plot to visualize a subset of chromosomes</Tooltip>}>
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="plotType_tooltip">
+              Circos plot displays all chromosomes, select Static plot to visualize a subset of chromosomes
+            </Tooltip>
+          }>
           <Select
             placeholder="No plot type selected"
             name="plotType"
@@ -152,19 +147,22 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
         </OverlayTrigger>
       </Form.Group>
 
-      {form.plotType.value === "static" ? <Form.Group className="mb-3" controlId="chromosome">
-        <Form.Label className="required">Chromosome</Form.Label>
-        <Select
-          placeholder="No chromosome selected"
-          name='chromosome'
-          isMulti={true}
-          value={form.chromosome}
-          onChange={(ev) => handleSelectChange("chromosome", ev)}
-          options={chromosomes}
-        />
-      </Form.Group> : 
-      <Form.Group className="mb-3" controlId="chromosome" >
-          <Form.Check ref={formRef}
+      {form.plotType.value === "static" ? (
+        <Form.Group className="mb-3" controlId="chromosome">
+          <Form.Label className="required">Chromosome</Form.Label>
+          <Select
+            placeholder="No chromosome selected"
+            name="chromosome"
+            isMulti={true}
+            value={form.chromosome}
+            onChange={(ev) => handleSelectChange("chromosome", ev)}
+            options={chromosomes}
+          />
+        </Form.Group>
+      ) : (
+        <Form.Group className="mb-3" controlId="chromosome">
+          <Form.Check
+            ref={formRef}
             type="checkbox"
             inline
             label="X"
@@ -182,8 +180,8 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
             onChange={handleChange}
             checked={isY}
           />
-      </Form.Group>
-      }
+        </Form.Group>
+      )}
       <Form.Group className="mb-3" controlId="types">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Select
@@ -204,9 +202,9 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
 
       <Accordion>
         <Accordion.Item eventKey="0">
-          <Accordion.Header style={{ backgroundColor: '#343a40' }}>Optional Fields</Accordion.Header>
+          <Accordion.Header style={{ backgroundColor: "#343a40" }}>Optional Fields</Accordion.Header>
           <Accordion.Body>
-              {form.chromosome.length >=0 ? <Form.Group className="mb-3" controlId="start">
+            {/* {form.chromosome.length >=0 ? <Form.Group className="mb-3" controlId="start">
                 <Form.Label className="required">Event Start Position</Form.Label>
                 <Form.Control
                 name="start"
@@ -225,7 +223,7 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
                 onChange={handleChange}
                 min="0"
               />
-            </Form.Group> : <></>}
+            </Form.Group> : <></>} */}
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
               <Select
@@ -249,9 +247,7 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
                 isMulti={true}
                 value={form.algorithm}
                 onChange={(ev) => handleSelectChange("algorithm", ev)}
-                options={[
-                  { value: "test", label: "Placeholder" },
-                ]}
+                options={[{ value: "test", label: "Placeholder" }]}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="sex">
@@ -264,7 +260,7 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
                 onChange={(ev) => handleSelectChange("sex", ev)}
                 options={[
                   { value: "male", label: "Male" },
-                  { value: "female", label: "Female" }
+                  { value: "female", label: "Female" },
                 ]}
               />
             </Form.Group>
@@ -277,26 +273,16 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
                 value={form.age}
                 onChange={handleChange}
               /> */}
-                <Row>
+              <Row>
                 <Col xl={6}>
                   <InputGroup>
-                    <Form.Control
-                      placeholder="Min age"
-                      name="minAge"
-                      value={form.minAge}
-                      onChange={handleChange}
-                    />
+                    <Form.Control placeholder="Min age" name="minAge" value={form.minAge} onChange={handleChange} />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
                 </Col>
                 <Col xl={6}>
                   <InputGroup>
-                    <Form.Control
-                      placeholder="Max age"
-                      name="maxAge"
-                      value={form.maxAge}
-                      onChange={handleChange}
-                    />
+                    <Form.Control placeholder="Max age" name="maxAge" value={form.maxAge} onChange={handleChange} />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
                 </Col>
@@ -316,11 +302,10 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
                   { value: "afr_eur", label: "AFR_EUR" },
                   { value: "ASN", label: "Asian" },
                   { value: "asn_eur", label: "ASN_EUR" },
-                  { value: "EUR", label: "European" }
+                  { value: "EUR", label: "European" },
                 ]}
               />
             </Form.Group>
-
 
             <Form.Group controlId="fraction">
               <Form.Label>Cellular Fraction</Form.Label>
@@ -352,32 +337,29 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
             <br></br>
             <Row>
               <Col>
-                <Form.Check 
+                <Form.Check
                   type="switch"
                   id="compare"
                   name="compare"
-                  checked= {compare}
+                  checked={compare}
                   onChange={handleChange}
                   label="Check this to comparison"
                 />
-            </Col>
-            <Col >
-            <Button variant="outline-secondary" className="me-1" 
-             type="button" onClick={handleFilter}>
-              Update
-            </Button>
-             <Button variant="outline-secondary" className="me-1" type="button">
-              Clear
-            </Button>
-            </Col>
+              </Col>
+              <Col>
+                <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
+                  Update
+                </Button>
+                <Button variant="outline-secondary" className="me-1" type="button">
+                  Clear
+                </Button>
+              </Col>
             </Row>
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-     
 
       <div className="m-3">
-       
         <Button variant="outline-secondary" className="me-1" type="reset">
           Reset
         </Button>
@@ -390,6 +372,5 @@ export default function ExploreForm({ onSubmit, onReset,onCompare,onFilter }) {
         </OverlayTrigger>
       </div>
     </Form>
-    
   );
 }
