@@ -111,7 +111,7 @@ function GenePlot(props) {
   })
 })
   //console.log(props)
-  props.onHeightChange(genePlotHeight)
+  props.onHeightChange(genePlotHeight+200)
   const data = geneLine
   
   var shapelist = [];

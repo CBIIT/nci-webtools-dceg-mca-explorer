@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import * as htmlToImage from "html-to-image";
 import GenePlot from './GenePlot';
+import SnpPlot from './SnpPlot';
 
 
 function SingleChromosome(props) {
@@ -171,10 +172,17 @@ function SingleChromosome(props) {
      />
      <br/>
      {xMax-xMin<2000000?
-      <GenePlot width={props.width} xMax={xMax} xMin={xMin} 
-      chr={props.chromesomeId} onHeightChange={props.onHeightChange}>
-        
-      </GenePlot>:''}
+      <div>
+         <SnpPlot width={props.width} xMax={xMax} xMin={xMin} 
+          chr={props.chromesomeId} onHeightChange={props.onHeightChange}>
+        </SnpPlot>
+        <br></br>
+        <GenePlot width={props.width} xMax={xMax} xMin={xMin} 
+          chr={props.chromesomeId} onHeightChange={props.onHeightChange}>
+        </GenePlot>
+       
+      </div>
+      :''}
     </div>
 
   );
