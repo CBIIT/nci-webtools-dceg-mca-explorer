@@ -30,6 +30,7 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     { id: 4, label: "Age", isChecked: false },
     { id: 5, label: "Ancestry", isChecked: false },
   ]);
+  const [compare, setCompare] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -59,13 +60,13 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     setForm(defaultFormState);
     setIsX(false);
     setIsY(false);
-    //setCompare(false)
+    //setCompare(false);
     if (onReset) onReset(defaultFormState);
     onSubmit(resetFormState); //clean the plot
   }
 
   function handleSelectChange(name, selection = []) {
-    //console.log(name,selection);
+    console.log(name, selection);
     if (name === "chromosome" && selection.find((option) => option.value === "all")) {
       selection = chromosomes.slice(1);
     }
@@ -110,23 +111,36 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
   //console.log(form)
   function handleFilter(event) {
     event.preventDefault();
-    onFilter(form);
+    setCompare(true);
+    //mergeForm({ compare: true });
+    //onCompare({ compare: true });
+    //update the compare variable and run the filter function to do compare
+    setForm({ ...form, compare: true });
+    onFilter({ ...form, compare: true });
+
+    console.log(compare, " comparing....", form);
     // onSubmit(form)
   }
 
   const handleCompareCheckboxChange = (id) => {
     const updatedComparecheck = compareChecks.map((ck) => {
-      if(ck.id === id){
-        return {...ck,isChecked: !ck.isChecked };
+      if (ck.id === id) {
+        return { ...ck, isChecked: !ck.isChecked };
       }
       return ck;
-    })
-    setCompareChecks(updatedComparecheck)
-  }
-  useEffect(() => {
-    //console.log(form.chromosome);
-  }, [form.chromosome]);
-
+    });
+    setCompareChecks(updatedComparecheck);
+  };
+  // useEffect(() => {
+  //   setCompare(compare);
+  //   setForm({ ...form });
+  //   console.log(compare, form);
+  // }, [compare]);
+  const updateGroup = (group) => {
+    console.log(group);
+    //if (group === "a") setForm({ ...form, groupA: form.group });
+    // else if (group === "b") setForm({ ...form, groupB: form.group });
+  };
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="study">
@@ -373,26 +387,22 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
           <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>
           <Accordion.Body>
             <Card.Body>
-            {compareChecks.map((ck) =>(
-               <div key={ck.id}>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={ck.isChecked}
-                    onChange={()=>handleCompareCheckboxChange(ck.id)}
-                  />
-                  {ck.label}
-                </label>
-               </div> 
-            ))}
+              {compareChecks.map((ck) => (
+                <div key={ck.id}>
+                  <label>
+                    <input type="checkbox" checked={ck.isChecked} onChange={() => handleCompareCheckboxChange(ck.id)} />
+                    {ck.label}
+                  </label>
+                </div>
+              ))}
             </Card.Body>
             <Card.Body>
               <p>Group A</p>
-              <ComparePanel compareItem={compareChecks}></ComparePanel>
+              <ComparePanel compareItem={compareChecks} name="A"></ComparePanel>
             </Card.Body>
             <Card.Body>
               <p>Group B</p>
-              <ComparePanel compareItem={compareChecks}></ComparePanel>
+              <ComparePanel compareItem={compareChecks} name="B"></ComparePanel>
               <br></br>
             </Card.Body>
             <Card.Body>

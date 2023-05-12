@@ -5,14 +5,57 @@ import { sampleState, formState, loadingState, defaultFormState, resetFormState 
 import { useState, useRef, useEffect } from "react";
 
 export default function ComparePanel(props) {
-  const [form, setForm] = useState(defaultFormState);
+  const [form, setForm] = useRecoilState(formState);
+  const [compareform, setCompareForm] = useState();
+  const [study, setStudy] = useState([]);
+  const [array, setArray] = useState([]);
+  const [sex, setSex] = useState([]);
+  const [ancestry, setAncestry] = useState([]);
+  const [minAge, setMinAge] = useState("");
+  const [maxAge, setMaxAge] = useState("");
   //console.log(props.compareItem[0]);
 
   function handleChange(event) {
     const { name, value } = event.target;
+    if (name === "minAge") {
+      setMinAge(value);
+    }
+    if (name === "maxAge") {
+      setMaxAge(value);
+    }
   }
 
-  function handleSelectChange(name, selection = []) {}
+  function handleSelectChange(name, selection = []) {
+    if (name === "study") {
+      setStudy(selection);
+    }
+    //mergeForm({ [name]: selection });
+
+    if (name === "array") {
+      setArray(selection);
+    }
+    if (name === "sex") {
+      setSex(selection);
+    }
+    if (name === "ancestry") {
+      setAncestry(selection);
+    }
+    setCompareForm({ ...compareform, [name]: selection });
+
+    //console.log(compareform);
+  }
+
+  const updateForm = () => {
+    if (props.name === "A") {
+      setForm({ ...form, groupA: compareform });
+    } else if (props.name === "B") {
+      setForm({ ...form, groupB: compareform });
+    }
+  };
+
+  useEffect(() => {
+    updateForm();
+  }, [compareform]);
 
   return (
     <div>
@@ -23,7 +66,7 @@ export default function ComparePanel(props) {
             placeholder="No study selected"
             name="study"
             isMulti={true}
-            value={form.study}
+            value={study}
             onChange={(ev) => handleSelectChange("study", ev)}
             options={[
               { value: "plco", label: "PLCO" },
@@ -41,7 +84,7 @@ export default function ComparePanel(props) {
             placeholder="No array selected"
             name="array"
             isMulti={true}
-            value={form.array}
+            value={array}
             onChange={(ev) => handleSelectChange("array", ev)}
             options={[
               { value: "gsa", label: "Illumina Global Screening Array" },
@@ -71,7 +114,7 @@ export default function ComparePanel(props) {
             placeholder="No sex selected"
             name="sex"
             isMulti={true}
-            value={form.sex}
+            value={sex}
             onChange={(ev) => handleSelectChange("sex", ev)}
             options={[
               { value: "male", label: "Male" },
@@ -88,13 +131,13 @@ export default function ComparePanel(props) {
           <Row>
             <Col xl={6}>
               <InputGroup>
-                <Form.Control placeholder="Min age" name="minAge" value={form.minAge} onChange={handleChange} />
+                <Form.Control placeholder="Min age" name="minAge" value={minAge} onChange={handleChange} />
                 {/* <InputGroup.Text></InputGroup.Text> */}
               </InputGroup>
             </Col>
             <Col xl={6}>
               <InputGroup>
-                <Form.Control placeholder="Max age" name="maxAge" value={form.maxAge} onChange={handleChange} />
+                <Form.Control placeholder="Max age" name="maxAge" value={maxAge} onChange={handleChange} />
                 {/* <InputGroup.Text></InputGroup.Text> */}
               </InputGroup>
             </Col>
@@ -110,7 +153,7 @@ export default function ComparePanel(props) {
             placeholder="No ancestry selected"
             name="ancestry"
             isMulti={true}
-            value={form.ancestry}
+            value={ancestry}
             onChange={(ev) => handleSelectChange("ancestry", ev)}
             options={[
               { value: "mix_eur", label: "ADMIXED_EUR" },

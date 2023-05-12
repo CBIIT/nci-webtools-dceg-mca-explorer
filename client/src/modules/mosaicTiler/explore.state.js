@@ -8,17 +8,17 @@ export const loadingState = atom({
 
 export const sampleState = selector({
   key: "explore.sampleState",
-  get: ({ get }) => query("api/query", {
-    table: "sample",
-    orderBy: "id",
-    order: "asc",
-  })
+  get: ({ get }) =>
+    query("api/query", {
+      table: "sample",
+      orderBy: "id",
+      order: "asc",
+    }),
 });
-
 
 export async function getData(params, tumor, gene) {
   var summary;
-  var participants
+  var participants;
 
   participants = await query("api/query", {
     "table": params.dataset.value,
@@ -41,75 +41,88 @@ export const resultsState = selector({
     //Get Data Function Here, return array of json documents
 
     results.map((e) => {
-      var chromosome = e.chromosome.slice(3)
+      var chromosome = e.chromosome.slice(3);
 
-      if(chromosome === "X")
-        chromosome = 23
+      if (chromosome === "X") chromosome = 23;
 
-      return({
+      return {
         ...e,
         chromosome: chromosome,
         sexMatch: e.sexMatch === 1 ? "Y" : "N",
         sexDiscordant: e.sexDiscordant === 1 ? true : false,
         unexpectedReplicate: e.unexpectedReplicate === 1 ? true : false,
         mochaAutosomal: e.mochaAutosomal === 1 ? true : false,
-      })
-    })
-    
+      };
+    });
 
     // console.log(results);
     return results;
   },
 });
 
-
 export const defaultFormState = {
   openSidebar: true,
-  study: {value: "plco", label: "PLCO"},
+  study: { value: "plco", label: "PLCO" },
   array: { value: "gsa", label: "Global Screening Array" },
-  chromosome: Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" }),
+  chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
+    .map((i) => {
+      return { value: "chr" + i, label: i };
+    })
+    .concat({ value: "chrX", label: "X" })
+    .concat({ value: "chrY", label: "Y" }),
   plotType: { value: "circos", label: "Circos" },
   submitted: false,
   chrX: false,
   chrY: false,
-  types: [ { value: "loh", label: "CN-LOH" },
-            { value: "loss", label: "Loss" },
-            { value: "gain", label: "Gain" },
-            { value: "undetermined", label: "Undetermined" }],
+  types: [
+    { value: "loh", label: "CN-LOH" },
+    { value: "loss", label: "Loss" },
+    { value: "gain", label: "Gain" },
+    { value: "undetermined", label: "Undetermined" },
+  ],
   compare: false,
-  minAge:'',
-  maxAge:'',
-  algorithm:[],
-  ancestry:[],
-  maxFraction:'',
-  minFraction:'',
-  sex:[],
-  counterSubmitted:0,
-  start:'',
-  end:''
+  minAge: "",
+  maxAge: "",
+  algorithm: [],
+  ancestry: [],
+  maxFraction: "",
+  minFraction: "",
+  sex: [],
+  counterSubmitted: 0,
+  start: "",
+  end: "",
+  groupA: [],
+  groupB: [],
 };
 
 export const resetFormState = {
   openSidebar: true,
-  study: {value: "plco", label: "PLCO"},
+  study: { value: "plco", label: "PLCO" },
   array: { value: "gsa", label: "Global Screening Array" },
-  chromosome: Array.from({ length: 22 }, (_, i) => i + 1).map((i) => { return ({ value: "chr" + i, label: i }) }).concat({ value: "chrX", label: "X" }).concat({ value: "chrY", label: "Y" }),
+  chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
+    .map((i) => {
+      return { value: "chr" + i, label: i };
+    })
+    .concat({ value: "chrX", label: "X" })
+    .concat({ value: "chrY", label: "Y" }),
   plotType: { value: "circos", label: "Circos" },
   submitted: false,
   chrX: false,
   chrY: false,
   types: [],
   compare: false,
-  minAge:'',
-  maxAge:'',
-  algorithm:[],
-  ancestry:[],
-  maxFraction:'',
-  minFraction:'',
-  sex:[],
-  counterSubmitted:0,
-  start:'',
-  end:''
+  minAge: "",
+  maxAge: "",
+  algorithm: [],
+  ancestry: [],
+  maxFraction: "",
+  minFraction: "",
+  sex: [],
+  counterSubmitted: 0,
+  start: "",
+  end: "",
+  groupA: [],
+  groupB: [],
 };
 
 export const formState = atom({
