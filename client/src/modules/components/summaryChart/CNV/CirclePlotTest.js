@@ -156,6 +156,13 @@ export default function CirclePlotTest(props) {
   let data = [];
   let dataA = [];
   let dataB = [];
+  useEffect(() => {
+    if (form.compare) {
+      dataA = handleGroupQuery(form.groupA);
+      dataB = handleGroupQuery(form.groupB);
+    } else {
+    }
+  });
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId),
@@ -167,10 +174,10 @@ export default function CirclePlotTest(props) {
   ];
 
   //do query for group compare:
-  async function handleGroupQuery() {
+  async function handleGroupQuery(group) {
     //setLoading(true)
-    const query = { chr: props.chr };
-    const response = await axios.post("/opensearch/chromosome", { search: query });
+    const query = { ...group, chr: chromesomeId };
+    const response = await axios.post("api/opensearch/chromosome", { search: query });
     const results = response.data;
     results.forEach((r) => {
       if (r._source !== null) {
@@ -185,13 +192,6 @@ export default function CirclePlotTest(props) {
       }
     });
   }
-
-  useEffect(() => {
-    if (true) {
-      //handleGroupQuery();
-    } else {
-    }
-  }, [props.xMin]);
 
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];

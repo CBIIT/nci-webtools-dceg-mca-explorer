@@ -47,10 +47,11 @@ export default function ComparePanel(props) {
 
   const updateForm = () => {
     if (props.name === "A") {
-      setForm({ ...form, groupA: compareform });
+      setForm({ ...form, groupA: { ...compareform } });
     } else if (props.name === "B") {
-      setForm({ ...form, groupB: compareform });
+      setForm({ ...form, groupB: { ...compareform } });
     }
+    console.log(form);
   };
 
   useEffect(() => {
