@@ -215,7 +215,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
 
   queryString.push({ match: { chromosome: "chr" + chromesome } }, { terms: { dataset: parseQueryStr(study) } });
   if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
-  if (sex !== undefined && sex != "") queryString.push({ terms: { "expectedSex.keyword": parseQueryStr(sex) } });
+  if (sex !== undefined && sex.length > 0)
+    queryString.push({ terms: { "computedGender.keyword": parseQueryStr(sex) } });
   console.log(queryString);
   const client = new Client({
     node: host,
