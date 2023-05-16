@@ -1,6 +1,5 @@
 import { booleanFormatter } from "./services/formatters.js";
 
-
 export const sources = [
   {
     sourcePath: "data/PLCO_GSA_blood_autosomal_mCAs.txt",
@@ -260,7 +259,7 @@ export const sources = [
       // { sourceName: "baf_auto", name: "bafAuto" },
     ],
   },
-   {
+  {
     sourcePath: "data/UKBB_blood_mLOX_filter2_call_rate_ge0.97_baf_auto_le0.03.txt",
     table: "sample",
     description: "/UKBB_blood_mLOX",
@@ -384,6 +383,15 @@ export const sources = [
       { sourceName: "transcription_end", name: "transcriptionEnd" },
       { sourceName: "exon_starts", name: "exonStarts" },
       { sourceName: "exon_ends", name: "exonEnds" },
+    ],
+  },
+  {
+    sourcePath: "/Users/yaox5/desktop/dbsnp2.csv",
+    table: "dbsnp",
+    description: "dbsnp",
+    columns: [
+      { sourceName: "chromosome", name: "chr" },
+      { sourceName: "position_grch38", name: "grch38" },
     ],
   },
 ];

@@ -200,16 +200,23 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
 
 apiRouter.post("/opensearch/chromosome", async (request, response) => {
   const { logger } = request.app.locals;
-  const search = request.body.search;
+  const group = request.body.search;
+  // console.log("query group:", group);
+  const study = group.study;
+  const array = group.array;
+  const chromesome = group.chr;
+  const sex = group.sex;
+  const ancestry = group.ancestry;
+  const maxAge = group.maxAge;
+  const minAge = group.minAge;
+  //console.log("query string:", study, array, chromesome);
   const dataset = [];
   const queryString = [];
-  search.forEach((element) => {
-    //element.label?dataset.push(element.value):''
-    element.label ? dataset.push(element.value) : "";
-    element.chr ? queryString.push({ match: { chromosome: "chr" + element.chr } }) : "";
-  });
-  queryString.push({ terms: { dataset: dataset } });
-  //console.log(queryString)
+
+  queryString.push({ match: { chromosome: "chr" + chromesome } }, { terms: { dataset: parseQueryStr(study) } });
+  if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
+  if (sex !== undefined && sex != "") queryString.push({ terms: { "expectedSex.keyword": parseQueryStr(sex) } });
+  console.log(queryString);
   const client = new Client({
     node: host,
     auth: {
@@ -230,6 +237,11 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         query: {
           bool: {
             must: queryString,
+            // [
+            //   { match: { chromosome: "chr2" } },
+            //   { terms: { dataset: ["plco"] } },
+            //   { terms: { "expectedSex.keyword": ["F", "M"] } },
+            // ],
           },
         },
       },
@@ -240,3 +252,18 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     console.error(error);
   }
 });
+
+const parseQueryStr = (query) => {
+  // query.forEach((e) => {
+  //   e.value === "male" ? sexarr.push("M") : "";
+  //   e.value === "female" ? sexarr.push("F") : "";
+  // });
+  const values = [];
+  query.forEach((e) => {
+    if (e.value === "male" || e.value === "female") {
+      values.push(e.value.substring(0, 1).toUpperCase());
+    } else values.push(e.value);
+  });
+  console.log(values);
+  return values;
+};
