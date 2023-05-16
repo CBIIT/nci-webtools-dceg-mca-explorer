@@ -10,6 +10,7 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
   const [loading, setLoading] = useRecoilState(loadingState);
+  const [counter, setCounter] = useState(0);
   //console.log(form)
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }]
@@ -31,8 +32,6 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     { id: 5, label: "Ancestry", isChecked: false },
   ]);
   const [compare, setCompare] = useState(false);
-  const [groupA, setGroupA] = useState([]);
-  const [groupB, setGroupB] = useState([]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -114,13 +113,15 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
   function handleFilter(event) {
     event.preventDefault();
     setCompare(true);
+    setCounter(counter + 1);
     //mergeForm({ compare: true });
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
-    setForm({ ...form, compare: true });
-    // onFilter({ ...form, compare: true });
+    //setForm({ ...form, compare: true, counterCompare: counter + 1 });
+    console.log("be comparing....", form);
+    onFilter({ ...form, compare: true, counterCompare: counter + 1 });
 
-    console.log(compare, " comparing....", form);
+    console.log(" comparing....", form);
     // onSubmit(form)
   }
 

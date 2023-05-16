@@ -27,7 +27,7 @@ export default function RangeView() {
   const [clickedCounter, setClickedCounter] = useState(0);
   const [chromoId, setChromoId] = useState(-1);
   const [allValue, setAllValue] = useState([]);
-  //console.log(form);
+
   //console.log(form.study.length)
 
   const [figureHeight, setFigureHeight] = useState(chartHeight);
@@ -45,7 +45,7 @@ export default function RangeView() {
     ? (query_value = [...study_value, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""])
     : (query_value = [study_value, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""]);
 
-  console.log(form.sex);
+  console.log("review:", form);
   useEffect(() => {
     if (true) {
       handleSubmit(query_value, form.sex);
@@ -58,9 +58,9 @@ export default function RangeView() {
     // form.ancestry,form.algorithm
   ]);
 
-  //    useEffect(() => {
-  //       console.log(form)
-  //     }, [form.compare]);
+  useEffect(() => {
+    console.log(form);
+  }, [form.counterSubmitted]);
 
   async function handleSubmit(qdataset, qsex) {
     setGain([]);

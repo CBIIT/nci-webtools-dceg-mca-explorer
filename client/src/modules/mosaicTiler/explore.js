@@ -27,18 +27,19 @@ export default function Explore() {
   });
 
   function handleSubmit(event) {
-    setForm({ ...event, submitted: true, counterSubmitted: counter + 1 });
-    //console.log("submit",  form.counterSubmitted);
+    setForm({ ...event, submitted: true, compare: false, counterSubmitted: counter + 1 });
+    console.log("submit", event);
   }
   function handleFilter(event) {
-    //setForm({ ...event,submitted: true,counterSubmitted:form.counterSubmitted});
-    // setForm({ ...form, compare: true });
+    console.log("filter:", event, form);
+    //setForm({ ...event, submitted: true, counterCompare: counter + 1 });
+    setForm({ ...form, compare: true, counterCompare: event.counterCompare });
     //console.log("Filter: ", form.counterSubmitted)
   }
-  function handleCompare(event) {
-    setForm({ ...form, compare: event.compare });
-    //console.log(event)
-  }
+  // function handleCompare(event) {
+  //   setForm({ ...form, compare: event.compare });
+  //   //console.log(event)
+  // }
 
   function handleReset(event) {
     setForm(event);
@@ -58,7 +59,7 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit} onCompare={handleCompare} onFilter={handleFilter} />
+              <ExploreForm onSubmit={handleSubmit} onFilter={handleFilter} />
             </Card.Body>
           </Card>
         </SidebarPanel>

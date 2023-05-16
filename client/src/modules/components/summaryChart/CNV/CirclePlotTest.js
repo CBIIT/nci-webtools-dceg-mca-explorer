@@ -56,10 +56,10 @@ export default function CirclePlotTest(props) {
   const [showChart, setShowChart] = useState(false);
   const [chromesomeId, setChromesomeId] = useState(0);
   const [form, setForm] = useRecoilState(formState);
-  const [dataFilter, setDataFilter] = useState([]);
-  // const [groupA, setGroupA] = useState([]);
-  // const [groupB, setGroupB] = useState([]);
-  //console.log(form.chromosome)
+  const [countFilter, setCountFilter] = useState(0);
+  const [groupA, setGroupA] = useState([]);
+  const [groupB, setGroupB] = useState([]);
+  //console.log("in plottest", form);
 
   const [circle, setCircle] = useState({
     loss: props.loss,
@@ -156,16 +156,14 @@ export default function CirclePlotTest(props) {
   };
 
   let data = [];
-  let dataA = [];
-  let dataB = [];
+
   useEffect(() => {
     if (form.compare) {
       handleGroupQuery(form.groupA, "A");
       handleGroupQuery(form.groupB, "B");
     } else {
     }
-    console.log(dataA);
-  });
+  }, [form.counterCompare]);
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId),
@@ -182,6 +180,7 @@ export default function CirclePlotTest(props) {
     const query = { ...group, chr: chromesomeId };
     const response = await axios.post("api/opensearch/chromosome", { search: query });
     const results = response.data;
+    const result = [];
     results.forEach((r) => {
       if (r._source !== null) {
         const d = r._source;
@@ -192,10 +191,12 @@ export default function CirclePlotTest(props) {
           d.start = d.beginGrch38;
           d.end = d.endGrch38;
         }
+        result.push(d);
       }
     });
-    if (gname === "A") dataA = results;
-    if (gname === "B") dataB = results;
+    if (gname === "A") setGroupA(result);
+    if (gname === "B") setGroupB(result);
+    return result;
   }
 
   //console.log(data,dataCompared)
@@ -222,7 +223,7 @@ export default function CirclePlotTest(props) {
             <Row className="justify-content-center">
               <Col>
                 <SingleChromosome
-                  data={dataA}
+                  data={groupA}
                   chromesomeId={chromesomeId}
                   width={singleFigWidth}
                   height={singleFigWidth}
@@ -230,7 +231,7 @@ export default function CirclePlotTest(props) {
               </Col>
               <Col>
                 <SingleChromosome
-                  data={dataB}
+                  data={groupB}
                   chromesomeId={chromesomeId}
                   width={singleFigWidth}
                   height={singleFigWidth}
