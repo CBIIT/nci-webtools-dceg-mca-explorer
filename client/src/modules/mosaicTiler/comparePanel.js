@@ -23,6 +23,7 @@ export default function ComparePanel(props) {
     if (name === "maxAge") {
       setMaxAge(value);
     }
+    setCompareForm({ ...compareform, [name]: value });
   }
 
   function handleSelectChange(name, selection = []) {
@@ -47,11 +48,11 @@ export default function ComparePanel(props) {
 
   const updateForm = () => {
     if (props.name === "A") {
-      setForm({ ...form, groupA: { ...compareform } });
+      setForm({ ...form, groupA: { ...compareform }, compare: true });
     } else if (props.name === "B") {
-      setForm({ ...form, groupB: { ...compareform } });
+      setForm({ ...form, groupB: { ...compareform }, compare: true });
     }
-    console.log(form);
+    props.onCompareChange(compareform, props.name);
   };
 
   useEffect(() => {

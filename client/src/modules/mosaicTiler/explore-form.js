@@ -31,6 +31,8 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     { id: 5, label: "Ancestry", isChecked: false },
   ]);
   const [compare, setCompare] = useState(false);
+  const [groupA, setGroupA] = useState([]);
+  const [groupB, setGroupB] = useState([]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -116,12 +118,17 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
     setForm({ ...form, compare: true });
-    onFilter({ ...form, compare: true });
+    // onFilter({ ...form, compare: true });
 
     console.log(compare, " comparing....", form);
     // onSubmit(form)
   }
 
+  const handlegroupChange = (value, gname) => {
+    //console.log(value, gname);
+    if (gname === "A") setForm({ ...form, groupA: value, compare: true });
+    if (gname === "B") setForm({ ...form, groupB: value, compare: true });
+  };
   const handleCompareCheckboxChange = (id) => {
     const updatedComparecheck = compareChecks.map((ck) => {
       if (ck.id === id) {
@@ -398,11 +405,11 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
             </Card.Body>
             <Card.Body>
               <p>Group A</p>
-              <ComparePanel compareItem={compareChecks} name="A"></ComparePanel>
+              <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
             </Card.Body>
             <Card.Body>
               <p>Group B</p>
-              <ComparePanel compareItem={compareChecks} name="B"></ComparePanel>
+              <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
               <br></br>
             </Card.Body>
             <Card.Body>
