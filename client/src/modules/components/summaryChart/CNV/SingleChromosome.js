@@ -5,14 +5,14 @@ import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
 
 function SingleChromosome(props) {
-  console.log(props.chromesomeId, props.data);
+  //console.log(props.chromesomeId, props.title);
   const ref = useRef();
   const [layout, setLayout] = useState({
     //title:"Chromosome "+ props.chromesomeId,
     barmode: "stack",
     width: props.width,
     height: props.height,
-    margin: { l: 10, r: 0, t: 40, b: 30 },
+    margin: { l: 10, r: 0, t: 30, b: 30 },
     xaxis: { title: "", showgrid: true, visible: true, showticklabels: true, zeroline: true, showline: true },
     yaxis: {
       show: false,
@@ -141,7 +141,7 @@ function SingleChromosome(props) {
   useEffect(() => {
     setLayout({
       ...layout,
-      //title:"Chromosome "+ props.chromesomeId
+      title: props.title,
     });
     // async e => {
     //    // draw genes if zoom is at less than 50 MB
@@ -158,7 +158,7 @@ function SingleChromosome(props) {
     //   //   setGenes(genes);
     //   // }
     // }
-  }, [props.chromesomeId]);
+  }, [props.chromesomeId, props.title]);
 
   return (
     <div id="plotly-div">
@@ -178,6 +178,7 @@ function SingleChromosome(props) {
         ref={ref}
         onRelayout={handleRelayout}
       />
+      {props.details}
       <br />
       {xMax - xMin < 2000000 ? (
         <div>

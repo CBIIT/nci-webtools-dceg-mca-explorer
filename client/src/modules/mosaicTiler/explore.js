@@ -18,6 +18,7 @@ export default function Explore() {
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
   const [counter, setCounter] = useState(0);
+  const [isOpenCompare, setIsOpenCompare] = useState(false);
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
@@ -46,8 +47,9 @@ export default function Explore() {
     console.log("reset", event);
   }
 
-  function handleClick() {
-    return "test";
+  function handleClick(value) {
+    setIsOpenCompare(value);
+    console.log("in explore", value);
   }
 
   return (
@@ -59,7 +61,7 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit} onFilter={handleFilter} onClick={handleClick} />
+              <ExploreForm onSubmit={handleSubmit} onFilter={handleFilter} isOpen={isOpenCompare} />
             </Card.Body>
           </Card>
         </SidebarPanel>
@@ -76,7 +78,7 @@ export default function Explore() {
                 }>
                 <Suspense fallback="Loading...">
                   {form.submitted ? (
-                    <RangeView />
+                    <RangeView handleClick={handleClick} />
                   ) : (
                     <div className="m-2">Please provide configuration settings on the left panel and click Submit.</div>
                   )}

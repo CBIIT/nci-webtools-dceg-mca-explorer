@@ -21,7 +21,7 @@ const initialXY = [
   { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
 ];
 const chartHeight = 800;
-export default function RangeView() {
+export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
   const [tab, setTab] = useState("summary");
   const [clickedCounter, setClickedCounter] = useState(0);
@@ -349,7 +349,10 @@ export default function RangeView() {
   const resetHeight = () => {
     setFigureHeight(chartHeight);
   };
-  const handleClickChr = () => {};
+  const handleClickChr = (value) => {
+    props.handleClick(value);
+    console.log("in rangeView to click", value);
+  };
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -372,25 +375,29 @@ export default function RangeView() {
               onClickedChr={handleClickChr}></CirclePlotTest>
           </div>
         </div>
-        <Row>
-          <div className="">
-            <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-              <ExcelFile
-                filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                element={<a href="javascript:void(0)">Export Data</a>}>
-                <ExcelSheet dataSet={exportTable()} name="Autosomal mCA Distribution" />
-              </ExcelFile>
-            </div>
+        {!form.compare ? (
+          <Row>
+            <div className="">
+              <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+                <ExcelFile
+                  filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet dataSet={exportTable()} name="Autosomal mCA Distribution" />
+                </ExcelFile>
+              </div>
 
-            <div className="mx-3">
-              <Table
-                columns={columns}
-                defaultSort={[{ id: "sampleId", asc: true }]}
-                data={chromoId >= 0 ? allValue : allValues}
-              />
+              <div className="mx-3">
+                <Table
+                  columns={columns}
+                  defaultSort={[{ id: "sampleId", asc: true }]}
+                  data={chromoId >= 0 ? allValue : allValues}
+                />
+              </div>
             </div>
-          </div>
-        </Row>
+          </Row>
+        ) : (
+          ""
+        )}
       </Tab>
       <Tab eventKey="scatter" title="Scatter">
         <Row className="m-3">

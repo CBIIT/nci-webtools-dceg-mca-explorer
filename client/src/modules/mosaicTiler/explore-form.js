@@ -5,7 +5,7 @@ import { sampleState, formState, loadingState, defaultFormState, resetFormState 
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 
-export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) {
+export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
@@ -150,7 +150,7 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     setCompare(true);
   };
   useEffect(() => {
-    console.log("display compare", form);
+    //console.log("display compare", form);
   });
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
@@ -391,7 +391,7 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
         </OverlayTrigger>
       </div>
       <hr></hr>
-      {compare && (
+      {isOpen && (
         <Accordion defaultActiveKey="0">
           <Accordion.Item eventKey="0">
             <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>

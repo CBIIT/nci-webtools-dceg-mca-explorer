@@ -27,18 +27,18 @@ export default function ComparePanel(props) {
   }
 
   function handleSelectChange(name, selection = []) {
-    if (name === "study") {
+    if (props.compareItem[0].isChecked && name === "study") {
       setStudy(selection);
     }
     //mergeForm({ [name]: selection });
 
-    if (name === "array") {
+    if (props.compareItem[1].isChecked && name === "array") {
       setArray(selection);
     }
-    if (name === "sex") {
+    if (props.compareItem[2].isChecked && name === "sex") {
       setSex(selection);
     }
-    if (name === "ancestry") {
+    if (props.compareItem[4].isChecked && name === "ancestry") {
       setAncestry(selection);
     }
     setCompareForm({ ...compareform, [name]: selection });
@@ -57,7 +57,25 @@ export default function ComparePanel(props) {
 
   useEffect(() => {
     updateForm();
-  }, [compareform]);
+    props.compareItem.forEach((element) => {
+      if (!element.isChecked && compareform) {
+        if (element.label === "Study") {
+          delete compareform.study;
+        } else if (element.label === "Genotype Array") {
+          delete compareform.array;
+        } else if (element.label === "Genotype Sec") {
+          delete compareform.sex;
+        } else if (element.label === "Age") {
+          delete compareform.maxAge;
+          delete compareform.minAge;
+        } else if (element.label === "Ancestry") {
+          delete compareform.ancestry;
+        }
+      }
+    });
+    //console.log(compareform, props.compareItem);
+    updateForm();
+  }, [compareform, props.compareItem]);
 
   return (
     <div>

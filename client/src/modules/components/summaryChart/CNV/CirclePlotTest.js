@@ -59,6 +59,8 @@ export default function CirclePlotTest(props) {
   const [countFilter, setCountFilter] = useState(0);
   const [groupA, setGroupA] = useState([]);
   const [groupB, setGroupB] = useState([]);
+  const [titleA, setTitleA] = useState("A");
+  const [titleB, setTitleB] = useState("B");
   //console.log("in plottest", form);
 
   const [circle, setCircle] = useState({
@@ -137,6 +139,7 @@ export default function CirclePlotTest(props) {
           bck.addEventListener("click", () => {
             //console.log("click",b.__data__.key)
             setShowChart(true);
+            props.onClickedChr(true);
             setChromesomeId(b.__data__.key);
             sendClickedId(b.__data__.key);
             const cid = "chr" + b.__data__.key;
@@ -151,6 +154,7 @@ export default function CirclePlotTest(props) {
   const handleBack = () => {
     setShowChart(false);
     sendClickedId(-1);
+    props.onClickedChr(false);
     setForm({ ...form, compare: false, showCompare: false });
     props.onResetHeight();
   };
@@ -194,11 +198,33 @@ export default function CirclePlotTest(props) {
         result.push(d);
       }
     });
-    if (gname === "A") setGroupA(result);
-    if (gname === "B") setGroupB(result);
+
+    if (gname === "A") {
+      setGroupA(result);
+    }
+    if (gname === "B") {
+      setGroupB(result);
+    }
     return result;
   }
-
+  useEffect(() => {
+    setTitleA(groupTitle(form.groupA));
+    setTitleB(groupTitle(form.groupB));
+  });
+  const groupTitle = (group) => {
+    let title = "";
+    if (group.study !== undefined) {
+      group.study.forEach((s) => {
+        title += s.label + ",";
+      });
+    }
+    if (group.sex !== undefined) {
+      group.sex.forEach((s) => {
+        title += s.label + ",";
+      });
+    }
+    return title;
+  };
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
@@ -208,7 +234,6 @@ export default function CirclePlotTest(props) {
   const thicknessloh = props.loh.length < 1000 ? 0 : -1.9;
   const thicknessloss = props.loss.length < 1000 ? 0 : linethickness;
   const thicknessundermined = props.undetermined.length < 1000 ? 0 : linethickness;
-  //console.log(props.undetermined)
 
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
@@ -224,6 +249,8 @@ export default function CirclePlotTest(props) {
               <Col>
                 <SingleChromosome
                   data={groupA}
+                  title="A"
+                  details={titleA}
                   chromesomeId={chromesomeId}
                   width={singleFigWidth}
                   height={singleFigWidth}
@@ -232,6 +259,8 @@ export default function CirclePlotTest(props) {
               <Col>
                 <SingleChromosome
                   data={groupB}
+                  title="B"
+                  details={titleB}
                   chromesomeId={chromesomeId}
                   width={singleFigWidth}
                   height={singleFigWidth}
