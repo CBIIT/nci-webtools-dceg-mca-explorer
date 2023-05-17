@@ -199,6 +199,7 @@ function SingleChromosome(props) {
       ) : (
         ""
       )}
+      {xMin ? "Window: " + Math.trunc(xMin) + "-" + Math.trunc(xMax) : ""}
     </div>
   );
 }

@@ -155,7 +155,17 @@ export default function CirclePlotTest(props) {
     setShowChart(false);
     sendClickedId(-1);
     props.onClickedChr(false);
-    setForm({ ...form, compare: false, showCompare: false });
+    setForm({
+      ...form,
+      compare: false,
+      showCompare: false,
+      chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
+        .map((i) => {
+          return { value: "chr" + i, label: i };
+        })
+        .concat({ value: "chrX", label: "X" })
+        .concat({ value: "chrY", label: "Y" }),
+    });
     props.onResetHeight();
   };
 
@@ -213,15 +223,17 @@ export default function CirclePlotTest(props) {
   });
   const groupTitle = (group) => {
     let title = "";
-    if (group.study !== undefined) {
-      group.study.forEach((s) => {
-        title += s.label + ",";
-      });
-    }
-    if (group.sex !== undefined) {
-      group.sex.forEach((s) => {
-        title += s.label + ",";
-      });
+    if (group != undefined) {
+      if (group.study !== undefined) {
+        group.study.forEach((s) => {
+          title += s.label + ",";
+        });
+      }
+      if (group.sex !== undefined) {
+        group.sex.forEach((s) => {
+          title += s.label + ",";
+        });
+      }
     }
     return title;
   };

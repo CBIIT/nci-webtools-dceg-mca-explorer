@@ -201,56 +201,58 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
 apiRouter.post("/opensearch/chromosome", async (request, response) => {
   const { logger } = request.app.locals;
   const group = request.body.search;
-  // console.log("query group:", group);
-  const study = group.study;
-  const array = group.array;
-  const chromesome = group.chr;
-  const sex = group.sex;
-  const ancestry = group.ancestry;
-  const maxAge = group.maxAge;
-  const minAge = group.minAge;
-  //console.log("query string:", study, array, chromesome);
-  const dataset = [];
-  const queryString = [];
+  if (group != undefined) {
+    // console.log("query group:", group);
+    const study = group.study;
+    const array = group.array;
+    const chromesome = group.chr;
+    const sex = group.sex;
+    const ancestry = group.ancestry;
+    const maxAge = group.maxAge;
+    const minAge = group.minAge;
+    //console.log("query string:", study, array, chromesome);
+    const dataset = [];
+    const queryString = [];
 
-  queryString.push({ match: { chromosome: "chr" + chromesome } }, { terms: { dataset: parseQueryStr(study) } });
-  //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
-  if (sex !== undefined && sex.length > 0)
-    queryString.push({ terms: { "computedGender.keyword": parseQueryStr(sex) } });
-  console.log(queryString);
-  const client = new Client({
-    node: host,
-    auth: {
-      username: OPENSEARCH_USERNAME,
-      password: OPENSEARCH_PASSWORD,
-    },
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
-
-  try {
-    const result = await client.search({
-      index: "mcaexplorer",
-      body: {
-        track_total_hits: true,
-        size: 200000,
-        query: {
-          bool: {
-            must: queryString,
-            // [
-            //   { match: { chromosome: "chr2" } },
-            //   { terms: { dataset: ["plco"] } },
-            //   { terms: { "expectedSex.keyword": ["F", "M"] } },
-            // ],
-          },
-        },
+    queryString.push({ match: { chromosome: "chr" + chromesome } }, { terms: { dataset: parseQueryStr(study) } });
+    //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
+    if (sex !== undefined && sex.length > 0)
+      queryString.push({ terms: { "computedGender.keyword": parseQueryStr(sex) } });
+    console.log(queryString);
+    const client = new Client({
+      node: host,
+      auth: {
+        username: OPENSEARCH_USERNAME,
+        password: OPENSEARCH_PASSWORD,
+      },
+      ssl: {
+        rejectUnauthorized: false,
       },
     });
-    console.log(result.body.hits.hits.length);
-    response.json(result.body.hits.hits);
-  } catch (error) {
-    console.error(error);
+
+    try {
+      const result = await client.search({
+        index: "mcaexplorer",
+        body: {
+          track_total_hits: true,
+          size: 200000,
+          query: {
+            bool: {
+              must: queryString,
+              // [
+              //   { match: { chromosome: "chr2" } },
+              //   { terms: { dataset: ["plco"] } },
+              //   { terms: { "expectedSex.keyword": ["F", "M"] } },
+              // ],
+            },
+          },
+        },
+      });
+      console.log(result.body.hits.hits.length);
+      response.json(result.body.hits.hits);
+    } catch (error) {
+      console.error(error);
+    }
   }
 });
 
