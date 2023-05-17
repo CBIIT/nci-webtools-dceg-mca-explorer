@@ -349,6 +349,7 @@ export default function RangeView() {
   const resetHeight = () => {
     setFigureHeight(chartHeight);
   };
+  const handleClickChr = () => {};
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -367,7 +368,8 @@ export default function RangeView() {
               chrx={chrX}
               chry={chrY}
               onHeightChange={handleheightChange}
-              onResetHeight={resetHeight}></CirclePlotTest>
+              onResetHeight={resetHeight}
+              onClickedChr={handleClickChr}></CirclePlotTest>
           </div>
         </div>
         <Row>

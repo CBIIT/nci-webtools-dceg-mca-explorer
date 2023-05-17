@@ -151,7 +151,7 @@ export default function CirclePlotTest(props) {
   const handleBack = () => {
     setShowChart(false);
     sendClickedId(-1);
-    setForm({ ...form, compare: false });
+    setForm({ ...form, compare: false, showCompare: false });
     props.onResetHeight();
   };
 

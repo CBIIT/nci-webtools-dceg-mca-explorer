@@ -46,7 +46,7 @@ export default function Explore() {
     console.log("reset", event);
   }
 
-  function results() {
+  function handleClick() {
     return "test";
   }
 
@@ -59,7 +59,7 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit} onFilter={handleFilter} />
+              <ExploreForm onSubmit={handleSubmit} onFilter={handleFilter} onClick={handleClick} />
             </Card.Body>
           </Card>
         </SidebarPanel>
