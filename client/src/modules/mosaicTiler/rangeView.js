@@ -354,7 +354,7 @@ export default function RangeView() {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
         <p style={{ textAlign: "center", marginBottom: "0.5rem", fontWeight: 500 }}>Autosomal mCA Distribution</p>
-
+        <Legend></Legend>
         <div className="row justify-content-center">
           <div style={{ height: figureHeight, left: 10 }}>
             <CirclePlotTest
@@ -369,7 +369,6 @@ export default function RangeView() {
               onHeightChange={handleheightChange}
               onResetHeight={resetHeight}></CirclePlotTest>
           </div>
-          <Legend></Legend>
         </div>
         <Row>
           <div className="">
