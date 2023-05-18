@@ -161,7 +161,7 @@ function SingleChromosome(props) {
   }, [props.chromesomeId, props.title]);
 
   return (
-    <div id="plotly-div">
+    <div id="plotly-div" className="mx-5" style={{ justifyContent: "flex-end" }}>
       <Plot
         data={data}
         layout={layout}

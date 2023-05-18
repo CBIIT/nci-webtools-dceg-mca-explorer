@@ -6,26 +6,26 @@ export default function Legend(props) {
   const yp = 10;
   const xw = 10;
   const xx = 10;
-  const yy = 400;
+  const yy = 750;
   return (
     <div className="text-center">
-      <svg version="1.1" baseProfile="full" width="700" height="40" xlmns="http://www/w3/org/2000/svg">
-        <rect y={xp + xx} x={0 + yy} fill="green" width={xw} height={yp} />
+      <svg version="1.1" baseProfile="full" width="1000" height="40" xlmns="http://www/w3/org/2000/svg">
+        <rect y={xp + xx} x={0 + yy + 5} fill="green" width={xw} height={yp} />
         <rect y={xp + xx} x={2 * yp + yy + 30} fill="blue" width={xw} height={yp} />
-        <rect y={xp + xx} x={4 * yp + yy + 85} fill="red" width={xw} height={yp} />
-        <rect y={xp + xx} x={6 * yp + yy + 120} fill="#ABABAB" width={xw} height={yp} />
-        <text textAnchor="right" y={xp + xx + 10} x={yp + yy + 4}>
+        <rect y={xp + xx} x={4 * yp + yy + 70} fill="red" width={xw} height={yp} />
+        <rect y={xp + xx} x={6 * yp + yy + 95} fill="#ABABAB" width={xw} height={yp} />
+        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 10}>
           Gain
         </text>
         {/* <text textAnchor="middle" x="325" y="80"> (503)</text> */}
-        <text textAnchor="right" y={xp + xx + 10} x={yp + yy + 55}>
+        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 55}>
           Neutral
         </text>
         {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
-        <text textAnchor="right" y={xp + xx + 10} x={yp + yy + 130}>
+        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 115}>
           Loss
         </text>
-        <text textAnchor="right" y={xp + xx + 10} x={yp + yy + 185}>
+        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 160}>
           Undetermined
         </text>
         {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}

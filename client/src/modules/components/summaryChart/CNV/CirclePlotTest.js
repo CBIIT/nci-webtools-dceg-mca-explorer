@@ -235,7 +235,7 @@ export default function CirclePlotTest(props) {
         });
       }
     }
-    return title;
+    return title.substring(0, title.length - 1);
   };
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];
@@ -258,7 +258,7 @@ export default function CirclePlotTest(props) {
           <p>Chromosome {chromesomeId}</p>
           {form.compare && (
             <Row className="justify-content-center">
-              <Col>
+              <Col lg={6}>
                 <SingleChromosome
                   data={groupA}
                   title="A"
@@ -268,7 +268,7 @@ export default function CirclePlotTest(props) {
                   height={singleFigWidth}
                   onHeightChange={props.onHeightChange}></SingleChromosome>
               </Col>
-              <Col>
+              <Col lg={6}>
                 <SingleChromosome
                   data={groupB}
                   title="B"
@@ -282,7 +282,7 @@ export default function CirclePlotTest(props) {
           )}
           {!form.compare && (
             <Row className="justify-content-center">
-              <Col>
+              <Col lg={10}>
                 <SingleChromosome
                   data={data}
                   chromesomeId={chromesomeId}
