@@ -57,25 +57,26 @@ export default function ComparePanel(props) {
 
   useEffect(() => {
     updateForm();
+    console.log(compareform);
     props.compareItem.forEach((element) => {
       if (!element.isChecked && compareform) {
         if (element.label === " Study") {
           setStudy([]);
-          delete compareform.study;
+          if (compareform.hasOwnProperty("study")) delete compareform.study;
         } else if (element.label === " Genotype Array") {
           setArray([]);
-          delete compareform.array;
+          if (compareform.hasOwnProperty("array")) delete compareform.array;
         } else if (element.label === " Genotype Sex") {
           setSex([]);
-          delete compareform.sex;
+          if (compareform.hasOwnProperty("sex")) delete compareform.sex;
         } else if (element.label === " Age") {
           setMinAge(0);
           setMaxAge(0);
-          delete compareform.minAge;
-          delete compareform.maxAge;
+          if (compareform.hasOwnProperty("minAge")) delete compareform.minAge;
+          if (compareform.hasOwnProperty("maxAge")) delete compareform.maxAge;
         } else if (element.label === " Ancestry") {
           setAncestry([]);
-          delete compareform.ancestry;
+          if (compareform.hasOwnProperty("ancestry")) delete compareform.ancestry;
         }
       }
     });

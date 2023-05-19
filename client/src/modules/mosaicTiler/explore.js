@@ -34,7 +34,13 @@ export default function Explore() {
   }
   function handleFilter(event) {
     ///console.log("filter:", event, form);
-    setForm({ ...form, compare: true, counterCompare: form.counterCompare + 2 });
+    setForm({
+      ...form,
+      compare: true,
+      counterCompare: form.counterCompare + 2,
+      groupA: { ...event.groupA },
+      groupB: { ...event.groupB },
+    });
   }
   function handleFilterClear(event) {
     // setForm({ ...form, counterCompare: form.counterCompare + 1 });
