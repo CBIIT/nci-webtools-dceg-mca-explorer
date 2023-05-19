@@ -34,7 +34,7 @@ export default function Explore() {
   }
   function handleFilter(event) {
     ///console.log("filter:", event, form);
-    setForm({ ...form, compare: true, counterCompare: event.counterCompare });
+    setForm({ ...form, compare: true, counterCompare: form.counterCompare + 2 });
   }
   function handleFilterClear(event) {
     // setForm({ ...form, counterCompare: form.counterCompare + 1 });
@@ -42,7 +42,7 @@ export default function Explore() {
   }
   useEffect(() => {
     setForm({ ...form, groupA: [], groupB: [], counterCompare: form.counterCompare + 1 });
-    console.log("clear...", form);
+    //console.log("clear...", form);
   }, [clear]);
 
   function handleReset(event) {
