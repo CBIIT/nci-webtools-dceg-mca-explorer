@@ -8,48 +8,57 @@ import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 
 import RangeView from "./rangeView";
-import Loader from "../components/loader"
+import Loader from "../components/loader";
 //import StackTest from "../components/summaryChart/CNV/StackTest"
-import {
-  SidebarContainer,
-  SidebarPanel,
-  MainPanel,
-} from "../components/sidebar-container";
+import { SidebarContainer, SidebarPanel, MainPanel } from "../components/sidebar-container";
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
   const loading = useRecoilValue(loadingState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
-  const [counter,setCounter] =useState(0)
+  const [counter, setCounter] = useState(0);
+  const [isOpenCompare, setIsOpenCompare] = useState(false);
+  const [clear, setClear] = useState(0);
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
 
   useEffect(() => {
-    setCounter(form.counterSubmitted)
+    setCounter(form.counterSubmitted);
   });
 
   function handleSubmit(event) {
-    setForm({ ...event, submitted: true, counterSubmitted:counter+1 });
-    //console.log("submit",  form.counterSubmitted);
+    setForm({ ...event, submitted: true, compare: false, counterSubmitted: counter + 1 });
+    // console.log("submit", event);
   }
   function handleFilter(event) {
-    setForm({ ...event,submitted: true,counterSubmitted:form.counterSubmitted});
-    //console.log("Filter: ", form.counterSubmitted)
+    ///console.log("filter:", event, form);
+    setForm({
+      ...form,
+      compare: true,
+      counterCompare: form.counterCompare + 2,
+      groupA: { ...event.groupA },
+      groupB: { ...event.groupB },
+    });
   }
-  function handleCompare(event) {
-    setForm({...form,compare:event.compare});
-    //console.log(event)
+  function handleFilterClear(event) {
+    // setForm({ ...form, counterCompare: form.counterCompare + 1 });
+    setClear(clear + 1);
   }
+  useEffect(() => {
+    setForm({ ...form, groupA: [], groupB: [], counterCompare: form.counterCompare + 1 });
+    //console.log("clear...", form);
+  }, [clear]);
 
   function handleReset(event) {
     setForm(event);
     console.log("reset", event);
   }
 
-  function results() {
-    return "test";
+  function handleClick(value) {
+    setIsOpenCompare(value);
+    console.log("in explore", value);
   }
 
   return (
@@ -61,7 +70,13 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit} onCompare={handleCompare} onFilter={handleFilter} />
+              <ExploreForm
+                onSubmit={handleSubmit}
+                onFilter={handleFilter}
+                onClear={handleFilterClear}
+                isOpen={isOpenCompare}
+                onFilterClear
+              />
             </Card.Body>
           </Card>
         </SidebarPanel>
@@ -71,23 +86,16 @@ export default function Explore() {
               <ErrorBoundary
                 fallback={
                   <div style={{ color: "red" }}>
-                    The server encountered an internal error or
-                    misconfiguration. Please contact{" "}
-                    <a href="mailto:NCImosaicTilerWebAdmin@mail.nih.gov">
-                      NCImosaicTilerWebAdmin@mail.nih.gov
-                    </a>{" "}
-                    and inform them your configuration settings and the time
-                    that the error occured.{" "}
+                    The server encountered an internal error or misconfiguration. Please contact{" "}
+                    <a href="mailto:NCImosaicTilerWebAdmin@mail.nih.gov">NCImosaicTilerWebAdmin@mail.nih.gov</a> and
+                    inform them your configuration settings and the time that the error occured.{" "}
                   </div>
                 }>
                 <Suspense fallback="Loading...">
                   {form.submitted ? (
-                    <RangeView />
+                    <RangeView handleClick={handleClick} />
                   ) : (
-                    <div className="m-2">
-                      Please provide configuration settings on
-                      the left panel and click Submit.
-                    </div>
+                    <div className="m-2">Please provide configuration settings on the left panel and click Submit.</div>
                   )}
                 </Suspense>
               </ErrorBoundary>

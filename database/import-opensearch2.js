@@ -14,7 +14,8 @@ const client = new Client({
     rejectUnauthorized: false,
   },
 });
-
+const args = process.argv;
+console.log(args[2]);
 const sources = [
   // { path: "data/plcoAuto.json", index: "mcaexplorer" },
   // { path: "data/plcoDenominator.json", index: "mcaexplorer" },
@@ -24,7 +25,8 @@ const sources = [
   // { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
   // { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
   // { path: "data/combined_gene_test.json", index: "combinedgene_test" },
-  { path: "data/dbsnp2.csv", index: "dbsnp" },
+  //{ path: "data/dbsnp2.csv", index: "dbsnp" },
+  { path: "/Users/yaox5/desktop/dbsnp2.csv", index: "dbsnp" },
 ];
 
 runImport(client, sources)
@@ -44,14 +46,19 @@ async function runImport(client, sources, logger = console) {
     });
 
     let id = 0;
+    let times = Number(args[2]);
+    let numbers = 100000000;
+    let beginid = times * numbers;
+    let endid = (times + 1) * numbers;
     for await (const line of reader) {
-      let contents = JSON.parse(line);
-      //console.log(contents);
-      if (!contents.index) {
-        datasource.push({ id, ...contents });
-        id++;
-        //console.log(datasource);
+      if (id > beginid) {
+        let d = line.split(",");
+        //let contents = "{chr:" + d[0] + ",grch38:" + d[1] + "}";
+        datasource.push({ id, chr: d[0], grch38: Number(d[1]) });
+        if (id % 5000000 == 0) console.log(id);
       }
+      id++;
+      if (id > endid) break;
     }
     //console.log(datasource.length);
     logger.info(`Read ${datasource.length} documents, starting import.`);

@@ -1,14 +1,23 @@
-import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
+import { Form, Button, Accordion, Card, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
+import ComparePanel from "./comparePanel";
 
-export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) {
+const compareArray = [
+  { id: 1, label: " Study", isChecked: false },
+  { id: 2, label: " Genotype Array", isChecked: false },
+  { id: 3, label: " Genotype Sex", isChecked: false },
+  { id: 4, label: " Age", isChecked: false },
+  { id: 5, label: " Ancestry", isChecked: false },
+];
+export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
   const [loading, setLoading] = useRecoilState(loadingState);
+  const [counter, setCounter] = useState(0);
   //console.log(form)
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }]
@@ -22,6 +31,7 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
   const formRef = useRef();
   const [isX, setIsX] = useState(false);
   const [isY, setIsY] = useState(false);
+  const [compareChecks, setCompareChecks] = useState(compareArray);
   const [compare, setCompare] = useState(false);
 
   function handleChange(event) {
@@ -33,16 +43,19 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     } else if (name === "chrY") {
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
-    } else if (name === "compare") {
-      setCompare(event.target.checked);
-      mergeForm({ [name]: event.target.checked });
-      onCompare({ compare: event.target.checked });
-    } else mergeForm({ [name]: value });
+    }
+    // else if(name==="compare" ){
+    //   setCompare(event.target.checked)
+    //   mergeForm({ [name]: event.target.checked})
+    //   onCompare({compare:event.target.checked})
+    // }
+    else mergeForm({ [name]: value });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
     if (onSubmit) onSubmit(form);
+    handleDisplayCompare();
   }
 
   function handleReset(event) {
@@ -50,13 +63,13 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
     setForm(defaultFormState);
     setIsX(false);
     setIsY(false);
-    setCompare(false);
+    //setCompare(false);
     if (onReset) onReset(defaultFormState);
     onSubmit(resetFormState); //clean the plot
   }
 
   function handleSelectChange(name, selection = []) {
-    //console.log(name,selection);
+    console.log(name, selection);
     if (name === "chromosome" && selection.find((option) => option.value === "all")) {
       selection = chromosomes.slice(1);
     }
@@ -101,13 +114,53 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
   //console.log(form)
   function handleFilter(event) {
     event.preventDefault();
-    onFilter(form);
+    setCounter(counter + 1);
+    //mergeForm({ compare: true });
+    //onCompare({ compare: true });
+    //update the compare variable and run the filter function to do compare
+    //setForm({ ...form, compare: true, counterCompare: counter + 1 });
+    onFilter({ ...form, compare: true, counterCompare: counter + 1 });
     // onSubmit(form)
   }
-  useEffect(() => {
-    console.log(form.chromosome);
-  }, [form.chromosome]);
 
+  const handleFilterClear = (event) => {
+    console.log("filterclear");
+    setCompareChecks(compareArray);
+
+    onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
+    //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
+  };
+
+  const handlegroupChange = (value, gname) => {
+    console.log("compare group:", value, gname);
+    if (gname === "A") setForm({ ...form, groupA: value, compare: true });
+    if (gname === "B") setForm({ ...form, groupB: value, compare: true });
+  };
+  const handleCompareCheckboxChange = (id) => {
+    const updatedComparecheck = compareChecks.map((ck) => {
+      if (ck.id === id) {
+        return { ...ck, isChecked: !ck.isChecked };
+      }
+      return ck;
+    });
+    setCompareChecks(updatedComparecheck);
+  };
+  // useEffect(() => {
+  //   setCompare(compare);
+  //   setForm({ ...form });
+  //   console.log(compare, form);
+  // }, [compare]);
+  const updateGroup = (group) => {
+    console.log(group);
+    //if (group === "a") setForm({ ...form, groupA: form.group });
+    // else if (group === "b") setForm({ ...form, groupB: form.group });
+  };
+  const handleDisplayCompare = () => {
+    setCompare(true);
+  };
+  useEffect(() => {
+    //console.log("display compare", form);
+  });
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="study">
@@ -146,7 +199,6 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
           {/* {isCircos?<Button></Button>} */}
         </OverlayTrigger>
       </Form.Group>
-
       {form.plotType.value === "static" ? (
         <Form.Group className="mb-3" controlId="chromosome">
           <Form.Label className="required">Chromosome</Form.Label>
@@ -199,7 +251,6 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
           ]}
         />
       </Form.Group>
-
       <Accordion>
         <Accordion.Item eventKey="0">
           <Accordion.Header style={{ backgroundColor: "#343a40" }}>Optional Fields</Accordion.Header>
@@ -334,36 +385,13 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
                 </Col>
               </Row>
             </Form.Group>
-            <br></br>
-            <Row>
-              <Col>
-                <Form.Check
-                  type="switch"
-                  id="compare"
-                  name="compare"
-                  checked={compare}
-                  onChange={handleChange}
-                  label="Check this to comparison"
-                />
-              </Col>
-              <Col>
-                <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
-                  Update
-                </Button>
-                <Button variant="outline-secondary" className="me-1" type="button">
-                  Clear
-                </Button>
-              </Col>
-            </Row>
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-
       <div className="m-3">
         <Button variant="outline-secondary" className="me-1" type="reset">
           Reset
         </Button>
-
         <OverlayTrigger
           overlay={!isValid() ? <Tooltip id="phos_tumor_val">Missing Required Parameters</Tooltip> : <></>}>
           <Button variant="primary" type="submit" disabled={!isValid()}>
@@ -371,6 +399,51 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter }) 
           </Button>
         </OverlayTrigger>
       </div>
+      <hr></hr>
+      {isOpen && (
+        <Accordion defaultActiveKey="0">
+          <Accordion.Item eventKey="0">
+            <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>
+            <Accordion.Body>
+              <Card.Body>
+                {compareChecks.map((ck) => (
+                  <div key={ck.id}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={ck.isChecked}
+                        onChange={() => handleCompareCheckboxChange(ck.id)}
+                      />
+                      {ck.label}
+                    </label>
+                  </div>
+                ))}
+              </Card.Body>
+              <Card.Body>
+                <p>Group A</p>
+                <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
+              </Card.Body>
+              <Card.Body>
+                <p>Group B</p>
+                <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
+                <br></br>
+              </Card.Body>
+              <Card.Body>
+                <Row>
+                  <Col>
+                    <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
+                      Compare
+                    </Button>
+                    <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilterClear}>
+                      Clear
+                    </Button>
+                  </Col>
+                </Row>
+              </Card.Body>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      )}
     </Form>
   );
 }
