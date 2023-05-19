@@ -178,7 +178,7 @@ export default function CirclePlotTest(props) {
     } else {
       console.log("clear form");
     }
-  }, [form.counterCompare, form.groupA, form.groupB]);
+  }, [form.counterCompare]);
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId),
@@ -231,16 +231,26 @@ export default function CirclePlotTest(props) {
     if (group != undefined) {
       if (group.study !== undefined) {
         group.study.forEach((s) => {
-          title += s.label + ",";
+          title += s.label + ", ";
         });
       }
       if (group.sex !== undefined) {
         group.sex.forEach((s) => {
-          title += s.label + ",";
+          title += s.label + ", ";
+        });
+      }
+      if (group.array !== undefined) {
+        group.array.forEach((s) => {
+          title += s.label + ", ";
+        });
+      }
+      if (group.ancestry !== undefined) {
+        group.ancestry.forEach((s) => {
+          title += s.label + ", ";
         });
       }
     }
-    return title.substring(0, title.length - 1);
+    return title.substring(0, title.length - 2);
   };
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];

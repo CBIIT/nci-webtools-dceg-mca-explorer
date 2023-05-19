@@ -37,10 +37,11 @@ export default function Explore() {
     setForm({ ...form, compare: true, counterCompare: event.counterCompare });
   }
   function handleFilterClear(event) {
+    // setForm({ ...form, counterCompare: form.counterCompare + 1 });
     setClear(clear + 1);
   }
   useEffect(() => {
-    setForm({ ...form, groupA: [], groupB: [] });
+    setForm({ ...form, groupA: [], groupB: [], counterCompare: form.counterCompare + 1 });
     console.log("clear...", form);
   }, [clear]);
 

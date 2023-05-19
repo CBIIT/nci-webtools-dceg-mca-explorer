@@ -6,11 +6,11 @@ import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 
 const compareArray = [
-  { id: 1, label: "Study", isChecked: false },
-  { id: 2, label: "Genotype Array", isChecked: false },
-  { id: 3, label: "Genotype Sex", isChecked: false },
-  { id: 4, label: "Age", isChecked: false },
-  { id: 5, label: "Ancestry", isChecked: false },
+  { id: 1, label: " Study", isChecked: false },
+  { id: 2, label: " Genotype Array", isChecked: false },
+  { id: 3, label: " Genotype Sex", isChecked: false },
+  { id: 4, label: " Age", isChecked: false },
+  { id: 5, label: " Ancestry", isChecked: false },
 ];
 export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");
@@ -127,7 +127,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     console.log("filterclear");
     setCompareChecks(compareArray);
 
-    onClear({ ...form, groupA: [], groupB: [] });
+    onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
     //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
   };
 
