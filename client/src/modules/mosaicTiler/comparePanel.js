@@ -60,21 +60,25 @@ export default function ComparePanel(props) {
     props.compareItem.forEach((element) => {
       if (!element.isChecked && compareform) {
         if (element.label === "Study") {
+          setStudy([]);
           delete compareform.study;
         } else if (element.label === "Genotype Array") {
+          setArray([]);
           delete compareform.array;
-        } else if (element.label === "Genotype Sec") {
+        } else if (element.label === "Genotype Sex") {
+          setSex([]);
           delete compareform.sex;
         } else if (element.label === "Age") {
-          delete compareform.maxAge;
+          setMinAge(0);
+          setMaxAge(0);
           delete compareform.minAge;
+          delete compareform.maxAge;
         } else if (element.label === "Ancestry") {
+          setAncestry([]);
           delete compareform.ancestry;
         }
       }
     });
-    //console.log(compareform, props.compareItem);
-    updateForm();
   }, [compareform, props.compareItem]);
 
   return (

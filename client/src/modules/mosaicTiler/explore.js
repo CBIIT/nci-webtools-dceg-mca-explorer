@@ -19,6 +19,7 @@ export default function Explore() {
   const [_openSidebar, _setOpenSidebar] = useState(true);
   const [counter, setCounter] = useState(0);
   const [isOpenCompare, setIsOpenCompare] = useState(false);
+  const [clear, setClear] = useState(0);
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
@@ -29,18 +30,19 @@ export default function Explore() {
 
   function handleSubmit(event) {
     setForm({ ...event, submitted: true, compare: false, counterSubmitted: counter + 1 });
-    console.log("submit", event);
+    // console.log("submit", event);
   }
   function handleFilter(event) {
-    console.log("filter:", event, form);
-    //setForm({ ...event, submitted: true, counterCompare: counter + 1 });
+    ///console.log("filter:", event, form);
     setForm({ ...form, compare: true, counterCompare: event.counterCompare });
-    //console.log("Filter: ", form.counterSubmitted)
   }
-  // function handleCompare(event) {
-  //   setForm({ ...form, compare: event.compare });
-  //   //console.log(event)
-  // }
+  function handleFilterClear(event) {
+    setClear(clear + 1);
+  }
+  useEffect(() => {
+    setForm({ ...form, groupA: [], groupB: [] });
+    console.log("clear...", form);
+  }, [clear]);
 
   function handleReset(event) {
     setForm(event);
@@ -61,7 +63,13 @@ export default function Explore() {
         <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
-              <ExploreForm onSubmit={handleSubmit} onFilter={handleFilter} isOpen={isOpenCompare} />
+              <ExploreForm
+                onSubmit={handleSubmit}
+                onFilter={handleFilter}
+                onClear={handleFilterClear}
+                isOpen={isOpenCompare}
+                onFilterClear
+              />
             </Card.Body>
           </Card>
         </SidebarPanel>

@@ -5,7 +5,14 @@ import { sampleState, formState, loadingState, defaultFormState, resetFormState 
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 
-export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter, isOpen }) {
+const compareArray = [
+  { id: 1, label: "Study", isChecked: false },
+  { id: 2, label: "Genotype Array", isChecked: false },
+  { id: 3, label: "Genotype Sex", isChecked: false },
+  { id: 4, label: "Age", isChecked: false },
+  { id: 5, label: "Ancestry", isChecked: false },
+];
+export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
@@ -24,13 +31,7 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter, is
   const formRef = useRef();
   const [isX, setIsX] = useState(false);
   const [isY, setIsY] = useState(false);
-  const [compareChecks, setCompareChecks] = useState([
-    { id: 1, label: "Study", isChecked: false },
-    { id: 2, label: "Genotype Array", isChecked: false },
-    { id: 3, label: "Genotype Sex", isChecked: false },
-    { id: 4, label: "Age", isChecked: false },
-    { id: 5, label: "Ancestry", isChecked: false },
-  ]);
+  const [compareChecks, setCompareChecks] = useState(compareArray);
   const [compare, setCompare] = useState(false);
 
   function handleChange(event) {
@@ -122,8 +123,16 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter, is
     // onSubmit(form)
   }
 
+  const handleFilterClear = (event) => {
+    console.log("filterclear");
+    setCompareChecks(compareArray);
+
+    onClear({ ...form, groupA: [], groupB: [] });
+    //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
+  };
+
   const handlegroupChange = (value, gname) => {
-    //console.log(value, gname);
+    console.log("compare group:", value, gname);
     if (gname === "A") setForm({ ...form, groupA: value, compare: true });
     if (gname === "B") setForm({ ...form, groupB: value, compare: true });
   };
@@ -425,7 +434,7 @@ export default function ExploreForm({ onSubmit, onReset, onCompare, onFilter, is
                     <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
                       Compare
                     </Button>
-                    <Button variant="outline-secondary" className="me-1" type="button">
+                    <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilterClear}>
                       Clear
                     </Button>
                   </Col>

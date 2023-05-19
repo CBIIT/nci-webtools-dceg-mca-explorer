@@ -22,6 +22,8 @@ function SingleChromosome(props) {
       showticklabels: false,
       zeroline: false,
       showline: false,
+      autorange: true,
+      dragmode: "select",
     },
     // dragmode: 'select',
     selectdirection: "h",
@@ -35,6 +37,8 @@ function SingleChromosome(props) {
     const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
     setXMax(xMax);
     setXMin(xMin);
+    console.log(event);
+
     //  setGeneLayout({ ...layout, xaxis: { ...xaxis, range } });
   }
   var data1 = [];

@@ -176,8 +176,9 @@ export default function CirclePlotTest(props) {
       handleGroupQuery(form.groupA, "A");
       handleGroupQuery(form.groupB, "B");
     } else {
+      console.log("clear form");
     }
-  }, [form.counterCompare]);
+  }, [form.counterCompare, form.groupA, form.groupB]);
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId),
@@ -191,23 +192,27 @@ export default function CirclePlotTest(props) {
   //do query for group compare:
   async function handleGroupQuery(group, gname) {
     //setLoading(true)
-    const query = { ...group, chr: chromesomeId };
-    const response = await axios.post("api/opensearch/chromosome", { search: query });
-    const results = response.data;
+    console.log("do query...", group, gname);
     const result = [];
-    results.forEach((r) => {
-      if (r._source !== null) {
-        const d = r._source;
-        if (d.cf != "nan") {
-          d.block_id = d.chromosome.substring(3);
-          d.value = d.cf;
-          d.dataset = d.dataset.toUpperCase();
-          d.start = d.beginGrch38;
-          d.end = d.endGrch38;
+    if (!Array.isArray(group)) {
+      const query = { ...group, chr: chromesomeId };
+      const response = await axios.post("api/opensearch/chromosome", { search: query });
+      const results = response.data;
+
+      results.forEach((r) => {
+        if (r._source !== null) {
+          const d = r._source;
+          if (d.cf != "nan") {
+            d.block_id = d.chromosome.substring(3);
+            d.value = d.cf;
+            d.dataset = d.dataset.toUpperCase();
+            d.start = d.beginGrch38;
+            d.end = d.endGrch38;
+          }
+          result.push(d);
         }
-        result.push(d);
-      }
-    });
+      });
+    }
 
     if (gname === "A") {
       setGroupA(result);

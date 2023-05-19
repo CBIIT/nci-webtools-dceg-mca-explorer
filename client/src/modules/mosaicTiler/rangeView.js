@@ -60,7 +60,7 @@ export default function RangeView(props) {
 
   useEffect(() => {
     console.log(form);
-  }, [form.counterSubmitted]);
+  }, [form.counterSubmitted, form.groupA, form.groupB]);
 
   async function handleSubmit(qdataset, qsex) {
     setGain([]);
@@ -139,7 +139,7 @@ export default function RangeView(props) {
     .filter((e) => chromosomes.includes(Number(e.block_id)))
     .sort((a, b) => Number(a.block_id) - Number(b.block_id));
   const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined);
-  console.log(gain, sortGain, chromosomes);
+  //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);
     setAllValue([...clickedValues]);
