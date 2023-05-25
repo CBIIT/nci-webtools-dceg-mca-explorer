@@ -32,7 +32,7 @@ function SnpPlot(props) {
         temp_pos.y = [0, 10];
         temp_pos.type = "scatter";
         temp_pos.mode = "lines";
-        temp_pos.line = { color: "grey" };
+        temp_pos.line = { color: "grey", width: 1 };
         snparr.push(temp_pos);
       }
     });

@@ -34,16 +34,16 @@ export default function RangeView(props) {
   const handleBrowserResize = () => {
     setBrowserSize({
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: window.innerHeight * 0.7,
     });
   };
-  useEffect(() => {
-    window.addEventListener("resize", handleBrowserResize);
-    console.log("resizing...", browserSize);
-    return () => {
-      window.removeEventListener("resize", handleBrowserResize);
-    };
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("resize", handleBrowserResize);
+  //   console.log("resizing...", browserSize);
+  //   return () => {
+  //     window.removeEventListener("resize", handleBrowserResize);
+  //   };
+  // }, []);
   const chartHeight = browserSize.height;
   //console.log(form.study.length)
 
@@ -451,7 +451,7 @@ export default function RangeView(props) {
               }}
               useResizeHandler
               className="flex-fill w-100"
-              style={{ height: "700px" }}
+              style={{ height: browserSize.height }}
             />
           </Col>
         </Row>

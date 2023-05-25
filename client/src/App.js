@@ -5,6 +5,7 @@ import About from "./modules/about/about";
 import Mosaic from "./modules/mosaicTiler/explore";
 import Home from "./modules/home/home";
 import Api from "./modules/api/api";
+import "./styles/main.scss";
 
 export default function App() {
   const navbarLinks = [

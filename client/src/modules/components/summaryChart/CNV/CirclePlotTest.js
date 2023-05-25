@@ -71,13 +71,13 @@ export default function CirclePlotTest(props) {
       height: window.innerHeight,
     });
   };
-  useEffect(() => {
-    window.addEventListener("resize", handleBrowserResize);
-    console.log("resizing...", browserSize);
-    return () => {
-      window.removeEventListener("resize", handleBrowserResize);
-    };
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener("resize", handleBrowserResize);
+  //   console.log("resizing...", browserSize);
+  //   return () => {
+  //     window.removeEventListener("resize", handleBrowserResize);
+  //   };
+  // }, []);
   const [circle, setCircle] = useState({
     loss: props.loss,
     gain: props.gain,
@@ -312,17 +312,22 @@ export default function CirclePlotTest(props) {
           )}
           {!form.compare && (
             <Row className="justify-content-center">
-              <Col lg={10}>
+              <Col className="col-xl-1"></Col>
+              <Col className="col-xl-10">
                 <SingleChromosome
                   data={data}
                   chromesomeId={chromesomeId}
                   width={size}
-                  height={size}
+                  height={browserSize.height * 0.7}
                   onHeightChange={props.onHeightChange}></SingleChromosome>
               </Col>
+              <Col className="col-xl-1"></Col>
             </Row>
           )}
-          <Button onClick={handleBack}>Back</Button>
+          <br />
+          <Button variant="outline-success" onClick={handleBack}>
+            Back
+          </Button>
         </div>
       ) : (
         <div>

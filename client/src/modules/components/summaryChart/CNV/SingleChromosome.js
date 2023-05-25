@@ -203,7 +203,16 @@ function SingleChromosome(props) {
       ) : (
         ""
       )}
-      {xMin ? "Window: " + Math.trunc(xMin) + "-" + Math.trunc(xMax) : ""}
+      <br />
+      {xMin
+        ? "Chr" +
+          props.chromesomeId +
+          ": " +
+          Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
+          "-" +
+          Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
+        : ""}
+      <br />
     </div>
   );
 }

@@ -9,7 +9,7 @@ import "./home.scss";
 export default function Home({ links }) {
   return (
     <>
-      <div style={{ marginTop: "-5px", padding: "0px" }} className="banner-container text-center d-none d-md-block">
+      <div style={{ marginTop: "5px", padding: "0px" }} className="banner-container text-center d-none d-md-block">
         <img src={genomeImage} alt="genome" style={{ width: "100%", height: "100%" }}></img>
       </div>
       <Container fluid className=" py-8 align-middle text-cernter" style={{ display: "block", width: "50%" }}>

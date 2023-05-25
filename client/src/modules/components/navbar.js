@@ -14,7 +14,7 @@ export default function Navbar({ links = [], className, children }) {
               to={link.path}
               key={link.path}
               // activeClassName="active"
-              className="nav-link"
+              className="nav-link mx-3"
               exact={link.exact}>
               {link.title}
             </NavLink>
