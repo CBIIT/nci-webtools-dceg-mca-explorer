@@ -270,3 +270,58 @@ const parseQueryStr = (query) => {
   console.log(values);
   return values;
 };
+
+apiRouter.post("/opensearch/snpchip", async (request, response) => {
+  const { logger } = request.app.locals;
+  const search = request.body.search;
+  const xMax = search.xMax;
+  const xMin = search.xMin;
+  const chr = search.chr;
+  console.log(search, xMax, chr);
+  const client = new Client({
+    node: host,
+    auth: {
+      username: OPENSEARCH_USERNAME,
+      password: OPENSEARCH_PASSWORD,
+    },
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
+  //console.log(client)
+  try {
+    const result = await client.search({
+      index: "snpchip",
+      _source: "grch38",
+      body: {
+        track_total_hits: true,
+        size: 10000,
+        query: {
+          bool: {
+            filter: [
+              {
+                range: {
+                  grch38: {
+                    gte: xMin,
+                    lte: xMax,
+                  },
+                },
+              },
+            ],
+            must: [
+              {
+                match: {
+                  chr38: chr,
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+    console.log(result.body.hits.hits.length);
+    response.json(result.body.hits.hits);
+  } catch (error) {
+    console.error(error);
+  }
+});

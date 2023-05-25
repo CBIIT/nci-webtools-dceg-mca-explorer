@@ -37,8 +37,6 @@ const hovertip = (d) => {
   );
 };
 
-const size = 800;
-
 function changeBackground(track, chromesomeId, opacity) {
   for (var t in track) {
     const svgDoc = track[t];
@@ -61,8 +59,25 @@ export default function CirclePlotTest(props) {
   const [groupB, setGroupB] = useState([]);
   const [titleA, setTitleA] = useState("A");
   const [titleB, setTitleB] = useState("B");
-  //console.log("in plottest", form);
+  const [browserSize, setBrowserSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const size = browserSize.width / 2;
 
+  const handleBrowserResize = () => {
+    setBrowserSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  };
+  useEffect(() => {
+    window.addEventListener("resize", handleBrowserResize);
+    console.log("resizing...", browserSize);
+    return () => {
+      window.removeEventListener("resize", handleBrowserResize);
+    };
+  }, []);
   const [circle, setCircle] = useState({
     loss: props.loss,
     gain: props.gain,
@@ -301,8 +316,8 @@ export default function CirclePlotTest(props) {
                 <SingleChromosome
                   data={data}
                   chromesomeId={chromesomeId}
-                  width={700}
-                  height={700}
+                  width={size}
+                  height={size}
                   onHeightChange={props.onHeightChange}></SingleChromosome>
               </Col>
             </Row>

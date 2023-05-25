@@ -20,14 +20,31 @@ const initialXY = [
   { block_id: "X", start: "0", end: "0", type: "Undetermined" },
   { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
 ];
-const chartHeight = 800;
+
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
   const [tab, setTab] = useState("summary");
   const [clickedCounter, setClickedCounter] = useState(0);
   const [chromoId, setChromoId] = useState(-1);
   const [allValue, setAllValue] = useState([]);
-
+  const [browserSize, setBrowserSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  const handleBrowserResize = () => {
+    setBrowserSize({
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+  };
+  useEffect(() => {
+    window.addEventListener("resize", handleBrowserResize);
+    console.log("resizing...", browserSize);
+    return () => {
+      window.removeEventListener("resize", handleBrowserResize);
+    };
+  }, []);
+  const chartHeight = browserSize.height;
   //console.log(form.study.length)
 
   const [figureHeight, setFigureHeight] = useState(chartHeight);
@@ -45,7 +62,7 @@ export default function RangeView(props) {
     ? (query_value = [...study_value, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""])
     : (query_value = [study_value, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""]);
 
-  console.log("review:", form);
+  //console.log("review:", form);
   useEffect(() => {
     if (true) {
       handleSubmit(query_value, form.sex);

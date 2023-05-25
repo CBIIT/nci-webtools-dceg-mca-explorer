@@ -25,8 +25,8 @@ const sources = [
   // { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
   // { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
   // { path: "data/combined_gene_test.json", index: "combinedgene_test" },
-  //{ path: "data/dbsnp2.csv", index: "dbsnp" },
-  { path: "/Users/yaox5/desktop/dbsnp2.csv", index: "dbsnp" },
+  // { path: "data/snp_test2.csv", index: "snpchip" },
+  { path: "/Users/yaox5/Downloads/snp-platforms/snp_col.csv", index: "snpchip" },
 ];
 
 runImport(client, sources)
@@ -47,14 +47,24 @@ async function runImport(client, sources, logger = console) {
 
     let id = 0;
     let times = Number(args[2]);
-    let numbers = 100000000;
+    let numbers = 1000000;
     let beginid = times * numbers;
     let endid = (times + 1) * numbers;
     for await (const line of reader) {
       if (id > beginid) {
         let d = line.split(",");
         //let contents = "{chr:" + d[0] + ",grch38:" + d[1] + "}";
-        datasource.push({ id, chr: d[0], grch38: Number(d[1]) });
+        let p1 = line.indexOf("[");
+        let p2 = line.indexOf("]");
+        const platform = line.substring(p1 + 1, p2);
+        const platforms = platform.split(",");
+        const temp = [];
+        platforms.forEach((element) => {
+          const correctedEle = element.replace(/""/g, '"');
+          const p = JSON.parse(correctedEle);
+          temp.push(p.platform);
+        });
+        datasource.push({ id, chr37: d[0], chr38: d[1], grch37: Number(d[2]), grch38: Number(d[3]), platforms: temp });
         if (id % 5000000 == 0) console.log(id);
       }
       id++;

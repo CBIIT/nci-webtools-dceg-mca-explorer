@@ -10,9 +10,8 @@ export default function App() {
   const navbarLinks = [
     { path: "/", title: "Home" },
     { path: "/mosaic", title: "mCA Explorer", exact: "true" },
-    { path: "/api", title: "API Access" ,exact: "true" },
-    { path: "/about", title: "About",exact: "true"  },
-
+    { path: "/api", title: "API Access", exact: "true" },
+    { path: "/about", title: "About", exact: "true" },
   ];
 
   return (
@@ -20,11 +19,10 @@ export default function App() {
       <Router>
         <Navbar links={navbarLinks} className="shadow-sm" />
         <Routes>
-          <Route path="/mosaic" exact='true' element={<Mosaic />} />
+          <Route path="/mosaic" exact="true" element={<Mosaic />} />
           <Route path="/about" element={<About />} />
           <Route path="/api" element={<Api />} />
           <Route path="/" element={<Home />} />
-
         </Routes>
       </Router>
     </RecoilRoot>

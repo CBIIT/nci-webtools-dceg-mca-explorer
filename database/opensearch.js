@@ -313,9 +313,9 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
   //     console.log(`Finish Combined Gene Dataset import`);
   //   }
   //{ path: "/Users/yaox5/desktop/dbsnp.json", index: "snp" },
-  const dbsnp = await parseCSVFile("/Users/yaox5/desktop/dbsnp2.csv", "\n");
+  const dbsnp = await parseCSVFile("/Users/yaox5/Downloads/snp_col.csv", "\n");
   try {
-    var fd = fs.openSync(path.resolve("data", "dbsnp.json"), "a");
+    var fd = fs.openSync(path.resolve("data", "snp.json"), "a");
     var counter = 0;
     dbsnp.map((e) => {
       //console.log(e);
@@ -327,7 +327,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         fd,
         JSON.stringify({
           index: {
-            _index: "dbsnp",
+            _index: "snp",
             _id: id,
           },
         }) + "\n",
@@ -343,6 +343,6 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish dbsnp Dataset import`);
+    console.log(`Finish snp Dataset import`);
   }
 })();

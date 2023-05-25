@@ -165,7 +165,7 @@ function SingleChromosome(props) {
   }, [props.chromesomeId, props.title]);
 
   return (
-    <div id="plotly-div" className="mx-5" style={{ justifyContent: "flex-end" }}>
+    <div id="plotly-div" className="mx-5" style={{ justifyContent: "center" }}>
       <Plot
         data={data}
         layout={layout}
@@ -178,7 +178,7 @@ function SingleChromosome(props) {
           },
         }}
         // useResizeHandler
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "100%", position: "relative" }}
         ref={ref}
         onRelayout={handleRelayout}
       />
