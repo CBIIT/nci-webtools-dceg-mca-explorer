@@ -1,115 +1,263 @@
-
 import { useEffect, useRef } from "react";
-import { NGCircos } from './lib/NGCircosPlot'
-import { CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03 } from './data/data'
-const d3 = require('d3');
+import Circos, { HIGHLIGHT, STACK } from "react-circos";
+import band from "./band.json";
 
-export default function  CircosPlot({data, options, className, style, onSelect}) {
-    const nodeRef = useRef(null);
+export default function CircosPlot(props) {
+  //return NGCircos01;
+  const layoutAll = props.layoutAll;
+  const dataXY = props.dataXY;
+  const size = props.size;
+  const thicknessloss = props.thicknessloss;
+  const thicknessgain = props.thicknessgain;
+  const thicknessundermined = props.thicknessundermined;
+  const thicknessloh = props.thicknessloh;
+  const circle = props.circle;
+  const circleRef = props.circleRef;
+  const handleEnter = props.handleEnter;
+  const hovertip = props.hovertip;
+  const classCircle = props.circleClass;
 
-// use NGCircos package to create circos plot
-    const NGCircosGenome = [      // Configure your own genome here.
-        [
-          ["1", 248956422],//number is the total number of genomes in this gene
-          ["2", 242193529],
-          ["3", 198295559],
-          ["4", 190214555],
-          ["5", 181538259],
-          ["6", 170805979],
-          ["7", 159345973],
-          ["8", 145138636],
-          ["9", 138394717],
-          ["10", 133797422],
-          ["11", 135086622],
-          ["12", 133275309],
-          ["13", 114364328],
-          ["14", 107043718],
-          ["15", 101991189],
-          ["16", 90338345],
-          ["17", 83257441],
-          ["18", 80373285],
-          ["19", 58617616],
-          ["20", 64444167],
-          ["21", 46709983],
-           ["22", 50818468]
-          // ["X" , 155270560],
-          // ["Y" , 59373566]
-        ]
-      ];
+  //console.log(classCircle);
+  return (
+    <div>
+      <div className={classCircle} id="chrxy">
+        <Circos
+          layout={layoutAll}
+          config={{
+            innerRadius: size / 2 - 50,
+            outerRadius: size / 2 - 30,
+            ticks: {
+              display: true,
+              color: "black",
+              labels: false,
+            },
+            labels: {
+              position: "center",
+              display: true,
+              size: 14,
+              color: "#000",
+              radialOffset: 28,
+            },
+          }}
+          tracks={[
+            {
+              type: STACK,
+              data: dataXY,
+              config: {
+                innerRadius: 0.05,
+                outerRadius: 1,
+                thickness: thicknessloss,
+                margin: 0,
+                strokeWidth: 1,
+                strokeColor: "red",
+                direction: "out",
+                logScale: true,
+                color: "red",
+                backgrounds: [
+                  {
+                    start: 0,
+                    end: 0,
+                    color: "white",
+                    opacity: 1,
+                  },
+                ],
+                tooltipContent: function (d) {
+                  return hovertip(d);
+                },
+                events: {
+                  mouseover: function (d, i, nodes, event) {
+                    console.log("mouse over");
+                  },
+                  click: function (d, i, nodes, event) {
+                    console.log("mouse over");
+                  },
+                },
+              },
+            },
+          ]}
+          size={size}
+        />
+      </div>
+      <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
+        <Circos
+          layout={layoutAll}
+          config={{
+            innerRadius: size / 2 - 50,
+            outerRadius: size / 2 - 30,
+            ticks: {
+              display: true,
+              color: "black",
+              //spacing: 100000,
+              labels: false,
+              // labelSpacing: 10,
+              // labelSuffix: "",
+              // labelDenominator: 1,
+              // labelDisplay: true,
+              // labelSize: "5px",
+              // labelColor: "yellow",
+              // labelFont: "default",
+              // majorSpacing: 1
+            },
+            labels: {
+              position: "center",
+              display: true,
+              size: 14,
+              color: "#000",
+              radialOffset: 28,
+            },
+          }}
+          tracks={[
+            {
+              type: STACK,
+              data: circle.undetermined,
+              config: {
+                innerRadius: 0.05,
+                outerRadius: 0.25,
+                thickness: thicknessundermined,
+                margin: 0,
+                strokeWidth: 1,
+                strokeColor: "grey",
+                direction: "out",
+                logScale: true,
+                color: "grey",
+                backgrounds: [
+                  {
+                    start: 0,
+                    end: 1,
+                    color: "grey",
+                    opacity: 0.5,
+                  },
+                ],
+                tooltipContent: function (d) {
+                  return hovertip(d);
+                },
+                events: {
+                  //  'mouseover.alert':
+                  //     function(d, i, nodes, event) {
+                  //       console.log(d,i, nodes)
+                  //       //changeBackground(track, chromesomeId, color)
+                  //   }
+                  //   ,
+                  //   click:function(d, i, nodes, event) {
+                  //     console.log(d)
+                  //       return hovercoler(d);
+                  //   }
+                },
+              },
+            },
+            {
+              type: STACK,
+              data: circle.loss,
+              config: {
+                innerRadius: 0.25,
+                outerRadius: 0.5,
+                thickness: thicknessloss,
+                margin: 0,
+                strokeWidth: 1,
+                strokeColor: "red",
+                direction: "out",
+                logScale: true,
+                color: "red",
+                backgrounds: [
+                  {
+                    start: 0,
+                    end: 1,
+                    color: "#f8787b",
+                    opacity: 0.5,
+                  },
+                ],
+                tooltipContent: function (d) {
+                  return hovertip(d);
+                },
+                events: {
+                  // 'mouseover.alert':
+                  //   function(d, i, nodes, event) {
+                  //     //return hovercoler(d);
+                  // },
+                  // click:function(d, i, nodes, event) {
+                  //     return hovercoler(d);
+                  // }
+                },
+              },
+            },
+            {
+              type: STACK,
+              data: circle.loh,
+              config: {
+                innerRadius: 0.5,
+                outerRadius: 0.75,
+                thickness: thicknessloh,
+                margin: 0,
+                strokeWidth: 1,
+                strokeColor: "blue",
+                direction: "out",
+                logScale: true,
+                color: "blue",
+                backgrounds: [
+                  {
+                    start: 0,
+                    end: 1,
+                    color: "#0095ff",
+                    opacity: 0.5,
+                  },
+                ],
+                tooltipContent: function (d) {
+                  return hovertip(d);
+                },
+              },
+            },
+            {
+              type: STACK,
+              data: circle.gain,
+              config: {
+                innerRadius: 0.75,
+                outerRadius: 1,
+                thickness: thicknessgain,
+                margin: 0,
+                strokeWidth: 1,
+                strokeColor: "green",
+                direction: "out",
+                logScale: true,
+                color: "green",
+                backgrounds: [
+                  {
+                    start: 0,
+                    end: 1,
+                    color: "#2fc405",
+                    opacity: 0.5,
+                  },
+                ],
+                tooltipContent: function (d) {
+                  return hovertip(d);
+                },
+              },
+            },
+            {
+              type: HIGHLIGHT,
+              data: band,
+              config: {
+                innerRadius: size / 2 - 50,
+                outerRadius: size / 2 - 35,
+                opacity: 0.5,
+                color: (d) => d.color,
 
-    useEffect(() => {
-      if (nodeRef.current ) {
-        var NGCircos01 = new NGCircos(CNV01, BACKGROUND01, CNV02, BACKGROUND02, CNV03, BACKGROUND03, NGCircosGenome, {       // Initialize NGCircos.js with "NGCircosGenome" and Main configuration
-        zoom: true,
-        target: "NGCircos",                              // Main configuration "target"
-        svgWidth: 1200,                                  // Main configuration "svgWidth"
-        svgHeight: 900,                                 // Main configuration "svgHeight"
-        svgClassName: "NGCircos",                  // Main configuration "svgClassName"
-        chrPad: 0.02,
-        //outerRadius:300,
-        //compareEventGroupGapRate: 1,
-        //compareEventGroupDistance: 1,
-        CNVMouseEvent: true,
-        CNVMouseClickDisplay: true,
-        CNVMouseClickColor: "red",
-        CNVMouseClickArcOpacity: 1,
-        CNVMouseClickArcStrokeColor: "#F26223",
-        CNVMouseClickArcStrokeWidth: 0,
-        CNVMouseClickTextFromData: "fourth",
-        CNVMouseClickTextOpacity: 1,
-        CNVMouseClickTextColor: "red",
-        CNVMouseClickTextSize: 8,
-        CNVMouseClickTextPostionX: 0,
-        CNVMouseClickTextPostionY: 0,
-        CNVMouseClickTextDrag: true,
-        CNVMouseDownDisplay: true,
-        CNVMouseDownColor: "green",
-        CNVMouseDownArcOpacity: 1,
-        CNVMouseDownArcStrokeColor: "#F26223",
-        CNVMouseDownArcStrokeWidth: 0,
-        CNVMouseEnterDisplay: true,
-        CNVMouseEnterColor: "yellow",
-        CNVMouseEnterArcOpacity: 1,
-        CNVMouseEnterArcStrokeColor: "#F26223",
-        CNVMouseEnterArcStrokeWidth: 0,
-        CNVMouseLeaveDisplay: true,
-        CNVMouseLeaveColor: "pink",
-        CNVMouseLeaveArcOpacity: 1,
-        CNVMouseLeaveArcStrokeColor: "#F26223",
-        CNVMouseLeaveArcStrokeWidth: 0,
-        CNVMouseMoveDisplay: true,
-        CNVMouseMoveColor: "red",
-        CNVMouseMoveArcOpacity: 1,
-        CNVMouseMoveArcStrokeColor: "#F26223",
-        CNVMouseMoveArcStrokeWidth: 0,
-        CNVMouseOutDisplay: true,
-        CNVMouseOutAnimationTime: 500,
-        CNVMouseOutColor: "",//original is red if mouse moved there
-        CNVMouseOutArcOpacity: 1,
-        CNVMouseOutArcStrokeColor: "red",
-        CNVMouseOutArcStrokeWidth: 0,
-        CNVMouseUpDisplay: true,
-        CNVMouseUpColor: "grey",
-        CNVMouseUpArcOpacity: 1,
-        CNVMouseUpArcStrokeColor: "#F26223",
-        CNVMouseUpArcStrokeWidth: 0,
-        CNVMouseOverDisplay: true,
-        CNVMouseOverColor: "red",
-        CNVMouseOverArcOpacity: 1,
-        CNVMouseOverArcStrokeColor: "#F26223",
-        CNVMouseOverArcStrokeWidth: 0,
-      });
-      NGCircos01.draw_genome(NGCircos01.genomeLength);  // NGCircos.js callback
-      NGCircos01.draw_genome(NGCircos01.genomeLength2); // NGCircos2.js callback second time
-
-      nodeRef.current.replaceChildren(NGCircos01);
-      }
-    }, [data, options, nodeRef]);
-  
-
-      //return NGCircos01;
-     return <div ref={nodeRef} className={className} style={style} />;
-     //return  
-    
-  
+                events: {
+                  click: function (d, i, nodes, event) {
+                    console.log("clicking ", d);
+                  },
+                  mouseover: function (d, i, nodes, event) {
+                    //console.log(d.block_id);
+                    //change class="cs-layout" class=d.block_id, fill="grey" to highlight the chromosome
+                    //document.getElementsByClassName()
+                  },
+                },
+              },
+            },
+          ]}
+          size={size}
+        />
+      </div>
+    </div>
+  );
+  //return
 }

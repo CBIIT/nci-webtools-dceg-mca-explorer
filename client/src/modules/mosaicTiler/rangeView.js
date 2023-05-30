@@ -10,7 +10,7 @@ import Legend from "../components/legend";
 
 import Table from "../components/table";
 
-const initialXY = [
+export const initialXY = [
   { block_id: "X", start: "0", end: "0", type: "Gain" },
   { block_id: "Y", start: "0", end: "0", type: "Gain" },
   { block_id: "X", start: "0", end: "0", type: "Loss" },
@@ -355,6 +355,7 @@ export default function RangeView(props) {
     displaylogo: false,
     modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
+
   const handleClickedChromoId = (id) => {
     setChromoId(id);
     //const response = await axios.post("api/opensearch/chromosome", { search: [...query_value,{chr:id}] })

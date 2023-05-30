@@ -69,7 +69,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   }
 
   function handleSelectChange(name, selection = []) {
-    console.log(name, selection);
+    //console.log(name, selection);
     if (name === "chromosome" && selection.find((option) => option.value === "all")) {
       selection = chromosomes.slice(1);
     }
@@ -120,7 +120,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     //update the compare variable and run the filter function to do compare
     //setForm({ ...form, compare: true, counterCompare: counter + 1 });
     onFilter({ ...form, compare: true, counterCompare: counter + 1 });
-    // onSubmit(form)
+    //onSubmit(form);
   }
 
   const handleFilterClear = (event) => {
@@ -400,50 +400,46 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </OverlayTrigger>
       </div>
       <hr></hr>
-      {isOpen && (
-        <Accordion defaultActiveKey="0">
-          <Accordion.Item eventKey="0">
-            <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>
-            <Accordion.Body>
-              <Card.Body>
-                {compareChecks.map((ck) => (
-                  <div key={ck.id}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={ck.isChecked}
-                        onChange={() => handleCompareCheckboxChange(ck.id)}
-                      />
-                      {ck.label}
-                    </label>
-                  </div>
-                ))}
-              </Card.Body>
-              <Card.Body>
-                <p>Group A</p>
-                <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
-              </Card.Body>
-              <Card.Body>
-                <p>Group B</p>
-                <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
-                <br></br>
-              </Card.Body>
-              <Card.Body>
-                <Row>
-                  <Col>
-                    <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
-                      Compare
-                    </Button>
-                    <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilterClear}>
-                      Clear
-                    </Button>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
-      )}
+      {/* {isOpen && ( */}
+      <Accordion defaultActiveKey="0">
+        <Accordion.Item eventKey="0">
+          <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>
+          <Accordion.Body>
+            <Card.Body>
+              {compareChecks.map((ck) => (
+                <div key={ck.id}>
+                  <label>
+                    <input type="checkbox" checked={ck.isChecked} onChange={() => handleCompareCheckboxChange(ck.id)} />
+                    {ck.label}
+                  </label>
+                </div>
+              ))}
+            </Card.Body>
+            <Card.Body>
+              <p>Group A</p>
+              <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
+            </Card.Body>
+            <Card.Body>
+              <p>Group B</p>
+              <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
+              <br></br>
+            </Card.Body>
+            <Card.Body>
+              <Row>
+                <Col>
+                  <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
+                    Compare
+                  </Button>
+                  <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilterClear}>
+                    Clear
+                  </Button>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Accordion.Body>
+        </Accordion.Item>
+      </Accordion>
+      {/* )} */}
     </Form>
   );
 }

@@ -29,17 +29,19 @@ export default function Explore() {
   });
 
   function handleSubmit(event) {
+    //setIsOpenCompare(true);
     setForm({ ...event, submitted: true, compare: false, counterSubmitted: counter + 1 });
     // console.log("submit", event);
   }
   function handleFilter(event) {
-    ///console.log("filter:", event, form);
+    console.log("filter:", event, form);
     setForm({
       ...form,
       compare: true,
-      counterCompare: form.counterCompare + 2,
+      counterCompare: form.counterCompare + 1,
       groupA: { ...event.groupA },
       groupB: { ...event.groupB },
+      //submitted: true,
     });
   }
   function handleFilterClear(event) {
@@ -94,6 +96,8 @@ export default function Explore() {
                 <Suspense fallback="Loading...">
                   {form.submitted ? (
                     <RangeView handleClick={handleClick} />
+                  ) : form.compare ? (
+                    <RangeView />
                   ) : (
                     <div className="m-2">Please provide configuration settings on the left panel and click Submit.</div>
                   )}

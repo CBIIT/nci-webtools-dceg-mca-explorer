@@ -51,13 +51,13 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     : datasets.push(qdataset.value);
   searchdataset.push({ terms: { dataset: datasets } });
   let sexarr = [];
-  if (qsex.length > 0) {
+  if (qsex !== undefined && qsex.length > 0) {
     qsex.forEach((e) => {
       e.value === "male" ? sexarr.push("M") : "";
       e.value === "female" ? sexarr.push("F") : "";
     });
     console.log(sexarr);
-    searchdataset.push({ terms: { "expectedSex.keyword": sexarr } });
+    searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
   }
   //searchdataset.push({ terms: { "expectedSex.keyword": ["F"] } });
   // hasX?searchdataset.push({match:{type:"mLOX"}}):''

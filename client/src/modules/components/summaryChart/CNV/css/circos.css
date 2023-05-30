@@ -43,13 +43,31 @@
 
 .overlayX{
     position: absolute;
-    width: 800px;
-    height: 800px;
+    /* width: 800px;
+    height: 800px; */
     top: 100;
     right: 0%;
     bottom: 10;
-    left: 9%;
+    /* left: 9%; */
    
+}
+.overlayX2 {
+    position: absolute;
+    /* width: 800px;
+    height: 800px; */
+    top: 100;
+    right: 40%;
+    bottom: 10;
+    left: 1%;
+}
+.overlayX3 {
+    position: absolute;
+    /* width: 800px;
+    height: 800px; */
+    top: 100;
+    right: 0%;
+    bottom: 10;
+    left: 60%;
 }
 
 .overlaySpinner{
