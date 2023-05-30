@@ -41,15 +41,17 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let hasY = false;
   const datasets = [];
   //if there is more studies, queryString is an array, if there is only one, study is json object
-  qdataset.length
-    ? qdataset.forEach((element) => {
-        element.value === "X" ? (hasX = true) : "";
-        element.value === "Y" ? (hasY = true) : "";
-        element.label ? datasets.push(element.value) : "";
-        //element.label?searchdataset.push({match:{dataset:element.value}}):''
-      })
-    : datasets.push(qdataset.value);
-  searchdataset.push({ terms: { dataset: datasets } });
+  if (qdataset !== undefined) {
+    qdataset.length
+      ? qdataset.forEach((element) => {
+          element.value === "X" ? (hasX = true) : "";
+          element.value === "Y" ? (hasY = true) : "";
+          element.label ? datasets.push(element.value) : "";
+          //element.label?searchdataset.push({match:{dataset:element.value}}):''
+        })
+      : datasets.push(qdataset.value);
+    searchdataset.push({ terms: { dataset: datasets } });
+  }
   let sexarr = [];
   if (qsex !== undefined && qsex.length > 0) {
     qsex.forEach((e) => {
@@ -214,7 +216,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const dataset = [];
     const queryString = [];
 
-    queryString.push({ match: { chromosome: "chr" + chromesome } }, { terms: { dataset: parseQueryStr(study) } });
+    queryString.push({ match: { chromosome: "chr" + chromesome } });
+    if (study !== undefined && study.length > 0) queryString.push({ terms: { dataset: parseQueryStr(study) } });
     //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
     if (sex !== undefined && sex.length > 0)
       queryString.push({ terms: { "computedGender.keyword": parseQueryStr(sex) } });

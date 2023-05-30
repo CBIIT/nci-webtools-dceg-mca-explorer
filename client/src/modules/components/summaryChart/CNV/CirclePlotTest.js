@@ -193,12 +193,12 @@ export default function CirclePlotTest(props) {
   let data = [];
   useEffect(() => {
     if (form.compare) {
-      handleGroupQuery(form.groupA, "A").then((data) => {
+      handleGroupQuery(form.groupA).then((data) => {
         showChart ? setGroupA(data) : setCircleA(data);
       });
-      handleGroupQuery(form.groupB, "B").then((data) => {
+      handleGroupQuery(form.groupB).then((data) => {
         showChart ? setGroupB(data) : setCircleB(data);
-        console.log(form.counterCompare, circleB, data);
+        console.log(form.counterCompare, showChart, circleB, data);
       });
     } else {
       console.log("clear form");
@@ -282,8 +282,8 @@ export default function CirclePlotTest(props) {
     else return circleTemp;
   }
   useEffect(() => {
-    setTitleA(groupTitle(form.groupA));
-    setTitleB(groupTitle(form.groupB));
+    setTitleA(groupTitle(form.groupA) + "; Total: " + groupA.length);
+    setTitleB(groupTitle(form.groupB) + "; Total: " + groupB.length);
   });
   useEffect(() => {});
   const groupTitle = (group) => {
