@@ -238,8 +238,8 @@ export default function CirclePlotTest(props) {
     return result;
   }
   useEffect(() => {
-    setTitleA(groupTitle(form.groupA));
-    setTitleB(groupTitle(form.groupB));
+    setTitleA(groupTitle(form.groupA) + "; Total: " + groupA.length);
+    setTitleB(groupTitle(form.groupB) + "; Total: " + groupB.length);
   });
   const groupTitle = (group) => {
     let title = "";
