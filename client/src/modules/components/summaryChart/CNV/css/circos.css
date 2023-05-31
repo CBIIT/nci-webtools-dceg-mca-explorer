@@ -69,6 +69,15 @@
     bottom: 10;
     left: 60%;
 }
+.buttonCircle{
+    position: relative;
+        /* width: 800px;
+        height: 800px; */
+        top: 800px;
+        right: 0%;
+        bottom: 10;
+        left: 6%;
+}
 
 .overlaySpinner{
     position: absolute;

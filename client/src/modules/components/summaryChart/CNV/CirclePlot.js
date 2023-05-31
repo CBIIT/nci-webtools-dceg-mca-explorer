@@ -256,6 +256,7 @@ export default function CircosPlot(props) {
           ]}
           size={size}
         />
+        {props.details}
       </div>
     </div>
   );

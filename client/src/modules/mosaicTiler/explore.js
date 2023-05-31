@@ -29,7 +29,7 @@ export default function Explore() {
   });
 
   function handleSubmit(event) {
-    //setIsOpenCompare(true);
+    setIsOpenCompare(true);
     setForm({ ...event, submitted: true, compare: false, counterSubmitted: counter + 1 });
     // console.log("submit", event);
   }

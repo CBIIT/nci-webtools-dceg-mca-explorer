@@ -282,8 +282,13 @@ export default function CirclePlotTest(props) {
     else return circleTemp;
   }
   useEffect(() => {
-    setTitleA(groupTitle(form.groupA) + "; Total: " + groupA.length);
-    setTitleB(groupTitle(form.groupB) + "; Total: " + groupB.length);
+    if (chromesomeId > 0) {
+      setTitleA(groupTitle(form.groupA) + "; Total: " + groupA.length);
+      setTitleB(groupTitle(form.groupB) + "; Total: " + groupB.length);
+    } else {
+      setTitleA(groupTitle(form.groupA) + "; " + circleTitle(circleA));
+      setTitleB(groupTitle(form.groupB) + "; " + circleTitle(circleB));
+    }
   });
   useEffect(() => {});
   const groupTitle = (group) => {
@@ -312,6 +317,22 @@ export default function CirclePlotTest(props) {
     }
     return title.substring(0, title.length - 2);
   };
+
+  const circleTitle = (circle) => {
+    let title = "";
+    if (circle !== null) {
+      title +=
+        "Gain: " +
+        circle.gain.length +
+        " Neutral: " +
+        circle.loh.length +
+        " Loss: " +
+        circle.loss.length +
+        " Undtermined: " +
+        circle.undetermined.length;
+    }
+    return title;
+  };
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
@@ -328,380 +349,119 @@ export default function CirclePlotTest(props) {
   let singleFigWidth = form.compare ? 350 : 700;
   return (
     <div className="align-middle text-center">
-      {
-        showChart ? (
-          <div>
-            <p>Chromosome {chromesomeId}</p>
-            {form.compare && (
-              <Row className="justify-content-center">
-                <Col lg={6}>
-                  <SingleChromosome
-                    data={groupA}
-                    title="A"
-                    details={titleA}
-                    chromesomeId={chromesomeId}
-                    width={singleFigWidth}
-                    height={singleFigWidth}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
-                </Col>
-                <Col lg={6}>
-                  <SingleChromosome
-                    data={groupB}
-                    title="B"
-                    details={titleB}
-                    chromesomeId={chromesomeId}
-                    width={singleFigWidth}
-                    height={singleFigWidth}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
-                </Col>
-              </Row>
-            )}
-            {!form.compare && (
-              <Row className="justify-content-center">
-                <Col className="col-xl-1"></Col>
-                <Col className="col-xl-10">
-                  <SingleChromosome
-                    data={data}
-                    chromesomeId={chromesomeId}
-                    width={size}
-                    height={browserSize.height * 0.7}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
-                </Col>
-                <Col className="col-xl-1"></Col>
-              </Row>
-            )}
-            <br />
-            <Button variant="outline-success" onClick={handleBack}>
-              Back
-            </Button>
-          </div>
-        ) : form.compare ? (
-          <Container>
-            <Button variant="outline-success" onClick={handleBack}>
-              Back
-            </Button>
-            <Row>
+      {showChart ? (
+        <div>
+          <p>Chromosome {chromesomeId}</p>
+          {form.compare && (
+            <Row className="justify-content-center">
               <Col lg={6}>
-                {circleA ? (
-                  <CircosPlot
-                    layoutAll={layoutAll}
-                    dataXY={[]}
-                    size={size * 0.7}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
-                    circle={circleA}
-                    circleRef={circleRef}
-                    circleClass="overlayX2"
-                    handleEnter={handleEnter}
-                    hovertip={hovertip}></CircosPlot>
-                ) : (
-                  ""
-                )}
+                <SingleChromosome
+                  data={groupA}
+                  title="A"
+                  details={titleA}
+                  chromesomeId={chromesomeId}
+                  width={singleFigWidth}
+                  height={singleFigWidth}
+                  onHeightChange={props.onHeightChange}></SingleChromosome>
               </Col>
-              <Col></Col>
-              {/* <br></br> */}
-              {/* <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br>
-              <br></br> */}
               <Col lg={6}>
-                {circleB ? (
-                  <CircosPlot
-                    layoutAll={layoutAll}
-                    dataXY={[]}
-                    size={size * 0.7}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
-                    circle={circleB}
-                    circleRef={circleRef}
-                    handleEnter={handleEnter}
-                    circleClass="overlayX3"
-                    hovertip={hovertip}></CircosPlot>
-                ) : (
-                  ""
-                )}
+                <SingleChromosome
+                  data={groupB}
+                  title="B"
+                  details={titleB}
+                  chromesomeId={chromesomeId}
+                  width={singleFigWidth}
+                  height={singleFigWidth}
+                  onHeightChange={props.onHeightChange}></SingleChromosome>
               </Col>
             </Row>
-          </Container>
-        ) : (
-          <div>
-            <CircosPlot
-              layoutAll={layoutAll}
-              dataXY={dataXY}
-              size={size}
-              thicknessloss={thicknessloss}
-              thicknessgain={thicknessgain}
-              thicknessundermined={thicknessundermined}
-              thicknessloh={thicknessloh}
-              circle={circle}
-              circleRef={circleRef}
-              handleEnter={handleEnter}
-              circleClass="overlayX"
-              hovertip={hovertip}></CircosPlot>
-          </div>
-        )
-        // <div>
-        //   <div className="overlayX" id="chrxy">
-        //     <Circos
-        //       layout={layoutAll}
-        //       config={{
-        //         innerRadius: size / 2 - 50,
-        //         outerRadius: size / 2 - 30,
-        //         ticks: {
-        //           display: true,
-        //           color: "black",
-        //           labels: false,
-        //         },
-        //         labels: {
-        //           position: "center",
-        //           display: true,
-        //           size: 14,
-        //           color: "#000",
-        //           radialOffset: 28,
-        //         },
-        //       }}
-        //       tracks={[
-        //         {
-        //           type: STACK,
-        //           data: dataXY,
-        //           config: {
-        //             innerRadius: 0.05,
-        //             outerRadius: 1,
-        //             thickness: thicknessloss,
-        //             margin: 0,
-        //             strokeWidth: 1,
-        //             strokeColor: "red",
-        //             direction: "out",
-        //             logScale: true,
-        //             color: "red",
-        //             backgrounds: [
-        //               {
-        //                 start: 0,
-        //                 end: 0,
-        //                 color: "white",
-        //                 opacity: 1,
-        //               },
-        //             ],
-        //             tooltipContent: function (d) {
-        //               return hovertip(d);
-        //             },
-        //             events: {
-        //               mouseover: function (d, i, nodes, event) {
-        //                 console.log("mouse over");
-        //               },
-        //               click: function (d, i, nodes, event) {
-        //                 console.log("mouse over");
-        //               },
-        //             },
-        //           },
-        //         },
-        //       ]}
-        //       size={size}
-        //     />
-        //   </div>
-        //   <div className="overlayX" ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
-        //     <Circos
-        //       layout={layoutAll}
-        //       config={{
-        //         innerRadius: size / 2 - 50,
-        //         outerRadius: size / 2 - 30,
-        //         ticks: {
-        //           display: true,
-        //           color: "black",
-        //           //spacing: 100000,
-        //           labels: false,
-        //           // labelSpacing: 10,
-        //           // labelSuffix: "",
-        //           // labelDenominator: 1,
-        //           // labelDisplay: true,
-        //           // labelSize: "5px",
-        //           // labelColor: "yellow",
-        //           // labelFont: "default",
-        //           // majorSpacing: 1
-        //         },
-        //         labels: {
-        //           position: "center",
-        //           display: true,
-        //           size: 14,
-        //           color: "#000",
-        //           radialOffset: 28,
-        //         },
-        //       }}
-        //       tracks={[
-        //         {
-        //           type: STACK,
-        //           data: circle.undetermined,
-        //           config: {
-        //             innerRadius: 0.05,
-        //             outerRadius: 0.25,
-        //             thickness: thicknessundermined,
-        //             margin: 0,
-        //             strokeWidth: 1,
-        //             strokeColor: "grey",
-        //             direction: "out",
-        //             logScale: true,
-        //             color: "grey",
-        //             backgrounds: [
-        //               {
-        //                 start: 0,
-        //                 end: 1,
-        //                 color: "grey",
-        //                 opacity: 0.5,
-        //               },
-        //             ],
-        //             tooltipContent: function (d) {
-        //               return hovertip(d);
-        //             },
-        //             events: {
-        //               //  'mouseover.alert':
-        //               //     function(d, i, nodes, event) {
-        //               //       console.log(d,i, nodes)
-        //               //       //changeBackground(track, chromesomeId, color)
-        //               //   }
-        //               //   ,
-        //               //   click:function(d, i, nodes, event) {
-        //               //     console.log(d)
-        //               //       return hovercoler(d);
-        //               //   }
-        //             },
-        //           },
-        //         },
-        //         {
-        //           type: STACK,
-        //           data: circle.loss,
-        //           config: {
-        //             innerRadius: 0.25,
-        //             outerRadius: 0.5,
-        //             thickness: thicknessloss,
-        //             margin: 0,
-        //             strokeWidth: 1,
-        //             strokeColor: "red",
-        //             direction: "out",
-        //             logScale: true,
-        //             color: "red",
-        //             backgrounds: [
-        //               {
-        //                 start: 0,
-        //                 end: 1,
-        //                 color: "#f8787b",
-        //                 opacity: 0.5,
-        //               },
-        //             ],
-        //             tooltipContent: function (d) {
-        //               return hovertip(d);
-        //             },
-        //             events: {
-        //               // 'mouseover.alert':
-        //               //   function(d, i, nodes, event) {
-        //               //     //return hovercoler(d);
-        //               // },
-        //               // click:function(d, i, nodes, event) {
-        //               //     return hovercoler(d);
-        //               // }
-        //             },
-        //           },
-        //         },
-        //         {
-        //           type: STACK,
-        //           data: circle.loh,
-        //           config: {
-        //             innerRadius: 0.5,
-        //             outerRadius: 0.75,
-        //             thickness: thicknessloh,
-        //             margin: 0,
-        //             strokeWidth: 1,
-        //             strokeColor: "blue",
-        //             direction: "out",
-        //             logScale: true,
-        //             color: "blue",
-        //             backgrounds: [
-        //               {
-        //                 start: 0,
-        //                 end: 1,
-        //                 color: "#0095ff",
-        //                 opacity: 0.5,
-        //               },
-        //             ],
-        //             tooltipContent: function (d) {
-        //               return hovertip(d);
-        //             },
-        //           },
-        //         },
-        //         {
-        //           type: STACK,
-        //           data: circle.gain,
-        //           config: {
-        //             innerRadius: 0.75,
-        //             outerRadius: 1,
-        //             thickness: thicknessgain,
-        //             margin: 0,
-        //             strokeWidth: 1,
-        //             strokeColor: "green",
-        //             direction: "out",
-        //             logScale: true,
-        //             color: "green",
-        //             backgrounds: [
-        //               {
-        //                 start: 0,
-        //                 end: 1,
-        //                 color: "#2fc405",
-        //                 opacity: 0.5,
-        //               },
-        //             ],
-        //             tooltipContent: function (d) {
-        //               return hovertip(d);
-        //             },
-        //           },
-        //         },
-        //         {
-        //           type: HIGHLIGHT,
-        //           data: band,
-        //           config: {
-        //             innerRadius: size / 2 - 50,
-        //             outerRadius: size / 2 - 35,
-        //             opacity: 0.5,
-        //             color: (d) => d.color,
+          )}
+          {!form.compare && (
+            <Row className="justify-content-center">
+              <Col className="col-xl-1"></Col>
+              <Col className="col-xl-10">
+                <SingleChromosome
+                  data={data}
+                  chromesomeId={chromesomeId}
+                  width={size}
+                  height={browserSize.height * 0.7}
+                  onHeightChange={props.onHeightChange}></SingleChromosome>
+              </Col>
+              <Col className="col-xl-1"></Col>
+            </Row>
+          )}
+          <br />
+          <Button variant="outline-success" onClick={handleBack}>
+            Back
+          </Button>
+        </div>
+      ) : form.compare ? (
+        <Container>
+          <Row>
+            <Col lg={6}>
+              {circleA ? (
+                <CircosPlot
+                  layoutAll={layoutAll}
+                  dataXY={[]}
+                  details={titleA}
+                  size={size * 0.7}
+                  thicknessloss={thicknessloss}
+                  thicknessgain={thicknessgain}
+                  thicknessundermined={thicknessundermined}
+                  thicknessloh={thicknessloh}
+                  circle={circleA}
+                  circleRef={circleRef}
+                  circleClass="overlayX2"
+                  handleEnter={handleEnter}
+                  hovertip={hovertip}></CircosPlot>
+              ) : (
+                ""
+              )}
+            </Col>
+            <Col></Col>
 
-        //             events: {
-        //               click: function (d, i, nodes, event) {
-        //                 console.log("clicking ", d);
-        //               },
-        //               mouseover: function (d, i, nodes, event) {
-        //                 //console.log(d.block_id);
-        //                 //change class="cs-layout" class=d.block_id, fill="grey" to highlight the chromosome
-        //                 //document.getElementsByClassName()
-        //               },
-        //             },
-        //           },
-        //         },
-        //       ]}
-        //       size={size}
-        //     />
-        //   </div>
-        // </div>
-      }
+            <Col lg={6}>
+              {circleB ? (
+                <CircosPlot
+                  layoutAll={layoutAll}
+                  dataXY={[]}
+                  details={titleB}
+                  size={size * 0.7}
+                  thicknessloss={thicknessloss}
+                  thicknessgain={thicknessgain}
+                  thicknessundermined={thicknessundermined}
+                  thicknessloh={thicknessloh}
+                  circle={circleB}
+                  circleRef={circleRef}
+                  handleEnter={handleEnter}
+                  circleClass="overlayX3"
+                  hovertip={hovertip}></CircosPlot>
+              ) : (
+                ""
+              )}
+            </Col>
+          </Row>
+          <Button variant="outline-success" onClick={handleBack} className="buttonCircle">
+            Back
+          </Button>
+        </Container>
+      ) : (
+        <div>
+          <CircosPlot
+            layoutAll={layoutAll}
+            dataXY={dataXY}
+            size={size}
+            thicknessloss={thicknessloss}
+            thicknessgain={thicknessgain}
+            thicknessundermined={thicknessundermined}
+            thicknessloh={thicknessloh}
+            circle={circle}
+            circleRef={circleRef}
+            handleEnter={handleEnter}
+            circleClass="overlayX"
+            hovertip={hovertip}></CircosPlot>
+        </div>
+      )}
     </div>
   );
 }
