@@ -54,6 +54,15 @@ function changeBackground(track, chromesomeId, opacity) {
 
 export default function CirclePlotTest(props) {
   //to show singleChrome chart
+
+  let circleT = {
+    loss: [...initialXY],
+    gain: [...initialXY],
+    loh: [...initialXY],
+    undetermined: [...initialXY],
+    chrx: [...initialXY],
+    chry: [...initialXY],
+  };
   const [showChart, setShowChart] = useState(false);
   const [chromesomeId, setChromesomeId] = useState(0);
   const [form, setForm] = useRecoilState(formState);
@@ -198,10 +207,10 @@ export default function CirclePlotTest(props) {
       });
       handleGroupQuery(form.groupB).then((data) => {
         showChart ? setGroupB(data) : setCircleB(data);
-        //console.log(form.counterCompare, showChart, circleB, data);
+        console.log(form.counterCompare, showChart, circleB, data);
       });
     } else {
-      console.log("clear form");
+      console.log("clear form", props.gain);
     }
   }, [form.counterCompare]);
   data = [
@@ -266,8 +275,8 @@ export default function CirclePlotTest(props) {
               chrYTemp.push(d);
               d.block_id = "Y";
             }
+            result.push(d);
           }
-          result.push(d);
         }
       });
     }
@@ -319,6 +328,11 @@ export default function CirclePlotTest(props) {
     return title.substring(0, title.length - 2);
   };
 
+  const isCircleNull = (circle) => {
+    if (circle !== null)
+      return circle.gain.length + circle.loh.length + circle.loss.length + circle.undetermined.length === 0;
+    else return true;
+  };
   const circleTitle = (circle) => {
     let title = "";
     if (circle !== null) {
@@ -448,19 +462,21 @@ export default function CirclePlotTest(props) {
         </Container>
       ) : (
         <div>
-          <CircosPlot
-            layoutAll={layoutAll}
-            dataXY={dataXY}
-            size={size}
-            thicknessloss={thicknessloss}
-            thicknessgain={thicknessgain}
-            thicknessundermined={thicknessundermined}
-            thicknessloh={thicknessloh}
-            circle={circle}
-            circleRef={circleRef}
-            handleEnter={handleEnter}
-            circleClass="overlayX"
-            hovertip={hovertip}></CircosPlot>
+          {true && (
+            <CircosPlot
+              layoutAll={layoutAll}
+              dataXY={dataXY}
+              size={size}
+              thicknessloss={thicknessloss}
+              thicknessgain={thicknessgain}
+              thicknessundermined={thicknessundermined}
+              thicknessloh={thicknessloh}
+              circle={circle}
+              circleRef={circleRef}
+              handleEnter={handleEnter}
+              circleClass="overlayX"
+              hovertip={hovertip}></CircosPlot>
+          )}
         </div>
       )}
     </div>

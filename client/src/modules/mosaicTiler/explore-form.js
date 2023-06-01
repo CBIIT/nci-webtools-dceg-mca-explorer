@@ -174,7 +174,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           options={[
             { value: "all", label: "All Studies" },
             { value: "plco", label: "PLCO" },
-            { value: "ukbb", label: "UK BioBank" },
+            { value: "ukbb", label: "UK Biobank" },
           ]}
         />
       </Form.Group>

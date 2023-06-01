@@ -186,7 +186,7 @@ export default function ComparePanel(props) {
             onChange={(ev) => handleSelectChange("study", ev)}
             options={[
               { value: "plco", label: "PLCO" },
-              { value: "ukbb", label: "UK BioBank" },
+              { value: "ukbb", label: "UK Biobank" },
             ]}
           />
         </Form.Group>

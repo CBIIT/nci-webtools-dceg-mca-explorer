@@ -76,7 +76,7 @@ export default function RangeView(props) {
   ]);
 
   useEffect(() => {
-    console.log(form);
+    //console.log(form);
   }, [form.counterSubmitted, form.groupA, form.groupB]);
 
   async function handleSubmit(qdataset, qsex) {

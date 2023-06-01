@@ -48,7 +48,7 @@ function GenePlot(props) {
   //console.log(showGene,isLoading)
   let geneRanges = genes.map((gene) => {
     let horizPadding = 20000 * 2;
-    if (genes.length > 20) horizPadding = 40000 * 2;
+    if (genes.length > 20) horizPadding = 40000 * 4;
     return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
   });
 
@@ -92,8 +92,8 @@ function GenePlot(props) {
           text: (e.strand === "-" ? "&#8592; " : "") + e.name + (e.strand === "+" ? " &#8594;" : ""),
           showarrow: false,
           font: {
-            family: "Arial",
-            size: 8,
+            family: "system-ui",
+            size: 10,
             color: "#000000",
           },
           xref: "x",

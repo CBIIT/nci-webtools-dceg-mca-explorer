@@ -5,7 +5,7 @@ import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
 
 function SingleChromosome(props) {
-  //console.log(props.chromesomeId, props.title);
+  //console.log(props.data);
   const ref = useRef();
   const [layout, setLayout] = useState({
     //title:"Chromosome "+ props.chromesomeId,
@@ -37,7 +37,7 @@ function SingleChromosome(props) {
     const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
     setXMax(xMax);
     setXMin(xMin);
-    console.log(event);
+    //console.log(event);
 
     //  setGeneLayout({ ...layout, xaxis: { ...xaxis, range } });
   }
@@ -47,15 +47,9 @@ function SingleChromosome(props) {
   var types = [];
 
   props.data.sort((a, b) =>
-    a.type === b.type
-      ? a.start === b.start
-        ? a.length === b.length
-          ? a.end - b.end
-          : b.length - a.length
-        : a.start - b.start
-      : a.type.localeCompare(b.type)
+    a.type === b.type ? (a.start === b.start ? b.end - a.end : a.start - b.start) : a.type.localeCompare(b.type)
   );
-  // console.log(props.data);
+  //console.log(props.data);
   props.data.forEach((element, index) => {
     data1.push(element.start);
     data2.push(element.length);
