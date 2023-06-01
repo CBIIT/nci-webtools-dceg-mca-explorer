@@ -34,7 +34,7 @@ export default function Explore() {
     // console.log("submit", event);
   }
   function handleFilter(event) {
-    console.log("filter:", event, form);
+    //console.log("filter:", event, form);
     setForm({
       ...form,
       compare: true,

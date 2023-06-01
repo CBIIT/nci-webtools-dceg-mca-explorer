@@ -198,7 +198,7 @@ export default function CirclePlotTest(props) {
       });
       handleGroupQuery(form.groupB).then((data) => {
         showChart ? setGroupB(data) : setCircleB(data);
-        console.log(form.counterCompare, showChart, circleB, data);
+        //console.log(form.counterCompare, showChart, circleB, data);
       });
     } else {
       console.log("clear form");
@@ -248,8 +248,9 @@ export default function CirclePlotTest(props) {
             d.block_id = d.chromosome.substring(3);
             d.value = d.cf;
             d.dataset = d.dataset.toUpperCase();
-            d.start = d.beginGrch38;
-            d.end = d.endGrch38;
+            d.start = Number(d.beginGrch38);
+            d.end = Number(d.endGrch38);
+            d.length = Number(d.length);
 
             //
             if (d.chromosome != "chrX") {

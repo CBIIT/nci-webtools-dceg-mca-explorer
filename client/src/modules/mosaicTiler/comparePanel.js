@@ -27,18 +27,18 @@ export default function ComparePanel(props) {
   }
 
   function handleSelectChange(name, selection = []) {
-    if (props.compareItem[0].isChecked && name === "study") {
+    if (props.compareItem[4].isChecked && name === "study") {
       setStudy(selection);
     }
     //mergeForm({ [name]: selection });
 
-    if (props.compareItem[1].isChecked && name === "array") {
+    if (props.compareItem[0].isChecked && name === "array") {
       setArray(selection);
     }
-    if (props.compareItem[2].isChecked && name === "sex") {
+    if (props.compareItem[1].isChecked && name === "sex") {
       setSex(selection);
     }
-    if (props.compareItem[4].isChecked && name === "ancestry") {
+    if (props.compareItem[3].isChecked && name === "ancestry") {
       setAncestry(selection);
     }
     setCompareForm({ ...compareform, [name]: selection });
@@ -57,7 +57,7 @@ export default function ComparePanel(props) {
 
   useEffect(() => {
     updateForm();
-    console.log(compareform);
+    // console.log(compareform);
     props.compareItem.forEach((element) => {
       if (!element.isChecked && compareform) {
         if (element.label === " Study") {
@@ -85,24 +85,6 @@ export default function ComparePanel(props) {
   return (
     <div>
       {props.compareItem[0].isChecked ? (
-        <Form.Group className="mb-3" controlId="array">
-          <Form.Label>Study</Form.Label>
-          <Select
-            placeholder="No study selected"
-            name="study"
-            isMulti={true}
-            value={study}
-            onChange={(ev) => handleSelectChange("study", ev)}
-            options={[
-              { value: "plco", label: "PLCO" },
-              { value: "ukbb", label: "UK BioBank" },
-            ]}
-          />
-        </Form.Group>
-      ) : (
-        ""
-      )}
-      {props.compareItem[1].isChecked ? (
         <Form.Group className="mb-3" controlId="array">
           <Form.Label>Genotyping Array</Form.Label>
           <Select
@@ -132,7 +114,7 @@ export default function ComparePanel(props) {
           options={[{ value: "test", label: "Placeholder" }]}
         />
       </Form.Group> */}
-      {props.compareItem[2].isChecked ? (
+      {props.compareItem[1].isChecked ? (
         <Form.Group className="mb-3" controlId="sex">
           <Form.Label>Genotype Sex</Form.Label>
           <Select
@@ -150,7 +132,7 @@ export default function ComparePanel(props) {
       ) : (
         ""
       )}
-      {props.compareItem[3].isChecked ? (
+      {props.compareItem[2].isChecked ? (
         <Form.Group className="mb-3" controlId="age">
           <Form.Label>Age</Form.Label>
           <Row>
@@ -171,7 +153,7 @@ export default function ComparePanel(props) {
       ) : (
         ""
       )}
-      {props.compareItem[4].isChecked ? (
+      {props.compareItem[3].isChecked ? (
         <Form.Group className="mb-3" controlId="ancestry">
           <Form.Label>Ancestry</Form.Label>
           <Select
@@ -193,7 +175,24 @@ export default function ComparePanel(props) {
       ) : (
         ""
       )}
-
+      {props.compareItem[4].isChecked ? (
+        <Form.Group className="mb-3" controlId="array">
+          <Form.Label>Study</Form.Label>
+          <Select
+            placeholder="No study selected"
+            name="study"
+            isMulti={true}
+            value={study}
+            onChange={(ev) => handleSelectChange("study", ev)}
+            options={[
+              { value: "plco", label: "PLCO" },
+              { value: "ukbb", label: "UK BioBank" },
+            ]}
+          />
+        </Form.Group>
+      ) : (
+        ""
+      )}
       {/* <Form.Group controlId="fraction">
         <Form.Label>Cellular Fraction</Form.Label>
         <Row>
