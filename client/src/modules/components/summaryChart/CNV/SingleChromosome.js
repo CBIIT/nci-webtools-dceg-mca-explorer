@@ -55,7 +55,7 @@ function SingleChromosome(props) {
         : a.start - b.start
       : a.type.localeCompare(b.type)
   );
-
+  // console.log(props.data);
   props.data.forEach((element, index) => {
     data1.push(element.start);
     data2.push(element.length);
@@ -184,7 +184,7 @@ function SingleChromosome(props) {
       />
       {props.details}
       <br />
-      {xMax - xMin < 2000000 ? (
+      {xMax - xMin < 5000000 ? (
         <div>
           <SnpPlot
             width={props.width}

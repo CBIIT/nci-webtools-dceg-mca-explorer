@@ -6,11 +6,11 @@ import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 
 const compareArray = [
-  { id: 1, label: " Study", isChecked: false },
-  { id: 2, label: " Genotype Array", isChecked: false },
-  { id: 3, label: " Genotype Sex", isChecked: false },
-  { id: 4, label: " Age", isChecked: false },
-  { id: 5, label: " Ancestry", isChecked: false },
+  { id: 1, label: " Genotype Array", isChecked: false },
+  { id: 2, label: " Genotype Sex", isChecked: false },
+  { id: 3, label: " Age", isChecked: false },
+  { id: 4, label: " Ancestry", isChecked: false },
+  { id: 5, label: " Study", isChecked: false },
 ];
 export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");
@@ -69,7 +69,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   }
 
   function handleSelectChange(name, selection = []) {
-    console.log(name, selection);
+    //console.log(name, selection);
     if (name === "chromosome" && selection.find((option) => option.value === "all")) {
       selection = chromosomes.slice(1);
     }
@@ -120,7 +120,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     //update the compare variable and run the filter function to do compare
     //setForm({ ...form, compare: true, counterCompare: counter + 1 });
     onFilter({ ...form, compare: true, counterCompare: counter + 1 });
-    // onSubmit(form)
+    //onSubmit(form);
   }
 
   const handleFilterClear = (event) => {
@@ -132,7 +132,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   };
 
   const handlegroupChange = (value, gname) => {
-    console.log("compare group:", value, gname);
+    // console.log("compare group:", value, gname);
     if (gname === "A") setForm({ ...form, groupA: value, compare: true });
     if (gname === "B") setForm({ ...form, groupB: value, compare: true });
   };
