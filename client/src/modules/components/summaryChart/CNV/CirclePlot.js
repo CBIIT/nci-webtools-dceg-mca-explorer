@@ -11,23 +11,12 @@ export default function CircosPlot(props) {
   const thicknessgain = props.thicknessgain;
   const thicknessundermined = props.thicknessundermined;
   const thicknessloh = props.thicknessloh;
-  //const circle = props.circle;
+  const circle = props.circle;
   const circleRef = props.circleRef;
   const handleEnter = props.handleEnter;
   const hovertip = props.hovertip;
   const classCircle = props.circleClass;
 
-  const [circle, setCircle] = useState(props.circle);
-  const [undetermined, setUndetermined] = useState(null);
-  // useEffect(() => {
-  //   setCircle(props.circle);
-  // });
-
-  useEffect(() => {
-    // setCircle(props.circle);
-    ///  setUndetermined(props.circle.undetermined);
-    console.log("this is circle:", circle);
-  });
   return (
     <div>
       <div className={classCircle} id="chrxy">

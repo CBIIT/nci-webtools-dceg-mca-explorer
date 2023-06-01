@@ -202,15 +202,26 @@ export default function CirclePlotTest(props) {
   let data = [];
   useEffect(() => {
     if (form.compare) {
+      setCircleA(null);
+      setCircleB(null);
       handleGroupQuery(form.groupA).then((data) => {
-        showChart ? setGroupA(data) : setCircleA(data);
+        showChart
+          ? setGroupA(data)
+          : setCircleA({
+              loss: [...data.loss],
+              gain: [...data.gain],
+              loh: [...data.loh],
+              undetermined: [...data.undetermined],
+              chrx: [...data.chrx],
+              chry: [...data.chry],
+            });
       });
       handleGroupQuery(form.groupB).then((data) => {
-        showChart ? setGroupB(data) : setCircleB(data);
+        showChart ? setGroupB(data) : setCircleB({ ...data });
         console.log(form.counterCompare, showChart, circleB, data);
       });
     } else {
-      console.log("clear form", props.gain);
+      console.log("clear form");
     }
   }, [form.counterCompare]);
   data = [
