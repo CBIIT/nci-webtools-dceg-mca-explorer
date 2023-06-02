@@ -3,10 +3,12 @@ import Plot from "react-plotly.js";
 import * as htmlToImage from "html-to-image";
 import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
+import { Button } from "react-bootstrap";
+import Plotly from "plotly.js";
 
 function SingleChromosome(props) {
   //console.log(props.data);
-  const ref = useRef();
+  const ref = useRef(null);
   const [layout, setLayout] = useState({
     //title:"Chromosome "+ props.chromesomeId,
     barmode: "stack",
@@ -32,15 +34,38 @@ function SingleChromosome(props) {
   });
   const [xMax, setXMax] = useState();
   const [xMin, setXMin] = useState();
+  const [zoomHistory, setZoomHistory] = useState([]);
 
+  useEffect(() => {
+    const plotRef = ref.current;
+    if (ref && plotRef) {
+      console.log(plotRef);
+      // plotRef.addEventListener("plotly_relayout", handleZoomHistory);
+      return () => {
+        //plotRef.removeEventListener("plotly_relayout", handleZoomHistory);
+      };
+    }
+  }, []);
   function handleRelayout(event) {
     const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
     setXMax(xMax);
     setXMin(xMin);
-    //console.log(event);
-
     //  setGeneLayout({ ...layout, xaxis: { ...xaxis, range } });
+    if (event["xaxis.autorange"]) {
+      setZoomHistory([]);
+    } else {
+      setZoomHistory((prevHistory) => [...prevHistory, event]);
+      console.log(event);
+    }
   }
+  const handleZoomHistory = (event) => {
+    if (zoomHistory.length > 0) {
+      const previousZoom = zoomHistory[zoomHistory.length - 1];
+      setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
+      ref.current.handleUpdate(previousZoom);
+    }
+    console.log(zoomHistory);
+  };
   var data1 = [];
   var data2 = [];
   var ydata = [];
@@ -158,8 +183,12 @@ function SingleChromosome(props) {
     // }
   }, [props.chromesomeId, props.title]);
 
+  const handlePlotMounted = (figure) => {
+    plotRef = figure;
+  };
   return (
     <div id="plotly-div" className="mx-5" style={{ justifyContent: "center" }}>
+      <Button onClick={handleZoomHistory}>Back to previous View</Button>
       <Plot
         data={data}
         layout={layout}
@@ -175,6 +204,7 @@ function SingleChromosome(props) {
         style={{ width: "100%", height: "100%", position: "relative" }}
         ref={ref}
         onRelayout={handleRelayout}
+        onM
       />
       {props.details}
       <br />
