@@ -4,7 +4,6 @@ import * as htmlToImage from "html-to-image";
 import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
 import { Button } from "react-bootstrap";
-import Plotly from "plotly.js";
 
 function SingleChromosome(props) {
   //console.log(props.data);
@@ -36,16 +35,17 @@ function SingleChromosome(props) {
   const [xMin, setXMin] = useState();
   const [zoomHistory, setZoomHistory] = useState([]);
 
-  useEffect(() => {
-    const plotRef = ref.current;
-    if (ref && plotRef) {
-      console.log(plotRef);
-      // plotRef.addEventListener("plotly_relayout", handleZoomHistory);
-      return () => {
-        //plotRef.removeEventListener("plotly_relayout", handleZoomHistory);
-      };
-    }
-  }, []);
+  // useEffect(() => {
+  //   const plotRef = ref.current;
+  //   if (ref && plotRef) {
+  //     console.log(plotRef);
+  //     // plotRef.addEventListener("plotly_relayout", handleZoomHistory);
+  //     return () => {
+  //       //plotRef.removeEventListener("plotly_relayout", handleZoomHistory);
+  //     };
+  //   }
+  // }, []);
+  useEffect(() => {}, []);
   function handleRelayout(event) {
     const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
     setXMax(xMax);
@@ -55,16 +55,21 @@ function SingleChromosome(props) {
       setZoomHistory([]);
     } else {
       setZoomHistory((prevHistory) => [...prevHistory, event]);
-      console.log(event);
     }
   }
   const handleZoomHistory = (event) => {
     if (zoomHistory.length > 0) {
       const previousZoom = zoomHistory[zoomHistory.length - 1];
       setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
-      ref.current.handleUpdate(previousZoom);
+      setLayout((prevLayout) => ({
+        ...prevLayout,
+        xaxis: { ...prevLayout.xaxis, range: [previousZoom["xaxis.range[0]"], previousZoom["xaxis.range[1]"]] },
+        //yaxis: { ...prevLayout.yaxis, range: [previousZoom["yaxis.range[0]"], previousZoom["yaxis.range[1]"]] },
+      }));
+      setXMax(previousZoom["xaxis.range[1]"]);
+      setXMin(previousZoom["xaxis.range[0]"]);
+      console.log(layout, previousZoom, xMax, xMin);
     }
-    console.log(zoomHistory);
   };
   var data1 = [];
   var data2 = [];
@@ -183,9 +188,6 @@ function SingleChromosome(props) {
     // }
   }, [props.chromesomeId, props.title]);
 
-  const handlePlotMounted = (figure) => {
-    plotRef = figure;
-  };
   return (
     <div id="plotly-div" className="mx-5" style={{ justifyContent: "center" }}>
       <Button onClick={handleZoomHistory}>Back to previous View</Button>
@@ -210,12 +212,16 @@ function SingleChromosome(props) {
       <br />
       {xMax - xMin < 5000000 ? (
         <div>
-          <SnpPlot
-            width={props.width}
-            xMax={xMax}
-            xMin={xMin}
-            chr={props.chromesomeId}
-            onHeightChange={props.onHeightChange}></SnpPlot>
+          {xMax - xMin < 1000000 ? (
+            <SnpPlot
+              width={props.width}
+              xMax={xMax}
+              xMin={xMin}
+              chr={props.chromesomeId}
+              onHeightChange={props.onHeightChange}></SnpPlot>
+          ) : (
+            ""
+          )}
           <br></br>
           <GenePlot
             width={props.width}
