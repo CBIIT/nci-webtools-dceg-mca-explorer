@@ -14,7 +14,14 @@ function SingleChromosome(props) {
     width: props.width,
     height: props.height,
     margin: { l: 10, r: 0, t: 30, b: 30 },
-    xaxis: { title: "", showgrid: true, visible: true, showticklabels: true, zeroline: true, showline: true },
+    xaxis: {
+      title: "",
+      showgrid: true,
+      visible: true,
+      showticklabels: true,
+      zeroline: true,
+      showline: true,
+    },
     yaxis: {
       show: false,
       visible: false,
@@ -34,18 +41,8 @@ function SingleChromosome(props) {
   const [xMax, setXMax] = useState();
   const [xMin, setXMin] = useState();
   const [zoomHistory, setZoomHistory] = useState([]);
+  //const [initX, setInitX] = useState([]);
 
-  // useEffect(() => {
-  //   const plotRef = ref.current;
-  //   if (ref && plotRef) {
-  //     console.log(plotRef);
-  //     // plotRef.addEventListener("plotly_relayout", handleZoomHistory);
-  //     return () => {
-  //       //plotRef.removeEventListener("plotly_relayout", handleZoomHistory);
-  //     };
-  //   }
-  // }, []);
-  useEffect(() => {}, []);
   function handleRelayout(event) {
     const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
     setXMax(xMax);
@@ -58,9 +55,9 @@ function SingleChromosome(props) {
     }
   }
   const handleZoomHistory = (event) => {
-    if (zoomHistory.length > 0) {
-      const previousZoom = zoomHistory[zoomHistory.length - 1];
-      setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
+    if (zoomHistory.length > 1) {
+      const previousZoom = zoomHistory[zoomHistory.length - 2];
+      setZoomHistory((prevHistory) => prevHistory.slice(0, -2));
       setLayout((prevLayout) => ({
         ...prevLayout,
         xaxis: { ...prevLayout.xaxis, range: [previousZoom["xaxis.range[0]"], previousZoom["xaxis.range[1]"]] },
@@ -68,7 +65,10 @@ function SingleChromosome(props) {
       }));
       setXMax(previousZoom["xaxis.range[1]"]);
       setXMin(previousZoom["xaxis.range[0]"]);
-      console.log(layout, previousZoom, xMax, xMin);
+      //console.log(layout, previousZoom, xMax, xMin);
+    } else {
+      const resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
+      resetBtn.click();
     }
   };
   var data1 = [];
@@ -206,7 +206,12 @@ function SingleChromosome(props) {
         style={{ width: "100%", height: "100%", position: "relative" }}
         ref={ref}
         onRelayout={handleRelayout}
-        onM
+        // onInitialized={() => {
+        //   if (initX.length === 0) {
+        //     console.log("set initial:", layout.xaxis.range);
+        //     setInitX(layout.xaxis.range);
+        //   }
+        // }}
       />
       {props.details}
       <br />
