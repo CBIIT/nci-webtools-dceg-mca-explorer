@@ -41,8 +41,21 @@ function SingleChromosome(props) {
   const [xMax, setXMax] = useState();
   const [xMin, setXMin] = useState();
   const [zoomHistory, setZoomHistory] = useState([]);
-  //const [initX, setInitX] = useState([]);
+  const [init, setInit] = useState(true);
 
+  useEffect(() => {
+    if (zoomHistory.length > 0) {
+      const currentView = zoomHistory.slice(-1).pop();
+      setLayout((prevLayout) => ({
+        ...prevLayout,
+        xaxis: { ...prevLayout.xaxis, range: [currentView["xaxis.range[0]"], currentView["xaxis.range[1]"]] },
+        //yaxis: { ...prevLayout.yaxis, range: [previousZoom["yaxis.range[0]"], previousZoom["yaxis.range[1]"]] },
+      }));
+
+      setXMax(currentView["xaxis.range[1]"]);
+      setXMin(currentView["xaxis.range[0]"]);
+    }
+  }, [zoomHistory]);
   function handleRelayout(event) {
     const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
     setXMax(xMax);
@@ -55,20 +68,21 @@ function SingleChromosome(props) {
     }
   }
   const handleZoomHistory = (event) => {
+    // if (init) {
+    //   setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
+    //   setInit(false);
+    // }
+    console.log(zoomHistory);
     if (zoomHistory.length > 1) {
-      const previousZoom = zoomHistory[zoomHistory.length - 2];
-      setZoomHistory((prevHistory) => prevHistory.slice(0, -2));
-      setLayout((prevLayout) => ({
-        ...prevLayout,
-        xaxis: { ...prevLayout.xaxis, range: [previousZoom["xaxis.range[0]"], previousZoom["xaxis.range[1]"]] },
-        //yaxis: { ...prevLayout.yaxis, range: [previousZoom["yaxis.range[0]"], previousZoom["yaxis.range[1]"]] },
-      }));
-      setXMax(previousZoom["xaxis.range[1]"]);
-      setXMin(previousZoom["xaxis.range[0]"]);
+      let previousZoom = null;
+      previousZoom = zoomHistory[zoomHistory.length - 1];
+      setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
+
       //console.log(layout, previousZoom, xMax, xMin);
     } else {
       const resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
       resetBtn.click();
+      setInit(true);
     }
   };
   var data1 = [];
@@ -190,7 +204,9 @@ function SingleChromosome(props) {
 
   return (
     <div id="plotly-div" className="mx-5" style={{ justifyContent: "center" }}>
-      <Button onClick={handleZoomHistory}>Back to previous View</Button>
+      <Button id="zoomBack" variant="link" onClick={handleZoomHistory}>
+        {zoomHistory.length > 0 ? "Back to previous view" : ""}
+      </Button>
       <Plot
         data={data}
         layout={layout}

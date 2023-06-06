@@ -92,10 +92,11 @@ function GenePlot(props) {
           text: (e.strand === "-" ? "&#8592; " : "") + e.name + (e.strand === "+" ? " &#8594;" : ""),
           showarrow: false,
           font: {
-            family: "system-ui",
-            size: 10,
-            color: "#000000",
+            family: "sans-serif", //"sans-serif, monospace",
+            size: 12,
+            color: "black",
           },
+
           xref: "x",
           yref: "y",
           align: "center",
@@ -153,7 +154,23 @@ function GenePlot(props) {
       <span className="visually-hidden">Loading...</span>
     </Spinner>
   ) : !isLoading && showGene ? (
-    <Plot data={data} layout={layout} style={{ width: "100%", height: "100%", display: "block" }} />
+    <Plot
+      data={data}
+      layout={layout}
+      config={{
+        //...defaultConfig,
+        toImageButtonOptions: {
+          filename:
+            "Gene" +
+            Math.trunc(props.xMin).toLocaleString("en-US", { style: "decimal" }) +
+            "-" +
+            Math.trunc(props.xMax).toLocaleString("en-US", { style: "decimal" }) +
+            "_chr" +
+            props.chr,
+        },
+      }}
+      style={{ width: "100%", height: "100%", display: "block" }}
+    />
   ) : (
     ""
   );
