@@ -46,10 +46,11 @@ function SingleChromosome(props) {
   useEffect(() => {
     if (zoomHistory.length > 0) {
       const currentView = zoomHistory.slice(-1).pop();
+      //console.log(currentView);
       setLayout((prevLayout) => ({
         ...prevLayout,
         xaxis: { ...prevLayout.xaxis, range: [currentView["xaxis.range[0]"], currentView["xaxis.range[1]"]] },
-        //yaxis: { ...prevLayout.yaxis, range: [previousZoom["yaxis.range[0]"], previousZoom["yaxis.range[1]"]] },
+        yaxis: { ...prevLayout.yaxis, range: [currentView["yaxis.range[0]"], currentView["yaxis.range[1]"]] },
       }));
 
       setXMax(currentView["xaxis.range[1]"]);
@@ -68,21 +69,11 @@ function SingleChromosome(props) {
     }
   }
   const handleZoomHistory = (event) => {
-    // if (init) {
-    //   setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
-    //   setInit(false);
-    // }
-    console.log(zoomHistory);
     if (zoomHistory.length > 1) {
-      let previousZoom = null;
-      previousZoom = zoomHistory[zoomHistory.length - 1];
       setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
-
-      //console.log(layout, previousZoom, xMax, xMin);
     } else {
       const resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
       resetBtn.click();
-      setInit(true);
     }
   };
   var data1 = [];
@@ -233,7 +224,7 @@ function SingleChromosome(props) {
       <br />
       {xMax - xMin < 5000000 ? (
         <div>
-          {xMax - xMin < 1000000 ? (
+          {xMax - xMin < 5000000 ? (
             <SnpPlot
               width={props.width}
               xMax={xMax}
