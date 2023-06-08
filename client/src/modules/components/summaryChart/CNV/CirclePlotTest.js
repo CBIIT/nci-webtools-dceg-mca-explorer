@@ -77,8 +77,13 @@ export default function CirclePlotTest(props) {
     width: window.innerWidth,
     height: window.innerHeight,
   });
-  const size = browserSize.width / 2;
-
+  let adjustWidth = 1;
+  if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
+  else if (browserSize.width >= 1600) adjustWidth = 0.5;
+  else adjustWidth = 0.7;
+  const size = browserSize.width * adjustWidth;
+  const compareCircleSize = size * adjustWidth;
+  //console.log(browserSize.width, size);
   const handleBrowserResize = () => {
     setBrowserSize({
       width: window.innerWidth,
@@ -304,8 +309,8 @@ export default function CirclePlotTest(props) {
   }
   useEffect(() => {
     if (chromesomeId > 0) {
-      setTitleA(groupTitle(form.groupA) + "; Total: " + groupA.length);
-      setTitleB(groupTitle(form.groupB) + "; Total: " + groupB.length);
+      setTitleA(groupTitle(form.groupA) + "\nTotal: " + groupA.length);
+      setTitleB(groupTitle(form.groupB) + "\nTotal: " + groupB.length);
     } else {
       setTitleA(groupTitle(form.groupA) + "; " + circleTitle(circleA));
       setTitleB(groupTitle(form.groupB) + "; " + circleTitle(circleB));
@@ -348,13 +353,13 @@ export default function CirclePlotTest(props) {
     let title = "";
     if (circle !== null) {
       title +=
-        "Gain: " +
+        "\nGain: " +
         circle.gain.length +
         " Neutral: " +
         circle.loh.length +
         " Loss: " +
         circle.loss.length +
-        " Undtermined: " +
+        " Undetermined: " +
         circle.undetermined.length;
     }
     return title;
@@ -372,7 +377,7 @@ export default function CirclePlotTest(props) {
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
 
-  let singleFigWidth = form.compare ? 350 : 700;
+  let singleFigWidth = form.compare ? size * 0.4 : size;
   return (
     <div className="align-middle text-center">
       {showChart ? (
@@ -380,20 +385,20 @@ export default function CirclePlotTest(props) {
           <p>Chromosome {chromesomeId}</p>
           {form.compare && (
             <Row className="justify-content-center">
-              <Col lg={6}>
+              <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
                 <SingleChromosome
                   data={groupA}
-                  title="A"
+                  title="Group A"
                   details={titleA}
                   chromesomeId={chromesomeId}
                   width={singleFigWidth}
                   height={singleFigWidth}
                   onHeightChange={props.onHeightChange}></SingleChromosome>
               </Col>
-              <Col lg={6}>
+              <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
                 <SingleChromosome
                   data={groupB}
-                  title="B"
+                  title="Group B"
                   details={titleB}
                   chromesomeId={chromesomeId}
                   width={singleFigWidth}
@@ -404,16 +409,14 @@ export default function CirclePlotTest(props) {
           )}
           {!form.compare && (
             <Row className="justify-content-center">
-              <Col className="col-xl-1"></Col>
-              <Col className="col-xl-10">
+              <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
                 <SingleChromosome
                   data={data}
                   chromesomeId={chromesomeId}
-                  width={size}
+                  width={size * 0.8}
                   height={browserSize.height * 0.7}
                   onHeightChange={props.onHeightChange}></SingleChromosome>
               </Col>
-              <Col className="col-xl-1"></Col>
             </Row>
           )}
           <br />
@@ -422,55 +425,55 @@ export default function CirclePlotTest(props) {
           </Button>
         </div>
       ) : form.compare ? (
-        <Container>
-          <Row>
-            <Col lg={6}>
-              {circleA ? (
-                <CircosPlot
-                  layoutAll={layoutAll}
-                  dataXY={[]}
-                  details={titleA}
-                  size={size * 0.7}
-                  thicknessloss={thicknessloss}
-                  thicknessgain={thicknessgain}
-                  thicknessundermined={thicknessundermined}
-                  thicknessloh={thicknessloh}
-                  circle={circleA}
-                  circleRef={circleRef}
-                  circleClass="overlayX2"
-                  handleEnter={handleEnter}
-                  hovertip={hovertip}></CircosPlot>
-              ) : (
-                ""
-              )}
-            </Col>
+        <div className="">
+          {/* <Row>
+            <Col lg={6}> */}
+          {circleA ? (
+            <CircosPlot
+              layoutAll={layoutAll}
+              dataXY={[]}
+              details={titleA}
+              size={compareCircleSize}
+              thicknessloss={thicknessloss}
+              thicknessgain={thicknessgain}
+              thicknessundermined={thicknessundermined}
+              thicknessloh={thicknessloh}
+              circle={circleA}
+              circleRef={circleRef}
+              circleClass="overlayX2"
+              handleEnter={handleEnter}
+              hovertip={hovertip}></CircosPlot>
+          ) : (
+            ""
+          )}
+          {/* </Col>
             <Col></Col>
 
-            <Col lg={6}>
-              {circleB ? (
-                <CircosPlot
-                  layoutAll={layoutAll}
-                  dataXY={[]}
-                  details={titleB}
-                  size={size * 0.7}
-                  thicknessloss={thicknessloss}
-                  thicknessgain={thicknessgain}
-                  thicknessundermined={thicknessundermined}
-                  thicknessloh={thicknessloh}
-                  circle={circleB}
-                  circleRef={circleRef}
-                  handleEnter={handleEnter}
-                  circleClass="overlayX3"
-                  hovertip={hovertip}></CircosPlot>
-              ) : (
-                ""
-              )}
-            </Col>
-          </Row>
+            <Col lg={6}> */}
+          {circleB ? (
+            <CircosPlot
+              layoutAll={layoutAll}
+              dataXY={[]}
+              details={titleB}
+              size={compareCircleSize}
+              thicknessloss={thicknessloss}
+              thicknessgain={thicknessgain}
+              thicknessundermined={thicknessundermined}
+              thicknessloh={thicknessloh}
+              circle={circleB}
+              circleRef={circleRef}
+              handleEnter={handleEnter}
+              circleClass="overlayX3"
+              hovertip={hovertip}></CircosPlot>
+          ) : (
+            ""
+          )}
+          {/* </Col>
+          </Row> */}
           <Button variant="outline-success" onClick={handleBack} className="buttonCircle">
             Back
           </Button>
-        </Container>
+        </div>
       ) : (
         <div>
           {true && (

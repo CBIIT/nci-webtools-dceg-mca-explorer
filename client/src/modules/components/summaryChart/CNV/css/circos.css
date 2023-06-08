@@ -55,8 +55,8 @@
     position: absolute;
     /* width: 800px;
     height: 800px; */
-    top: 100;
-    right: 40%;
+    /* top: 100; */
+    right: 50%;
     bottom: 10;
     left: 1%;
 }
@@ -64,10 +64,30 @@
     position: absolute;
     /* width: 800px;
     height: 800px; */
-    top: 100;
+    /* top: 100; */
     right: 0%;
     bottom: 10;
-    left: 60%;
+    left: 50%;
+}
+@media screen and (max-width:1600px) {
+    .overlayX3 {
+        position: absolute;
+            /* width: 800px;
+        height: 800px; */
+           top: 750px; 
+            right: 0%;
+                bottom: 10;
+                left: 0%;
+        }
+    .overlayX2 {
+        position: absolute;
+                    /* width: 800px;
+            height: 800px; */
+                    /* top: 100; */
+        right: 0%;
+        bottom: 10;
+        left: 0%;
+    }
 }
 .buttonCircle{
     position: relative;
@@ -87,3 +107,30 @@
     bottom: 10;
     left: 5%;
 }
+
+.circleContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.circleContainerSvg {
+    flex: 1 0 100%;
+    max-width: 100%;
+    margin: 10%;
+}
+
+@media screen and (max-width:600px) {
+    .circleContainerSvg {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+.chromoContainer {
+    display: block;
+    justify-content: "center";
+    /* align-items: center; */
+    /* height: 100vh; */
+            }
+    

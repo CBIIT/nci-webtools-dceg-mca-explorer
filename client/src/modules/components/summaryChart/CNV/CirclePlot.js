@@ -18,7 +18,7 @@ export default function CircosPlot(props) {
   const classCircle = props.circleClass;
 
   return (
-    <div>
+    <div style={{ justifyContent: "center" }}>
       <div className={classCircle} id="chrxy">
         <Circos
           layout={layoutAll}
@@ -255,7 +255,7 @@ export default function CircosPlot(props) {
           ]}
           size={size}
         />
-        {props.details}
+        <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.details}</div>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import * as htmlToImage from "html-to-image";
 import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
 import { Button } from "react-bootstrap";
+import "./css/circos.css";
 
 function SingleChromosome(props) {
   //console.log(props.data);
@@ -50,7 +51,7 @@ function SingleChromosome(props) {
       setLayout((prevLayout) => ({
         ...prevLayout,
         xaxis: { ...prevLayout.xaxis, range: [currentView["xaxis.range[0]"], currentView["xaxis.range[1]"]] },
-        yaxis: { ...prevLayout.yaxis, range: [currentView["yaxis.range[0]"], currentView["yaxis.range[1]"]] },
+        // yaxis: { ...prevLayout.yaxis, range: [currentView["yaxis.range[0]"], currentView["yaxis.range[1]"]] },
       }));
 
       setXMax(currentView["xaxis.range[1]"]);
@@ -168,13 +169,14 @@ function SingleChromosome(props) {
       scale: 1,
     },
     displaylogo: false,
+    responsive: true,
     modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
 
   useEffect(() => {
     setLayout({
       ...layout,
-      title: props.title,
+      // title: props.title,
     });
     // async e => {
     //    // draw genes if zoom is at less than 50 MB
@@ -194,68 +196,71 @@ function SingleChromosome(props) {
   }, [props.chromesomeId, props.title]);
 
   return (
-    <div id="plotly-div" className="mx-5" style={{ justifyContent: "center" }}>
-      <Button id="zoomBack" variant="link" onClick={handleZoomHistory}>
-        {zoomHistory.length > 0 ? "Back to previous view" : ""}
-      </Button>
-      <Plot
-        data={data}
-        layout={layout}
-        //  onInitialized={handleInitialized}
-        config={{
-          ...defaultConfig,
-          toImageButtonOptions: {
-            ...defaultConfig.toImageButtonOptions,
-            filename: "Chromosome " + props.chromesomeId,
-          },
-        }}
-        // useResizeHandler
-        style={{ width: "100%", height: "100%", position: "relative" }}
-        ref={ref}
-        onRelayout={handleRelayout}
-        // onInitialized={() => {
-        //   if (initX.length === 0) {
-        //     console.log("set initial:", layout.xaxis.range);
-        //     setInitX(layout.xaxis.range);
-        //   }
-        // }}
-      />
-      {props.details}
-      <br />
-      {xMax - xMin < 5000000 ? (
-        <div>
-          {xMax - xMin < 5000000 ? (
-            <SnpPlot
+    <>
+      <div id="plotly-div" className="" style={{ justifyContent: "center" }}>
+        {props.title}
+        <Button id="zoomBack" variant="link" onClick={handleZoomHistory}>
+          {zoomHistory.length > 0 ? "Back to previous view" : ""}
+        </Button>
+        <Plot
+          data={data}
+          layout={layout}
+          //  onInitialized={handleInitialized}
+          config={{
+            ...defaultConfig,
+            toImageButtonOptions: {
+              ...defaultConfig.toImageButtonOptions,
+              filename: "Chromosome " + props.chromesomeId,
+            },
+          }}
+          // useResizeHandler
+          style={{ width: "100%", height: "100%", position: "relative" }}
+          ref={ref}
+          onRelayout={handleRelayout}
+          // onInitialized={() => {
+          //   if (initX.length === 0) {
+          //     console.log("set initial:", layout.xaxis.range);
+          //     setInitX(layout.xaxis.range);
+          //   }
+          // }}
+        />
+        <div style={{ whiteSpace: "pre-line" }}>{props.details}</div>
+        <br />
+        {xMax - xMin < 5000000 ? (
+          <div>
+            {xMax - xMin < 5000000 ? (
+              <SnpPlot
+                width={props.width}
+                xMax={xMax}
+                xMin={xMin}
+                chr={props.chromesomeId}
+                onHeightChange={props.onHeightChange}></SnpPlot>
+            ) : (
+              ""
+            )}
+            <br></br>
+            <GenePlot
               width={props.width}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}
-              onHeightChange={props.onHeightChange}></SnpPlot>
-          ) : (
-            ""
-          )}
-          <br></br>
-          <GenePlot
-            width={props.width}
-            xMax={xMax}
-            xMin={xMin}
-            chr={props.chromesomeId}
-            onHeightChange={props.onHeightChange}></GenePlot>
-        </div>
-      ) : (
-        ""
-      )}
-      <br />
-      {xMin
-        ? "Chr" +
-          props.chromesomeId +
-          ": " +
-          Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
-          "-" +
-          Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
-        : ""}
-      <br />
-    </div>
+              onHeightChange={props.onHeightChange}></GenePlot>
+          </div>
+        ) : (
+          ""
+        )}
+        <br />
+        {xMin
+          ? "Chr" +
+            props.chromesomeId +
+            ": " +
+            Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
+            "-" +
+            Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
+          : ""}
+        <br />
+      </div>
+    </>
   );
 }
 
