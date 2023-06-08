@@ -4,28 +4,35 @@ import classNames from "classnames";
 export default function Legend(props) {
   const xp = 10;
   const yp = 10;
-  const xw = 10;
+  const xw = 8;
   const xx = 10;
-  const yy = 750;
+  const yy = 0;
+
   return (
-    <div className="text-center">
-      <svg version="1.1" baseProfile="full" width="1000" height="40" xlmns="http://www/w3/org/2000/svg">
-        <rect y={xp + xx} x={0 + yy + 5} fill="green" width={xw} height={yp} />
-        <rect y={xp + xx} x={2 * yp + yy + 30} fill="blue" width={xw} height={yp} />
-        <rect y={xp + xx} x={4 * yp + yy + 70} fill="red" width={xw} height={yp} />
-        <rect y={xp + xx} x={6 * yp + yy + 95} fill="#ABABAB" width={xw} height={yp} />
-        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 10}>
+    <div className="legendContainer">
+      <svg
+        version="1.1"
+        baseProfile="full"
+        className="legendClass"
+        width="100%"
+        height="100"
+        xlmns="http://www/w3/org/2000/svg">
+        <rect y={yp} x={0} fill="green" width={xw} height={yp} />
+        <rect y={3 * yp} x={0} fill="blue" width={xw} height={yp} />
+        <rect y={5 * yp} x={0} fill="red" width={xw} height={yp} />
+        <rect y={7 * yp} x={0} fill="#ABABAB" width={xw} height={yp} />
+        <text style={{ fontSize: 12 }} textAnchor="right" y={yp + 7} x={xx}>
           Gain
         </text>
         {/* <text textAnchor="middle" x="325" y="80"> (503)</text> */}
-        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 55}>
+        <text style={{ fontSize: 12 }} textAnchor="right" y={yp + 27} x={xx}>
           Neutral
         </text>
         {/* <text textAnchor="middle" x="400" y="80">(927)</text> */}
-        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 115}>
+        <text style={{ fontSize: 12 }} textAnchor="right" y={yp + 47} x={xx}>
           Loss
         </text>
-        <text style={{ fontSize: 12 }} textAnchor="right" y={xp + xx + 10} x={yp + yy + 160}>
+        <text style={{ fontSize: 12 }} textAnchor="right" y={yp + 67} x={xx}>
           Undetermined
         </text>
         {/* <text textAnchor="middle" x="475" y="80">(576)</text> */}

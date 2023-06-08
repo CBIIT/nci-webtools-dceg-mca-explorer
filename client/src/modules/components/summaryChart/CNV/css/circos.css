@@ -58,7 +58,7 @@
     /* top: 100; */
     right: 50%;
     bottom: 10;
-    left: 1%;
+    left: 0%;
 }
 .overlayX3 {
     position: absolute;
@@ -87,6 +87,9 @@
         right: 0%;
         bottom: 10;
         left: 0%;
+    }
+    .legendContainer{
+        right: 0%;
     }
 }
 .buttonCircle{
@@ -133,4 +136,11 @@
     /* align-items: center; */
     /* height: 100vh; */
             }
-    
+   
+.legendClass{
+    position: relative; 
+    right:0;
+}
+.legendContainer{
+    position: relative;
+}

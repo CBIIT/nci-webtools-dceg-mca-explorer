@@ -20,6 +20,7 @@ export default function CircosPlot(props) {
   return (
     <div style={{ justifyContent: "center" }}>
       <div className={classCircle} id="chrxy">
+        {props.title}
         <Circos
           layout={layoutAll}
           config={{
@@ -78,6 +79,7 @@ export default function CircosPlot(props) {
         />
       </div>
       <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
+        {props.title}
         <Circos
           layout={layoutAll}
           config={{

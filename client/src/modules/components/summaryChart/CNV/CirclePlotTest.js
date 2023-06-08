@@ -79,7 +79,7 @@ export default function CirclePlotTest(props) {
   });
   let adjustWidth = 1;
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
-  else if (browserSize.width >= 1600) adjustWidth = 0.5;
+  else if (browserSize.width >= 1600) adjustWidth = 0.45;
   else adjustWidth = 0.7;
   const size = browserSize.width * adjustWidth;
   const compareCircleSize = size * adjustWidth;
@@ -431,6 +431,7 @@ export default function CirclePlotTest(props) {
           {circleA ? (
             <CircosPlot
               layoutAll={layoutAll}
+              title="Group A"
               dataXY={[]}
               details={titleA}
               size={compareCircleSize}
@@ -454,6 +455,7 @@ export default function CirclePlotTest(props) {
             <CircosPlot
               layoutAll={layoutAll}
               dataXY={[]}
+              title="Group B"
               details={titleB}
               size={compareCircleSize}
               thicknessloss={thicknessloss}
@@ -480,6 +482,7 @@ export default function CirclePlotTest(props) {
             <CircosPlot
               layoutAll={layoutAll}
               dataXY={dataXY}
+              title="Autosomal mCA Distribution "
               size={size}
               thicknessloss={thicknessloss}
               thicknessgain={thicknessgain}

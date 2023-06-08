@@ -375,22 +375,28 @@ export default function RangeView(props) {
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
-        <p style={{ textAlign: "center", marginBottom: "0.5rem", fontWeight: 500 }}>Autosomal mCA Distribution</p>
-        <Legend></Legend>
         <div className="row justify-content-center">
           <div style={{ height: figureHeight, left: 10 }}>
-            <CirclePlotTest
-              clickedChromoId={handleClickedChromoId}
-              key={clickedCounter}
-              loss={loss}
-              loh={loh}
-              gain={gain}
-              undetermined={undetermined}
-              chrx={chrX}
-              chry={chrY}
-              onHeightChange={handleheightChange}
-              onResetHeight={resetHeight}
-              onClickedChr={handleClickChr}></CirclePlotTest>
+            <Row className="justify-content-center">
+              <Col className="col col-xl-10 d-flex justify-content-center align-items-center">
+                <CirclePlotTest
+                  clickedChromoId={handleClickedChromoId}
+                  key={clickedCounter}
+                  loss={loss}
+                  loh={loh}
+                  gain={gain}
+                  undetermined={undetermined}
+                  chrx={chrX}
+                  chry={chrY}
+                  onHeightChange={handleheightChange}
+                  onResetHeight={resetHeight}
+                  onClickedChr={handleClickChr}></CirclePlotTest>
+              </Col>
+              <Col className="col col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                <Legend></Legend>
+              </Col>
+            </Row>
+            <Row></Row>
           </div>
         </div>
         {!form.compare ? (
