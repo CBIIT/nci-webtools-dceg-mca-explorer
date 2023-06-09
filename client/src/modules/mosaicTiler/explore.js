@@ -59,8 +59,8 @@ export default function Explore() {
   }
 
   function handleClick(value) {
-    setIsOpenCompare(value);
-    console.log("in explore", value);
+    setIsOpenCompare(true);
+    //console.log("in explore", value);
   }
 
   return (

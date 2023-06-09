@@ -114,12 +114,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   //console.log(form)
   function handleFilter(event) {
     event.preventDefault();
-    setCounter(counter + 1);
+    //setCounter(counter + 1);
     //mergeForm({ compare: true });
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
     //setForm({ ...form, compare: true, counterCompare: counter + 1 });
-    onFilter({ ...form, compare: true, counterCompare: counter + 1 });
+    onFilter({ ...form });
     //onSubmit(form);
   }
 

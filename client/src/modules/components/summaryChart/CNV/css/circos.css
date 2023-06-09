@@ -72,18 +72,13 @@
 @media screen and (max-width:1600px) {
     .overlayX3 {
         position: absolute;
-            /* width: 800px;
-        height: 800px; */
-           top: 750px; 
-            right: 0%;
-                bottom: 10;
-                left: 0%;
-        }
+        top: 680px; 
+        right: 0%;
+        bottom: 10;
+        left: 0%;
+     }
     .overlayX2 {
         position: absolute;
-                    /* width: 800px;
-            height: 800px; */
-                    /* top: 100; */
         right: 0%;
         bottom: 10;
         left: 0%;
@@ -96,10 +91,10 @@
     position: relative;
         /* width: 800px;
         height: 800px; */
-        top: 800px;
-        right: 0%;
+        /* top: 800px; */
+        right: 50%;
         bottom: 10;
-        left: 6%;
+        left: 50%;
 }
 
 .overlaySpinner{

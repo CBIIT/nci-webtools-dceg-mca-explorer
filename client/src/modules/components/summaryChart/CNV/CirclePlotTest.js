@@ -203,23 +203,18 @@ export default function CirclePlotTest(props) {
     props.onResetHeight();
     setChromesomeId(0);
   };
+  const handleBackChromo = () => {
+    setForm({ ...form, compare: false });
+  };
 
   let data = [];
   useEffect(() => {
+    //console.log("do query...");
     if (form.compare) {
       setCircleA(null);
       setCircleB(null);
       handleGroupQuery(form.groupA).then((data) => {
-        showChart
-          ? setGroupA(data)
-          : setCircleA({
-              loss: [...data.loss],
-              gain: [...data.gain],
-              loh: [...data.loh],
-              undetermined: [...data.undetermined],
-              chrx: [...data.chrx],
-              chry: [...data.chry],
-            });
+        showChart ? setGroupA(data) : setCircleA({ ...data });
       });
       handleGroupQuery(form.groupB).then((data) => {
         showChart ? setGroupB(data) : setCircleB({ ...data });
@@ -257,7 +252,7 @@ export default function CirclePlotTest(props) {
         query = { ...group, chr: chromesomeId };
         response = await axios.post("api/opensearch/chromosome", { search: query });
       } else {
-        //console.log("do query...", group, gname, chromesomeId);
+        //console.log("do query...", group, chromesomeId);
         const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
@@ -384,48 +379,57 @@ export default function CirclePlotTest(props) {
         <div>
           <p>Chromosome {chromesomeId}</p>
           {form.compare && (
-            <Row className="justify-content-center">
-              <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
-                <SingleChromosome
-                  data={groupA}
-                  title="Group A"
-                  details={titleA}
-                  chromesomeId={chromesomeId}
-                  width={singleFigWidth}
-                  height={singleFigWidth}
-                  onHeightChange={props.onHeightChange}></SingleChromosome>
-              </Col>
-              <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
-                <SingleChromosome
-                  data={groupB}
-                  title="Group B"
-                  details={titleB}
-                  chromesomeId={chromesomeId}
-                  width={singleFigWidth}
-                  height={singleFigWidth}
-                  onHeightChange={props.onHeightChange}></SingleChromosome>
-              </Col>
-            </Row>
+            <>
+              <Button variant="link" onClick={handleBackChromo}>
+                Back to chromosome
+              </Button>
+              <Row className="justify-content-center">
+                <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
+                  <SingleChromosome
+                    data={groupA}
+                    title="Group A"
+                    details={titleA}
+                    chromesomeId={chromesomeId}
+                    width={singleFigWidth}
+                    height={singleFigWidth}
+                    onHeightChange={props.onHeightChange}></SingleChromosome>
+                </Col>
+                <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
+                  <SingleChromosome
+                    data={groupB}
+                    title="Group B"
+                    details={titleB}
+                    chromesomeId={chromesomeId}
+                    width={singleFigWidth}
+                    height={singleFigWidth}
+                    onHeightChange={props.onHeightChange}></SingleChromosome>
+                </Col>
+              </Row>
+            </>
           )}
           {!form.compare && (
-            <Row className="justify-content-center">
-              <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                <SingleChromosome
-                  data={data}
-                  chromesomeId={chromesomeId}
-                  width={size * 0.8}
-                  height={browserSize.height * 0.7}
-                  onHeightChange={props.onHeightChange}></SingleChromosome>
-              </Col>
-            </Row>
+            <>
+              <Button variant="link" onClick={handleBack}>
+                Back to circle summary
+              </Button>
+              <Row className="justify-content-center">
+                <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
+                  <SingleChromosome
+                    data={data}
+                    chromesomeId={chromesomeId}
+                    width={size * 0.8}
+                    height={browserSize.height * 0.7}
+                    onHeightChange={props.onHeightChange}></SingleChromosome>
+                </Col>
+              </Row>
+            </>
           )}
-          <br />
-          <Button variant="outline-success" onClick={handleBack}>
-            Back
-          </Button>
         </div>
       ) : form.compare ? (
-        <div className="">
+        <div className="justify-content-center">
+          <Button variant="link" onClick={handleBack} className="buttonCircle">
+            Back to circle summary
+          </Button>
           {/* <Row>
             <Col lg={6}> */}
           {circleA ? (
@@ -472,9 +476,6 @@ export default function CirclePlotTest(props) {
           )}
           {/* </Col>
           </Row> */}
-          <Button variant="outline-success" onClick={handleBack} className="buttonCircle">
-            Back
-          </Button>
         </div>
       ) : (
         <div>
