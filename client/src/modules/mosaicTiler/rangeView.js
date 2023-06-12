@@ -75,9 +75,7 @@ export default function RangeView(props) {
     // form.ancestry,form.algorithm
   ]);
 
-  useEffect(() => {
-    //console.log(form);
-  }, [form.counterSubmitted, form.groupA, form.groupB]);
+  useEffect(() => {}, []);
 
   async function handleSubmit(qdataset, qsex) {
     setGain([]);
@@ -307,7 +305,12 @@ export default function RangeView(props) {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
-          <div style={{ height: figureHeight, left: 10 }}>
+          {allValues.length == 0 && form.counterSubmitted > 0 ? (
+            <h4 className="d-flex mx-3">Loading and rendering...</h4>
+          ) : (
+            ""
+          )}
+          <div style={{ height: figureHeight + 100, left: 10 }}>
             <Row>
               <Col className="col col-xl-8 col-lg-8 col-md-8 col-sm-1"></Col>
               <Col className="col col-xl-4 col-lg-4 col-md-4 col-sm-10">
@@ -325,6 +328,7 @@ export default function RangeView(props) {
                   undetermined={undetermined}
                   chrx={chrX}
                   chry={chrY}
+                  figureHeight={figureHeight}
                   onHeightChange={handleheightChange}
                   onResetHeight={resetHeight}
                   onClickedChr={handleClickChr}></CirclePlotTest>

@@ -28,10 +28,14 @@ export default function Explore() {
     setCounter(form.counterSubmitted);
   });
 
-  function handleSubmit(event) {
+  function handleSubmit(event, name) {
     setIsOpenCompare(true);
-    setForm({ ...event, submitted: true, compare: false, counterSubmitted: counter + 1 });
-    // console.log("submit", event);
+    setForm({
+      ...event,
+      submitted: true,
+      compare: false,
+      counterSubmitted: name === undefined ? counter + 1 : 0,
+    });
   }
   function handleFilter(event) {
     //console.log("filter:", event, form);

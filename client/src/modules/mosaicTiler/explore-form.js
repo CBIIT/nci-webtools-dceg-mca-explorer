@@ -65,7 +65,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setIsY(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
-    onSubmit(resetFormState); //clean the plot
+    onSubmit(resetFormState, "reset"); //clean the plot
   }
 
   function handleSelectChange(name, selection = []) {

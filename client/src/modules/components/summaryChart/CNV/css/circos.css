@@ -145,3 +145,12 @@
     top: 100px;
     left: 80%;
 }
+
+.compareContainer{
+    display: flex;
+    flex-direction: column;
+
+}
+.tableRow{
+    flex-grow: 1;
+}

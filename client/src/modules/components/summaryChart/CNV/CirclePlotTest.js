@@ -72,6 +72,11 @@ export default function CirclePlotTest(props) {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  //use this figuresHeight to control the height after gene table created
+  const [figuresHeight, setFigureHeight] = useState(0);
+  //
+  const [isLoaded, setIsLoaded] = useState(false);
+
   let adjustWidth = 1;
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
   else if (browserSize.width >= 1600) adjustWidth = 0.45;
@@ -204,6 +209,7 @@ export default function CirclePlotTest(props) {
   };
 
   let data = [];
+  let temploading = 0;
   useEffect(() => {
     //console.log("do query...");
     setTableData([]);
@@ -218,7 +224,7 @@ export default function CirclePlotTest(props) {
         showChart ? setGroupB(data) : setCircleB({ ...data });
       });
     } else {
-      console.log("clear form");
+      console.log("clear form", temploading);
     }
   }, [form.counterCompare]);
   data = [
@@ -296,6 +302,7 @@ export default function CirclePlotTest(props) {
       chry: chrYTemp,
     };
     setTableData([...tableData, ...result]);
+
     if (showChart) return result;
     else return circleTemp;
   }
@@ -394,10 +401,10 @@ export default function CirclePlotTest(props) {
 
   let singleFigWidth = form.compare ? size * 0.4 : size;
   return (
-    <Container className="align-middle text-center">
-      <div className="row justify-content-center">
+    <Container className="compareContainer align-middle text-center">
+      <div>
         {showChart ? (
-          <div>
+          <div style={{ height: compareCircleSize + figuresHeight, left: 0 }}>
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
@@ -536,7 +543,7 @@ export default function CirclePlotTest(props) {
         )}
       </div>
       {form.compare && (
-        <Row className="">
+        <Row className="tableRow">
           <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
               filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
