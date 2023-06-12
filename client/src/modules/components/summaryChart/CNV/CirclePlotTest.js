@@ -401,29 +401,42 @@ export default function CirclePlotTest(props) {
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
-                <Button variant="link" onClick={handleBackChromo}>
-                  Back to chromosome
-                </Button>
-                <Row className="">
-                  <Col className="col col-xl-6 d-flex justify-content-center ">
-                    <SingleChromosome
-                      data={groupA}
-                      title="Group A"
-                      details={titleA}
-                      chromesomeId={chromesomeId}
-                      width={singleFigWidth}
-                      height={singleFigWidth}
-                      onHeightChange={props.onHeightChange}></SingleChromosome>
+                <Row className="justify-content-center">
+                  {/* <Col>
+                    <Button variant="link" onClick={handleBack}>
+                      Back to circle summary
+                    </Button>
+                  </Col> */}
+                  <Col>
+                    <Button variant="link" onClick={handleBackChromo}>
+                      Back to chromosome
+                    </Button>
                   </Col>
+                </Row>
+                <Row className="justify-content-center">
                   <Col className="col col-xl-6 d-flex justify-content-center ">
-                    <SingleChromosome
-                      data={groupB}
-                      title="Group B"
-                      details={titleB}
-                      chromesomeId={chromesomeId}
-                      width={singleFigWidth}
-                      height={singleFigWidth}
-                      onHeightChange={props.onHeightChange}></SingleChromosome>
+                    <div style={{ position: "sticky", top: 0 }}>
+                      <SingleChromosome
+                        data={groupA}
+                        title="Group A"
+                        details={titleA}
+                        chromesomeId={chromesomeId}
+                        width={singleFigWidth}
+                        height={singleFigWidth}
+                        onHeightChange={props.onHeightChange}></SingleChromosome>
+                    </div>
+                  </Col>
+                  <Col className="col col-xl-6 d-flex justify-content-center">
+                    <div style={{ position: "sticky", top: 0 }}>
+                      <SingleChromosome
+                        data={groupB}
+                        title="Group B"
+                        details={titleB}
+                        chromesomeId={chromesomeId}
+                        width={singleFigWidth}
+                        height={singleFigWidth}
+                        onHeightChange={props.onHeightChange}></SingleChromosome>
+                    </div>
                   </Col>
                 </Row>
               </>
