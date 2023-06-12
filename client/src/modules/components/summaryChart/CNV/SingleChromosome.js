@@ -5,6 +5,7 @@ import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
 import { Button } from "react-bootstrap";
 import "./css/circos.css";
+import { Row } from "react-bootstrap";
 
 function SingleChromosome(props) {
   //console.log(props.data);
@@ -73,7 +74,14 @@ function SingleChromosome(props) {
     if (zoomHistory.length > 1) {
       setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
     } else {
-      const resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
+      let resetBtn = null;
+      if (props.title != undefined) {
+        if (props.title.includes("A")) resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
+        else resetBtn = document.querySelectorAll('a[data-val*="reset"]')[1];
+      } else {
+        resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
+      }
+
       resetBtn.click();
     }
   };
@@ -213,7 +221,7 @@ function SingleChromosome(props) {
               filename: "Chromosome " + props.chromesomeId,
             },
           }}
-          // useResizeHandler
+          //useResizeHandler
           style={{ width: "100%", height: "100%", position: "relative" }}
           ref={ref}
           onRelayout={handleRelayout}
@@ -255,7 +263,7 @@ function SingleChromosome(props) {
             props.chromesomeId +
             ": " +
             Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
-            "-" +
+            " -- " +
             Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
           : ""}
         <br />

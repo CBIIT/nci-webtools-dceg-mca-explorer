@@ -5,10 +5,10 @@ import { formState } from "./explore.state";
 import Plot from "react-plotly.js";
 import { Tabs, Tab, Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
+import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
-
-import Table from "../components/table";
+import Columns from "./columns";
 
 export const initialXY = [
   { block_id: "X", start: "0", end: "0", type: "Gain" },
@@ -161,76 +161,7 @@ export default function RangeView(props) {
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);
     setAllValue([...clickedValues]);
   }, [chromoId]);
-  const columns = [
-    {
-      accessor: "sampleId",
-      id: "sampleId",
-      label: "sampleId",
-      Header: <b>Sample ID</b>,
-    },
-    {
-      accessor: "dataset",
-      id: "dataset",
-      label: "Dataset",
-      Header: <b>Dataset</b>,
-    },
-    {
-      accessor: "block_id",
-      id: "chromosome",
-      label: "Chromosome",
-      Header: <b>Chromosome</b>,
-    },
-    {
-      accessor: "type",
-      id: "type",
-      label: "Type",
-      Header: <b>Type</b>,
-    },
-    {
-      accessor: "value",
-      id: "value",
-      label: "value",
-      Header: <b>Cellular Fraction</b>,
-    },
-    {
-      accessor: "start",
-      id: "start",
-      label: "Start",
-      Header: (
-        <OverlayTrigger overlay={<Tooltip id="start_position">Event Start Position</Tooltip>}>
-          <b>Start</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "end",
-      id: "end",
-      label: "End",
-      Header: (
-        <OverlayTrigger overlay={<Tooltip id="end_position">Event End Position</Tooltip>}>
-          <b>End</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "ancestry",
-      id: "ancestry",
-      label: "Ancestry",
-      Header: <b>Ancestry</b>,
-    },
-    {
-      accessor: "computedGender",
-      id: "sex",
-      label: "Sex",
-      Header: <b>Sex</b>,
-    },
-    {
-      accessor: "age",
-      id: "age",
-      label: "Age",
-      Header: <b>Age</b>,
-    },
-  ];
+  const columns = Columns;
 
   function getScatterData() {
     const gainScatter = {
@@ -377,8 +308,14 @@ export default function RangeView(props) {
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
           <div style={{ height: figureHeight, left: 10 }}>
+            <Row>
+              <Col className="col col-xl-8 col-lg-8 col-md-8 col-sm-1"></Col>
+              <Col className="col col-xl-4 col-lg-4 col-md-4 col-sm-10">
+                <Legend></Legend>
+              </Col>
+            </Row>
             <Row className="justify-content-center">
-              <Col className="col col-xl-10 d-flex justify-content-center align-items-center">
+              <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
                 <CirclePlotTest
                   clickedChromoId={handleClickedChromoId}
                   key={clickedCounter}
@@ -392,11 +329,7 @@ export default function RangeView(props) {
                   onResetHeight={resetHeight}
                   onClickedChr={handleClickChr}></CirclePlotTest>
               </Col>
-              <Col className="col col-xl-2 col-lg-2 col-md-2 col-sm-2">
-                <Legend></Legend>
-              </Col>
             </Row>
-            <Row></Row>
           </div>
         </div>
         {!form.compare ? (

@@ -5,9 +5,7 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Pagination from "react-bootstrap/Pagination";
 import { useTable, useFilters, usePagination, useSortBy } from "react-table";
 
-export function TextFilter({
-  column: { filterValue, setFilter, placeholder, aria },
-}) {
+export function TextFilter({ column: { filterValue, setFilter, placeholder, aria } }) {
   return (
     <Form.Control
       value={filterValue || ""}
@@ -18,11 +16,8 @@ export function TextFilter({
   );
 }
 
-export function RangeFilter({
-  column: { filterValue = [], setFilter, minPlaceholder, maxPlaceholder, aria },
-}) {
-  const getInputValue = (ev) =>
-    ev.target.value ? parseInt(ev.target.value, 10) : undefined;
+export function RangeFilter({ column: { filterValue = [], setFilter, minPlaceholder, maxPlaceholder, aria } }) {
+  const getInputValue = (ev) => (ev.target.value ? parseInt(ev.target.value, 10) : undefined);
 
   return (
     <InputGroup className="flex-nowrap">
@@ -45,7 +40,7 @@ export function RangeFilter({
 }
 
 export default function Table({ columns, data, options, defaultSort }) {
-  data.sort((a,b)=> (a.name>b.name)?1:-1)
+  data.sort((a, b) => (a.name > b.name ? 1 : -1));
   const {
     getTableProps,
     getTableBodyProps,
@@ -73,7 +68,7 @@ export default function Table({ columns, data, options, defaultSort }) {
     },
     useFilters,
     useSortBy,
-    usePagination,
+    usePagination
   );
 
   return (
@@ -122,9 +117,7 @@ export default function Table({ columns, data, options, defaultSort }) {
               return (
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <td
-                      style={{ whiteSpace: "nowrap" }}
-                      {...cell.getCellProps()}>
+                    <td style={{ whiteSpace: "nowrap" }} {...cell.getCellProps()}>
                       {cell.render("Cell")}
                     </td>
                   ))}
@@ -138,8 +131,7 @@ export default function Table({ columns, data, options, defaultSort }) {
       <div className="d-flex flex-wrap align-items-center justify-content-between px-3">
         <div>
           Showing rows {(1 + pageIndex * pageSize).toLocaleString()}-
-          {Math.min(rows.length, (pageIndex + 1) * pageSize).toLocaleString()}{" "}
-          of {rows.length.toLocaleString()}
+          {Math.min(rows.length, (pageIndex + 1) * pageSize).toLocaleString()} of {rows.length.toLocaleString()}
         </div>
 
         <div className="d-flex">
@@ -158,22 +150,16 @@ export default function Table({ columns, data, options, defaultSort }) {
           </Form.Control>
 
           <Pagination className="mb-0">
-            <Pagination.First
-              onClick={() => gotoPage(0)}
-              disabled={!canPreviousPage}>
+            <Pagination.First onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
               First
             </Pagination.First>
-            <Pagination.Prev
-              onClick={() => previousPage()}
-              disabled={!canPreviousPage}>
+            <Pagination.Prev onClick={() => previousPage()} disabled={!canPreviousPage}>
               Previous
             </Pagination.Prev>
             <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage}>
               Next
             </Pagination.Next>
-            <Pagination.Last
-              onClick={() => gotoPage(pageCount - 1)}
-              disabled={!canNextPage}>
+            <Pagination.Last onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
               Last
             </Pagination.Last>
           </Pagination>

@@ -13,6 +13,9 @@ import axios from "axios";
 import CircosPlot from "./CirclePlot";
 
 import { initialXY } from "../../../mosaicTiler/rangeView";
+import { ExcelFile, ExcelSheet } from "../../excel-export";
+import Table from "../../table";
+import columns from "../../../mosaicTiler/columns";
 //import "./styles.css";
 const hovertip = (d) => {
   return (
@@ -54,15 +57,6 @@ function changeBackground(track, chromesomeId, opacity) {
 
 export default function CirclePlotTest(props) {
   //to show singleChrome chart
-
-  let circleT = {
-    loss: [...initialXY],
-    gain: [...initialXY],
-    loh: [...initialXY],
-    undetermined: [...initialXY],
-    chrx: [...initialXY],
-    chry: [...initialXY],
-  };
   const [showChart, setShowChart] = useState(false);
   const [chromesomeId, setChromesomeId] = useState(0);
   const [form, setForm] = useRecoilState(formState);
@@ -73,6 +67,7 @@ export default function CirclePlotTest(props) {
   const [titleB, setTitleB] = useState("B");
   const [circleA, setCircleA] = useState(null);
   const [circleB, setCircleB] = useState(null);
+  const [tableData, setTableData] = useState([]);
   const [browserSize, setBrowserSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -97,6 +92,7 @@ export default function CirclePlotTest(props) {
   //     window.removeEventListener("resize", handleBrowserResize);
   //   };
   // }, []);
+
   const [circle, setCircle] = useState({
     loss: props.loss,
     gain: props.gain,
@@ -210,15 +206,16 @@ export default function CirclePlotTest(props) {
   let data = [];
   useEffect(() => {
     //console.log("do query...");
+    setTableData([]);
     if (form.compare) {
       setCircleA(null);
       setCircleB(null);
+
       handleGroupQuery(form.groupA).then((data) => {
         showChart ? setGroupA(data) : setCircleA({ ...data });
       });
       handleGroupQuery(form.groupB).then((data) => {
         showChart ? setGroupB(data) : setCircleB({ ...data });
-        console.log(form.counterCompare, showChart, circleB, data);
       });
     } else {
       console.log("clear form");
@@ -233,7 +230,6 @@ export default function CirclePlotTest(props) {
     ...props.chry.filter((chr) => chr.block_id === chromesomeId),
     // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
   ];
-
   //do query for group compare:
   async function handleGroupQuery(group) {
     //setLoading(true)
@@ -299,16 +295,17 @@ export default function CirclePlotTest(props) {
       chrx: chrXTemp,
       chry: chrYTemp,
     };
+    setTableData([...tableData, ...result]);
     if (showChart) return result;
     else return circleTemp;
   }
   useEffect(() => {
     if (chromesomeId > 0) {
-      setTitleA(groupTitle(form.groupA) + "\nTotal: " + groupA.length);
-      setTitleB(groupTitle(form.groupB) + "\nTotal: " + groupB.length);
+      setTitleA(groupTitle(form.groupA)); // + "\nTotal: " + groupA.length);
+      setTitleB(groupTitle(form.groupB)); // + "\nTotal: " + groupB.length);
     } else {
-      setTitleA(groupTitle(form.groupA) + "; " + circleTitle(circleA));
-      setTitleB(groupTitle(form.groupB) + "; " + circleTitle(circleB));
+      setTitleA(groupTitle(form.groupA)); // + "; " + circleTitle(circleA));
+      setTitleB(groupTitle(form.groupB)); // + "; " + circleTitle(circleB));
     }
   });
   useEffect(() => {});
@@ -359,6 +356,29 @@ export default function CirclePlotTest(props) {
     }
     return title;
   };
+  function exportTable() {
+    return [
+      {
+        columns: columns.map((e) => {
+          return { title: e.label, width: { wpx: 160 } };
+        }),
+        data: data.map((e) => {
+          return [
+            { value: e.sampleId },
+            { value: e.dataset },
+            { value: e.block_id },
+            { value: e.type },
+            { value: e.value },
+            { value: e.start },
+            { value: e.end },
+            { value: e.ancestry },
+            { value: e.computedGender },
+            { value: e.age },
+          ];
+        }),
+      },
+    ];
+  }
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
@@ -374,129 +394,148 @@ export default function CirclePlotTest(props) {
 
   let singleFigWidth = form.compare ? size * 0.4 : size;
   return (
-    <div className="align-middle text-center">
-      {showChart ? (
-        <div>
-          <p>Chromosome {chromesomeId}</p>
-          {form.compare && (
-            <>
-              <Button variant="link" onClick={handleBackChromo}>
-                Back to chromosome
-              </Button>
-              <Row className="justify-content-center">
-                <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
-                  <SingleChromosome
-                    data={groupA}
+    <Container className="align-middle text-center">
+      <div className="row justify-content-center">
+        {showChart ? (
+          <div>
+            <p>Chromosome {chromesomeId}</p>
+            {form.compare && (
+              <>
+                <Button variant="link" onClick={handleBackChromo}>
+                  Back to chromosome
+                </Button>
+                <Row className="">
+                  <Col className="col col-xl-6 d-flex justify-content-center ">
+                    <SingleChromosome
+                      data={groupA}
+                      title="Group A"
+                      details={titleA}
+                      chromesomeId={chromesomeId}
+                      width={singleFigWidth}
+                      height={singleFigWidth}
+                      onHeightChange={props.onHeightChange}></SingleChromosome>
+                  </Col>
+                  <Col className="col col-xl-6 d-flex justify-content-center ">
+                    <SingleChromosome
+                      data={groupB}
+                      title="Group B"
+                      details={titleB}
+                      chromesomeId={chromesomeId}
+                      width={singleFigWidth}
+                      height={singleFigWidth}
+                      onHeightChange={props.onHeightChange}></SingleChromosome>
+                  </Col>
+                </Row>
+              </>
+            )}
+            {!form.compare && (
+              <>
+                <Row className="justify-content-center">
+                  <Button variant="link" onClick={handleBack}>
+                    Back to circle summary
+                  </Button>
+                </Row>
+
+                <Row className="justify-content-center">
+                  <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
+                    <SingleChromosome
+                      data={data}
+                      chromesomeId={chromesomeId}
+                      width={size * 0.8}
+                      height={browserSize.height * 0.7}
+                      onHeightChange={props.onHeightChange}></SingleChromosome>
+                  </Col>
+                </Row>
+              </>
+            )}
+          </div>
+        ) : form.compare ? (
+          <div className="compareCircle" style={{ height: compareCircleSize + 110, left: 0 }}>
+            <Button variant="link" onClick={handleBack} className="">
+              Back to circle summary
+            </Button>
+            <Row className="">
+              <Col className="col col-xl-5 d-flex ">
+                {circleA ? (
+                  <CircosPlot
+                    layoutAll={layoutAll}
                     title="Group A"
+                    dataXY={[]}
                     details={titleA}
-                    chromesomeId={chromesomeId}
-                    width={singleFigWidth}
-                    height={singleFigWidth}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
-                </Col>
-                <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
-                  <SingleChromosome
-                    data={groupB}
+                    size={compareCircleSize}
+                    thicknessloss={thicknessloss}
+                    thicknessgain={thicknessgain}
+                    thicknessundermined={thicknessundermined}
+                    thicknessloh={thicknessloh}
+                    circle={circleA}
+                    circleRef={circleRef}
+                    circleClass="overlayX2"
+                    handleEnter={handleEnter}
+                    hovertip={hovertip}></CircosPlot>
+                ) : (
+                  ""
+                )}
+              </Col>
+              <Col></Col>
+
+              <Col className="col col-xl-5 d-flex justify-content-center align-items-center">
+                {circleB ? (
+                  <CircosPlot
+                    layoutAll={layoutAll}
+                    dataXY={[]}
                     title="Group B"
                     details={titleB}
-                    chromesomeId={chromesomeId}
-                    width={singleFigWidth}
-                    height={singleFigWidth}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
-                </Col>
-              </Row>
-            </>
-          )}
-          {!form.compare && (
-            <>
-              <Button variant="link" onClick={handleBack}>
-                Back to circle summary
-              </Button>
-              <Row className="justify-content-center">
-                <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                  <SingleChromosome
-                    data={data}
-                    chromesomeId={chromesomeId}
-                    width={size * 0.8}
-                    height={browserSize.height * 0.7}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
-                </Col>
-              </Row>
-            </>
-          )}
-        </div>
-      ) : form.compare ? (
-        <div className="justify-content-center">
-          <Button variant="link" onClick={handleBack} className="buttonCircle">
-            Back to circle summary
-          </Button>
-          {/* <Row>
-            <Col lg={6}> */}
-          {circleA ? (
-            <CircosPlot
-              layoutAll={layoutAll}
-              title="Group A"
-              dataXY={[]}
-              details={titleA}
-              size={compareCircleSize}
-              thicknessloss={thicknessloss}
-              thicknessgain={thicknessgain}
-              thicknessundermined={thicknessundermined}
-              thicknessloh={thicknessloh}
-              circle={circleA}
-              circleRef={circleRef}
-              circleClass="overlayX2"
-              handleEnter={handleEnter}
-              hovertip={hovertip}></CircosPlot>
-          ) : (
-            ""
-          )}
-          {/* </Col>
-            <Col></Col>
-
-            <Col lg={6}> */}
-          {circleB ? (
-            <CircosPlot
-              layoutAll={layoutAll}
-              dataXY={[]}
-              title="Group B"
-              details={titleB}
-              size={compareCircleSize}
-              thicknessloss={thicknessloss}
-              thicknessgain={thicknessgain}
-              thicknessundermined={thicknessundermined}
-              thicknessloh={thicknessloh}
-              circle={circleB}
-              circleRef={circleRef}
-              handleEnter={handleEnter}
-              circleClass="overlayX3"
-              hovertip={hovertip}></CircosPlot>
-          ) : (
-            ""
-          )}
-          {/* </Col>
-          </Row> */}
-        </div>
-      ) : (
-        <div>
-          {true && (
-            <CircosPlot
-              layoutAll={layoutAll}
-              dataXY={dataXY}
-              title="Autosomal mCA Distribution "
-              size={size}
-              thicknessloss={thicknessloss}
-              thicknessgain={thicknessgain}
-              thicknessundermined={thicknessundermined}
-              thicknessloh={thicknessloh}
-              circle={circle}
-              circleRef={circleRef}
-              handleEnter={handleEnter}
-              circleClass="overlayX"
-              hovertip={hovertip}></CircosPlot>
-          )}
-        </div>
+                    size={compareCircleSize}
+                    thicknessloss={thicknessloss}
+                    thicknessgain={thicknessgain}
+                    thicknessundermined={thicknessundermined}
+                    thicknessloh={thicknessloh}
+                    circle={circleB}
+                    circleRef={circleRef}
+                    handleEnter={handleEnter}
+                    circleClass="overlayX3"
+                    hovertip={hovertip}></CircosPlot>
+                ) : (
+                  ""
+                )}
+              </Col>
+            </Row>
+          </div>
+        ) : (
+          <div>
+            {true && (
+              <CircosPlot
+                layoutAll={layoutAll}
+                dataXY={dataXY}
+                title="Autosomal mCA Distribution "
+                size={size}
+                thicknessloss={thicknessloss}
+                thicknessgain={thicknessgain}
+                thicknessundermined={thicknessundermined}
+                thicknessloh={thicknessloh}
+                circle={circle}
+                circleRef={circleRef}
+                handleEnter={handleEnter}
+                circleClass="overlayX"
+                hovertip={hovertip}></CircosPlot>
+            )}
+          </div>
+        )}
+      </div>
+      {form.compare && (
+        <Row className="">
+          <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+            <ExcelFile
+              filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
+              element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet dataSet={exportTable()} name="Autosomal mCA Distribution" />
+            </ExcelFile>
+          </div>
+          <div className="mx-3">
+            <Table columns={columns} defaultSort={[{ id: "sampleId", asc: true }]} data={tableData} />
+          </div>
+        </Row>
       )}
-    </div>
+    </Container>
   );
 }

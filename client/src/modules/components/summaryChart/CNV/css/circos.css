@@ -105,6 +105,10 @@
     bottom: 10;
     left: 5%;
 }
+.compareCircle{
+    top: 1000;
+    left: 0
+}
 
 .circleContainer {
     display: flex;
@@ -138,4 +142,6 @@
 }
 .legendContainer{
     position: relative;
+    top: 100px;
+    left: 80%;
 }
