@@ -289,7 +289,6 @@ export default function RangeView(props) {
     setChromoId(id);
     //const response = await axios.post("api/opensearch/chromosome", { search: [...query_value,{chr:id}] })
   };
-
   const handleheightChange = (newHeight) => {
     setFigureHeight(newHeight + chartHeight);
   };
@@ -310,7 +309,7 @@ export default function RangeView(props) {
           ) : (
             ""
           )}
-          <div style={{ height: figureHeight + 600, left: 10 }}>
+          <div className="compareFigure" style={{ height: figureHeight + 200, left: 10 }}>
             <Row>
               <Col className="col col-xl-8 col-lg-8 col-md-8 col-sm-1"></Col>
               <Col className="col col-xl-4 col-lg-4 col-md-4 col-sm-10">

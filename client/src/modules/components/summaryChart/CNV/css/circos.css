@@ -69,6 +69,11 @@
     bottom: 10;
     left: 50%;
 }
+.compareTable {
+        position: absolute;
+            bottom: 10;
+        
+}
 @media screen and (max-width:1600px) {
     .overlayX3 {
         position: absolute;
@@ -85,6 +90,14 @@
     }
     .legendContainer{
         right: 0%;
+    }
+    .tableRow {
+        position: absolute;
+        flex-grow: 1;
+        top: 1200px;
+    }
+    #footer{
+      margin-top: 800px;
     }
 }
 .buttonCircle{
@@ -154,3 +167,4 @@
 .tableRow{
     flex-grow: 1;
 }
+

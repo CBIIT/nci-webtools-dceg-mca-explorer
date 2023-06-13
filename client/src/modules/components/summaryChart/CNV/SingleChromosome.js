@@ -252,7 +252,8 @@ function SingleChromosome(props) {
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}
-              onHeightChange={props.onHeightChange}></GenePlot>
+              onHeightChange={props.onHeightChange}
+              onCompareHeightChange={props.onCompareHeightChange}></GenePlot>
           </div>
         ) : (
           ""

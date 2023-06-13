@@ -50,3 +50,10 @@
 .accordion-button:not(.collapsed) {
   color: #000000;
 }
+
+#footer{
+  position:fixed;
+  left:0;
+  bottom: 0;
+  width: 100%;
+}

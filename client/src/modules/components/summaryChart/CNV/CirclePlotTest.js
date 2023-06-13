@@ -203,9 +203,12 @@ export default function CirclePlotTest(props) {
     });
     props.onResetHeight();
     setChromesomeId(0);
+    setFigureHeight(0);
   };
   const handleBackChromo = () => {
     setForm({ ...form, compare: false });
+    setFigureHeight(0);
+    props.onResetHeight();
   };
 
   let data = [];
@@ -227,6 +230,10 @@ export default function CirclePlotTest(props) {
       console.log("clear form", temploading);
     }
   }, [form.counterCompare]);
+
+  const handleCompareHeightChange = (height) => {
+    setFigureHeight(height);
+  };
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId),
@@ -404,7 +411,7 @@ export default function CirclePlotTest(props) {
     <Container className="compareContainer align-middle text-center">
       <div>
         {showChart ? (
-          <div style={{ height: compareCircleSize + figuresHeight + 400, left: 0 }}>
+          <div style={{ height: compareCircleSize + figuresHeight + 200, left: 0 }}>
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
@@ -430,7 +437,8 @@ export default function CirclePlotTest(props) {
                         chromesomeId={chromesomeId}
                         width={singleFigWidth}
                         height={singleFigWidth}
-                        onHeightChange={props.onHeightChange}></SingleChromosome>
+                        onHeightChange={props.onHeightChange}
+                        onCompareHeightChange={handleCompareHeightChange}></SingleChromosome>
                     </div>
                   </Col>
                   <Col className="col col-xl-6 d-flex justify-content-center">
@@ -442,7 +450,8 @@ export default function CirclePlotTest(props) {
                         chromesomeId={chromesomeId}
                         width={singleFigWidth}
                         height={singleFigWidth}
-                        onHeightChange={props.onHeightChange}></SingleChromosome>
+                        onHeightChange={props.onHeightChange}
+                        onCompareHeightChange={handleCompareHeightChange}></SingleChromosome>
                     </div>
                   </Col>
                 </Row>
