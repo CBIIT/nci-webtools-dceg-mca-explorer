@@ -83,6 +83,8 @@ export default function CirclePlotTest(props) {
   else adjustWidth = 0.7;
   const size = browserSize.width * adjustWidth;
   const compareCircleSize = size * adjustWidth;
+
+  const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
   const handleBrowserResize = () => {
     setBrowserSize({
@@ -204,11 +206,13 @@ export default function CirclePlotTest(props) {
     props.onResetHeight();
     setChromesomeId(0);
     setFigureHeight(0);
+    clearBtn.click();
   };
   const handleBackChromo = () => {
     setForm({ ...form, compare: false });
     setFigureHeight(0);
     props.onResetHeight();
+    clearBtn.click();
   };
 
   let data = [];

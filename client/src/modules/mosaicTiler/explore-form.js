@@ -434,7 +434,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                     <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
                       Compare
                     </Button>
-                    <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilterClear}>
+                    <Button
+                      variant="outline-secondary"
+                      className="me-1"
+                      type="button"
+                      id="clearCompare"
+                      onClick={handleFilterClear}>
                       Clear
                     </Button>
                   </Col>

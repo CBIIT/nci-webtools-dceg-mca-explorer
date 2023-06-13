@@ -20,7 +20,7 @@ export default function Legend(props) {
         <rect y={yp} x={0} fill="green" width={xw} height={yp} />
         <rect y={3 * yp} x={0} fill="blue" width={xw} height={yp} />
         <rect y={5 * yp} x={0} fill="red" width={xw} height={yp} />
-        <rect y={7 * yp} x={0} fill="#ABABAB" width={xw} height={yp} />
+        <rect y={7 * yp - 1} x={0} fill="#ABABAB" width={xw} height={yp} />
         <text style={{ fontSize: 10 }} textAnchor="right" y={yp + 7} x={xx}>
           Gain
         </text>
