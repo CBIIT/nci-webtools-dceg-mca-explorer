@@ -152,9 +152,12 @@ function GenePlot(props) {
   };
 
   return !showGene && isLoading ? (
-    <Spinner animation="border" role="status">
-      <span className="visually-hidden">Loading...</span>
-    </Spinner>
+    <>
+      Loading Gene ...
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </>
   ) : !isLoading && showGene ? (
     <Plot
       data={data}

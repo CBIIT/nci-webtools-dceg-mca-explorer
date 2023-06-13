@@ -67,14 +67,21 @@ function SnpPlot(props) {
     margin: { l: 20, r: 20, t: 5, b: 30 },
   };
 
-  return (
-    // !showSnp && isLoading ?
-    // <Spinner animation="border" role="status">
-    //   <span className="visually-hidden">Loading...</span>
-    // </Spinner> : !isLoading && showSnp ?
+  return !showSnp && isLoading ? (
+    <Spinner animation="border" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </Spinner>
+  ) : !isLoading && showSnp ? (
     <div>
       <Plot data={snps} layout={layout} style={{ width: "100%", height: "100%", display: "block" }} />
     </div>
+  ) : (
+    <>
+      Loading SNP ...
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </>
   );
 }
 

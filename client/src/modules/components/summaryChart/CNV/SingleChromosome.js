@@ -256,7 +256,12 @@ function SingleChromosome(props) {
               onCompareHeightChange={props.onCompareHeightChange}></GenePlot>
           </div>
         ) : (
-          ""
+          <div style={{ justifyContent: "center", whiteSpace: "pre-line" }}>
+            <p>
+              Gene and SNP plot are not available at the current zoom level.<br></br>
+              Please zoom in to a 5MB range to see genes and SNPs.
+            </p>
+          </div>
         )}
         <br />
         {xMin
