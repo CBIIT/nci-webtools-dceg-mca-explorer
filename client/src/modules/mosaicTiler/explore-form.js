@@ -431,7 +431,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Card.Body>
                 <Row>
                   <Col>
-                    <Button variant="outline-secondary" className="me-1" type="button" onClick={handleFilter}>
+                    <Button
+                      variant="outline-secondary"
+                      className="me-1"
+                      type="button"
+                      id="compareSubmit"
+                      onClick={handleFilter}>
                       Compare
                     </Button>
                     <Button

@@ -153,12 +153,13 @@ export default function CirclePlotTest(props) {
   const handleEnter = () => {
     console.log("handleEnter");
     if (circleRef.current) {
-      var track0 = circleRef.current.querySelectorAll(".track-0 .block");
-      var track1 = circleRef.current.querySelectorAll(".track-1 .block");
-      var track2 = circleRef.current.querySelectorAll(".track-2 .block");
-      var track3 = circleRef.current.querySelectorAll(".track-3 .block");
+      var track0 = document.querySelectorAll(".track-0 .block");
+      var track1 = document.querySelectorAll(".track-1 .block");
+      var track2 = document.querySelectorAll(".track-2 .block");
+      var track3 = document.querySelectorAll(".track-3 .block");
       //var trackxy = circleRef.current.querySelectorAll('#chrxy .track-0');
       var alltracks = [track0, track1, track2, track3];
+      console.log(alltracks.length);
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
@@ -182,6 +183,9 @@ export default function CirclePlotTest(props) {
             const cid = "chr" + b.__data__.key;
             const chrid = form.chromosome.filter((c) => c.value === cid);
             setForm({ ...form, chromosome: chrid });
+            if (form.compare) {
+              document.getElementById("compareSubmit").click();
+            }
           });
         });
       });
@@ -216,22 +220,51 @@ export default function CirclePlotTest(props) {
   };
 
   let data = [];
-  let temploading = 0;
   useEffect(() => {
     //console.log("do query...");
     setTableData([]);
     if (form.compare) {
       setCircleA(null);
       setCircleB(null);
-
+      setTableData([]);
       handleGroupQuery(form.groupA).then((data) => {
-        showChart ? setGroupA(data) : setCircleA({ ...data });
+        if (showChart) {
+          setGroupA(data);
+          setTableData([...data, ...groupB]);
+        } else {
+          setCircleA({ ...data });
+          setTableData([
+            ...data.loss,
+            ...circleB.loss,
+            ...data.gain,
+            ...circleB.gain,
+            ...data.loh,
+            ...circleB.loh,
+            ...data.undetermined,
+            ...circleB.undetermined,
+          ]);
+        }
       });
       handleGroupQuery(form.groupB).then((data) => {
-        showChart ? setGroupB(data) : setCircleB({ ...data });
+        if (showChart) {
+          setGroupB(data);
+          setTableData([...groupA, ...data]);
+        } else {
+          setCircleB({ ...data });
+          setTableData([
+            ...circleA.loss,
+            ...data.loss,
+            ...circleA.gain,
+            ...data.gain,
+            ...circleA.loh,
+            ...data.loh,
+            ...circleA.undetermined,
+            ...data.undetermined,
+          ]);
+        }
       });
     } else {
-      console.log("clear form", temploading);
+      console.log("clear form");
     }
   }, [form.counterCompare]);
 
@@ -254,10 +287,10 @@ export default function CirclePlotTest(props) {
     let query = {};
     let response = "";
     let circleTemp = {};
-    const gainTemp = [...initialXY];
-    const lohTemp = [...initialXY];
-    const lossTemp = [...initialXY];
-    const undeterTemp = [...initialXY];
+    const gainTemp = [];
+    const lohTemp = [];
+    const lossTemp = [];
+    const undeterTemp = [];
     const chrXTemp = [];
     const chrYTemp = [];
     if (!Array.isArray(group)) {
@@ -312,7 +345,7 @@ export default function CirclePlotTest(props) {
       chrx: chrXTemp,
       chry: chrYTemp,
     };
-    setTableData([...tableData, ...result]);
+    //setTableData([...result]);
 
     if (showChart) return result;
     else return circleTemp;
@@ -380,7 +413,7 @@ export default function CirclePlotTest(props) {
         columns: columns.map((e) => {
           return { title: e.label, width: { wpx: 160 } };
         }),
-        data: data.map((e) => {
+        data: tableData.map((e) => {
           return [
             { value: e.sampleId },
             { value: e.dataset },
@@ -558,10 +591,8 @@ export default function CirclePlotTest(props) {
       {form.compare && (
         <Row className="tableRow">
           <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile
-              filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-              element={<a href="javascript:void(0)">Export Data</a>}>
-              <ExcelSheet dataSet={exportTable()} name="Autosomal mCA Distribution" />
+            <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet dataSet={exportTable()} name="compare" />
             </ExcelFile>
           </div>
           <div className="mx-3">
