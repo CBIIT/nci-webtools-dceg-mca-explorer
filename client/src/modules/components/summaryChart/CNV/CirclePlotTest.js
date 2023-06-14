@@ -432,7 +432,7 @@ export default function CirclePlotTest(props) {
     <Container className="compareContainer align-middle text-center">
       <div>
         {showChart ? (
-          <div style={{ height: compareCircleSize + figuresHeight + 150, left: 0 }}>
+          <div style={{ height: compareCircleSize + figuresHeight + 120, left: 0 }}>
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
@@ -500,7 +500,7 @@ export default function CirclePlotTest(props) {
             )}
           </div>
         ) : form.compare ? (
-          <div className="compareCircle" style={{ height: compareCircleSize + 110, left: 0 }}>
+          <div className="compareCircle" style={{ height: compareCircleSize + 50, left: 0 }}>
             <Button variant="link" onClick={handleBack} className="">
               Back to circle summary
             </Button>
