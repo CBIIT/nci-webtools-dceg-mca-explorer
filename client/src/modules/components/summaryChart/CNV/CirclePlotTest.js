@@ -432,7 +432,7 @@ export default function CirclePlotTest(props) {
     <Container className="compareContainer align-middle text-center">
       <div>
         {showChart ? (
-          <div style={{ height: compareCircleSize + figuresHeight + 200, left: 0 }}>
+          <div style={{ height: compareCircleSize + figuresHeight + 150, left: 0 }}>
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
