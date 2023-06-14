@@ -206,6 +206,7 @@ function SingleChromosome(props) {
   return (
     <>
       <div id="plotly-div" className="" style={{ justifyContent: "center" }}>
+        {props.title}
         {props.title && <br></br>}
         <Button id="zoomBack" variant="link" onClick={handleZoomHistory}>
           {zoomHistory.length > 0 ? "Back to previous view" : ""}

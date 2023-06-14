@@ -226,43 +226,8 @@ export default function CirclePlotTest(props) {
     if (form.compare) {
       setCircleA(null);
       setCircleB(null);
-      setTableData([]);
-      handleGroupQuery(form.groupA).then((data) => {
-        if (showChart) {
-          setGroupA(data);
-          setTableData([...data, ...groupB]);
-        } else {
-          setCircleA({ ...data });
-          setTableData([
-            ...data.loss,
-            ...circleB.loss,
-            ...data.gain,
-            ...circleB.gain,
-            ...data.loh,
-            ...circleB.loh,
-            ...data.undetermined,
-            ...circleB.undetermined,
-          ]);
-        }
-      });
-      handleGroupQuery(form.groupB).then((data) => {
-        if (showChart) {
-          setGroupB(data);
-          setTableData([...groupA, ...data]);
-        } else {
-          setCircleB({ ...data });
-          setTableData([
-            ...circleA.loss,
-            ...data.loss,
-            ...circleA.gain,
-            ...data.gain,
-            ...circleA.loh,
-            ...data.loh,
-            ...circleA.undetermined,
-            ...data.undetermined,
-          ]);
-        }
-      });
+      handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
+      handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
     } else {
       console.log("clear form");
     }
@@ -345,7 +310,7 @@ export default function CirclePlotTest(props) {
       chrx: chrXTemp,
       chry: chrYTemp,
     };
-    //setTableData([...result]);
+    //setTableData([...result, ...tableData]);
 
     if (showChart) return result;
     else return circleTemp;
@@ -359,7 +324,26 @@ export default function CirclePlotTest(props) {
       setTitleB(groupTitle(form.groupB)); // + "; " + circleTitle(circleB));
     }
   });
-  useEffect(() => {});
+  useEffect(() => {
+    if (circleA !== null) {
+      setTableData([...circleA.loss, ...circleA.gain, ...circleA.loh, ...circleA.undetermined, ...tableData]);
+    }
+  }, [circleA]);
+  useEffect(() => {
+    if (circleB !== null) {
+      setTableData([...circleB.loss, ...circleB.gain, ...circleB.loh, ...circleB.undetermined, ...tableData]);
+    }
+  }, [circleB]);
+  useEffect(() => {
+    if (groupA !== null) {
+      setTableData([...groupA, ...tableData]);
+    }
+  }, [groupA]);
+  useEffect(() => {
+    if (groupB !== null) {
+      setTableData([...groupB, ...tableData]);
+    }
+  }, [groupB]);
   const groupTitle = (group) => {
     let title = "";
     if (group != undefined) {
