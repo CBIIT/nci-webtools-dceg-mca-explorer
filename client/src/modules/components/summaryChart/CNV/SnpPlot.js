@@ -68,9 +68,13 @@ function SnpPlot(props) {
   };
 
   return !showSnp && isLoading ? (
-    <Spinner animation="border" role="status">
-      <span className="visually-hidden">Loading...</span>
-    </Spinner>
+    <>
+      {" "}
+      Loading Gene ...
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    </>
   ) : !isLoading && showSnp ? (
     <div>
       <Plot data={snps} layout={layout} style={{ width: "100%", height: "100%", display: "block" }} />

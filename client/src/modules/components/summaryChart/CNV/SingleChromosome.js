@@ -206,7 +206,7 @@ function SingleChromosome(props) {
   return (
     <>
       <div id="plotly-div" className="" style={{ justifyContent: "center" }}>
-        {props.title}
+        {props.title && <br></br>}
         <Button id="zoomBack" variant="link" onClick={handleZoomHistory}>
           {zoomHistory.length > 0 ? "Back to previous view" : ""}
         </Button>
@@ -254,16 +254,16 @@ function SingleChromosome(props) {
               chr={props.chromesomeId}
               onHeightChange={props.onHeightChange}
               onCompareHeightChange={props.onCompareHeightChange}></GenePlot>
+            <br></br>
           </div>
         ) : (
-          <div style={{ justifyContent: "center", whiteSpace: "pre-line" }}>
-            <p>
+          !props.title && (
+            <p style={{ fontSize: "14px" }}>
               Gene and SNP plot are not available at the current zoom level.<br></br>
               Please zoom in to a 5MB range to see genes and SNPs.
             </p>
-          </div>
+          )
         )}
-        <br />
         {xMin
           ? "Chr" +
             props.chromesomeId +
@@ -272,7 +272,6 @@ function SingleChromosome(props) {
             " -- " +
             Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
           : ""}
-        <br />
       </div>
     </>
   );
