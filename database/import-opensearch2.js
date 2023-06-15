@@ -46,7 +46,7 @@ async function runImport(client, sources, logger = console) {
     });
 
     let id = 0;
-    let times = Number(args[2]);
+    let times = Number(args[2]); //node import-opensearch2.js 0/1... around 10 to finish loading
     let numbers = 1000000;
     let beginid = times * numbers;
     let endid = (times + 1) * numbers;
