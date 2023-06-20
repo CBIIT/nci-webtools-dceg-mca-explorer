@@ -82,7 +82,7 @@ export default function CirclePlotTest(props) {
   else if (browserSize.width >= 1600) adjustWidth = 0.45;
   else adjustWidth = 0.7;
   const size = browserSize.width * adjustWidth;
-  const compareCircleSize = size * adjustWidth;
+  const compareCircleSize = size * (adjustWidth + 0.15);
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -427,7 +427,7 @@ export default function CirclePlotTest(props) {
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
 
-  let singleFigWidth = form.compare ? size * 0.4 : size;
+  let singleFigWidth = form.compare ? size * 0.5 : size;
   return (
     <Container className="compareContainer align-middle text-center">
       <div>
@@ -453,8 +453,8 @@ export default function CirclePlotTest(props) {
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         data={groupA}
-                        title="Group A"
-                        details={titleA}
+                        title={titleA}
+                        details="A"
                         chromesomeId={chromesomeId}
                         width={singleFigWidth}
                         height={singleFigWidth}
@@ -466,8 +466,8 @@ export default function CirclePlotTest(props) {
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         data={groupB}
-                        title="Group B"
-                        details={titleB}
+                        title={titleB}
+                        details="B"
                         chromesomeId={chromesomeId}
                         width={singleFigWidth}
                         height={singleFigWidth}
@@ -505,13 +505,13 @@ export default function CirclePlotTest(props) {
               Back to circle summary
             </Button>
             <Row className="">
-              <Col className="col col-xl-5 d-flex ">
+              <Col className="col col-xl-6 d-flex ">
                 {circleA ? (
                   <CircosPlot
                     layoutAll={layoutAll}
-                    title="Group A"
+                    title={titleA}
                     dataXY={[]}
-                    details={titleA}
+                    //details={titleA}
                     size={compareCircleSize}
                     thicknessloss={thicknessloss}
                     thicknessgain={thicknessgain}
@@ -528,13 +528,13 @@ export default function CirclePlotTest(props) {
               </Col>
               <Col></Col>
 
-              <Col className="col col-xl-5 d-flex justify-content-center align-items-center">
+              <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
                 {circleB ? (
                   <CircosPlot
                     layoutAll={layoutAll}
                     dataXY={[]}
-                    title="Group B"
-                    details={titleB}
+                    title={titleB}
+                    //details="B"
                     size={compareCircleSize}
                     thicknessloss={thicknessloss}
                     thicknessgain={thicknessgain}

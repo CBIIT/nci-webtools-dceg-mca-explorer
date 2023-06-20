@@ -6,6 +6,7 @@ import SnpPlot from "./SnpPlot";
 import { Button } from "react-bootstrap";
 import "./css/circos.css";
 import { Row } from "react-bootstrap";
+import ResolutionPlot from "./ResolutionPlot";
 
 function SingleChromosome(props) {
   //console.log(props.data);
@@ -43,7 +44,6 @@ function SingleChromosome(props) {
   const [xMax, setXMax] = useState();
   const [xMin, setXMin] = useState();
   const [zoomHistory, setZoomHistory] = useState([]);
-  const [init, setInit] = useState(true);
 
   useEffect(() => {
     if (zoomHistory.length > 0) {
@@ -75,8 +75,8 @@ function SingleChromosome(props) {
       setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
     } else {
       let resetBtn = null;
-      if (props.title != undefined) {
-        if (props.title.includes("A")) resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
+      if (props.details != undefined) {
+        if (props.details.includes("A")) resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
         else resetBtn = document.querySelectorAll('a[data-val*="reset"]')[1];
       } else {
         resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
@@ -202,6 +202,13 @@ function SingleChromosome(props) {
     //   // }
     // }
   }, [props.chromesomeId, props.title]);
+  const prev = zoomHistory[zoomHistory.length - 2];
+  let backtoprev = "Back to initial";
+  if (prev != undefined) {
+    const pxmin = prev["xaxis.range[0]"];
+    const pxmax = prev["xaxis.range[1]"];
+    backtoprev = "Back to " + (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
+  }
 
   return (
     <>
@@ -209,7 +216,7 @@ function SingleChromosome(props) {
         {props.title}
         {props.title && <br></br>}
         <Button id="zoomBack" variant="link" onClick={handleZoomHistory}>
-          {zoomHistory.length > 0 ? "Back to previous view" : ""}
+          {zoomHistory.length > 0 ? backtoprev : ""}
         </Button>
         <Plot
           data={data}
@@ -233,7 +240,7 @@ function SingleChromosome(props) {
           //   }
           // }}
         />
-        <div style={{ whiteSpace: "pre-line" }}>{props.details}</div>
+        {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />
         {xMax - xMin < 5000000 ? (
           <div>
@@ -273,6 +280,7 @@ function SingleChromosome(props) {
             " -- " +
             Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
           : ""}
+        {/* <ResolutionPlot></ResolutionPlot> */}
       </div>
     </>
   );

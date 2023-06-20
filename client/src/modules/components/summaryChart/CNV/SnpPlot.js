@@ -57,7 +57,7 @@ function SnpPlot(props) {
       zeroline: false,
       showticklabels: false,
       fixedrange: true,
-      title: "Snp",
+      title: "SNP",
     },
     height: snpPlotHeight,
     width: props.width,
