@@ -44,11 +44,12 @@ function SingleChromosome(props) {
   const [xMax, setXMax] = useState();
   const [xMin, setXMin] = useState();
   const [zoomHistory, setZoomHistory] = useState([]);
+  const [newRange, setNewRange] = useState([]);
 
   useEffect(() => {
     if (zoomHistory.length > 0) {
       const currentView = zoomHistory.slice(-1).pop();
-      //console.log(currentView);
+      console.log(props.details, currentView);
       setLayout((prevLayout) => ({
         ...prevLayout,
         xaxis: { ...prevLayout.xaxis, range: [currentView["xaxis.range[0]"], currentView["xaxis.range[1]"]] },
@@ -59,15 +60,21 @@ function SingleChromosome(props) {
       setXMin(currentView["xaxis.range[0]"]);
     }
   }, [zoomHistory]);
-  function handleRelayout(event) {
-    const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
-    setXMax(xMax);
-    setXMin(xMin);
-    //  setGeneLayout({ ...layout, xaxis: { ...xaxis, range } });
-    if (event["xaxis.autorange"]) {
-      setZoomHistory([]);
-    } else {
-      setZoomHistory((prevHistory) => [...prevHistory, event]);
+
+  function handleRelayout(event, name) {
+    if (event !== undefined) {
+      const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
+      setXMax(xMax);
+      setXMin(xMin);
+      //trigger synchronize another plot to zoom
+      //if (props.zoomRange === null) {
+      props.onZoomChange(event, props.details);
+      //}
+      if (event["xaxis.autorange"]) {
+        setZoomHistory([]);
+      } else {
+        setZoomHistory((prevHistory) => [...prevHistory, event]);
+      }
     }
   }
   const handleZoomHistory = (event) => {
@@ -81,10 +88,23 @@ function SingleChromosome(props) {
       } else {
         resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
       }
-
       resetBtn.click();
+      setNewRange([]);
+      setZoomHistory([]);
     }
   };
+
+  //synchronize the zoom range
+  useEffect(() => {
+    if (props.zoomRange !== undefined && props.zoomRange !== null) {
+      //ref.current.props.on("plotly_relayout", handleRelayout);
+      ref.current.props.onRelayout(handleRelayout(props.zoomRange, props.details));
+      const new_range = [props.zoomRange["xaxis.range[0]"], props.zoomRange["xaxis.range[1]"]];
+      setNewRange(new_range);
+      console.log("props.zoomRange", newRange, props.details);
+    }
+  }, [props.zoomRange]);
+
   var data1 = [];
   var data2 = [];
   var ydata = [];
@@ -182,26 +202,28 @@ function SingleChromosome(props) {
   };
 
   useEffect(() => {
+    const nlayout = { ...layout };
     setLayout({
-      ...layout,
-      // title: props.title,
+      nlayout,
     });
-    // async e => {
-    //    // draw genes if zoom is at less than 50 MB
-    //   //setGenes([]);
-    //   //ref.current.drawGenes([]);
-    //   // let zoomRange = Math.abs(xAxis.extent[1] - xAxis.extent[0]);
-    //   // if (zoomRange <= 2e6) {
-    //   //   let genes = await query('genes', {
-    //   //     chromosome: selectedChromosome,
-    //   //     transcription_start: xAxis.extent[0],
-    //   //     transcription_end: xAxis.extent[1]
-    //   //   });
-    //   //   ref.current.drawGenes(genes);
-    //   //   setGenes(genes);
-    //   // }
-    // }
-  }, [props.chromesomeId, props.title]);
+    if (newRange) {
+      const synlayout = {
+        ...nlayout,
+        xaxis: { range: newRange },
+      };
+      setLayout(synlayout);
+      //console.log(props.details, synlayout, newRange);
+    }
+    console.log(props.title, zoomHistory);
+  }, [props.chromesomeId, props.title, newRange]);
+
+  useEffect(() => {
+    //console.log(layout, props.details);
+    if (data.length === 0) {
+      setZoomHistory([]);
+    }
+  }, [data]);
+
   const prev = zoomHistory[zoomHistory.length - 2];
   let backtoprev = "Back to initial";
   if (prev != undefined) {

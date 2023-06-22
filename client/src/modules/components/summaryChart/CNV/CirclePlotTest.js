@@ -72,8 +72,11 @@ export default function CirclePlotTest(props) {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+  const [zoomRangeA, setZoomRangeA] = useState(null);
+  const [zoomRangeB, setZoomRangeB] = useState(null);
+
   //use this figuresHeight to control the height after gene table created
-  const [figuresHeight, setFigureHeight] = useState(0);
+  const [figureHeight, setFigureHeight] = useState(0);
   //
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -216,7 +219,19 @@ export default function CirclePlotTest(props) {
     setForm({ ...form, compare: false });
     setFigureHeight(0);
     props.onResetHeight();
+    setZoomRangeA(null);
+    setZoomRangeB(null);
     clearBtn.click();
+  };
+  const handleZoomChange = (event, group) => {
+    console.log("zoomchange", group);
+    //Apply the zoom range only to the plot that did not trigger
+    if (group === "A") {
+      setZoomRangeB(event);
+    }
+    if (group === "B") {
+      setZoomRangeA(event);
+    }
   };
 
   let data = [];
@@ -432,7 +447,7 @@ export default function CirclePlotTest(props) {
     <Container className="compareContainer align-middle text-center">
       <div>
         {showChart ? (
-          <div style={{ height: compareCircleSize + figuresHeight + 120, left: 0 }}>
+          <div style={{ height: compareCircleSize + figureHeight + 120, left: 0 }}>
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
@@ -452,6 +467,8 @@ export default function CirclePlotTest(props) {
                   <Col className="col col-xl-6 d-flex justify-content-center ">
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
+                        onZoomChange={handleZoomChange}
+                        zoomRange={zoomRangeA}
                         data={groupA}
                         title={titleA}
                         details="A"
@@ -465,6 +482,8 @@ export default function CirclePlotTest(props) {
                   <Col className="col col-xl-6 d-flex justify-content-center">
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
+                        onZoomChange={handleZoomChange}
+                        zoomRange={zoomRangeB}
                         data={groupB}
                         title={titleB}
                         details="B"
