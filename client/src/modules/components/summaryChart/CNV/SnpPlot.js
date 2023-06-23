@@ -9,13 +9,13 @@ function SnpPlot(props) {
   const [snps, setSnps] = useState([]);
   const snparr = [];
   const snpPlotHeight = 100;
-  //console.log(props.xMax,props.xMin)
+  console.log(props.xMax, props.xMin);
   useEffect(() => {
     if (true) {
       handleQuery();
     } else {
     }
-  }, [props.xMin]);
+  }, [props.xMax]);
 
   async function handleQuery() {
     //setLoading(true)

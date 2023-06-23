@@ -228,9 +228,11 @@ export default function CirclePlotTest(props) {
     //Apply the zoom range only to the plot that did not trigger
     if (group === "A") {
       setZoomRangeB(event);
+      //setZoomRangeA(null);
     }
     if (group === "B") {
       setZoomRangeA(event);
+      //setZoomRangeB(null);
     }
   };
 

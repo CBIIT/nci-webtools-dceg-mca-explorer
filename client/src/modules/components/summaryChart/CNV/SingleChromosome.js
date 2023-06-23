@@ -5,8 +5,6 @@ import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
 import { Button } from "react-bootstrap";
 import "./css/circos.css";
-import { Row } from "react-bootstrap";
-import ResolutionPlot from "./ResolutionPlot";
 
 function SingleChromosome(props) {
   //console.log(props.data);
@@ -45,11 +43,12 @@ function SingleChromosome(props) {
   const [xMin, setXMin] = useState();
   const [zoomHistory, setZoomHistory] = useState([]);
   const [newRange, setNewRange] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (zoomHistory.length > 0) {
       const currentView = zoomHistory.slice(-1).pop();
-      console.log(props.details, currentView);
+      //console.log(props.details, currentView);
       setLayout((prevLayout) => ({
         ...prevLayout,
         xaxis: { ...prevLayout.xaxis, range: [currentView["xaxis.range[0]"], currentView["xaxis.range[1]"]] },
@@ -66,10 +65,16 @@ function SingleChromosome(props) {
       const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
       setXMax(xMax);
       setXMin(xMin);
-      //trigger synchronize another plot to zoom
-      //if (props.zoomRange === null) {
-      props.onZoomChange(event, props.details);
-      //}
+      //console.log(xMin, xMax);
+      setLoading(true);
+
+      //trigger synchronize another plot to zoom, make sue only trigger for one plot
+      //difficient zoom in on single chromosome  or on comparison by name
+      if (props.details !== undefined && name === undefined) {
+        //if (props.zoomRange === null) {
+        props.onZoomChange(event, props.details);
+        //}
+      }
       if (event["xaxis.autorange"]) {
         setZoomHistory([]);
       } else {
@@ -101,7 +106,7 @@ function SingleChromosome(props) {
       ref.current.props.onRelayout(handleRelayout(props.zoomRange, props.details));
       const new_range = [props.zoomRange["xaxis.range[0]"], props.zoomRange["xaxis.range[1]"]];
       setNewRange(new_range);
-      console.log("props.zoomRange", newRange, props.details);
+      // console.log("props.zoomRange", newRange, props.details);
     }
   }, [props.zoomRange]);
 
@@ -214,7 +219,7 @@ function SingleChromosome(props) {
       setLayout(synlayout);
       //console.log(props.details, synlayout, newRange);
     }
-    console.log(props.title, zoomHistory);
+    //console.log(props.title, zoomHistory);
   }, [props.chromesomeId, props.title, newRange]);
 
   useEffect(() => {
