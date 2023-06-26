@@ -309,7 +309,7 @@ export default function RangeView(props) {
           ) : (
             ""
           )}
-          <div className="compareFigure" style={{ height: figureHeight + 250, left: 10 }}>
+          <div className="compareFigure" style={{ height: figureHeight, left: 10 }}>
             <Row>
               <Col className="col col-xl-3 col-lg-3 col-md-3 col-sm-1"></Col>
               <Col className="col col-xl-8 col-lg-8 col-md-8 col-sm-10">
@@ -356,7 +356,7 @@ export default function RangeView(props) {
             </div>
           </Row>
         ) : (
-          ""
+          <div className="extra-space"></div>
         )}
       </Tab>
       <Tab eventKey="scatter" title="Scatter">
