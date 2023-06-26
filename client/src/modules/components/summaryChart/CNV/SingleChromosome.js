@@ -6,6 +6,7 @@ import SnpPlot from "./SnpPlot";
 import { Button } from "react-bootstrap";
 import "./css/circos.css";
 
+const zoomWindow = 5000000;
 function SingleChromosome(props) {
   //console.log(props.data);
   const ref = useRef(null);
@@ -66,7 +67,7 @@ function SingleChromosome(props) {
       setXMax(xMax);
       setXMin(xMin);
       //console.log(xMin, xMax);
-      setLoading(true);
+      xMax - xMin < zoomWindow ? setLoading(true) : setLoading(false);
 
       //trigger synchronize another plot to zoom, make sue only trigger for one plot
       //difficient zoom in on single chromosome  or on comparison by name
@@ -85,6 +86,15 @@ function SingleChromosome(props) {
   const handleZoomHistory = (event) => {
     if (zoomHistory.length > 1) {
       setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
+      // let bbutton = null;
+      // if (props.details.includes("A")) {
+      //   bbutton = document.getElementById("zoomBackB");
+      //   bbutton.click();
+      // }
+      // if (props.details.includes("B")) {
+      //   bbutton = document.getElementById("zoomBackA");
+      //   bbutton.click();
+      // }
     } else {
       let resetBtn = null;
       if (props.details != undefined) {
@@ -242,7 +252,7 @@ function SingleChromosome(props) {
       <div id="plotly-div" className="" style={{ justifyContent: "center" }}>
         {props.title}
         {props.title && <br></br>}
-        <Button id="zoomBack" variant="link" onClick={handleZoomHistory}>
+        <Button id={"zoomBack" + props.details} variant="link" onClick={handleZoomHistory}>
           {zoomHistory.length > 0 ? backtoprev : ""}
         </Button>
         <Plot
@@ -269,18 +279,14 @@ function SingleChromosome(props) {
         />
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />
-        {xMax - xMin < 5000000 ? (
+        {loading && xMax - xMin < zoomWindow ? (
           <div>
-            {xMax - xMin < 5000000 ? (
-              <SnpPlot
-                width={props.width}
-                xMax={xMax}
-                xMin={xMin}
-                chr={props.chromesomeId}
-                onHeightChange={props.onHeightChange}></SnpPlot>
-            ) : (
-              ""
-            )}
+            <SnpPlot
+              width={props.width}
+              xMax={xMax}
+              xMin={xMin}
+              chr={props.chromesomeId}
+              onHeightChange={props.onHeightChange}></SnpPlot>
             <br></br>
             <GenePlot
               width={props.width}
