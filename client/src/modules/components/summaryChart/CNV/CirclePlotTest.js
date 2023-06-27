@@ -497,7 +497,7 @@ export default function CirclePlotTest(props) {
                     </div>
                   </Col>
                 </Row>
-                {/* {form.compare && (
+                {form.compare && (
                   <Row className="">
                     <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
                       <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
@@ -508,7 +508,7 @@ export default function CirclePlotTest(props) {
                       <Table columns={columns} defaultSort={[{ id: "sampleId", asc: true }]} data={tableData} />
                     </div>
                   </Row>
-                )} */}
+                )}
               </>
             )}
             {!form.compare && (
@@ -605,7 +605,7 @@ export default function CirclePlotTest(props) {
           </div>
         )}
       </div>
-      {form.compare && (
+      {form.compare && !showChart && (
         <Row className="tableRow">
           <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
             <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
