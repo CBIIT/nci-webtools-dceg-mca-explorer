@@ -497,6 +497,18 @@ export default function CirclePlotTest(props) {
                     </div>
                   </Col>
                 </Row>
+                {/* {form.compare && (
+                  <Row className="">
+                    <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+                      <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
+                        <ExcelSheet dataSet={exportTable()} name="compare" />
+                      </ExcelFile>
+                    </div>
+                    <div className="mx-3">
+                      <Table columns={columns} defaultSort={[{ id: "sampleId", asc: true }]} data={tableData} />
+                    </div>
+                  </Row>
+                )} */}
               </>
             )}
             {!form.compare && (

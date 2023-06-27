@@ -6,7 +6,7 @@ import { NavLink } from "react-router-dom";
 export default function Navbar({ links = [], className, children }) {
   return (
     <BootstrapNavbar bg="white" variant="light" className={className}>
-      <Container>
+      <Container style={{ flex: 1 }}>
         {children}
         <Nav className="me-auto">
           {links?.map((link) => (
