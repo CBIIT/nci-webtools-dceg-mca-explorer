@@ -193,33 +193,37 @@ export default function ComparePanel(props) {
       ) : (
         ""
       )}
-      {/* <Form.Group controlId="fraction">
-        <Form.Label>Cellular Fraction</Form.Label>
-        <Row>
-          <Col xl={6}>
-            <InputGroup>
-              <Form.Control
-                placeholder="Min percentage"
-                name="minFraction"
-                value={form.minFraction}
-                onChange={handleChange}
-              />
-              <InputGroup.Text>%</InputGroup.Text>
-            </InputGroup>
-          </Col>
-          <Col xl={6}>
-            <InputGroup>
-              <Form.Control
-                placeholder="Max percentage"
-                name="maxFraction"
-                value={form.maxFraction}
-                onChange={handleChange}
-              />
-              <InputGroup.Text>%</InputGroup.Text>
-            </InputGroup>
-          </Col>
-        </Row>
-      </Form.Group> */}
+      {props.compareItem[5].isChecked ? (
+        <Form.Group controlId="fraction">
+          <Form.Label>Cellular Fraction</Form.Label>
+          <Row>
+            <Col xl={6}>
+              <InputGroup>
+                <Form.Control
+                  placeholder="Min percentage"
+                  name="minFraction"
+                  value={form.minFraction}
+                  onChange={handleChange}
+                />
+                <InputGroup.Text>%</InputGroup.Text>
+              </InputGroup>
+            </Col>
+            <Col xl={6}>
+              <InputGroup>
+                <Form.Control
+                  placeholder="Max percentage"
+                  name="maxFraction"
+                  value={form.maxFraction}
+                  onChange={handleChange}
+                />
+                <InputGroup.Text>%</InputGroup.Text>
+              </InputGroup>
+            </Col>
+          </Row>
+        </Form.Group>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

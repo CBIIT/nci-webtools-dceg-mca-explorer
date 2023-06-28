@@ -74,16 +74,10 @@
             bottom: 10;
         
 }
-@media screen and (min-width:1600px) {
-    #footer{
-        margin-top:0px
-    }
-    
-}
-@media screen and (max-width:1600px) {
+
+@media screen and (max-width:1200px) {
     .overlayX3 {
         position: absolute;
-        top: 800px; 
         right: 0%;
         bottom: 10;
         left: 0%;
@@ -94,11 +88,11 @@
         bottom: 10;
         left: 0%;
     }
-        .tableRow {
+        /* .tableRow {
             position: absolute;
             flex-grow: 1;
             top: 1400px;
-        }
+        } */
                  
         /* #footer {
             margin-top: 700px;

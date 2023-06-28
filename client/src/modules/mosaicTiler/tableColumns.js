@@ -1,5 +1,6 @@
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-const columns = [
+
+export const Columns = [
   {
     accessor: "sampleId",
     id: "sampleId",
@@ -70,4 +71,26 @@ const columns = [
   },
 ];
 
-export default columns;
+export function exportTable(tableData) {
+  return [
+    {
+      columns: Columns.map((e) => {
+        return { title: e.label, width: { wpx: 160 } };
+      }),
+      data: tableData.map((e) => {
+        return [
+          { value: e.sampleId },
+          { value: e.dataset },
+          { value: e.block_id },
+          { value: e.type },
+          { value: e.value },
+          { value: e.start },
+          { value: e.end },
+          { value: e.ancestry },
+          { value: e.computedGender },
+          { value: e.age },
+        ];
+      }),
+    },
+  ];
+}

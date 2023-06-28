@@ -11,11 +11,11 @@ import { useRecoilState } from "recoil";
 import Spinner from "react-bootstrap/Spinner";
 import axios from "axios";
 import CircosPlot from "./CirclePlot";
-
+import CircosPlotCompare from "./CirclePlotCompare";
 import { initialXY } from "../../../mosaicTiler/rangeView";
 import { ExcelFile, ExcelSheet } from "../../excel-export";
 import Table from "../../table";
-import columns from "../../../mosaicTiler/columns";
+import { Columns, exportTable } from "../../../mosaicTiler/tableColumns";
 //import "./styles.css";
 const hovertip = (d) => {
   return (
@@ -408,38 +408,16 @@ export default function CirclePlotTest(props) {
     }
     return title;
   };
-  function exportTable() {
-    return [
-      {
-        columns: columns.map((e) => {
-          return { title: e.label, width: { wpx: 160 } };
-        }),
-        data: tableData.map((e) => {
-          return [
-            { value: e.sampleId },
-            { value: e.dataset },
-            { value: e.block_id },
-            { value: e.type },
-            { value: e.value },
-            { value: e.start },
-            { value: e.end },
-            { value: e.ancestry },
-            { value: e.computedGender },
-            { value: e.age },
-          ];
-        }),
-      },
-    ];
-  }
+
   //if window size is small, stack circle comparison plots and needs more space above footer
   //chromosome comparison plots can automatically stack and no need extra space
   useEffect(() => {
     let ifExtraSpace = false;
     const temp = document.getElementsByClassName("tableRow");
     if (temp.length == 0) document.getElementById("footer").style.marginTop = "0px";
-    if (temp.length > 0 && window.innerWidth < 1600) document.getElementById("footer").style.marginTop = "700px";
+    if (temp.length > 0 && window.innerWidth < 2000) document.getElementById("footer").style.marginTop = "700px";
     const handleResize = () => {
-      ifExtraSpace = window.innerWidth < 1600;
+      ifExtraSpace = window.innerWidth < 2000;
       //console.log(ifExtraSpace);
       if (temp.length > 0 && ifExtraSpace) document.getElementById("footer").style.marginTop = "700px";
       if (!ifExtraSpace) document.getElementById("footer").style.marginTop = "0px";
@@ -484,7 +462,7 @@ export default function CirclePlotTest(props) {
                   </Col>
                 </Row>
                 <Row className="justify-content-center">
-                  <Col className="col col-xl-6 d-flex justify-content-center ">
+                  <Col className="col d-flex justify-content-center" xs={12} md={6} lg={6}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
@@ -499,7 +477,7 @@ export default function CirclePlotTest(props) {
                         onCompareHeightChange={handleCompareHeightChange}></SingleChromosome>
                     </div>
                   </Col>
-                  <Col className="col col-xl-6 d-flex justify-content-center">
+                  <Col className="col d-flex justify-content-center" xs={12} md={6} lg={6}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
@@ -519,11 +497,11 @@ export default function CirclePlotTest(props) {
                   <Row className="">
                     <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                       <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
-                        <ExcelSheet dataSet={exportTable()} name="compare" />
+                        <ExcelSheet dataSet={exportTable(tableData)} name="compare" />
                       </ExcelFile>
                     </div>
                     <div className="mx-3">
-                      <Table columns={columns} defaultSort={[{ id: "sampleId", asc: true }]} data={tableData} />
+                      <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
                     </div>
                   </Row>
                 )}
@@ -551,56 +529,69 @@ export default function CirclePlotTest(props) {
             )}
           </div>
         ) : form.compare ? (
-          <div className="compareCircle" style={{ height: compareCircleSize + 50, left: 0 }}>
+          <div>
             <Button variant="link" onClick={handleBack} className="">
               Back to circle summary
             </Button>
-            <Row className="">
-              <Col className="col col-xl-6 d-flex ">
-                {circleA ? (
-                  <CircosPlot
-                    layoutAll={layoutAll}
-                    title={titleA}
-                    dataXY={[]}
-                    //details={titleA}
-                    size={compareCircleSize}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
-                    circle={circleA}
-                    circleRef={circleRef}
-                    circleClass="overlayX2"
-                    handleEnter={handleEnter}
-                    hovertip={hovertip}></CircosPlot>
-                ) : (
-                  ""
-                )}
-              </Col>
-              <Col></Col>
+            <div>
+              <Row className="justify-content-center">
+                <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize }}>
+                  {circleA ? (
+                    <CircosPlotCompare
+                      layoutAll={layoutAll}
+                      title={titleA}
+                      dataXY={[]}
+                      //details={titleA}
+                      size={compareCircleSize}
+                      thicknessloss={thicknessloss}
+                      thicknessgain={thicknessgain}
+                      thicknessundermined={thicknessundermined}
+                      thicknessloh={thicknessloh}
+                      circle={circleA}
+                      circleRef={circleRef}
+                      //circleClass="overlayX2"
+                      handleEnter={handleEnter}
+                      hovertip={hovertip}></CircosPlotCompare>
+                  ) : (
+                    ""
+                  )}
+                </Col>
+                <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize }}>
+                  {circleB ? (
+                    <CircosPlotCompare
+                      layoutAll={layoutAll}
+                      dataXY={[]}
+                      title={titleB}
+                      //details="B"
+                      size={compareCircleSize}
+                      thicknessloss={thicknessloss}
+                      thicknessgain={thicknessgain}
+                      thicknessundermined={thicknessundermined}
+                      thicknessloh={thicknessloh}
+                      circle={circleB}
+                      circleRef={circleRef}
+                      handleEnter={handleEnter}
+                      //circleClass="overlayX3"
+                      hovertip={hovertip}></CircosPlotCompare>
+                  ) : (
+                    ""
+                  )}
+                </Col>
+              </Row>
 
-              <Col className="col col-xl-6 d-flex justify-content-center align-items-center">
-                {circleB ? (
-                  <CircosPlot
-                    layoutAll={layoutAll}
-                    dataXY={[]}
-                    title={titleB}
-                    //details="B"
-                    size={compareCircleSize}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
-                    circle={circleB}
-                    circleRef={circleRef}
-                    handleEnter={handleEnter}
-                    circleClass="overlayX3"
-                    hovertip={hovertip}></CircosPlot>
-                ) : (
-                  ""
-                )}
-              </Col>
-            </Row>
+              {form.compare && !showChart && (
+                <Row className="tableRow">
+                  <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+                    <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
+                      <ExcelSheet dataSet={exportTable(tableData)} name="compare" />
+                    </ExcelFile>
+                  </div>
+                  <div className="mx-3">
+                    <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
+                  </div>
+                </Row>
+              )}
+            </div>
           </div>
         ) : (
           <div>
@@ -623,20 +614,20 @@ export default function CirclePlotTest(props) {
           </div>
         )}
       </div>
-      <div>
+      {/* <div>
         {form.compare && !showChart && (
           <Row className="tableRow">
             <div className="d-flex" style={{ justifyContent: "flex-end" }}>
               <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
-                <ExcelSheet dataSet={exportTable()} name="compare" />
+                <ExcelSheet dataSet={exportTable(tableData)} name="compare" />
               </ExcelFile>
             </div>
             <div className="mx-3">
-              <Table columns={columns} defaultSort={[{ id: "sampleId", asc: true }]} data={tableData} />
+              <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
             </div>
           </Row>
         )}
-      </div>
+      </div> */}
     </Container>
   );
 }

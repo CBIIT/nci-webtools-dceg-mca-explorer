@@ -11,6 +11,8 @@ const compareArray = [
   { id: 3, label: " Age", isChecked: false },
   { id: 4, label: " Ancestry", isChecked: false },
   { id: 5, label: " Study", isChecked: false },
+  { id: 6, label: " Cellular Fraction", isChecked: false },
+  { id: 7, label: " Smoking Status", isChecked: false },
 ];
 export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");

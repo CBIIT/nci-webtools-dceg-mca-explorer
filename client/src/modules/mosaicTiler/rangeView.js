@@ -8,7 +8,7 @@ import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
-import Columns from "./columns";
+import { Columns, exportTable } from "./tableColumns";
 
 export const initialXY = [
   { block_id: "X", start: "0", end: "0", type: "Gain" },
@@ -249,29 +249,6 @@ export default function RangeView(props) {
     return [gainScatter, lossScatter, lohScatter, undeterminedScatter];
   }
 
-  function exportTable() {
-    return [
-      {
-        columns: columns.map((e) => {
-          return { title: e.label, width: { wpx: 160 } };
-        }),
-        data: (chromoId >= 0 ? allValue : allValues).map((e) => {
-          return [
-            { value: e.sampleId },
-            { value: e.dataset },
-            { value: e.block_id },
-            { value: e.type },
-            { value: e.value },
-            { value: e.start },
-            { value: e.end },
-            { value: e.ancestry },
-            { value: e.computedGender },
-            { value: e.age },
-          ];
-        }),
-      },
-    ];
-  }
   const defaultConfig = {
     displayModeBar: true,
     toImageButtonOptions: {
@@ -342,14 +319,17 @@ export default function RangeView(props) {
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                   element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet dataSet={exportTable()} name="Autosomal mCA Distribution" />
+                  <ExcelSheet
+                    dataSet={exportTable(chromoId >= 0 ? allValue : allValues)}
+                    name="Autosomal mCA Distribution"
+                  />
                 </ExcelFile>
               </div>
 
               <div className="mx-3">
                 <Table
                   columns={columns}
-                  defaultSort={[{ id: "sampleId", asc: true }]}
+                  defaultSort={[{ id: "start", asc: true }]}
                   data={chromoId >= 0 ? allValue : allValues}
                 />
               </div>
@@ -374,7 +354,7 @@ export default function RangeView(props) {
                   type: "category",
                 },
                 yaxis: {
-                  title: "<b>Value</b>",
+                  title: "<b>Cellular Fraction</b>",
                   tickfont: {
                     size: 14,
                   },
@@ -384,6 +364,7 @@ export default function RangeView(props) {
                 autosize: true,
                 scattermode: "group",
                 tickmode: "linear",
+                title: "Cell Fraction Plot",
               }}
               config={{
                 ...defaultConfig,
@@ -404,14 +385,17 @@ export default function RangeView(props) {
               <ExcelFile
                 filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                 element={<a href="javascript:void(0)">Export Data</a>}>
-                <ExcelSheet dataSet={exportTable()} name="Autosomal mCA Distribution" />
+                <ExcelSheet
+                  dataSet={exportTable(chromoId >= 0 ? allValue : allValues)}
+                  name="Autosomal mCA Distribution"
+                />
               </ExcelFile>
             </div>
 
             <div className="mx-3">
               <Table
                 columns={columns}
-                defaultSort={[{ id: "sampleId", asc: true }]}
+                defaultSort={[{ id: "start", asc: true }]}
                 data={chromoId >= 0 ? allValue : allValues}
               />
             </div>
