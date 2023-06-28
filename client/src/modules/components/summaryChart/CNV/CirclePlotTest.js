@@ -82,7 +82,7 @@ export default function CirclePlotTest(props) {
 
   let adjustWidth = 1;
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
-  else if (browserSize.width >= 1600) adjustWidth = 0.45;
+  else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
   const size = browserSize.width * adjustWidth;
   const compareCircleSize = size * (adjustWidth + 0.15);
@@ -431,6 +431,24 @@ export default function CirclePlotTest(props) {
       },
     ];
   }
+  //if window size is small, stack circle comparison plots and needs more space above footer
+  //chromosome comparison plots can automatically stack and no need extra space
+  useEffect(() => {
+    let ifExtraSpace = false;
+    const temp = document.getElementsByClassName("tableRow");
+    if (temp.length == 0) document.getElementById("footer").style.marginTop = "0px";
+    if (temp.length > 0 && window.innerWidth < 1600) document.getElementById("footer").style.marginTop = "700px";
+    const handleResize = () => {
+      ifExtraSpace = window.innerWidth < 1600;
+      //console.log(ifExtraSpace);
+      if (temp.length > 0 && ifExtraSpace) document.getElementById("footer").style.marginTop = "700px";
+      if (!ifExtraSpace) document.getElementById("footer").style.marginTop = "0px";
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  });
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
@@ -444,12 +462,12 @@ export default function CirclePlotTest(props) {
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
 
-  let singleFigWidth = form.compare ? size * 0.5 : size;
+  let singleFigWidth = form.compare ? size * 0.4 : size;
   return (
     <Container className="compareContainer align-middle text-center">
       <div>
         {showChart ? (
-          <div style={{ height: compareCircleSize + figureHeight + 120, left: 0 }}>
+          <div style={{ height: compareCircleSize + figureHeight + 620, left: 0 }}>
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
@@ -499,7 +517,7 @@ export default function CirclePlotTest(props) {
                 </Row>
                 {form.compare && (
                   <Row className="">
-                    <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+                    <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                       <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
                         <ExcelSheet dataSet={exportTable()} name="compare" />
                       </ExcelFile>
@@ -605,18 +623,20 @@ export default function CirclePlotTest(props) {
           </div>
         )}
       </div>
-      {form.compare && !showChart && (
-        <Row className="tableRow">
-          <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
-              <ExcelSheet dataSet={exportTable()} name="compare" />
-            </ExcelFile>
-          </div>
-          <div className="mx-3">
-            <Table columns={columns} defaultSort={[{ id: "sampleId", asc: true }]} data={tableData} />
-          </div>
-        </Row>
-      )}
+      <div>
+        {form.compare && !showChart && (
+          <Row className="tableRow">
+            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+              <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
+                <ExcelSheet dataSet={exportTable()} name="compare" />
+              </ExcelFile>
+            </div>
+            <div className="mx-3">
+              <Table columns={columns} defaultSort={[{ id: "sampleId", asc: true }]} data={tableData} />
+            </div>
+          </Row>
+        )}
+      </div>
     </Container>
   );
 }

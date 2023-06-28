@@ -74,10 +74,16 @@
             bottom: 10;
         
 }
+@media screen and (min-width:1600px) {
+    #footer{
+        margin-top:0px
+    }
+    
+}
 @media screen and (max-width:1600px) {
     .overlayX3 {
         position: absolute;
-        top: 680px; 
+        top: 800px; 
         right: 0%;
         bottom: 10;
         left: 0%;
@@ -88,15 +94,15 @@
         bottom: 10;
         left: 0%;
     }
-         .tableRow {
-             position: absolute;
-             flex-grow: 1;
-             top: 1300px;
-         }
+        .tableRow {
+            position: absolute;
+            flex-grow: 1;
+            top: 1400px;
+        }
                  
-         #footer {
-                     margin-top: 400px;
-                 }
+        /* #footer {
+            margin-top: 700px;
+        } */
     /* .legendContainer{
         right: 0%;
     }
@@ -109,6 +115,7 @@
       margin-top: auto;
     } */
 }
+
 /* @media screen and (max-width:1200px) {
     .overlayX3 {
         position: absolute;
@@ -202,7 +209,8 @@
 .compareContainer{
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    overflow:auto;
+    overflow-x: hidden;
 }
 .tableRow{
     flex-grow: 1;
