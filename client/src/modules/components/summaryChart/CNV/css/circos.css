@@ -168,7 +168,8 @@
 .legendContainer{
     position: relative;
     top: 10px;
-    left: 80%;
+
+    /* left: 80%; */
 }
 
 .compareContainer{

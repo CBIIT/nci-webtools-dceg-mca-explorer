@@ -38,7 +38,7 @@ function SingleChromosome(props) {
     // dragmode: 'select',
     selectdirection: "h",
     showlegend: false, // turn off the legend icon
-    autosize: false, // disable autosize to fix the x-axis zoom issue
+    autosize: true, // disable autosize to fix the x-axis zoom issue
   });
   const [xMax, setXMax] = useState();
   const [xMin, setXMin] = useState();
