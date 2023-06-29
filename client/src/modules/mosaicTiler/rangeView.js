@@ -55,6 +55,7 @@ export default function RangeView(props) {
   const [undetermined, setUndetermined] = useState([]);
   const [chrX, setChrX] = useState([]);
   const [chrY, setChrY] = useState([]);
+  const [tableData, setTableData] = useState([]);
 
   const study_value = form.study;
   let query_value = [];
@@ -276,6 +277,14 @@ export default function RangeView(props) {
     props.handleClick(value);
     // console.log("in rangeView to click", value);
   };
+  //get data by different filters and render in the table
+  const handleDataChange = (data) => {
+    // console.log(data);
+    setTableData(data);
+    //if circle summary, use allValue, if single chromosome summary, use allValues
+    //if from compare, use data
+    //chromoId >= 0 ? allValue : allValues;
+  };
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -286,10 +295,10 @@ export default function RangeView(props) {
           ) : (
             ""
           )}
-          <div className="compareFigure" style={{ height: figureHeight, left: 10 }}>
+          <div className="" style={{ height: figureHeight + 180, left: 10 }}>
             <Row>
-              <Col className="col col-xl-3 col-lg-3 col-md-3 col-sm-1"></Col>
-              <Col className="col col-xl-8 col-lg-8 col-md-8 col-sm-10">
+              {/* <Col className="col col-xl-3 col-lg-3 col-md-3 col-sm-1"></Col> */}
+              <Col className="">
                 <Legend></Legend>
               </Col>
             </Row>
@@ -307,12 +316,13 @@ export default function RangeView(props) {
                   figureHeight={figureHeight}
                   onHeightChange={handleheightChange}
                   onResetHeight={resetHeight}
-                  onClickedChr={handleClickChr}></CirclePlotTest>
+                  onClickedChr={handleClickChr}
+                  getData={handleDataChange}></CirclePlotTest>
               </Col>
             </Row>
           </div>
         </div>
-        {!form.compare ? (
+        {true ? (
           <Row>
             <div className="">
               <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
@@ -320,7 +330,7 @@ export default function RangeView(props) {
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet
-                    dataSet={exportTable(chromoId >= 0 ? allValue : allValues)}
+                    dataSet={exportTable(tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData)}
                     name="Autosomal mCA Distribution"
                   />
                 </ExcelFile>
@@ -330,7 +340,7 @@ export default function RangeView(props) {
                 <Table
                   columns={columns}
                   defaultSort={[{ id: "start", asc: true }]}
-                  data={chromoId >= 0 ? allValue : allValues}
+                  data={tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData}
                 />
               </div>
             </div>

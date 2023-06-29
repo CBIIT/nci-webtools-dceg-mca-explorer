@@ -85,7 +85,7 @@ export default function CirclePlotTest(props) {
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
   const size = browserSize.width * adjustWidth;
-  const compareCircleSize = size * (adjustWidth + 0.15);
+  const compareCircleSize = size * (adjustWidth + 0.1);
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -224,7 +224,6 @@ export default function CirclePlotTest(props) {
     clearBtn.click();
   };
   const handleZoomChange = (event, group) => {
-    console.log("zoomchange", group);
     //Apply the zoom range only to the plot that did not trigger
     if (group === "A") {
       setZoomRangeB(event);
@@ -411,22 +410,22 @@ export default function CirclePlotTest(props) {
 
   //if window size is small, stack circle comparison plots and needs more space above footer
   //chromosome comparison plots can automatically stack and no need extra space
-  useEffect(() => {
-    let ifExtraSpace = false;
-    const temp = document.getElementsByClassName("tableRow");
-    if (temp.length == 0) document.getElementById("footer").style.marginTop = "0px";
-    if (temp.length > 0 && window.innerWidth < 2000) document.getElementById("footer").style.marginTop = "700px";
-    const handleResize = () => {
-      ifExtraSpace = window.innerWidth < 2000;
-      //console.log(ifExtraSpace);
-      if (temp.length > 0 && ifExtraSpace) document.getElementById("footer").style.marginTop = "700px";
-      if (!ifExtraSpace) document.getElementById("footer").style.marginTop = "0px";
-    };
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  });
+  // useEffect(() => {
+  //   let ifExtraSpace = false;
+  //   const temp = document.getElementsByClassName("tableRow");
+  //   if (temp.length == 0) document.getElementById("footer").style.marginTop = "0px";
+  //   if (temp.length > 0 && window.innerWidth < 2000) document.getElementById("footer").style.marginTop = "700px";
+  //   const handleResize = () => {
+  //     ifExtraSpace = window.innerWidth < 2000;
+  //     //console.log(ifExtraSpace);
+  //     if (temp.length > 0 && ifExtraSpace) document.getElementById("footer").style.marginTop = "700px";
+  //     if (!ifExtraSpace) document.getElementById("footer").style.marginTop = "0px";
+  //   };
+  //   window.addEventListener("resize", handleResize);
+  //   return () => {
+  //     window.removeEventListener("resize", handleResize);
+  //   };
+  // });
   //console.log(data,dataCompared)
   const dataXY = [...props.chrx, ...props.chry];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
@@ -441,6 +440,8 @@ export default function CirclePlotTest(props) {
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
 
   let singleFigWidth = form.compare ? size * 0.4 : size;
+  props.getData(tableData);
+
   return (
     <Container className="compareContainer align-middle text-center">
       <div>
@@ -493,7 +494,7 @@ export default function CirclePlotTest(props) {
                     </div>
                   </Col>
                 </Row>
-                {form.compare && (
+                {/* {form.compare && (
                   <Row className="">
                     <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                       <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
@@ -504,7 +505,7 @@ export default function CirclePlotTest(props) {
                       <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
                     </div>
                   </Row>
-                )}
+                )} */}
               </>
             )}
             {!form.compare && (
@@ -529,7 +530,7 @@ export default function CirclePlotTest(props) {
             )}
           </div>
         ) : form.compare ? (
-          <div>
+          <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
             <Button variant="link" onClick={handleBack} className="">
               Back to circle summary
             </Button>
@@ -579,7 +580,7 @@ export default function CirclePlotTest(props) {
                 </Col>
               </Row>
 
-              {form.compare && !showChart && (
+              {/* {form.compare && !showChart && (
                 <Row className="tableRow">
                   <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                     <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
@@ -590,7 +591,7 @@ export default function CirclePlotTest(props) {
                     <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
                   </div>
                 </Row>
-              )}
+              )} */}
             </div>
           </div>
         ) : (
