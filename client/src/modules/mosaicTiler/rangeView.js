@@ -154,7 +154,11 @@ export default function RangeView(props) {
   const sortUndetermined = undetermined
     .filter((e) => chromosomes.includes(Number(e.block_id)))
     .sort((a, b) => Number(a.block_id) - Number(b.block_id));
-  const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined);
+
+  const sortX = chrX.filter((e) => chromosomes.includes("X")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
+  const sortY = chrY.filter((e) => chromosomes.includes("Y")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
+
+  const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);

@@ -67,10 +67,10 @@ function SnpPlot(props) {
     margin: { l: 20, r: 20, t: 5, b: 30 },
   };
 
-  return !showSnp && isLoading ? (
+  return showSnp && isLoading ? (
     <>
       {" "}
-      Loading Gene ...
+      Loading SNP ...
       <Spinner animation="border" role="status">
         <span className="visually-hidden">Loading...</span>
       </Spinner>
@@ -81,10 +81,10 @@ function SnpPlot(props) {
     </div>
   ) : (
     <>
-      Loading SNP ...
+      {/* Loading SNP ...
       <Spinner animation="border" role="status">
         <span className="visually-hidden">Loading...</span>
-      </Spinner>
+      </Spinner> */}
     </>
   );
 }

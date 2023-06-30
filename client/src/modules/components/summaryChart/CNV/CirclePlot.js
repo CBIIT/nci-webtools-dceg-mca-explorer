@@ -46,7 +46,7 @@ export default function CircosPlot(props) {
               config: {
                 innerRadius: 0.05,
                 outerRadius: 1,
-                thickness: thicknessloss,
+                thickness: 0.1,
                 margin: 0,
                 strokeWidth: 1,
                 strokeColor: "red",
@@ -77,6 +77,7 @@ export default function CircosPlot(props) {
           ]}
           size={size}
         />
+        {dataXY.length > 0 ? "X, Y are representative subjects and all samples couldn’t be visualized" : ""}
       </div>
       <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
         {props.title}

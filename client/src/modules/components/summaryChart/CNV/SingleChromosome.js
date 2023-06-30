@@ -62,7 +62,8 @@ function SingleChromosome(props) {
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
-    if (event !== undefined) {
+    console.log("zooming...", event);
+    if (event !== undefined && event.dragmode !== "zoom") {
       const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
       setXMax(xMax);
       setXMin(xMin);

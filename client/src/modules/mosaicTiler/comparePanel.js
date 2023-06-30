@@ -13,6 +13,7 @@ export default function ComparePanel(props) {
   const [ancestry, setAncestry] = useState([]);
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
+  const [smoking, setSmoking] = useState([]);
   //console.log(props.compareItem[0]);
 
   function handleChange(event) {
@@ -43,6 +44,9 @@ export default function ComparePanel(props) {
     }
     setCompareForm({ ...compareform, [name]: selection });
 
+    if (props.compareItem[6].isChecked && name === "smoking") {
+      setSmoking(selection);
+    }
     //console.log(compareform);
   }
 
@@ -220,6 +224,24 @@ export default function ComparePanel(props) {
               </InputGroup>
             </Col>
           </Row>
+        </Form.Group>
+      ) : (
+        ""
+      )}
+      {props.compareItem[6].isChecked ? (
+        <Form.Group className="mb-3" controlId="array">
+          <Form.Label>Smoking Status</Form.Label>
+          <Select
+            placeholder="No status selected"
+            name="smoking"
+            isMulti={true}
+            value={smoking}
+            onChange={(ev) => handleSelectChange("smoking", ev)}
+            options={[
+              { value: "yes", label: "Yes" },
+              { value: "no", label: "No" },
+            ]}
+          />
         </Form.Group>
       ) : (
         ""

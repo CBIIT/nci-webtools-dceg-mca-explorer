@@ -359,8 +359,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 ]}
               />
             </Form.Group>
-
-            <Form.Group controlId="fraction">
+            <Form.Group className="mb-3" controlId="fraction">
               <Form.Label>Cellular Fraction</Form.Label>
               <Row>
                 <Col xl={6}>
@@ -386,6 +385,20 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                   </InputGroup>
                 </Col>
               </Row>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="smoking">
+              <Form.Label>Smoking Status</Form.Label>
+              <Select
+                placeholder="No status selected"
+                name="smoking"
+                isMulti={true}
+                value={form.smoking}
+                onChange={(ev) => handleSelectChange("smoking", ev)}
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "no", label: "No" },
+                ]}
+              />
             </Form.Group>
           </Accordion.Body>
         </Accordion.Item>

@@ -12,10 +12,10 @@ import Spinner from "react-bootstrap/Spinner";
 import axios from "axios";
 import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
-import { initialXY } from "../../../mosaicTiler/rangeView";
-import { ExcelFile, ExcelSheet } from "../../excel-export";
-import Table from "../../table";
-import { Columns, exportTable } from "../../../mosaicTiler/tableColumns";
+// import { initialXY } from "../../../mosaicTiler/rangeView";
+// import { ExcelFile, ExcelSheet } from "../../excel-export";
+// import Table from "../../table";
+// import { Columns, exportTable } from "../../../mosaicTiler/tableColumns";
 //import "./styles.css";
 const hovertip = (d) => {
   return (
@@ -427,7 +427,8 @@ export default function CirclePlotTest(props) {
   //   };
   // });
   //console.log(data,dataCompared)
-  const dataXY = [...props.chrx, ...props.chry];
+  //only disply 200 events for X and Y
+  const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   const linethickness = -1.75;
@@ -439,7 +440,7 @@ export default function CirclePlotTest(props) {
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
 
-  let singleFigWidth = form.compare ? size * 0.4 : size;
+  let singleFigWidth = form.compare ? size * 0.45 : size;
   props.getData(tableData);
 
   return (
@@ -463,7 +464,7 @@ export default function CirclePlotTest(props) {
                   </Col>
                 </Row>
                 <Row className="justify-content-center">
-                  <Col className="col d-flex justify-content-center" xs={12} md={6} lg={6}>
+                  <Col className="col d-flex justify-content-center" xs md={6} lg={6}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
@@ -478,7 +479,7 @@ export default function CirclePlotTest(props) {
                         onCompareHeightChange={handleCompareHeightChange}></SingleChromosome>
                     </div>
                   </Col>
-                  <Col className="col d-flex justify-content-center" xs={12} md={6} lg={6}>
+                  <Col className="col d-flex justify-content-center" xs md={6} lg={6}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
