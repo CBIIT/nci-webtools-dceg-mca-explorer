@@ -237,7 +237,8 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    //console.log("do query...");
+    console.log("do query...", form.groupA);
+
     setTableData([]);
     if (form.compare) {
       setCircleA(null);
@@ -283,7 +284,14 @@ export default function CirclePlotTest(props) {
         const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
-        response = await axios.post("api/opensearch/mca", { dataset: dataset, sex: sex });
+        response = await axios.post("api/opensearch/mca", {
+          dataset: dataset,
+          sex: sex,
+          mincf: group.minFraction,
+          maxcf: group.maxFraction,
+          ancestry: group.ancestry,
+          types: group.types,
+        });
       }
 
       const results = response.data;

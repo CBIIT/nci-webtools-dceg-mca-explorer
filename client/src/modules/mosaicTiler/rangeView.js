@@ -66,7 +66,7 @@ export default function RangeView(props) {
   //console.log("review:", form);
   useEffect(() => {
     if (true) {
-      handleSubmit(query_value, form.sex);
+      handleSubmit(query_value, form);
     } else {
     }
   }, [
@@ -78,7 +78,7 @@ export default function RangeView(props) {
 
   useEffect(() => {}, []);
 
-  async function handleSubmit(qdataset, qsex) {
+  async function handleSubmit(qdataset, qform) {
     setGain([]);
     setLoh([]);
     setLoss([]);
@@ -86,7 +86,14 @@ export default function RangeView(props) {
     setChrX([]);
     setChrY([]);
     //setLoading(true)
-    const response = await axios.post("api/opensearch/mca", { dataset: qdataset, sex: qsex });
+    const response = await axios.post("api/opensearch/mca", {
+      dataset: qdataset,
+      sex: qform.sex,
+      mincf: qform.minFraction,
+      maxcf: qform.maxFraction,
+      ancestry: qform.ancestry,
+      types: qform.types,
+    });
     const gainTemp = [...initialXY];
     const lossTemp = [...initialXY];
     const lohTemp = [...initialXY];

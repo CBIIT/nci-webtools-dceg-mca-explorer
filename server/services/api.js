@@ -29,12 +29,18 @@ apiRouter.post("/query/samples", async (request, response) => {
 
 apiRouter.post("/opensearch/mca", async (request, response) => {
   const { logger } = request.app.locals;
-
   const qdataset = request.body.dataset;
   const qsex = request.body.sex;
-  console.log(qdataset, qsex);
+  const qmincf = request.body.mincf ? request.body.mincf : 0;
+  const qmaxcf = request.body.maxcf ? request.body.maxcf : 1;
+  const qancestry = request.body.ancestry;
+  const qtype = request.body.types;
+  console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype);
+  const qfilter = ["mLOX", "mLOY"];
+  qtype.forEach((t) => qfilter.push(t.label));
+
   //serach only rows which has chromosome, this will exclude plcoDenominator
-  const filterString = [{ terms: { "type.keyword": ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"] } }];
+  const filterString = [{ terms: { "type.keyword": qfilter } }];
   const searchdataset = [];
   const searchExclude = []; //{match:{"chromosome":"chrX"}},{terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined']}}
   let hasX = false;
@@ -52,6 +58,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       : datasets.push(qdataset.value);
     searchdataset.push({ terms: { dataset: datasets } });
   }
+  //query sex
   let sexarr = [];
   if (qsex !== undefined && qsex.length > 0) {
     qsex.forEach((e) => {
@@ -61,6 +68,23 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     console.log(sexarr);
     searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
   }
+  //query cf within the range, add query range in filter
+  if (qmincf !== undefined || qmaxcf !== undefined) {
+    if (qmincf === undefined) qmincf = "0";
+    if (qmaxcf === undefined) qmaxcf = "1";
+
+    filterString.push({ range: { cf: { gte: qmincf, lte: qmaxcf } } });
+  }
+
+  //query ancestry
+  let ancestryarr = [];
+  if (qancestry !== undefined && qancestry.length > 0) {
+    qancestry.forEach((a) => {
+      ancestryarr.push(a.value);
+    });
+    searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
+  }
+
   //searchdataset.push({ terms: { "expectedSex.keyword": ["F"] } });
   // hasX?searchdataset.push({match:{type:"mLOX"}}):''
   // hasY?searchdataset.push({match:{type:"mLOY"}}):''
@@ -212,6 +236,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const ancestry = group.ancestry;
     const maxAge = group.maxAge;
     const minAge = group.minAge;
+    const types = group.types;
     //console.log("query string:", study, array, chromesome);
     const dataset = [];
     const queryString = [];
@@ -221,6 +246,22 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
     if (sex !== undefined && sex.length > 0)
       queryString.push({ terms: { "computedGender.keyword": parseQueryStr(sex) } });
+    //add query for ancestry
+    let atemp = [];
+    if (ancestry !== undefined)
+      ancestry.forEach((a) => {
+        atemp.push(a.value);
+      });
+    queryString.push({ terms: { "ancestry.keyword": atemp } });
+    atemp = [];
+    //add query for types
+    if (types !== undefined) {
+      types.forEach((t) => {
+        atemp.push(t.label);
+      });
+    }
+    queryString.push({ terms: { "type.keyword": atemp } });
+
     console.log(queryString);
     const client = new Client({
       node: host,

@@ -3,6 +3,7 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
+import { AncestryOptions, TypeStateOptions } from "./constants";
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -14,6 +15,7 @@ export default function ComparePanel(props) {
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
+  const [types, setTypes] = useState(null);
   //console.log(props.compareItem[0]);
 
   function handleChange(event) {
@@ -42,11 +44,23 @@ export default function ComparePanel(props) {
     if (props.compareItem[3].isChecked && name === "ancestry") {
       setAncestry(selection);
     }
-    setCompareForm({ ...compareform, [name]: selection });
-
     if (props.compareItem[6].isChecked && name === "smoking") {
       setSmoking(selection);
     }
+
+    if (props.compareItem[7].isChecked && name === "types") {
+      if (selection.find((option) => option.value === "all")) {
+        selection = [
+          { value: "loh", label: "CN-LOH" },
+          { value: "loss", label: "Loss" },
+          { value: "gain", label: "Gain" },
+          { value: "undetermined", label: "Undetermined" },
+        ];
+      }
+      setTypes(selection);
+    }
+
+    setCompareForm({ ...compareform, [name]: selection });
     //console.log(compareform);
   }
 
@@ -81,6 +95,12 @@ export default function ComparePanel(props) {
         } else if (element.label === " Ancestry") {
           setAncestry([]);
           if (compareform.hasOwnProperty("ancestry")) delete compareform.ancestry;
+        } else if (element.label === " Smoking Status") {
+          setSmoking([]);
+          if (compareform.hasOwnProperty("smoking")) delete compareform.smoking;
+        } else if (element.label === " Copy Number State") {
+          setTypes(null);
+          if (compareform.hasOwnProperty("types")) delete compareform.types;
         }
       }
     });
@@ -166,14 +186,7 @@ export default function ComparePanel(props) {
             isMulti={true}
             value={ancestry}
             onChange={(ev) => handleSelectChange("ancestry", ev)}
-            options={[
-              { value: "mix_eur", label: "ADMIXED_EUR" },
-              { value: "AFR", label: "African" },
-              { value: "afr_eur", label: "AFR_EUR" },
-              { value: "ASN", label: "Asian" },
-              { value: "asn_eur", label: "ASN_EUR" },
-              { value: "EUR", label: "European" },
-            ]}
+            options={AncestryOptions}
           />
         </Form.Group>
       ) : (
@@ -229,7 +242,7 @@ export default function ComparePanel(props) {
         ""
       )}
       {props.compareItem[6].isChecked ? (
-        <Form.Group className="mb-3" controlId="array">
+        <Form.Group className="mb-3" controlId="smoking">
           <Form.Label>Smoking Status</Form.Label>
           <Select
             placeholder="No status selected"
@@ -241,6 +254,22 @@ export default function ComparePanel(props) {
               { value: "yes", label: "Yes" },
               { value: "no", label: "No" },
             ]}
+          />
+        </Form.Group>
+      ) : (
+        ""
+      )}
+
+      {props.compareItem[7].isChecked ? (
+        <Form.Group className="mb-3" controlId="types">
+          <Form.Label className="required">Copy Number State</Form.Label>
+          <Select
+            placeholder="No types selected"
+            name="types"
+            isMulti={true}
+            value={types}
+            onChange={(ev) => handleSelectChange("types", ev)}
+            options={TypeStateOptions}
           />
         </Form.Group>
       ) : (

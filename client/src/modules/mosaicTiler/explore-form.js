@@ -4,16 +4,9 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
+import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
 
-const compareArray = [
-  { id: 1, label: " Genotype Array", isChecked: false },
-  { id: 2, label: " Genotype Sex", isChecked: false },
-  { id: 3, label: " Age", isChecked: false },
-  { id: 4, label: " Ancestry", isChecked: false },
-  { id: 5, label: " Study", isChecked: false },
-  { id: 6, label: " Cellular Fraction", isChecked: false },
-  { id: 7, label: " Smoking Status", isChecked: false },
-];
+const compareArray = CompareArray;
 export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
@@ -244,13 +237,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           isMulti={true}
           value={form.types}
           onChange={(ev) => handleSelectChange("types", ev)}
-          options={[
-            { value: "all", label: "All Types" },
-            { value: "loh", label: "CN-LOH" },
-            { value: "loss", label: "Loss" },
-            { value: "gain", label: "Gain" },
-            { value: "undetermined", label: "Undetermined" },
-          ]}
+          options={TypeStateOptions}
         />
       </Form.Group>
       <Accordion>
@@ -349,14 +336,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 isMulti={true}
                 value={form.ancestry}
                 onChange={(ev) => handleSelectChange("ancestry", ev)}
-                options={[
-                  { value: "mix_eur", label: "ADMIXED_EUR" },
-                  { value: "AFR", label: "African" },
-                  { value: "afr_eur", label: "AFR_EUR" },
-                  { value: "ASN", label: "Asian" },
-                  { value: "asn_eur", label: "ASN_EUR" },
-                  { value: "EUR", label: "European" },
-                ]}
+                options={AncestryOptions}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="fraction">
