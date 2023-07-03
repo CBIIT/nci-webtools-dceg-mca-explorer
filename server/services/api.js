@@ -36,8 +36,11 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
   console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype);
-  const qfilter = ["mLOX", "mLOY"];
-  qtype.forEach((t) => qfilter.push(t.label));
+  let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
+  if (qtype !== undefined) {
+    qfilter = ["mLOX", "mLOY"];
+    qtype.forEach((t) => qfilter.push(t.label));
+  }
 
   //serach only rows which has chromosome, this will exclude plcoDenominator
   const filterString = [{ terms: { "type.keyword": qfilter } }];
