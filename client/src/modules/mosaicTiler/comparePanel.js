@@ -16,6 +16,8 @@ export default function ComparePanel(props) {
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
   const [types, setTypes] = useState(null);
+  const [minFraction, setMinFraction] = useState("");
+  const [maxFraction, setMaxFraction] = useState("");
   //console.log(props.compareItem[0]);
 
   function handleChange(event) {
@@ -25,6 +27,13 @@ export default function ComparePanel(props) {
     }
     if (name === "maxAge") {
       setMaxAge(value);
+    }
+    //  setCompareForm({ ...compareform, [name]: value });
+    if (name === "minFraction") {
+      setMinFraction(value);
+    }
+    if (name === "maxFraction") {
+      setMaxFraction(value);
     }
     setCompareForm({ ...compareform, [name]: value });
   }
@@ -219,7 +228,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Min percentage"
                   name="minFraction"
-                  value={form.minFraction}
+                  value={minFraction}
                   onChange={handleChange}
                 />
                 <InputGroup.Text>%</InputGroup.Text>
@@ -230,7 +239,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Max percentage"
                   name="maxFraction"
-                  value={form.maxFraction}
+                  value={maxFraction}
                   onChange={handleChange}
                 />
                 <InputGroup.Text>%</InputGroup.Text>

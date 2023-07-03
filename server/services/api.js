@@ -239,6 +239,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const ancestry = group.ancestry;
     const maxAge = group.maxAge;
     const minAge = group.minAge;
+    const maxcf = group.maxFraction;
+    const mincf = group.minFraction;
     const types = group.types;
     //console.log("query string:", study, array, chromesome);
     const dataset = [];
@@ -264,6 +266,14 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         atemp.push(t.label);
       });
       queryString.push({ terms: { "type.keyword": atemp } });
+    }
+    //add query for cf
+    //query cf within the range, add query range in filter
+    if (mincf !== undefined || maxcf !== undefined) {
+      if (mincf === undefined) mincf = "0";
+      if (maxcf === undefined) maxcf = "1";
+
+      queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
 
     console.log(queryString);
