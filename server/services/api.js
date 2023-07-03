@@ -248,19 +248,20 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       queryString.push({ terms: { "computedGender.keyword": parseQueryStr(sex) } });
     //add query for ancestry
     let atemp = [];
-    if (ancestry !== undefined)
+    if (ancestry !== undefined) {
       ancestry.forEach((a) => {
         atemp.push(a.value);
       });
-    queryString.push({ terms: { "ancestry.keyword": atemp } });
+      queryString.push({ terms: { "ancestry.keyword": atemp } });
+    }
     atemp = [];
     //add query for types
     if (types !== undefined) {
       types.forEach((t) => {
         atemp.push(t.label);
       });
+      queryString.push({ terms: { "type.keyword": atemp } });
     }
-    queryString.push({ terms: { "type.keyword": atemp } });
 
     console.log(queryString);
     const client = new Client({
