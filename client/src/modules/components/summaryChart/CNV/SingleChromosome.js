@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import Plot from "react-plotly.js";
-import * as htmlToImage from "html-to-image";
 import GenePlot from "./GenePlot";
 import SnpPlot from "./SnpPlot";
 import { Button } from "react-bootstrap";
@@ -188,20 +187,6 @@ function SingleChromosome(props) {
     },
   ];
   //console.log(data,types)
-  const handleDownload = () => {
-    //console.log(ref.current)
-    htmlToImage
-      .toPng(ref.current, { quality: 0.95, backgroundColor: "white" })
-      .then((dataUrl) => {
-        var link = document.createElement("a");
-        link.download = "chromosome.png";
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch(function (error) {
-        console.error("oops, something went wrong!", error);
-      });
-  };
 
   const defaultConfig = {
     displayModeBar: true,
@@ -256,28 +241,30 @@ function SingleChromosome(props) {
         <Button id={"zoomBack" + props.details} variant="link" onClick={handleZoomHistory}>
           {zoomHistory.length > 0 ? backtoprev : ""}
         </Button>
-        <Plot
-          data={data}
-          layout={layout}
-          //  onInitialized={handleInitialized}
-          config={{
-            ...defaultConfig,
-            toImageButtonOptions: {
-              ...defaultConfig.toImageButtonOptions,
-              filename: "Chromosome " + props.chromesomeId,
-            },
-          }}
-          //useResizeHandler
-          style={{ width: "100%", height: "100%", position: "relative" }}
-          ref={ref}
-          onRelayout={handleRelayout}
-          // onInitialized={() => {
-          //   if (initX.length === 0) {
-          //     console.log("set initial:", layout.xaxis.range);
-          //     setInitX(layout.xaxis.range);
-          //   }
-          // }}
-        />
+        <div id={props.details}>
+          <Plot
+            data={data}
+            layout={layout}
+            //  onInitialized={handleInitialized}
+            config={{
+              ...defaultConfig,
+              toImageButtonOptions: {
+                ...defaultConfig.toImageButtonOptions,
+                filename: "Chromosome " + props.chromesomeId,
+              },
+            }}
+            //useResizeHandler
+            style={{ width: "100%", height: "100%", position: "relative" }}
+            ref={ref}
+            onRelayout={handleRelayout}
+            // onInitialized={() => {
+            //   if (initX.length === 0) {
+            //     console.log("set initial:", layout.xaxis.range);
+            //     setInitX(layout.xaxis.range);
+            //   }
+            // }}
+          />
+        </div>
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />
         {loading && xMax - xMin < zoomWindow ? (

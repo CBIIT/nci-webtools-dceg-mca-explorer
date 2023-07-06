@@ -19,5 +19,11 @@ function createApp(env) {
   app.use(logRequests());
   app.use("/api", apiRouter);
   app.use(logErrors()); // logErrors should always be last
+  app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin,X-Requested-Witdh,Content-Type,Accept");
+    next();
+  });
   return app;
 }

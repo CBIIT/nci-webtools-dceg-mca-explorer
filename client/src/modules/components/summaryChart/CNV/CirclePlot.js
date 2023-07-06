@@ -18,8 +18,8 @@ export default function CircosPlot(props) {
   const classCircle = props.circleClass;
 
   return (
-    <div style={{ justifyContent: "center" }}>
-      <div className={classCircle} id="chrxy">
+    <div style={{ justifyContent: "center" }} id="summaryCircle">
+      <div className={classCircle}>
         {props.title}
         <Circos
           layout={layoutAll}

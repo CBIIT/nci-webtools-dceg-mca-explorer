@@ -1,17 +1,17 @@
 import * as React from "react";
 import { useEffect, useState, useRef } from "react";
-import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import layout from "./layout2.json";
-import band from "./band.json";
 import "./css/circos.css";
 import SingleChromosome from "./SingleChromosome";
 import { Row, Col, Button, Container } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
-import Spinner from "react-bootstrap/Spinner";
+
 import axios from "axios";
 import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
+import * as htmlToImage from "html-to-image";
+import jsPDF from "jspdf";
 // import { initialXY } from "../../../mosaicTiler/rangeView";
 // import { ExcelFile, ExcelSheet } from "../../excel-export";
 // import Table from "../../table";
@@ -415,6 +415,43 @@ export default function CirclePlotTest(props) {
     }
     return title;
   };
+  const handleDownload = () => {
+    var imageAs = document.getElementById("A");
+    var imageA = imageAs.querySelectorAll("svg")[0];
+    var imageBs = document.getElementById("B");
+    var imageB = imageBs.querySelectorAll("svg")[0];
+    htmlToImage
+      .toPng(imageA, { quality: 1, backgroundColor: "white" })
+      .then((dataUrl1) => {
+        htmlToImage.toPng(imageB, { quality: 1, backgroundColor: "white" }).then((dataUrl2) => {
+          const pdf = new jsPDF();
+          const width = pdf.internal.pageSize.getWidth() / 2;
+          pdf.addImage(dataUrl1, "PNG", 0, 0, width, width);
+          pdf.addImage(dataUrl2, "PNG", width, 0, width, width);
+
+          pdf.save("comparison.pdf");
+        });
+      })
+      .catch(function (error) {
+        console.error("oops, something went wrong!", error);
+      });
+  };
+  const handleSummaryDownload = () => {
+    var images = document.getElementById("summaryCircle");
+    var image = images.querySelectorAll("svg")[1];
+    htmlToImage
+      .toPng(image)
+      .then((dataUrl) => {
+        const pdf = new jsPDF();
+        const width = pdf.internal.pageSize.getWidth();
+        const height = pdf.internal.pageSize.getHeight();
+        pdf.addImage(dataUrl, "PNG", 0, 0, width, width);
+        pdf.save("summaryCircle.pdf");
+      })
+      .catch(function (error) {
+        console.error("oops, something went wrong!", error);
+      });
+  };
 
   //if window size is small, stack circle comparison plots and needs more space above footer
   //chromosome comparison plots can automatically stack and no need extra space
@@ -459,6 +496,11 @@ export default function CirclePlotTest(props) {
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
+                <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+                  <Button variant="link" onClick={handleDownload}>
+                    Download comparison images
+                  </Button>
+                </div>
                 <Row className="justify-content-center">
                   {/* <Col>
                     <Button variant="link" onClick={handleBack}>
@@ -503,6 +545,7 @@ export default function CirclePlotTest(props) {
                     </div>
                   </Col>
                 </Row>
+
                 {/* {form.compare && (
                   <Row className="">
                     <div className="d-flex" style={{ justifyContent: "flex-end" }}>
@@ -543,15 +586,20 @@ export default function CirclePlotTest(props) {
             <Button variant="link" onClick={handleBack} className="">
               Back to circle summary
             </Button>
+            <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+              <Button variant="link" onClick={handleDownload}>
+                Download comparison images
+              </Button>
+            </div>
             <div>
               <Row className="justify-content-center">
-                <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize }}>
+                <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
                   {circleA ? (
                     <CircosPlotCompare
                       layoutAll={layoutAll}
                       title={titleA}
                       dataXY={[]}
-                      //details={titleA}
+                      details="A"
                       size={compareCircleSize}
                       thicknessloss={thicknessloss}
                       thicknessgain={thicknessgain}
@@ -566,13 +614,13 @@ export default function CirclePlotTest(props) {
                     ""
                   )}
                 </Col>
-                <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize }}>
+                <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
                   {circleB ? (
                     <CircosPlotCompare
                       layoutAll={layoutAll}
                       dataXY={[]}
                       title={titleB}
-                      //details="B"
+                      details="B"
                       size={compareCircleSize}
                       thicknessloss={thicknessloss}
                       thicknessgain={thicknessgain}
@@ -606,20 +654,27 @@ export default function CirclePlotTest(props) {
         ) : (
           <div>
             {true && (
-              <CircosPlot
-                layoutAll={layoutAll}
-                dataXY={dataXY}
-                title="Autosomal mCA Distribution "
-                size={size}
-                thicknessloss={thicknessloss}
-                thicknessgain={thicknessgain}
-                thicknessundermined={thicknessundermined}
-                thicknessloh={thicknessloh}
-                circle={circle}
-                circleRef={circleRef}
-                handleEnter={handleEnter}
-                circleClass="overlayX"
-                hovertip={hovertip}></CircosPlot>
+              <>
+                <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+                  <Button variant="link" onClick={handleSummaryDownload}>
+                    Download image
+                  </Button>
+                </div>
+                <CircosPlot
+                  layoutAll={layoutAll}
+                  dataXY={dataXY}
+                  title="Autosomal mCA Distribution "
+                  size={size}
+                  thicknessloss={thicknessloss}
+                  thicknessgain={thicknessgain}
+                  thicknessundermined={thicknessundermined}
+                  thicknessloh={thicknessloh}
+                  circle={circle}
+                  circleRef={circleRef}
+                  handleEnter={handleEnter}
+                  circleClass="overlayX"
+                  hovertip={hovertip}></CircosPlot>
+              </>
             )}
           </div>
         )}
