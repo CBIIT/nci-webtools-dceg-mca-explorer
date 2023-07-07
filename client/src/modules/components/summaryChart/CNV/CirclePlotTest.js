@@ -415,7 +415,9 @@ export default function CirclePlotTest(props) {
     }
     return title;
   };
+
   const handleDownload = () => {
+    setIsLoaded(true);
     var imageAs = document.getElementById("A");
     var imageA = imageAs.querySelectorAll("svg")[0];
     var imageBs = document.getElementById("B");
@@ -428,8 +430,8 @@ export default function CirclePlotTest(props) {
           const width = pdf.internal.pageSize.getWidth() / 2;
           pdf.addImage(dataUrl1, "PNG", 0, 0, width, width);
           pdf.addImage(dataUrl2, "PNG", width, 0, width, width);
-
           pdf.save("comparison.pdf");
+          setIsLoaded(false);
         });
       })
       .catch(function (error) {
@@ -437,16 +439,22 @@ export default function CirclePlotTest(props) {
       });
   };
   const handleSummaryDownload = () => {
+    setIsLoaded(true);
     var images = document.getElementById("summaryCircle");
     var image = images.querySelectorAll("svg")[1];
+    var imageXY = images.querySelectorAll("svg")[0];
     htmlToImage
       .toPng(image)
       .then((dataUrl) => {
-        const pdf = new jsPDF();
-        const width = pdf.internal.pageSize.getWidth();
-        const height = pdf.internal.pageSize.getHeight();
-        pdf.addImage(dataUrl, "PNG", 0, 0, width, width);
-        pdf.save("summaryCircle.pdf");
+        htmlToImage.toPng(imageXY).then((dataUrl2) => {
+          const pdf = new jsPDF();
+          const width = pdf.internal.pageSize.getWidth();
+          //const height = pdf.internal.pageSize.getHeight();
+          pdf.addImage(dataUrl, "PNG", 0, 0, width, width);
+          pdf.addImage(dataUrl2, "PNG", 0, 0, width, width);
+          pdf.save("summaryCircle.pdf");
+          setIsLoaded(false);
+        });
       })
       .catch(function (error) {
         console.error("oops, something went wrong!", error);
@@ -497,9 +505,13 @@ export default function CirclePlotTest(props) {
             {form.compare && (
               <>
                 <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-                  <Button variant="link" onClick={handleDownload}>
-                    Download comparison images
-                  </Button>
+                  {isLoaded ? (
+                    <p>Downloading...</p>
+                  ) : (
+                    <Button variant="link" onClick={handleDownload}>
+                      Download comparison images
+                    </Button>
+                  )}
                 </div>
                 <Row className="justify-content-center">
                   {/* <Col>
@@ -587,9 +599,13 @@ export default function CirclePlotTest(props) {
               Back to circle summary
             </Button>
             <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-              <Button variant="link" onClick={handleDownload}>
-                Download comparison images
-              </Button>
+              {isLoaded ? (
+                <p>Downloading...</p>
+              ) : (
+                <Button variant="link" onClick={handleDownload}>
+                  Download comparison images
+                </Button>
+              )}
             </div>
             <div>
               <Row className="justify-content-center">
@@ -656,9 +672,13 @@ export default function CirclePlotTest(props) {
             {true && (
               <>
                 <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-                  <Button variant="link" onClick={handleSummaryDownload}>
-                    Download image
-                  </Button>
+                  {isLoaded ? (
+                    <p>Downloading...</p>
+                  ) : (
+                    <Button variant="link" onClick={handleSummaryDownload}>
+                      Download image
+                    </Button>
+                  )}
                 </div>
                 <CircosPlot
                   layoutAll={layoutAll}
