@@ -332,8 +332,8 @@ const parseQueryStr = (query) => {
 apiRouter.post("/opensearch/snpchip", async (request, response) => {
   const { logger } = request.app.locals;
   const search = request.body.search;
-  const xMax = search.xMax;
-  const xMin = search.xMin;
+  //  const xMax = search.xMax;
+  //  const xMin = search.xMin;
   const chr = search.chr;
   const bucketRange = search.bucketRange;
   //console.log(search, xMax, chr, bucketRange);

@@ -18,7 +18,7 @@ function SnpPlot(props) {
 
   for (let i = 0; i < snpwidth; i++) {
     const p = i * unit;
-    bucketRange[i] = { from: p + props.xMin, to: p + unit + props.xMin };
+    bucketRange[i] = { from: p + Math.floor(props.xMin), to: p + unit + Math.floor(props.xMin) };
     const s = {
       x: [props.xMin, props.xMin],
       y: [0, 10],
@@ -38,7 +38,7 @@ function SnpPlot(props) {
 
   async function handleQuery() {
     //setLoading(true)
-    const query = { xMin: props.xMin, xMax: props.xMax, chr: props.chr, bucketRange };
+    const query = { chr: props.chr, bucketRange };
     const response = await axios.post("api/opensearch/snpchip", { search: query });
     const results = response.data;
     //console.log("snps:", results);
@@ -46,14 +46,11 @@ function SnpPlot(props) {
     for (let i = 0; i < results.length; i++) {
       const res = results[i];
       const sp = snparr[i];
-      console.log(res);
+      //console.log(res);
       if (res.doc_count > 0) {
         sp.x = [res.from, res.from];
-
-        //sp.nums = sp.nums + 1;
       }
     }
-
     setSnps(snparr);
     if (snparr.length > 0) {
       setShowSnp(true);
