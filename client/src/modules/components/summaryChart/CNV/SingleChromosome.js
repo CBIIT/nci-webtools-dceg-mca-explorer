@@ -165,7 +165,7 @@ function SingleChromosome(props) {
         var text =
           "Study: " +
           e.dataset +
-          "<br>SampleId: " +
+          "<br>Sample ID: " +
           e.sampleId +
           "<br>Start: " +
           e.start +

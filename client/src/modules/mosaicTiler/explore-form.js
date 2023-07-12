@@ -413,15 +413,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                     </label>
                   </div>
                 ))}
-              </Card.Body>
-              <Card.Body>
-                <p>Group A</p>
-                <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
-              </Card.Body>
-              <Card.Body>
-                <p>Group B</p>
-                <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
                 <br></br>
+                Group A
+                <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
+                Group B
+                <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
               </Card.Body>
               <Card.Body>
                 <Row>

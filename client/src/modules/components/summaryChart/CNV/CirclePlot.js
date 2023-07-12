@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+//import { useEffect, useRef, useState } from "react";
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 
@@ -77,7 +77,6 @@ export default function CircosPlot(props) {
           ]}
           size={size}
         />
-        {dataXY.length > 0 ? "X, Y are representative subjects and all samples couldn’t be visualized" : ""}
       </div>
       <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
         {props.title}

@@ -306,6 +306,11 @@ export default function RangeView(props) {
           ) : (
             ""
           )}
+          {chrX.length > 0 || chrY.length > 0 ? (
+            <p>X, Y are representative subjects and all samples couldn’t be visualized</p>
+          ) : (
+            ""
+          )}
           <div className="">
             <Row>
               {/* <Col className="col col-xl-3 col-lg-3 col-md-3 col-sm-1"></Col> */}
