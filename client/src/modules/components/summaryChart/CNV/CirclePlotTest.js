@@ -500,7 +500,8 @@ export default function CirclePlotTest(props) {
     <Container className="compareContainer align-middle text-center">
       <div>
         {showChart ? (
-          <div style={{ height: compareCircleSize + figureHeight + 620, left: 0 }}>
+          // <div style={{ height: compareCircleSize + figureHeight + 620, left: 0 }}>
+          <div>
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
@@ -594,7 +595,8 @@ export default function CirclePlotTest(props) {
             )}
           </div>
         ) : form.compare ? (
-          <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
+          // <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
+          <div>
             <Button variant="link" onClick={handleBack} className="">
               Back to circle summary
             </Button>
@@ -669,17 +671,17 @@ export default function CirclePlotTest(props) {
           </div>
         ) : (
           <div>
-            {true && (
-              <>
-                <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-                  {isLoaded ? (
-                    <p>Downloading...</p>
-                  ) : (
-                    <Button variant="link" onClick={handleSummaryDownload}>
-                      Download image
-                    </Button>
-                  )}
-                </div>
+            <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+              {isLoaded ? (
+                <p>Downloading...</p>
+              ) : (
+                <Button variant="link" onClick={handleSummaryDownload} style={{ justifyContent: "flex-end" }}>
+                  Download image
+                </Button>
+              )}
+            </div>
+            <Row className="justify-content-center">
+              <Col xs={12} md={12} lg={12} style={{ width: size, height: size + 15 }}>
                 <CircosPlot
                   layoutAll={layoutAll}
                   dataXY={dataXY}
@@ -694,8 +696,8 @@ export default function CirclePlotTest(props) {
                   handleEnter={handleEnter}
                   circleClass="overlayX"
                   hovertip={hovertip}></CircosPlot>
-              </>
-            )}
+              </Col>
+            </Row>
           </div>
         )}
       </div>

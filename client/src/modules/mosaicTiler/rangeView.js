@@ -306,7 +306,7 @@ export default function RangeView(props) {
           ) : (
             ""
           )}
-          <div className="" style={{ height: figureHeight + 180, left: 10 }}>
+          <div className="">
             <Row>
               {/* <Col className="col col-xl-3 col-lg-3 col-md-3 col-sm-1"></Col> */}
               <Col className="col col-xl-12 d-flex justify-content-end ">
@@ -315,50 +315,48 @@ export default function RangeView(props) {
             </Row>
             <Row className="justify-content-center">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                <CirclePlotTest
-                  clickedChromoId={handleClickedChromoId}
-                  key={clickedCounter}
-                  loss={loss}
-                  loh={loh}
-                  gain={gain}
-                  undetermined={undetermined}
-                  chrx={chrX}
-                  chry={chrY}
-                  figureHeight={figureHeight}
-                  onHeightChange={handleheightChange}
-                  onResetHeight={resetHeight}
-                  onClickedChr={handleClickChr}
-                  getData={handleDataChange}></CirclePlotTest>
+                <div className="">
+                  <CirclePlotTest
+                    clickedChromoId={handleClickedChromoId}
+                    key={clickedCounter}
+                    loss={loss}
+                    loh={loh}
+                    gain={gain}
+                    undetermined={undetermined}
+                    chrx={chrX}
+                    chry={chrY}
+                    figureHeight={figureHeight}
+                    onHeightChange={handleheightChange}
+                    onResetHeight={resetHeight}
+                    onClickedChr={handleClickChr}
+                    getData={handleDataChange}></CirclePlotTest>
+                </div>
               </Col>
+            </Row>
+            <Row>
+              <div className="">
+                <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+                  <ExcelFile
+                    filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
+                    element={<a href="javascript:void(0)">Export Data</a>}>
+                    <ExcelSheet
+                      dataSet={exportTable(tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData)}
+                      name="Autosomal mCA Distribution"
+                    />
+                  </ExcelFile>
+                </div>
+
+                <div className="mx-3">
+                  <Table
+                    columns={columns}
+                    defaultSort={[{ id: "start", asc: true }]}
+                    data={tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData}
+                  />
+                </div>
+              </div>
             </Row>
           </div>
         </div>
-        {true ? (
-          <Row>
-            <div className="">
-              <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
-                <ExcelFile
-                  filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet
-                    dataSet={exportTable(tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData)}
-                    name="Autosomal mCA Distribution"
-                  />
-                </ExcelFile>
-              </div>
-
-              <div className="mx-3">
-                <Table
-                  columns={columns}
-                  defaultSort={[{ id: "start", asc: true }]}
-                  data={tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData}
-                />
-              </div>
-            </div>
-          </Row>
-        ) : (
-          <div className="extra-space"></div>
-        )}
       </Tab>
       <Tab eventKey="scatter" title="Scatter">
         <Row className="m-3">

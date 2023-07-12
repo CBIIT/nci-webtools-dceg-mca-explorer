@@ -177,6 +177,8 @@
     flex-direction: column;
     overflow:auto;
     overflow-x: hidden;
+    align-items: stretch;
+    flex-grow: 1;
 }
 .tableRow{
     flex-grow: 1;
