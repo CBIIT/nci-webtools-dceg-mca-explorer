@@ -332,11 +332,18 @@ const parseQueryStr = (query) => {
 apiRouter.post("/opensearch/snpchip", async (request, response) => {
   const { logger } = request.app.locals;
   const search = request.body.search;
-  //  const xMax = search.xMax;
-  //  const xMin = search.xMin;
+  const xMax = search.xMax;
+  const xMin = search.xMin;
   const chr = search.chr;
-  const bucketRange = search.bucketRange;
-  //console.log(search, xMax, chr, bucketRange);
+  const bins = search.bins;
+  //console.log(search, xMax, xMin, chr, bins);
+  let ranges = [];
+  let binSize = (xMax - xMin) / bins;
+  for (let i = xMin; i <= xMax; i += binSize) {
+    ranges.push({ from: i, to: i + binSize });
+  }
+  //console.log(ranges);
+
   const client = new Client({
     node: host,
     auth: {
@@ -370,7 +377,7 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
           number_of_grch38_distribution: {
             range: {
               field: "grch38",
-              ranges: bucketRange,
+              ranges: ranges,
             },
           },
         },

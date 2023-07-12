@@ -13,12 +13,10 @@ function SnpPlot(props) {
   const snpPlotHeight = 100;
   //console.log(props.xMax, props.xMin);
   //
-  const unit = Math.round((props.xMax - props.xMin) / snpwidth);
-  const bucketRange = Array(snpwidth).fill(0);
+  //const unit = Math.round((props.xMax - props.xMin) / snpwidth);
 
   for (let i = 0; i < snpwidth; i++) {
-    const p = i * unit;
-    bucketRange[i] = { from: p + Math.floor(props.xMin), to: p + unit + Math.floor(props.xMin) };
+    //const p = i * unit;
     const s = {
       x: [props.xMin, props.xMin],
       y: [0, 10],
@@ -38,7 +36,7 @@ function SnpPlot(props) {
 
   async function handleQuery() {
     //setLoading(true)
-    const query = { chr: props.chr, bucketRange };
+    const query = { chr: props.chr, xMax: props.xMax, xMin: props.xMin, bins: snpwidth };
     const response = await axios.post("api/opensearch/snpchip", { search: query });
     const results = response.data;
     //console.log("snps:", results);
