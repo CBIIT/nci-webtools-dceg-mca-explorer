@@ -423,9 +423,9 @@ export default function CirclePlotTest(props) {
     var imageBs = document.getElementById("B");
     var imageB = imageBs.querySelectorAll("svg")[0];
     htmlToImage
-      .toPng(imageA, { quality: 1, backgroundColor: "white" })
+      .toPng(imageA, { quality: 0.5, pixelRatio: 0.5, backgroundColor: "white" })
       .then((dataUrl1) => {
-        htmlToImage.toPng(imageB, { quality: 1, backgroundColor: "white" }).then((dataUrl2) => {
+        htmlToImage.toPng(imageB, { quality: 0.5, pixelRatio: 0.5, backgroundColor: "white" }).then((dataUrl2) => {
           const pdf = new jsPDF();
           const width = pdf.internal.pageSize.getWidth() / 2;
           pdf.addImage(dataUrl1, "PNG", 0, 0, width, width);
@@ -444,9 +444,9 @@ export default function CirclePlotTest(props) {
     var image = images.querySelectorAll("svg")[1];
     var imageXY = images.querySelectorAll("svg")[0];
     htmlToImage
-      .toPng(image)
+      .toPng(image, { quality: 0.5, pixelRatio: 0.5 })
       .then((dataUrl) => {
-        htmlToImage.toPng(imageXY).then((dataUrl2) => {
+        htmlToImage.toPng(imageXY, { quality: 0.5, pixelRatio: 0.5 }).then((dataUrl2) => {
           const pdf = new jsPDF();
           const width = pdf.internal.pageSize.getWidth();
           //const height = pdf.internal.pageSize.getHeight();

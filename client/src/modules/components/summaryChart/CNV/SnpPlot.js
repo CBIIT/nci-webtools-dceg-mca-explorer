@@ -7,9 +7,28 @@ function SnpPlot(props) {
   const [showSnp, setShowSnp] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [snps, setSnps] = useState([]);
+  const snpwidth = Math.round(props.width);
   const snparr = [];
+
   const snpPlotHeight = 100;
   //console.log(props.xMax, props.xMin);
+  //
+  const unit = Math.round((props.xMax - props.xMin) / snpwidth);
+  const bucketRange = Array(snpwidth).fill(0);
+
+  for (let i = 0; i < snpwidth; i++) {
+    const p = i * unit;
+    bucketRange[i] = { from: p + props.xMin, to: p + unit + props.xMin };
+    const s = {
+      x: [props.xMin, props.xMin],
+      y: [0, 10],
+      type: "scatter",
+      mode: "lines",
+      line: { color: "grey", width: 1 },
+    };
+    snparr.push(s);
+  }
+  //console.log(snparr);
   useEffect(() => {
     if (true) {
       handleQuery();
@@ -19,23 +38,21 @@ function SnpPlot(props) {
 
   async function handleQuery() {
     //setLoading(true)
-    const query = { xMin: props.xMin, xMax: props.xMax, chr: props.chr };
+    const query = { xMin: props.xMin, xMax: props.xMax, chr: props.chr, bucketRange };
     const response = await axios.post("api/opensearch/snpchip", { search: query });
     const results = response.data;
     //console.log("snps:", results);
 
-    results.forEach((r) => {
-      if (r._source !== null) {
-        const g = r._source;
-        const temp_pos = {};
-        temp_pos.x = [g.grch38, g.grch38];
-        temp_pos.y = [0, 10];
-        temp_pos.type = "scatter";
-        temp_pos.mode = "lines";
-        temp_pos.line = { color: "grey", width: 1 };
-        snparr.push(temp_pos);
+    for (let i = 0; i < results.length; i++) {
+      const res = results[i];
+      const sp = snparr[i];
+      console.log(res);
+      if (res.doc_count > 0) {
+        sp.x = [res.from, res.from];
+
+        //sp.nums = sp.nums + 1;
       }
-    });
+    }
 
     setSnps(snparr);
     if (snparr.length > 0) {
@@ -45,7 +62,7 @@ function SnpPlot(props) {
       setShowSnp(false);
       setIsLoading(false);
     }
-    //console.log(snparr);
+    // console.log(snparr);
   }
 
   //props.onHeightChange(snpPlotHeight)
@@ -69,7 +86,6 @@ function SnpPlot(props) {
 
   return showSnp && isLoading ? (
     <>
-      {" "}
       Loading SNP ...
       <Spinner animation="border" role="status">
         <span className="visually-hidden">Loading...</span>
