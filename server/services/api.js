@@ -335,7 +335,8 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
   const xMax = search.xMax;
   const xMin = search.xMin;
   const chr = search.chr;
-  console.log(search, xMax, chr);
+  const bucketRange = search.bucketRange;
+  //console.log(search, xMax, chr, bucketRange);
   const client = new Client({
     node: host,
     auth: {
@@ -353,19 +354,9 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
       _source: "grch38",
       body: {
         track_total_hits: true,
-        size: 10000,
+        size: 0,
         query: {
           bool: {
-            filter: [
-              {
-                range: {
-                  grch38: {
-                    gte: xMin,
-                    lte: xMax,
-                  },
-                },
-              },
-            ],
             must: [
               {
                 match: {
@@ -375,10 +366,18 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
             ],
           },
         },
+        aggs: {
+          number_of_grch38_distribution: {
+            range: {
+              field: "grch38",
+              ranges: bucketRange,
+            },
+          },
+        },
       },
     });
-    console.log(result.body.hits.hits.length);
-    response.json(result.body.hits.hits);
+    console.log(result.body.aggregations.number_of_grch38_distribution.buckets.length);
+    response.json(result.body.aggregations.number_of_grch38_distribution.buckets);
   } catch (error) {
     console.error(error);
   }

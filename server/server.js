@@ -25,5 +25,6 @@ function createApp(env) {
     res.header("Access-Control-Allow-Headers", "Origin,X-Requested-Witdh,Content-Type,Accept");
     next();
   });
+  app.use(express.static("public"));
   return app;
 }
