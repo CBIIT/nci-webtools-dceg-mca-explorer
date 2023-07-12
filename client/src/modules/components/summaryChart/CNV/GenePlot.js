@@ -150,7 +150,11 @@ function GenePlot(props) {
     showlegend: false, // turn off the legend icon
     autosize: true, // disable autosize to fix the x-axis zoom issue
     annotations: annotation,
-    margin: { l: 0, r: 20, t: 5, b: 30 },
+    margin: { l: 0, r: 20, t: 10, b: 30 },
+    modebar: {
+      // vertical modebar button layout
+      orientation: "v",
+    },
   };
 
   return !showGene && isLoading ? (

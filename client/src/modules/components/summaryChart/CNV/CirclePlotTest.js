@@ -428,8 +428,10 @@ export default function CirclePlotTest(props) {
         htmlToImage.toPng(imageB, { quality: 0.8, pixelRatio: 0.8, backgroundColor: "white" }).then((dataUrl2) => {
           const pdf = new jsPDF();
           const width = pdf.internal.pageSize.getWidth() / 2;
-          pdf.addImage(dataUrl1, "PNG", 0, 0, width, width);
-          pdf.addImage(dataUrl2, "PNG", width, 0, width, width);
+          pdf.text(titleA, 0.3 * width, 10);
+          pdf.text(titleB, 1.25 * width, 10);
+          pdf.addImage(dataUrl1, "PNG", 0, 15, width, width);
+          pdf.addImage(dataUrl2, "PNG", width, 15, width, width);
           pdf.save("comparison.pdf");
           setIsLoaded(false);
         });
@@ -450,8 +452,9 @@ export default function CirclePlotTest(props) {
           const pdf = new jsPDF();
           const width = pdf.internal.pageSize.getWidth();
           //const height = pdf.internal.pageSize.getHeight();
-          pdf.addImage(dataUrl, "PNG", 0, 0, width, width);
-          pdf.addImage(dataUrl2, "PNG", 0, 0, width, width);
+
+          pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
+          pdf.addImage(dataUrl2, "PNG", 0, 10, width, width);
           pdf.save("summaryCircle.pdf");
           setIsLoaded(false);
         });
