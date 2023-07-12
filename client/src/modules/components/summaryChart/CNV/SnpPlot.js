@@ -44,8 +44,8 @@ function SnpPlot(props) {
     for (let i = 0; i < results.length; i++) {
       const res = results[i];
       const sp = snparr[i];
-      //console.log(res);
-      if (res.doc_count > 0) {
+      console.log(res, sp);
+      if (res.doc_count > 0 && sp !== undefined) {
         sp.x = [res.from, res.from];
       }
     }
