@@ -123,6 +123,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setCompareChecks(compareArray);
 
     onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
+    const resetBtns = document.querySelectorAll('a[data-val*="reset"]');
+    if (resetBtns !== undefined) {
+      for (let i = 0; i < resetBtns.length; i++) {
+        resetBtns[i].click();
+      }
+    }
+
     //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
   };
 
