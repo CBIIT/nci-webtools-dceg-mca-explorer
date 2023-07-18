@@ -4,412 +4,46 @@
     "url": "/"
   },
   "paths": {
-    "/api/query": {
-      "get": {
+    "/api/opensearch/mca": {
+      "post": {
         "tags": [
-          "metabolites"
+          "all chromosome"
         ],
-        "summary": "Finds metabolites",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "table",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "v_metabolite_query_study_dataset"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "-1"
-          },
-          {
-            "name": "_id",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": ""
-          },
-          {
-            "name": "_study_id",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "example": "4"
-          },
-          {
-            "name": "_study_dataset_id",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "example": "6"
-          },
-          {
-            "name": "columns",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "example": "id,preferred_name,preferred_super_pathway,n_study,n_study_dataset,n_participant,n_female,n_male,n_fasted,n_metabolon,n_nightingale,n_broad,n_biocrates"
+        "summary": "Finds events",
+        "produces": ["application/json"],
+       "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/summaryRequest"
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/tablesMetabolites"
-            }
+            "description": "Successful operation"
           },
           "400": {
             "description": "Invalid parameters supplied"
           }
         }
       }
-    },
-    "/api/query/": {
-      "get": {
-        "tags": [
-          "studies"
-        ],
-        "summary": "Finds metabolites by study",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "table",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "v_study_query_metabolite"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "-1"
-          },
-          {
-            "name": "_metabolite_id",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": ""
-          },
-          {
-            "name": "_study_dataset_id",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "example": "6"
-          },
-          {
-            "name": "columns",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "example": "id,name,abbreviation,n_study_dataset,region,platform"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/tablesStudy"
-            }
-          },
-          "400": {
-            "description": "Invalid parameters supplied"
-          }
-        }
-      }
-    },
-    "/api//query": {
-      "get": {
-        "tags": [
-          "datasets"
-        ],
-        "summary": "Finds metabolites by datasets",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "table",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "v_study_dataset_query_metabolite"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "-1"
-          },
-          {
-            "name": "_metabolite_id",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": ""
-          },
-          {
-            "name": "_study_id",
-            "in": "query",
-            "description": "study_metabolite that need to be considered for filter",
-            "type": "integer",
-            "example": "3"
-          },
-          {
-            "name": "columns",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "example": "id,study_name,name,platform,n_metabolite,n_participant,type_of_blood,age_mean,female,male,fasted_no,fasted_yes,race_asian,race_black,race_hispanic,race_white,race_other"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/tablesDatasets"
-            }
-          },
-          "400": {
-            "description": "Invalid parameters supplied"
-          }
-        }
-      }
-    },
-    "/api//query/": {
-      "get": {
-        "tags": [
-          "detail of a metabolite"
-        ],
-        "summary": "detail of a metabolite",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "table",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "v_study_dataset_metabolite_query"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "-1"
-          },
-          {
-            "name": "_metabolite_id",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "default": "HMDB00159"
-          },
-          {
-            "name": "columns",
-            "in": "query",
-            "description": "study_dataset_metabolite that need to be considered for filter",
-            "type": "string",
-            "example": "metabolite_id,study_dataset_id,study_name,platform,merge_variable,input_metabolite_name,input_metabid,input_chemical_id,input_comp_id,input_hmdb_id,input_cas,input_pubchem,input_chemspider,input_kegg,input_inchikey,input_chebi,input_broad_id"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "schema": {
-              "$ref": "#/definitions/metabolitesName"
-            }
-          },
-          "400": {
-            "description": "Invalid parameters supplied"
-          }
-        }
-      }
-    }
+    }  
   },
-  "definitions": {
-    "tablesMetabolites": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "order": {
-          "type": "string"
-        },
-        "study_id": {
-          "type": "string"
-        },
-        "study_name": {
-          "type": "string"
-        }
-      }
-    },
-    "tablesStudy": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "abbreviation": {
-          "type": "string"
-        },
-        "stun_study_datasetdy_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "region": {
-          "type": "string"
-        },
-        "platform": {
-          "type": "string"
-        }
-      }
-    },
-    "tablesDatasets": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "study_name": {
-          "type": "string"
-        },
-        "platform": {
-          "type": "string"
-        },
-        "n_metabolite": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "n_participant": {
-          "type": "string"
-        },
-        "type_of_blood": {
-          "type": "string"
-        },
-        "age_mean": {
-          "type": "number",
-          "format": "double"
-        },
-        "female": {
-          "type": "string"
-        },
-        "male": {
-          "type": "string"
-        },
-        "fasted_no": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "fasted_yes": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "race_asian": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "race_black": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "race_hispanic": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "race_white": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "race_other": {
-          "type": "integer",
-          "format": "int64"
-        }
-      }
-    },
-    "metabolitesName": {
-      "type": "object",
-      "properties": {
-        "metabolite_id": {
-          "type": "string"
-        },
-        "study_dataset_id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "study_name": {
-          "type": "string"
-        },
-        "platform": {
-          "type": "string"
-        },
-        "merge_variable": {
-          "type": "string"
-        },
-        "input_metabolite_name": {
-          "type": "string"
-        },
-        "input_metabid": {
-          "type": "string"
-        },
-        "input_chemical_id": {
-          "type": "string"
-        },
-        "input_comp_id": {
-          "type": "string"
-        },
-        "input_hmdb_id": {
-          "type": "string"
-        },
-        "input_cas": {
-          "type": "string"
-        },
-        "input_pubchem": {
-          "type": "string"
-        },
-        "input_chemspider": {
-          "type": "string"
-        },
-        "input_kegg": {
-          "type": "string"
-        },
-        "input_inchikey": {
-          "type": "string"
-        },
-        "input_chebi": {
-          "type": "string"
-        },
-        "input_broad_id": {
-          "type": "string"
+   "definitions":{
+    "summaryRequest":{
+      "type":"object",
+      "properties":{
+        "types":{
+          "type": "string",
+          "description": "Specifies the study dataset",
+          "enum": ["plco", "ukbb"],
+          "default": ["plco"]
+
         }
       }
     }
-  }
+   }
 }

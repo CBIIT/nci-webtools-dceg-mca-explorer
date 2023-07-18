@@ -16,10 +16,34 @@ apiRouter.use(express.json());
 //const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
 const host = `https://${OPENSEARCH_ENDPOINT}`;
 
-console.log("opensearch host is:", host);
+//console.log("opensearch host is:", host);
+
+// log requests
+apiRouter.use((request, response, next) => {
+  const { logger } = request.app.locals;
+  request.startTime = new Date().getTime();
+  logger.info([request.path, request.query]);
+  next();
+});
+
+// add cache-control headers to responses for GET requests
+apiRouter.use((request, response, next) => {
+  if (request.method === "GET") response.set("Cache-Control", `public, max-age=${60 * 60}`);
+  next();
+});
+
+// add cors headers to responses
+apiRouter.use((request, response, next) => {
+  response.set("Access-Control-Allow-Origin", "*");
+  response.set("Access-Control-Allow-Methods", "*");
+  response.set("Access-Control-Allow-Headers", "*");
+  response.set("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 apiRouter.get("/", (request, response) => {
   spec.servers = [{ url: BASE_URL || "." }];
+  //spec.servers = [{ url: "localhost" || "." }];
   response.json(spec);
 });
 
