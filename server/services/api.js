@@ -3,6 +3,9 @@ import Router from "express-promise-router";
 import { getStatus, getSamples } from "./query.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const spec = require("./spec.json");
 const { APPLICATION_NAME, BASE_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_ENDPOINT } = process.env;
 
 export const apiRouter = new Router();
@@ -14,6 +17,12 @@ apiRouter.use(express.json());
 const host = `https://${OPENSEARCH_ENDPOINT}`;
 
 console.log("opensearch host is:", host);
+
+apiRouter.get("/", (request, response) => {
+  spec.servers = [{ url: BASE_URL || "." }];
+  response.json(spec);
+});
+
 apiRouter.get("/ping", async (request, response) => {
   const { connection } = request.app.locals;
   const status = await getStatus(connection);

@@ -4,7 +4,7 @@ import Navbar from "./modules/components/navbar";
 import About from "./modules/about/about";
 import Mosaic from "./modules/mosaicTiler/explore";
 import Home from "./modules/home/home";
-import Api from "./modules/api/api";
+import ApiAccess from "./modules/api/api-access";
 import "./styles/main.scss";
 
 export default function App() {
@@ -22,7 +22,7 @@ export default function App() {
         <Routes>
           <Route path="/mosaic" exact="true" element={<Mosaic />} />
           <Route path="/about" element={<About />} />
-          <Route path="/api" element={<Api />} />
+          <Route path="/api" element={<ApiAccess />} />
           <Route path="/" element={<Home />} />
         </Routes>
       </Router>

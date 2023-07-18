@@ -29,4 +29,3 @@ export async function getStatus(connection) {
   const results = await checkHeartbeat(connection);
   return results.isOk;
 }
-
