@@ -262,7 +262,7 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
 
 apiRouter.post("/opensearch/chromosome", async (request, response) => {
   const { logger } = request.app.locals;
-  const group = request.body.search;
+  const group = request.body;
   if (group != undefined) {
     // console.log("query group:", group);
     const study = group.study;

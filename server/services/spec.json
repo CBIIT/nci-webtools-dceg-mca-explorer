@@ -11,37 +11,332 @@
         ],
         "summary": "Finds events",
         "produces": ["application/json"],
-       "requestBody": {
+        "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/definitions/summaryRequest"
+                "$ref": "#/definitions/SummaryRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successful operation"
+            "description": "Successful operation",
+             "schema": {
+              "$ref": "#/definitions/SummaryResponse"
+            }
           },
           "400": {
             "description": "Invalid parameters supplied"
           }
         }
       }
-    }  
+    },
+    "/api/opensearch/chromosome": {
+      "post": {
+        "tags": [
+          "one chromosome"
+        ],
+        "summary": "Finds events for one chromosome",
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/ChromosomeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+             "schema": {
+              "$ref": "#/definitions/SummaryResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid parameters supplied"
+          }
+        }
+      }
+    }    
   },
    "definitions":{
-    "summaryRequest":{
+    "SummaryRequest":{
       "type":"object",
       "properties":{
-        "types":{
-          "type": "string",
-          "description": "Specifies the study dataset",
-          "enum": ["plco", "ukbb"],
-          "default": ["plco"]
-
+        "dataset":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+              "type":"string",
+               "description": "Specifies the study plco or ukbb"
+            },
+            "label":{
+              "type":"string"}
+            }
+          },
+          "example":[
+             {
+            "value":"plco",
+            "label":"PLCO"
+          }
+          ]
+        },         
+        "ancestry":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+                      "type":"string"
+                    },
+            "label": {
+              "type":"string"  
+            }
+            }
+          },
+          "example":[
+            {
+            "value":"ADMIXED_EUR",
+            "label":"ADMIXED_EUR"
+          },
+          {
+            "value":"AFR",
+            "label":"African"
+          },
+          {
+            "value":"AFR_EUR",
+            "label":"AFR_EUR"
+          },
+          {
+            "value":"ASN",
+            "label":"Asian"
+          },
+          {
+            "value":"ASN_EUR",
+            "label":"ASN_EUR"
+          },
+          {
+            "value":"EUR",
+            "label":"European"
+          }
+        ]},
+        "maxcf":{
+          "type":"string",
+          "description":"max value for cellular fraction",
+          "default":"1"
+        },
+         "mincf":{
+          "type":"string",
+          "description":"min value for cellular fraction",
+          "default":"0"
+        },
+          "sex":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+              "type":"string",
+              "description": "Specifies the sex value male, female"
+            },
+            "label":{
+              "type":"string"            
+            }
+            }
+          },
+          "example":[
+            {"value":"male"}
+          ]
+        },
+          "types":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+              "type":"string",
+              "description": "Specifies the state of dataset:loh,loss,gain,undermined"
+            },
+            "label":{
+              "type":"string" 
+            }
+            }
+          },
+          "example":[
+            {
+              "value":"loh",
+              "label":"CN-LOH"
+            },
+             {
+              "value":"loss",
+              "label":"Loss"
+            },
+             {
+              "value":"gain",
+              "label":"Gain"
+            },
+             {
+              "value":"undermined",
+              "label":"Undermined"
+            }
+          ]
+        }
+      }
+    },
+    "SummaryResponse":{
+      "type": "object",
+      "properties": {
+        "sampleId": {
+          "type": "string"
+        },
+        "computedGender": {
+          "type": "string"
+        },
+        "chromosome": {
+          "type": "string"
+        },
+        "beginGrch38": {
+          "type": "string"
+        },
+        "endGrch38": {
+          "type": "string"
+        }
+      }
+    },
+     "ChromosomeRequest":{
+      "type":"object",
+      "properties":{
+        "chr":{
+          "type":"string",
+          "default":"2"
+        },
+        "study":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+              "type":"string",
+               "description": "Specifies the study plco or ukbb"
+            },
+            "label":{
+              "type":"string"}
+            }
+          },
+          "example":[
+             {
+            "value":"plco",
+            "label":"PLCO"
+          }
+          ]
+        },         
+        "ancestry":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+                      "type":"string"
+                    },
+            "label": {
+              "type":"string"  
+            }
+            }
+          },
+          "example":[
+            {
+            "value":"ADMIXED_EUR",
+            "label":"ADMIXED_EUR"
+          },
+          {
+            "value":"AFR",
+            "label":"African"
+          },
+          {
+            "value":"AFR_EUR",
+            "label":"AFR_EUR"
+          },
+          {
+            "value":"ASN",
+            "label":"Asian"
+          },
+          {
+            "value":"ASN_EUR",
+            "label":"ASN_EUR"
+          },
+          {
+            "value":"EUR",
+            "label":"European"
+          }
+        ]},
+        "maxcf":{
+          "type":"string",
+          "description":"max value for cellular fraction",
+          "default":"1"
+        },
+         "mincf":{
+          "type":"string",
+          "description":"min value for cellular fraction",
+          "default":"0"
+        },
+          "sex":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+              "type":"string",
+              "description": "Specifies the sex value male, female"
+            },
+            "label":{
+              "type":"string"            
+            }
+            }
+          },
+          "example":[
+            {"value":"male"}
+          ]
+        },
+          "types":{
+          "type": "array",
+          "items":{
+            "type":"object",
+            "properties":{
+              "value":{
+              "type":"string",
+              "description": "Specifies the state of dataset:loh,loss,gain,undermined"
+            },
+            "label":{
+              "type":"string" 
+            }
+            }
+          },
+          "example":[
+            {
+              "value":"loh",
+              "label":"CN-LOH"
+            },
+             {
+              "value":"loss",
+              "label":"Loss"
+            },
+             {
+              "value":"gain",
+              "label":"Gain"
+            },
+             {
+              "value":"undermined",
+              "label":"Undermined"
+            }
+          ]
         }
       }
     }

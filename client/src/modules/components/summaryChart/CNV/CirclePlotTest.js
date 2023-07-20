@@ -278,7 +278,7 @@ export default function CirclePlotTest(props) {
     if (!Array.isArray(group)) {
       if (chromesomeId > 0) {
         query = { ...group, chr: chromesomeId };
-        response = await axios.post("api/opensearch/chromosome", { search: query });
+        response = await axios.post("api/opensearch/chromosome", query);
       } else {
         //console.log("do query...", group, chromesomeId);
         const dataset = group.study;
