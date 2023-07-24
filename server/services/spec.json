@@ -6,10 +6,8 @@
   "paths": {
     "/api/opensearch/mca": {
       "post": {
-        "tags": [
-          "all chromosome"
-        ],
-        "summary": "Finds events",
+        "tags": ["All chromosome"],
+        "summary": "Finds events for all chromosome",
         "produces": ["application/json"],
         "requestBody": {
           "required": true,
@@ -37,7 +35,7 @@
     "/api/opensearch/chromosome": {
       "post": {
         "tags": [
-          "one chromosome"
+          "One chromosome"
         ],
         "summary": "Finds events for one chromosome",
         "produces": ["application/json"],
@@ -253,28 +251,22 @@
           },
           "example":[
             {
-            "value":"ADMIXED_EUR",
-            "label":"ADMIXED_EUR"
+            "value":"ADMIXED_EUR"
           },
           {
-            "value":"AFR",
-            "label":"African"
+            "value":"AFR"
           },
           {
-            "value":"AFR_EUR",
-            "label":"AFR_EUR"
+            "value":"AFR_EUR"
           },
           {
-            "value":"ASN",
-            "label":"Asian"
+            "value":"ASN"
           },
           {
-            "value":"ASN_EUR",
-            "label":"ASN_EUR"
+            "value":"ASN_EUR"
           },
           {
-            "value":"EUR",
-            "label":"European"
+            "value":"EUR"
           }
         ]},
         "maxcf":{

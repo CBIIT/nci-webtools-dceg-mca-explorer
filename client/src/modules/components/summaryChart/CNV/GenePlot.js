@@ -48,9 +48,10 @@ function GenePlot(props) {
   //console.log(showGene,isLoading)
   let geneRanges = genes.map((gene) => {
     const namelength = gene.name.length;
-    let horizPadding = 20000 * 2;
-    if (props.width < 600) horizPadding = horizPadding * 2 + namelength;
-    if (genes.length > 20) horizPadding = 40000 * 4 + namelength;
+    let horizPadding = 20000 * namelength;
+    if (props.width < 600) horizPadding = horizPadding * namelength;
+    if (genes.length > 20) horizPadding = 40000 * namelength;
+    //console.log(namelength, horizPadding);
     return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
   });
 
@@ -81,31 +82,30 @@ function GenePlot(props) {
         hovertemplate: hoverText,
       };
       geneLine.push(gl);
+      const a = {
+        x: (e.transcriptionStart + e.transcriptionEnd) / 2,
+        y: genePlotHeight - yGene - rowpadding,
+        //add left arrow or right arrow for gene name
+        text: (e.strand === "-" ? "&#8592; " : "") + e.name + (e.strand === "+" ? " &#8594;" : ""),
+        showarrow: false,
+        font: {
+          family: "sans-serif", //"sans-serif, monospace",
+          size: 12,
+          color: "black",
+        },
 
+        xref: "x",
+        yref: "y",
+        align: "center",
+        xanchor: "center",
+        yanchor: "bottom",
+      };
+      annotation.push(a);
       e.exonEnds.forEach((ex, index) => {
         const p = (ex - e.exonStarts[index]) / 2 + e.exonStarts[index];
         pos.push(p);
         ypos.push(yGene);
         //create annotation for each gene
-        const a = {
-          x: (e.transcriptionStart + e.transcriptionEnd) / 2,
-          y: genePlotHeight - yGene - rowpadding,
-          //add left arrow or right arrow for gene name
-          text: (e.strand === "-" ? "&#8592; " : "") + e.name + (e.strand === "+" ? " &#8594;" : ""),
-          showarrow: false,
-          font: {
-            family: "sans-serif", //"sans-serif, monospace",
-            size: 12,
-            color: "black",
-          },
-
-          xref: "x",
-          yref: "y",
-          align: "center",
-          xanchor: "center",
-          yanchor: "bottom",
-        };
-        annotation.push(a);
       });
     });
   });
