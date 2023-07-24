@@ -396,7 +396,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </Button>
         <OverlayTrigger
           overlay={!isValid() ? <Tooltip id="phos_tumor_val">Missing Required Parameters</Tooltip> : <></>}>
-          <Button variant="primary" type="submit" disabled={!isValid()}>
+          <Button variant="primary" type="submit" id="summarySubmit" disabled={!isValid()}>
             Submit
           </Button>
         </OverlayTrigger>

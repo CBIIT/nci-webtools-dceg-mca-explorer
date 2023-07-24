@@ -84,7 +84,7 @@ export default function ComparePanel(props) {
 
   useEffect(() => {
     updateForm();
-    // console.log(compareform);
+    //console.log("this is compare filter");
     props.compareItem.forEach((element) => {
       if (!element.isChecked && compareform) {
         if (element.label === " Study") {

@@ -237,7 +237,7 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    console.log("do query...", form.groupA);
+    //console.log("do query...", form.groupA, form.counterCompare);
 
     setTableData([]);
     if (form.compare) {
@@ -246,7 +246,7 @@ export default function CirclePlotTest(props) {
       handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
       handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
     } else {
-      console.log("clear form");
+      //console.log("clear form");
     }
   }, [form.counterCompare]);
 
@@ -482,6 +482,23 @@ export default function CirclePlotTest(props) {
   //     window.removeEventListener("resize", handleResize);
   //   };
   // });
+  useEffect(() => {
+    const handleResize = () => {
+      // window.innerWidth < 700;
+      const summarybtn = document.getElementById("summarySubmit");
+      // console.log(window.innerWidth, size);
+      if (window.innerWidth < 1200 && size > 850) {
+        summarybtn.click();
+      }
+      if (window.innerWidth < 980 && size > 600) {
+        summarybtn.click();
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [window.innerWidth]);
   //console.log(data,dataCompared)
   //only disply 200 events for X and Y
   const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];

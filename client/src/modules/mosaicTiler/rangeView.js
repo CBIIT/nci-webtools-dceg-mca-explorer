@@ -3,21 +3,23 @@ import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
 import Plot from "react-plotly.js";
-import { Tabs, Tab, Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Tabs, Tab, Row, Col } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
 import { Columns, exportTable } from "./tableColumns";
 
-export const initialXY = [
+export const initialX = [
   { block_id: "X", start: "0", end: "0", type: "Gain" },
-  { block_id: "Y", start: "0", end: "0", type: "Gain" },
   { block_id: "X", start: "0", end: "0", type: "Loss" },
-  { block_id: "Y", start: "0", end: "0", type: "Loss" },
   { block_id: "X", start: "0", end: "0", type: "CN-LOH" },
-  { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
   { block_id: "X", start: "0", end: "0", type: "Undetermined" },
+];
+export const initialY = [
+  { block_id: "Y", start: "0", end: "0", type: "Gain" },
+  { block_id: "Y", start: "0", end: "0", type: "Loss" },
+  { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
   { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
 ];
 
@@ -94,10 +96,18 @@ export default function RangeView(props) {
       ancestry: qform.ancestry,
       types: qform.types,
     });
-    const gainTemp = [...initialXY];
-    const lossTemp = [...initialXY];
-    const lohTemp = [...initialXY];
-    const undeterTemp = [...initialXY];
+    let gainTemp = [];
+    let lossTemp = [];
+    let lohTemp = [];
+    let undeterTemp = [];
+    // if (form.chrX) {
+    //   // gainTemp = [...initialX];
+    //   // lossTemp = [...initialX];
+    //   // lohTemp = [...initialX];
+    //   // undeterTemp = [...initialX];
+    // }
+    // if (form.chrY) {
+    // }
     const chrXTemp = [];
     const chrYTemp = [];
     const results = response.data;
