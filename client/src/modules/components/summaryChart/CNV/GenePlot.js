@@ -49,8 +49,8 @@ function GenePlot(props) {
   let geneRanges = genes.map((gene) => {
     const namelength = gene.name.length;
     let horizPadding = 20000 * namelength;
-    if (props.width < 600) horizPadding = horizPadding * namelength;
-    if (genes.length > 20) horizPadding = 40000 * namelength;
+    if (props.width < 600) horizPadding = horizPadding * 2;
+    // if (genes.length > 20) horizPadding = 40000 * namelength;
     //console.log(namelength, horizPadding);
     return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
   });
@@ -86,7 +86,7 @@ function GenePlot(props) {
         x: (e.transcriptionStart + e.transcriptionEnd) / 2,
         y: genePlotHeight - yGene - rowpadding,
         //add left arrow or right arrow for gene name
-        text: (e.strand === "-" ? "&#8592; " : "") + e.name + (e.strand === "+" ? " &#8594;" : ""),
+        text: (e.strand === "-" ? "&#8592;" : "") + e.name + (e.strand === "+" ? "&#8594;" : ""),
         showarrow: false,
         font: {
           family: "sans-serif", //"sans-serif, monospace",

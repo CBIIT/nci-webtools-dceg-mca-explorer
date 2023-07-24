@@ -97,14 +97,18 @@ function SingleChromosome(props) {
       //   bbutton.click();
       // }
     } else {
-      let resetBtn = null;
       if (props.details != undefined) {
-        if (props.details.includes("A")) resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
-        else resetBtn = document.querySelectorAll('a[data-val*="reset"]')[1];
+        let resetBtnA = null;
+        let resetBtnB = null;
+        resetBtnA = document.querySelectorAll('a[data-val*="reset"]')[0];
+        resetBtnB = document.querySelectorAll('a[data-val*="reset"]')[1];
+        resetBtnA.click();
+        resetBtnB.click();
       } else {
-        resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
+        let resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
+        resetBtn.click();
       }
-      resetBtn.click();
+
       setNewRange([]);
       setZoomHistory([]);
     }
