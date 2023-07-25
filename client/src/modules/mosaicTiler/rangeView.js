@@ -96,18 +96,11 @@ export default function RangeView(props) {
       ancestry: qform.ancestry,
       types: qform.types,
     });
-    let gainTemp = [];
-    let lossTemp = [];
-    let lohTemp = [];
-    let undeterTemp = [];
-    // if (form.chrX) {
-    //   // gainTemp = [...initialX];
-    //   // lossTemp = [...initialX];
-    //   // lohTemp = [...initialX];
-    //   // undeterTemp = [...initialX];
-    // }
-    // if (form.chrY) {
-    // }
+    let gainTemp = [...initialX, ...initialY];
+    let lossTemp = [...initialX, ...initialY];
+    let lohTemp = [...initialX, ...initialY];
+    let undeterTemp = [...initialX, ...initialY];
+
     const chrXTemp = [];
     const chrYTemp = [];
     const results = response.data;
