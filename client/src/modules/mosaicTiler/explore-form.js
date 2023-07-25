@@ -119,7 +119,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   }
 
   const handleFilterClear = (event) => {
-    console.log("filterclear");
+    //console.log("filterclear");
     setCompareChecks(compareArray);
 
     onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
@@ -165,9 +165,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   });
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
-      <Form.Group className="mb-3" controlId="study">
+      <Form.Group className="mb-3">
         <Form.Label className="required">Study</Form.Label>
         <Select
+          aria-label="study"
           placeholder="No study selected"
           name="study"
           isMulti={true}
@@ -180,7 +181,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           ]}
         />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="plotType">
+      <Form.Group className="mb-3">
         <Form.Label className="required">Plot Type</Form.Label>
         <OverlayTrigger
           overlay={
@@ -189,6 +190,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             </Tooltip>
           }>
           <Select
+            aria-label="plotType"
             placeholder="No plot type selected"
             name="plotType"
             value={form.plotType}
@@ -202,9 +204,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </OverlayTrigger>
       </Form.Group>
       {form.plotType.value === "static" ? (
-        <Form.Group className="mb-3" controlId="chromosome">
+        <Form.Group className="mb-3">
           <Form.Label className="required">Chromosome</Form.Label>
           <Select
+            aria-label="chromosome"
             placeholder="No chromosome selected"
             name="chromosome"
             isMulti={true}
@@ -214,7 +217,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           />
         </Form.Group>
       ) : (
-        <Form.Group className="mb-3" controlId="chromosome">
+        <Form.Group className="mb-3">
           <Form.Check
             ref={formRef}
             type="checkbox"
@@ -236,9 +239,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           />
         </Form.Group>
       )}
-      <Form.Group className="mb-3" controlId="types">
+      <Form.Group className="mb-3">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Select
+          aria-label="state"
           placeholder="No types selected"
           name="types"
           isMulti={true}
@@ -311,7 +315,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 ]}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="age">
+            <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
               {/* <Form.Control
                 placeholder="No age selected"
@@ -323,13 +327,25 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Row>
                 <Col xl={6}>
                   <InputGroup>
-                    <Form.Control placeholder="Min age" name="minAge" value={form.minAge} onChange={handleChange} />
+                    <Form.Control
+                      placeholder="Min age"
+                      name="minAge"
+                      id="minAge"
+                      value={form.minAge}
+                      onChange={handleChange}
+                    />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
                 </Col>
                 <Col xl={6}>
                   <InputGroup>
-                    <Form.Control placeholder="Max age" name="maxAge" value={form.maxAge} onChange={handleChange} />
+                    <Form.Control
+                      placeholder="Max age"
+                      name="maxAge"
+                      id="maxAge"
+                      value={form.maxAge}
+                      onChange={handleChange}
+                    />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
                 </Col>
@@ -346,7 +362,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 options={AncestryOptions}
               />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="fraction">
+            <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
               <Row>
                 <Col xl={6}>
@@ -354,6 +370,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                     <Form.Control
                       placeholder="Min percentage"
                       name="minFraction"
+                      id="minFraction"
                       value={form.minFraction}
                       onChange={handleChange}
                     />
@@ -365,6 +382,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                     <Form.Control
                       placeholder="Max percentage"
                       name="maxFraction"
+                      id="maxFraction"
                       value={form.maxFraction}
                       onChange={handleChange}
                     />

@@ -166,18 +166,30 @@ export default function ComparePanel(props) {
         ""
       )}
       {props.compareItem[2].isChecked ? (
-        <Form.Group className="mb-3" controlId="age">
+        <Form.Group className="mb-3">
           <Form.Label>Age</Form.Label>
           <Row>
             <Col xl={6}>
               <InputGroup>
-                <Form.Control placeholder="Min age" name="minAge" value={minAge} onChange={handleChange} />
+                <Form.Control
+                  placeholder="Min age"
+                  name="minAge"
+                  id="minAgeCompare"
+                  value={minAge}
+                  onChange={handleChange}
+                />
                 {/* <InputGroup.Text></InputGroup.Text> */}
               </InputGroup>
             </Col>
             <Col xl={6}>
               <InputGroup>
-                <Form.Control placeholder="Max age" name="maxAge" value={maxAge} onChange={handleChange} />
+                <Form.Control
+                  placeholder="Max age"
+                  name="maxAge"
+                  id="maxAgeCompare"
+                  value={maxAge}
+                  onChange={handleChange}
+                />
                 {/* <InputGroup.Text></InputGroup.Text> */}
               </InputGroup>
             </Col>
@@ -220,7 +232,7 @@ export default function ComparePanel(props) {
         ""
       )}
       {props.compareItem[5].isChecked ? (
-        <Form.Group controlId="fraction">
+        <Form.Group>
           <Form.Label>Cellular Fraction</Form.Label>
           <Row>
             <Col xl={6}>
@@ -228,6 +240,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Min percentage"
                   name="minFraction"
+                  id="minFractionCompare"
                   value={minFraction}
                   onChange={handleChange}
                 />
@@ -239,6 +252,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Max percentage"
                   name="maxFraction"
+                  id="maxFractionCompare"
                   value={maxFraction}
                   onChange={handleChange}
                 />
