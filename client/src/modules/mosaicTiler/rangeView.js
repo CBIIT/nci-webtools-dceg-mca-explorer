@@ -100,12 +100,24 @@ export default function RangeView(props) {
     let lossTemp = [];
     let lohTemp = [];
     let undeterTemp = [];
-    // if (form.chrX) {
-    //   // gainTemp = [...initialX];
-    //   // lossTemp = [...initialX];
-    //   // lohTemp = [...initialX];
-    //   // undeterTemp = [...initialX];
-    // }
+    if (form.chrX && form.chrY) {
+      gainTemp = [...initialX, ...initialY];
+      lossTemp = [...initialX, ...initialY];
+      lohTemp = [...initialX, ...initialY];
+      undeterTemp = [...initialX, ...initialY];
+    }
+    if (form.chrX && !form.chrY) {
+      gainTemp = [...initialX];
+      lossTemp = [...initialX];
+      lohTemp = [...initialX];
+      undeterTemp = [...initialX];
+    }
+    if (!form.chrX && form.chrY) {
+      gainTemp = [...initialY];
+      lossTemp = [...initialY];
+      lohTemp = [...initialY];
+      undeterTemp = [...initialY];
+    }
     // if (form.chrY) {
     // }
     const chrXTemp = [];
