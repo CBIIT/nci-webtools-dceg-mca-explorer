@@ -71,19 +71,35 @@ export default function CirclePlotTest(props) {
   });
   const [zoomRangeA, setZoomRangeA] = useState(null);
   const [zoomRangeB, setZoomRangeB] = useState(null);
+  //isCompare is used to decide the figure is summary plot or compare plot
+  //if it is summary plot, the resize if browser width changes
+  //if it is compare plots, do not resize
   const [isCompare, setIsCompare] = useState(false);
-
   //use this figuresHeight to control the height after gene table created
   const [figureHeight, setFigureHeight] = useState(0);
   //
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const compareRef = useRef(isCompare);
+  const showChartRef = useRef(showChart);
+
+  //update compareRef when isCompare changes
+  useEffect(() => {
+    compareRef.current = isCompare;
+  }, [isCompare]);
+  //update compareRef when isCompare changes
+  useEffect(() => {
+    showChartRef.current = showChart;
+  }, [showChart]);
 
   let adjustWidth = 1;
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
   const size = browserSize.width * adjustWidth;
-  const compareCircleSize = size * (adjustWidth + 0.1);
+  const compareCircleSize = size < 900 ? 600 : size * (adjustWidth + 0.1);
+  let singleChromeSize = size < 900 ? 600 : size * 0.8;
+  let singleFigWidth = size < 900 ? 600 : size * 0.7;
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -197,6 +213,7 @@ export default function CirclePlotTest(props) {
     setShowChart(false);
     sendClickedId(-1);
     props.onClickedChr(false);
+    setIsCompare(false);
     setForm({
       ...form,
       compare: false,
@@ -240,7 +257,6 @@ export default function CirclePlotTest(props) {
       setCircleA(null);
       setCircleB(null);
       setIsCompare(true);
-      console.log(isCompare);
       handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
       handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
     } else {
@@ -480,23 +496,28 @@ export default function CirclePlotTest(props) {
   //     window.removeEventListener("resize", handleResize);
   //   };
   // });
+
   useEffect(() => {
+    console.log("showChart: ", showChart, isCompare);
     const handleResize = () => {
       // window.innerWidth < 700;
       const summarybtn = document.getElementById("summarySubmit");
       //console.log(window.innerWidth, size, singleFigWidth);
-      console.log("showChart: ", showChart, isCompare);
-      if (!isCompare && !showChart) {
-        if (window.innerWidth < 1200 && size > 850) {
-          summarybtn.click();
+      console.log("showChart: ", showChartRef.current, compareRef.current);
+      if (!compareRef.current) {
+        if (!showChartRef.current) {
+          if (window.innerWidth < 1200 && size > 850) {
+            summarybtn.click();
+          } else if (window.innerWidth < 980 && size > 600) {
+            summarybtn.click();
+          } else if (window.innerWidth > 980 && size < 700) {
+            summarybtn.click();
+          }
+        } else {
+          singleChromeSize = window.innerWidth * 0.8;
         }
-        if (window.innerWidth < 980 && size > 600) {
-          summarybtn.click();
-        }
-        if (window.innerWidth > 980 && size < 700) {
-          singleFigWidth = form.compare ? window.innerWidth * 0.45 : window.innerWidth;
-          summarybtn.click();
-        }
+      } else {
+        singleFigWidth = window.innerWidth * 0.45;
       }
     };
     window.addEventListener("resize", handleResize);
@@ -521,7 +542,7 @@ export default function CirclePlotTest(props) {
   let layout_xy = !form.chrX || form.chrX === undefined ? layoutxy.filter((l) => l.label !== "X") : layoutxy;
   layout_xy = !form.chrY || form.chrY === undefined ? layout_xy.filter((l) => l.label !== "Y") : layout_xy;
 
-  let singleFigWidth = form.compare ? size * 0.45 : size;
+  //let singleFigWidth = form.compare ? size * 0.45 : size;
   props.getData(tableData);
 
   return (
@@ -614,7 +635,7 @@ export default function CirclePlotTest(props) {
                     <SingleChromosome
                       data={data}
                       chromesomeId={chromesomeId}
-                      width={size * 0.8}
+                      width={singleChromeSize}
                       height={browserSize.height * 0.7}
                       onHeightChange={props.onHeightChange}></SingleChromosome>
                   </Col>
