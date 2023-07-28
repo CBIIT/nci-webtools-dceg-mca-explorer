@@ -16,7 +16,7 @@ export default function CircosPlot(props) {
   const handleEnter = props.handleEnter;
   const hovertip = props.hovertip;
   const classCircle = props.circleClass;
-
+  const layoutxy = props.layoutxy;
   return (
     <div style={{ justifyContent: "center" }}>
       {props.title}

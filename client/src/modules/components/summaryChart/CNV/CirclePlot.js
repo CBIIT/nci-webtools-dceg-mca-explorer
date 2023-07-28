@@ -16,13 +16,14 @@ export default function CircosPlot(props) {
   const handleEnter = props.handleEnter;
   const hovertip = props.hovertip;
   const classCircle = props.circleClass;
+  const layoutxy = props.layoutxy;
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
       <div className={classCircle}>
         {props.title}
         <Circos
-          layout={layoutAll}
+          layout={layoutxy}
           config={{
             innerRadius: size / 2 - 50,
             outerRadius: size / 2 - 30,

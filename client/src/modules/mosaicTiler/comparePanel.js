@@ -118,9 +118,11 @@ export default function ComparePanel(props) {
   return (
     <div>
       {props.compareItem[0].isChecked ? (
-        <Form.Group className="mb-3" controlId="array">
+        <Form.Group className="mb-3">
           <Form.Label>Genotyping Array</Form.Label>
           <Select
+            id={props.name + "array"}
+            aria-label={props.name + "array"}
             placeholder="No array selected"
             name="array"
             isMulti={true}
@@ -148,9 +150,11 @@ export default function ComparePanel(props) {
         />
       </Form.Group> */}
       {props.compareItem[1].isChecked ? (
-        <Form.Group className="mb-3" controlId="sex">
+        <Form.Group className="mb-3">
           <Form.Label>Genotype Sex</Form.Label>
           <Select
+            id={props.name + "sex"}
+            aria-label={props.name + "sex"}
             placeholder="No sex selected"
             name="sex"
             isMulti={true}
@@ -174,7 +178,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Min age"
                   name="minAge"
-                  id="minAgeCompare"
+                  id={props.name + "minAgeCompare"}
                   value={minAge}
                   onChange={handleChange}
                 />
@@ -186,7 +190,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Max age"
                   name="maxAge"
-                  id="maxAgeCompare"
+                  id={props.name + "maxAgeCompare"}
                   value={maxAge}
                   onChange={handleChange}
                 />
@@ -199,11 +203,13 @@ export default function ComparePanel(props) {
         ""
       )}
       {props.compareItem[3].isChecked ? (
-        <Form.Group className="mb-3" controlId="ancestry">
+        <Form.Group className="mb-3">
           <Form.Label>Ancestry</Form.Label>
           <Select
             placeholder="No ancestry selected"
             name="ancestry"
+            aria-label={props.name + "ancestry"}
+            id={props.name + "ancestry"}
             isMulti={true}
             value={ancestry}
             onChange={(ev) => handleSelectChange("ancestry", ev)}
@@ -214,11 +220,13 @@ export default function ComparePanel(props) {
         ""
       )}
       {props.compareItem[4].isChecked ? (
-        <Form.Group className="mb-3" controlId="array">
+        <Form.Group className="mb-3">
           <Form.Label>Study</Form.Label>
           <Select
             placeholder="No study selected"
             name="study"
+            aria-label={props.name + "study"}
+            id={props.name + "study"}
             isMulti={true}
             value={study}
             onChange={(ev) => handleSelectChange("study", ev)}
@@ -240,7 +248,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Min percentage"
                   name="minFraction"
-                  id="minFractionCompare"
+                  id={props.name + "minFractionCompare"}
                   value={minFraction}
                   onChange={handleChange}
                 />
@@ -252,7 +260,7 @@ export default function ComparePanel(props) {
                 <Form.Control
                   placeholder="Max percentage"
                   name="maxFraction"
-                  id="maxFractionCompare"
+                  id={props.name + "maxFractionCompare"}
                   value={maxFraction}
                   onChange={handleChange}
                 />
@@ -270,6 +278,8 @@ export default function ComparePanel(props) {
           <Select
             placeholder="No status selected"
             name="smoking"
+            aria-label={props.name + "smoking"}
+            id={props.name + "smoking"}
             isMulti={true}
             value={smoking}
             onChange={(ev) => handleSelectChange("smoking", ev)}
@@ -289,6 +299,8 @@ export default function ComparePanel(props) {
           <Select
             placeholder="No types selected"
             name="types"
+            id={props.name + "types"}
+            aria-label={props.name + "types"}
             isMulti={true}
             value={types}
             onChange={(ev) => handleSelectChange("types", ev)}

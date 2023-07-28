@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useEffect, useState, useRef } from "react";
 import layout from "./layout2.json";
+import layoutxy from "./layoutxy.json";
 import "./css/circos.css";
 import SingleChromosome from "./SingleChromosome";
 import { Row, Col, Button, Container } from "react-bootstrap";
@@ -12,11 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-// import { initialXY } from "../../../mosaicTiler/rangeView";
-// import { ExcelFile, ExcelSheet } from "../../excel-export";
-// import Table from "../../table";
-// import { Columns, exportTable } from "../../../mosaicTiler/tableColumns";
-//import "./styles.css";
+
 const hovertip = (d) => {
   return (
     "<p style='text-align:left'>Sample ID: " +
@@ -74,6 +71,7 @@ export default function CirclePlotTest(props) {
   });
   const [zoomRangeA, setZoomRangeA] = useState(null);
   const [zoomRangeB, setZoomRangeB] = useState(null);
+  const [isCompare, setIsCompare] = useState(false);
 
   //use this figuresHeight to control the height after gene table created
   const [figureHeight, setFigureHeight] = useState(0);
@@ -237,12 +235,12 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    //console.log("do query...", form.groupA, form.counterCompare);
-
     setTableData([]);
     if (form.compare) {
       setCircleA(null);
       setCircleB(null);
+      setIsCompare(true);
+      console.log(isCompare);
       handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
       handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
     } else {
@@ -486,12 +484,19 @@ export default function CirclePlotTest(props) {
     const handleResize = () => {
       // window.innerWidth < 700;
       const summarybtn = document.getElementById("summarySubmit");
-      // console.log(window.innerWidth, size);
-      if (window.innerWidth < 1200 && size > 850) {
-        summarybtn.click();
-      }
-      if (window.innerWidth < 980 && size > 600) {
-        summarybtn.click();
+      //console.log(window.innerWidth, size, singleFigWidth);
+      console.log("showChart: ", showChart, isCompare);
+      if (!isCompare && !showChart) {
+        if (window.innerWidth < 1200 && size > 850) {
+          summarybtn.click();
+        }
+        if (window.innerWidth < 980 && size > 600) {
+          summarybtn.click();
+        }
+        if (window.innerWidth > 980 && size < 700) {
+          singleFigWidth = form.compare ? window.innerWidth * 0.45 : window.innerWidth;
+          summarybtn.click();
+        }
       }
     };
     window.addEventListener("resize", handleResize);
@@ -512,6 +517,9 @@ export default function CirclePlotTest(props) {
 
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
+
+  let layout_xy = !form.chrX || form.chrX === undefined ? layoutxy.filter((l) => l.label !== "X") : layoutxy;
+  layout_xy = !form.chrY || form.chrY === undefined ? layout_xy.filter((l) => l.label !== "Y") : layout_xy;
 
   let singleFigWidth = form.compare ? size * 0.45 : size;
   props.getData(tableData);
@@ -635,6 +643,7 @@ export default function CirclePlotTest(props) {
                   {circleA ? (
                     <CircosPlotCompare
                       layoutAll={layoutAll}
+                      layoutxy={layout_xy}
                       title={titleA}
                       dataXY={[]}
                       details="A"
@@ -656,6 +665,7 @@ export default function CirclePlotTest(props) {
                   {circleB ? (
                     <CircosPlotCompare
                       layoutAll={layoutAll}
+                      layoutxy={layout_xy}
                       dataXY={[]}
                       title={titleB}
                       details="B"
@@ -705,6 +715,7 @@ export default function CirclePlotTest(props) {
               <Col xs={12} md={12} lg={12} style={{ width: size, height: size + 15 }}>
                 <CircosPlot
                   layoutAll={layoutAll}
+                  layoutxy={layout_xy}
                   dataXY={dataXY}
                   title="Autosomal mCA Distribution "
                   size={size}

@@ -240,10 +240,10 @@ function SingleChromosome(props) {
 
   return (
     <>
-      <div id="plotly-div" className="" style={{ justifyContent: "center" }}>
+      <div className="" style={{ justifyContent: "center" }}>
         {props.title}
         {props.title && <br></br>}
-        <Button id={"zoomBack" + props.details} variant="link" onClick={handleZoomHistory}>
+        <Button id={"zoomBack" + props.details} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
           {zoomHistory.length > 0 ? backtoprev : ""}
         </Button>
         <div id={props.details}>
