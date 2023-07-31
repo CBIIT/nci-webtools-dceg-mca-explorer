@@ -14,6 +14,9 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 
+import Plot from "react-plotly.js";
+import SingleChromosomeTest from "./SingleChromosomeTest";
+
 const hovertip = (d) => {
   return (
     "<p style='text-align:left'>Sample ID: " +
@@ -560,7 +563,8 @@ export default function CirclePlotTest(props) {
   let layout_xy = !form.chrX || form.chrX === undefined ? layoutxy.filter((l) => l.label !== "X") : layoutxy;
   layout_xy = !form.chrY || form.chrY === undefined ? layout_xy.filter((l) => l.label !== "Y") : layout_xy;
 
-  //let singleFigWidth = form.compare ? size * 0.45 : size;
+  singleFigWidth = form.compare ? size * 0.45 : size;
+  singleFigWidth = singleFigWidth < minFigSize ? minFigSize : singleFigWidth;
   props.getData(tableData);
 
   return (
@@ -588,7 +592,7 @@ export default function CirclePlotTest(props) {
                     </Button>
                   </Col> */}
                   <Col>
-                    <Button variant="link" onClick={minFigSize}>
+                    <Button variant="link" onClick={handleBackChromo}>
                       Back to chromosome
                     </Button>
                   </Col>
@@ -653,8 +657,7 @@ export default function CirclePlotTest(props) {
                     <SingleChromosome
                       data={data}
                       chromesomeId={chromesomeId}
-                      width={singleChromeSize}
-                      height={browserSize.height * 0.7}
+                      size={singleChromeSize}
                       onHeightChange={props.onHeightChange}></SingleChromosome>
                   </Col>
                 </Row>

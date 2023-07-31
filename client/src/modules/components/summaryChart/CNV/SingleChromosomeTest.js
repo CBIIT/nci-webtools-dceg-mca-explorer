@@ -1,20 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import Plot from "react-plotly.js";
-import GenePlot from "./GenePlot";
-import SnpPlot from "./SnpPlot";
-import { Button } from "react-bootstrap";
+
 import "./css/circos.css";
 
 const zoomWindow = 5000000;
-function SingleChromosome(props) {
-  //console.log(props.data);
+function SingleChromosomeTest(props) {
   const ref = useRef(null);
-  const [width, setWidth] = useState(props.width === undefined ? props.size : props.width);
-  const [height, setHeight] = useState(props.width === undefined ? props.size : props.width);
-  const sizeRef = useRef(width);
   const [layout, setLayout] = useState({
     //title:"Chromosome "+ props.chromesomeId,
     barmode: "stack",
+    //width: props.width,
+    //height: props.height,
     margin: { l: 10, r: 0, t: 30, b: 30 },
     xaxis: {
       title: "",
@@ -46,11 +42,6 @@ function SingleChromosome(props) {
   const [zoomHistory, setZoomHistory] = useState([]);
   const [newRange, setNewRange] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  //update sizeRef when width changes
-  useEffect(() => {
-    sizeRef.current = width;
-  }, [width]);
 
   useEffect(() => {
     if (zoomHistory.length > 0) {
@@ -119,7 +110,6 @@ function SingleChromosome(props) {
       setZoomHistory([]);
     }
   };
-
   //synchronize the zoom range
   useEffect(() => {
     if (props.zoomRange !== undefined && props.zoomRange !== null) {
@@ -130,27 +120,6 @@ function SingleChromosome(props) {
       // console.log("props.zoomRange", newRange, props.details);
     }
   }, [props.zoomRange]);
-
-  const handleResize = () => {
-    const container = ref.current;
-    if (props.size !== undefined && container) {
-      //console.log(props.size, sizeRef.current, window.innerWidth);
-      if (window.innerWidth > 980 && sizeRef.current < 700) {
-        setWidth(800);
-        setHeight(800);
-      }
-      if (window.innerWidth < 980 && sizeRef.current > 700) {
-        setWidth(550);
-        setHeight(550);
-      }
-    }
-  };
-  useEffect(() => {
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   var data1 = [];
   var data2 = [];
   var ydata = [];
@@ -263,79 +232,11 @@ function SingleChromosome(props) {
     const pxmax = prev["xaxis.range[1]"];
     backtoprev = "Back to " + (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
   }
-
   return (
-    <>
-      <div className="" style={{ justifyContent: "center" }}>
-        {props.title}
-        {props.title && <br></br>}
-        <Button id={"zoomBack" + props.details} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
-          {zoomHistory.length > 0 ? backtoprev : ""}
-        </Button>
-        <div id={props.details}>
-          <Plot
-            data={data}
-            layout={{ ...layout, width, height }}
-            //  onInitialized={handleInitialized}
-            config={{
-              ...defaultConfig,
-              toImageButtonOptions: {
-                ...defaultConfig.toImageButtonOptions,
-                filename: "Chromosome " + props.chromesomeId,
-              },
-            }}
-            useResizeHandler={true}
-            style={{ width: "100%", height: "100%", position: "relative" }}
-            ref={ref}
-            onRelayout={handleRelayout}
-            // onInitialized={() => {
-            //   if (initX.length === 0) {
-            //     console.log("set initial:", layout.xaxis.range);
-            //     setInitX(layout.xaxis.range);
-            //   }
-            // }}
-          />
-        </div>
-        {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
-        <br />
-        {loading && xMax - xMin < zoomWindow ? (
-          <div>
-            <SnpPlot
-              width={props.width}
-              xMax={xMax}
-              xMin={xMin}
-              chr={props.chromesomeId}
-              onHeightChange={props.onHeightChange}></SnpPlot>
-            <br></br>
-            <GenePlot
-              width={props.width}
-              xMax={xMax}
-              xMin={xMin}
-              chr={props.chromesomeId}
-              onHeightChange={props.onHeightChange}
-              onCompareHeightChange={props.onCompareHeightChange}></GenePlot>
-            <br></br>
-          </div>
-        ) : (
-          !props.title && (
-            <p style={{ fontSize: "14px" }}>
-              Gene and SNP plot are not available at the current zoom level.<br></br>
-              Please zoom in to a 5MB range to see genes and SNPs.
-            </p>
-          )
-        )}
-        {xMin
-          ? "Chr" +
-            props.chromesomeId +
-            ": " +
-            Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
-            " -- " +
-            Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
-          : ""}
-        {/* <ResolutionPlot></ResolutionPlot> */}
-      </div>
-    </>
+    <div>
+      <Plot data={data} layout={layout} useResizeHandler={true} style={{ width: "100%", height: "100%" }} />
+    </div>
   );
 }
 
-export default SingleChromosome;
+export default SingleChromosomeTest;
