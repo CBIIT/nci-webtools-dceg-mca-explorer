@@ -15,7 +15,7 @@ function SingleChromosome(props) {
   const [layout, setLayout] = useState({
     //title:"Chromosome "+ props.chromesomeId,
     barmode: "stack",
-    margin: { l: 10, r: 0, t: 30, b: 30 },
+    margin: { l: 10, r: 10, t: 30, b: 30 },
     xaxis: {
       title: "",
       showgrid: true,
@@ -134,7 +134,7 @@ function SingleChromosome(props) {
   const handleResize = () => {
     const container = ref.current;
     if (props.size !== undefined && container) {
-      //console.log(props.size, sizeRef.current, window.innerWidth);
+      console.log(props.size, sizeRef.current, window.innerWidth);
       if (window.innerWidth > 980 && sizeRef.current < 700) {
         setWidth(800);
         setHeight(800);
@@ -301,14 +301,14 @@ function SingleChromosome(props) {
         {loading && xMax - xMin < zoomWindow ? (
           <div>
             <SnpPlot
-              width={props.width}
+              width={width}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}
               onHeightChange={props.onHeightChange}></SnpPlot>
             <br></br>
             <GenePlot
-              width={props.width}
+              width={width}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}

@@ -14,9 +14,6 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 
-import Plot from "react-plotly.js";
-import SingleChromosomeTest from "./SingleChromosomeTest";
-
 const hovertip = (d) => {
   return (
     "<p style='text-align:left'>Sample ID: " +
@@ -523,7 +520,7 @@ export default function CirclePlotTest(props) {
     const handleResize = () => {
       // window.innerWidth < 700;
       const summarybtn = document.getElementById("summarySubmit");
-      //console.log(window.innerWidth, size, singleFigWidth);
+      console.log(window.innerWidth, size, singleFigWidth);
       //console.log("showChart: ", showChartRef.current, compareRef.current);
       if (!compareRef.current) {
         if (!showChartRef.current) {
@@ -538,7 +535,6 @@ export default function CirclePlotTest(props) {
           singleChromeSize = window.innerWidth * 0.8;
         }
       } else {
-        singleFigWidth = window.innerWidth * 0.45;
       }
     };
     window.addEventListener("resize", handleResize);
@@ -564,7 +560,7 @@ export default function CirclePlotTest(props) {
   layout_xy = !form.chrY || form.chrY === undefined ? layout_xy.filter((l) => l.label !== "Y") : layout_xy;
 
   singleFigWidth = form.compare ? size * 0.45 : size;
-  singleFigWidth = singleFigWidth < minFigSize ? minFigSize : singleFigWidth;
+  singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
   props.getData(tableData);
 
   return (
@@ -598,7 +594,12 @@ export default function CirclePlotTest(props) {
                   </Col>
                 </Row>
                 <Row className="justify-content-center">
-                  <Col className="col d-flex justify-content-center" xs md={6} lg={6}>
+                  <Col
+                    className="col d-flex justify-content-center"
+                    xs={12}
+                    md={6}
+                    lg={6}
+                    style={{ width: compareCircleSize }}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
@@ -613,7 +614,12 @@ export default function CirclePlotTest(props) {
                         onCompareHeightChange={handleCompareHeightChange}></SingleChromosome>
                     </div>
                   </Col>
-                  <Col className="col d-flex justify-content-center" xs md={6} lg={6}>
+                  <Col
+                    className="col d-flex justify-content-center"
+                    xs={12}
+                    md={6}
+                    lg={6}
+                    style={{ width: compareCircleSize }}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
