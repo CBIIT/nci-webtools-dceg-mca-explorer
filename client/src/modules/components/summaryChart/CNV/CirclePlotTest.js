@@ -93,13 +93,15 @@ export default function CirclePlotTest(props) {
   }, [showChart]);
 
   let adjustWidth = 1;
+  const minFigSize = 550;
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
-  const size = browserSize.width * adjustWidth;
-  const compareCircleSize = size < 900 ? 600 : size * (adjustWidth + 0.1);
-  let singleChromeSize = size < 900 ? 600 : size * 0.8;
-  let singleFigWidth = size < 900 ? 600 : size * 0.7;
+
+  const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
+  const compareCircleSize = size < 900 ? minFigSize : size * (adjustWidth + 0.1);
+  let singleChromeSize = size < 900 ? minFigSize : size * 0.8;
+  let singleFigWidth = size < 900 ? minFigSize : size * 0.7;
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -228,7 +230,23 @@ export default function CirclePlotTest(props) {
     props.onResetHeight();
     setChromesomeId(0);
     setFigureHeight(0);
-    clearBtn.click();
+    //clearBtn.click();
+    console.log(window.innerWidth, size);
+    const summarybtn2 = document.getElementById("summarySubmit");
+    //summarybtn2.click();
+    if (window.innerWidth < 1200 && size > 850) {
+      summarybtn2.click();
+    }
+    if (window.innerWidth < 980 && size > 600) {
+      summarybtn2.click();
+    }
+    if (window.innerWidth > 980 && size < 700) {
+      summarybtn2.click();
+    }
+    if (window.innerWidth > 1200 && size < 600) {
+      summarybtn2.click();
+      //console.log("back:", window.innerWidth, size);
+    }
   };
   const handleBackChromo = () => {
     setForm({ ...form, compare: false });
@@ -498,12 +516,12 @@ export default function CirclePlotTest(props) {
   // });
 
   useEffect(() => {
-    console.log("showChart: ", showChart, isCompare);
+    //console.log("showChart: ", showChart, isCompare);
     const handleResize = () => {
       // window.innerWidth < 700;
       const summarybtn = document.getElementById("summarySubmit");
       //console.log(window.innerWidth, size, singleFigWidth);
-      console.log("showChart: ", showChartRef.current, compareRef.current);
+      //console.log("showChart: ", showChartRef.current, compareRef.current);
       if (!compareRef.current) {
         if (!showChartRef.current) {
           if (window.innerWidth < 1200 && size > 850) {
@@ -570,7 +588,7 @@ export default function CirclePlotTest(props) {
                     </Button>
                   </Col> */}
                   <Col>
-                    <Button variant="link" onClick={handleBackChromo}>
+                    <Button variant="link" onClick={minFigSize}>
                       Back to chromosome
                     </Button>
                   </Col>
