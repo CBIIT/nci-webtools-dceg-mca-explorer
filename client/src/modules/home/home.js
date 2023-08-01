@@ -1,20 +1,50 @@
 import Container from "react-bootstrap/Container";
-import genomeImage from "./mca.jpeg";
+import genomeImage from "./mca1.jpeg";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import { Link } from "react-router-dom";
 import "./home.scss";
-
+//text-light to text-dark
 export default function Home({ links }) {
   return (
     <>
-      <div style={{ marginTop: "5px", padding: "0px" }} className="banner-container text-center d-none d-md-block">
-        <img src={genomeImage} alt="genome" style={{ width: "100%", height: "250%" }}></img>
+      <div className="bg-primary-dark">
+        <div className="cover-image" style={{ height: "500px", width: "100%", backgroundImage: `url(${genomeImage})` }}>
+          <Container>
+            <Row>
+              <Col md={6}>
+                <div className="d-flex h-100 align-items-center my-4">
+                  <div style={{ marginTop: "100px" }}>
+                    <h1 className="font-title text-dark mb-3">mCA Explorer</h1>
+                    <hr className="border-dark" />
+                    <p className="lead text-dark">mCA Explorer - Mosaic Chromosomal Alteration Explorer</p>
+                    <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
+                      Explore mosaic
+                    </Link>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </Container>
+        </div>
       </div>
-      <Container fluid className=" py-8 align-middle text-cernter" style={{ display: "block", width: "50%" }}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-        pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-        laborum.
-      </Container>
+
+      <div className="bg-light py-4">
+        <Container>
+          <Row>
+            <Col>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+                dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+                ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
+                deserunt mollit anim id est laborum.
+              </p>
+            </Col>
+          </Row>
+        </Container>
+      </div>
+
       <div className="bg-white text-center">
         <div
           className="bg-light text-light text-center"

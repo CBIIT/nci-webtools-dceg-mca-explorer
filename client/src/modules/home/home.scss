@@ -13,6 +13,13 @@
   }
 }
 
+.cover-image {
+  background-attachment: fixed;
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size:cover;
+}
+
 a {
   font-weight: 500;
 }
