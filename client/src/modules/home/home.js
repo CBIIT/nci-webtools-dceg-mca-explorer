@@ -1,16 +1,12 @@
 import Container from "react-bootstrap/Container";
-import Card from "react-bootstrap/Card";
-import genomeImage from "./mosaic2.jpeg";
-import downloadsimg from "./downloads.svg";
-import gwasimg from "./gwas.svg";
-import { Button, Row, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import genomeImage from "./mca.jpeg";
 import "./home.scss";
+
 export default function Home({ links }) {
   return (
     <>
       <div style={{ marginTop: "5px", padding: "0px" }} className="banner-container text-center d-none d-md-block">
-        <img src={genomeImage} alt="genome" style={{ width: "100%", height: "100%" }}></img>
+        <img src={genomeImage} alt="genome" style={{ width: "100%", height: "250%" }}></img>
       </div>
       <Container fluid className=" py-8 align-middle text-cernter" style={{ display: "block", width: "50%" }}>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore

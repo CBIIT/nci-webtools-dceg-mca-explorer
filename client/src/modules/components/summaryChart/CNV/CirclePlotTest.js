@@ -98,9 +98,9 @@ export default function CirclePlotTest(props) {
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
 
-  const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
+  const size = browserSize.width < 900 ? minFigSize - 100 : browserSize.width * adjustWidth;
   const compareCircleSize = size < 900 ? minFigSize : size * (adjustWidth + 0.1);
-  let singleChromeSize = size < 900 ? minFigSize : size * 0.8;
+  let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
   let singleFigWidth = size < 900 ? minFigSize : size * 0.7;
 
   const clearBtn = document.getElementById("clearCompare");
