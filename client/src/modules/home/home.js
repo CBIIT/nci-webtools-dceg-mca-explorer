@@ -1,5 +1,5 @@
 import Container from "react-bootstrap/Container";
-import genomeImage from "./mca1.jpeg";
+import genomeImage from "./mca2.jpeg";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
@@ -15,10 +15,10 @@ export default function Home({ links }) {
               <Col md={6}>
                 <div className="d-flex h-100 align-items-center my-4">
                   <div style={{ marginTop: "100px" }}>
-                    <h1 className="font-title text-dark mb-3">mCA Explorer</h1>
-                    <hr className="border-dark" />
-                    <p className="lead text-dark">mCA Explorer - Mosaic Chromosomal Alteration Explorer</p>
-                    <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
+                    <h1 className="font-title text-light mb-3">mCA Explorer</h1>
+                    <hr className="border-light" />
+                    <p className="lead text-light">mCA Explorer - Mosaic Chromosomal Alteration Explorer</p>
+                    <Link to="/mosaic" className="btn btn-outline-light text-decoration-none">
                       Explore mosaic
                     </Link>
                   </div>
