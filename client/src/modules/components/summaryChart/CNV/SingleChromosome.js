@@ -140,8 +140,8 @@ function SingleChromosome(props) {
         setHeight(800);
       }
       if (window.innerWidth < 980 && sizeRef.current > 700) {
-        setWidth(550);
-        setHeight(550);
+        setWidth(450);
+        setHeight(450);
       }
     }
   };
