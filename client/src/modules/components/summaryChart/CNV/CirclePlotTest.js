@@ -686,7 +686,7 @@ export default function CirclePlotTest(props) {
               )}
             </div>
             <div>
-              <Row className="justify-content-center">
+              <Row className="justify-content-center g-0">
                 <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
                   {circleA ? (
                     <CircosPlotCompare
