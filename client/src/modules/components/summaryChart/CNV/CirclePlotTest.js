@@ -13,6 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
+import { initialY } from "../../../mosaicTiler/rangeView";
 
 const hovertip = (d) => {
   return (
@@ -454,17 +455,57 @@ export default function CirclePlotTest(props) {
     var imageA = imageAs.querySelectorAll("svg")[0];
     var imageBs = document.getElementById("B");
     var imageB = imageBs.querySelectorAll("svg")[0];
+    const initalY = 15;
+    const legendSize = 3;
+    const legendY = 5;
+    const legendY2 = 8;
+    const legendX = 8;
     htmlToImage
       .toPng(imageA, { quality: 0.8, pixelRatio: 0.8, backgroundColor: "white" })
       .then((dataUrl1) => {
         htmlToImage.toPng(imageB, { quality: 0.8, pixelRatio: 0.8, backgroundColor: "white" }).then((dataUrl2) => {
           const pdf = new jsPDF();
           const width = pdf.internal.pageSize.getWidth() / 2;
-          pdf.text(titleA, 0.3 * width, 10);
-          pdf.text(titleB, 1.25 * width, 10);
-          pdf.addImage(dataUrl1, "PNG", 0, 15, width, width);
-          pdf.addImage(dataUrl2, "PNG", width, 15, width, width);
-          pdf.save("comparison.pdf");
+          pdf.setFillColor(0, 128, 0);
+          pdf.rect(legendX, legendY, legendSize, legendSize, "F");
+          pdf.setFontSize(10);
+          pdf.setTextColor(0, 128, 0);
+          pdf.text("Gain", legendX + 5, legendY2);
+
+          pdf.setFillColor(0, 0, 255);
+          pdf.rect(legendX + 20, legendY, legendSize, legendSize, "F");
+          pdf.setTextColor(0, 0, 255);
+          pdf.text("Neutral", legendX + 25, legendY2);
+
+          pdf.setFillColor(255, 0, 0);
+          pdf.rect(legendX + 40, legendY, legendSize, legendSize, "F");
+          pdf.setTextColor(255, 0, 0);
+          pdf.text("Loss", legendX + 45, legendY2);
+
+          pdf.setFillColor(128, 128, 128);
+          pdf.rect(legendX + 60, legendY, legendSize, legendSize, "F");
+          pdf.setTextColor(128, 128, 128);
+          pdf.text("Undetermined", legendX + 65, legendY2);
+
+          pdf.setTextColor(0, 0, 0);
+          pdf.setFontSize(10);
+          if (chromesomeId) pdf.text("Chromesome " + chromesomeId, width, initalY, { align: "center" });
+          pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
+          pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
+          pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
+          pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
+          //pdf.save("comparison.pdf");zoomRangeA
+          console.log(zoomRangeA["xaxis.range[0]"]);
+          if (zoomRangeA !== null && zoomRangeA["xaxis.range[0]"] !== undefined) {
+            const zoomRanges =
+              Math.trunc(zoomRangeA["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
+              " -- " +
+              Math.trunc(zoomRangeA["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
+
+            pdf.text(zoomRanges, width * 0.5, width + 30, { align: "center" });
+            pdf.text(zoomRanges, width * 1.5, width + 30, { align: "center" });
+          }
+          setTimeout(() => pdf.save("comparison.pdf"), 500);
           setIsLoaded(false);
         });
       })
@@ -484,7 +525,7 @@ export default function CirclePlotTest(props) {
           const pdf = new jsPDF();
           const width = pdf.internal.pageSize.getWidth();
           //const height = pdf.internal.pageSize.getHeight();
-
+          //pdf.text("", width *0.5, 10, { align: "center" });
           pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
           pdf.addImage(dataUrl2, "PNG", 0, 10, width, width);
           pdf.save("summaryCircle.pdf");
@@ -495,25 +536,6 @@ export default function CirclePlotTest(props) {
         console.error("oops, something went wrong!", error);
       });
   };
-
-  //if window size is small, stack circle comparison plots and needs more space above footer
-  //chromosome comparison plots can automatically stack and no need extra space
-  // useEffect(() => {
-  //   let ifExtraSpace = false;
-  //   const temp = document.getElementsByClassName("tableRow");
-  //   if (temp.length == 0) document.getElementById("footer").style.marginTop = "0px";
-  //   if (temp.length > 0 && window.innerWidth < 2000) document.getElementById("footer").style.marginTop = "700px";
-  //   const handleResize = () => {
-  //     ifExtraSpace = window.innerWidth < 2000;
-  //     //console.log(ifExtraSpace);
-  //     if (temp.length > 0 && ifExtraSpace) document.getElementById("footer").style.marginTop = "700px";
-  //     if (!ifExtraSpace) document.getElementById("footer").style.marginTop = "0px";
-  //   };
-  //   window.addEventListener("resize", handleResize);
-  //   return () => {
-  //     window.removeEventListener("resize", handleResize);
-  //   };
-  // });
 
   useEffect(() => {
     //console.log("showChart: ", showChart, isCompare);
@@ -582,11 +604,6 @@ export default function CirclePlotTest(props) {
                   )}
                 </div>
                 <Row className="justify-content-center">
-                  {/* <Col>
-                    <Button variant="link" onClick={handleBack}>
-                      Back to circle summary
-                    </Button>
-                  </Col> */}
                   <Col>
                     <Button variant="link" onClick={handleBackChromo}>
                       Back to chromosome
@@ -635,19 +652,6 @@ export default function CirclePlotTest(props) {
                     </div>
                   </Col>
                 </Row>
-
-                {/* {form.compare && (
-                  <Row className="">
-                    <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-                      <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
-                        <ExcelSheet dataSet={exportTable(tableData)} name="compare" />
-                      </ExcelFile>
-                    </div>
-                    <div className="mx-3">
-                      <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
-                    </div>
-                  </Row>
-                )} */}
               </>
             )}
             {!form.compare && (
@@ -732,19 +736,6 @@ export default function CirclePlotTest(props) {
                   )}
                 </Col>
               </Row>
-
-              {/* {form.compare && !showChart && (
-                <Row className="tableRow">
-                  <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-                    <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
-                      <ExcelSheet dataSet={exportTable(tableData)} name="compare" />
-                    </ExcelFile>
-                  </div>
-                  <div className="mx-3">
-                    <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
-                  </div>
-                </Row>
-              )} */}
             </div>
           </div>
         ) : (
@@ -781,20 +772,6 @@ export default function CirclePlotTest(props) {
           </div>
         )}
       </div>
-      {/* <div>
-        {form.compare && !showChart && (
-          <Row className="tableRow">
-            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-              <ExcelFile filename={"Compare"} element={<a href="javascript:void(0)">Export Data</a>}>
-                <ExcelSheet dataSet={exportTable(tableData)} name="compare" />
-              </ExcelFile>
-            </div>
-            <div className="mx-3">
-              <Table columns={Columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
-            </div>
-          </Row>
-        )}
-      </div> */}
     </Container>
   );
 }

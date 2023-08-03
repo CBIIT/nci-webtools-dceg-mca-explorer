@@ -134,7 +134,7 @@ function SingleChromosome(props) {
   const handleResize = () => {
     const container = ref.current;
     if (props.size !== undefined && container) {
-      console.log(props.size, sizeRef.current, window.innerWidth);
+      //console.log(props.size, sizeRef.current, window.innerWidth);
       if (window.innerWidth > 980 && sizeRef.current < 700) {
         setWidth(800);
         setHeight(800);
