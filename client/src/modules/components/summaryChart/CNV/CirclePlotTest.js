@@ -680,7 +680,7 @@ export default function CirclePlotTest(props) {
             <Button variant="link" onClick={handleBack} className="">
               Back to circle summary
             </Button>
-            <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
               {isLoaded ? (
                 <p>Downloading...</p>
               ) : (
