@@ -495,7 +495,7 @@ export default function CirclePlotTest(props) {
           pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
           pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
           //pdf.save("comparison.pdf");zoomRangeA
-          console.log(zoomRangeA["xaxis.range[0]"]);
+          // console.log(zoomRangeA["xaxis.range[0]"]);
           if (zoomRangeA !== null && zoomRangeA["xaxis.range[0]"] !== undefined) {
             const zoomRanges =
               Math.trunc(zoomRangeA["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
