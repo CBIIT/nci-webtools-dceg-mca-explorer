@@ -594,7 +594,7 @@ export default function CirclePlotTest(props) {
             <p>Chromosome {chromesomeId}</p>
             {form.compare && (
               <>
-                <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+                <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                   {isLoaded ? (
                     <p>Downloading...</p>
                   ) : (
@@ -663,7 +663,7 @@ export default function CirclePlotTest(props) {
                 </Row>
 
                 <Row className="justify-content-center">
-                  <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
+                  <Col className="col-xl-12 d-flex justify-content-center align-items-center">
                     <SingleChromosome
                       data={data}
                       chromesomeId={chromesomeId}
@@ -740,7 +740,7 @@ export default function CirclePlotTest(props) {
           </div>
         ) : (
           <div>
-            <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
               {isLoaded ? (
                 <p>Downloading...</p>
               ) : (

@@ -340,24 +340,22 @@ export default function RangeView(props) {
                 <Legend></Legend>
               </Col>
             </Row>
-            <Row className="justify-content-center">
+            <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                <div className="">
-                  <CirclePlotTest
-                    clickedChromoId={handleClickedChromoId}
-                    key={clickedCounter}
-                    loss={loss}
-                    loh={loh}
-                    gain={gain}
-                    undetermined={undetermined}
-                    chrx={chrX}
-                    chry={chrY}
-                    figureHeight={figureHeight}
-                    onHeightChange={handleheightChange}
-                    onResetHeight={resetHeight}
-                    onClickedChr={handleClickChr}
-                    getData={handleDataChange}></CirclePlotTest>
-                </div>
+                <CirclePlotTest
+                  clickedChromoId={handleClickedChromoId}
+                  key={clickedCounter}
+                  loss={loss}
+                  loh={loh}
+                  gain={gain}
+                  undetermined={undetermined}
+                  chrx={chrX}
+                  chry={chrY}
+                  figureHeight={figureHeight}
+                  onHeightChange={handleheightChange}
+                  onResetHeight={resetHeight}
+                  onClickedChr={handleClickChr}
+                  getData={handleDataChange}></CirclePlotTest>
               </Col>
             </Row>
             <Row>

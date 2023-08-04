@@ -1,26 +1,23 @@
-import Spinner from "react-bootstrap/Spinner";
-import classNames from "classnames";
-
 export default function Legend(props) {
   const xp = 10;
   const yp = 10;
   const xw = 8;
   const xx = 8;
-  const yy = 0;
+  const yy = 10;
 
   return (
-    <div className="legendContainer">
+    <div className="">
       <svg
         version="1.1"
         baseProfile="full"
         className="legendClass"
-        width="100%"
-        height="50"
+        width="220"
+        height="30"
         xlmns="http://www/w3/org/2000/svg">
-        <rect x={yp} y={0} fill="green" width={xw} height={yp} />
-        <rect x={5 * yp} y={0} fill="blue" width={xw} height={yp} />
-        <rect x={10 * yp} y={0} fill="red" width={xw} height={yp} />
-        <rect x={14 * yp} y={0} fill="#ABABAB" width={xw} height={yp} />
+        <rect x={yp} y={0} fill="green" width={xw} height={yy} />
+        <rect x={5 * yp} y={0} fill="blue" width={xw} height={yy} />
+        <rect x={10 * yp} y={0} fill="red" width={xw} height={yy} />
+        <rect x={14 * yp} y={0} fill="#ABABAB" width={xw} height={yy} />
         <text style={{ fontSize: 10 }} textAnchor="right" x={yp + 10} y={xx}>
           Gain
         </text>
