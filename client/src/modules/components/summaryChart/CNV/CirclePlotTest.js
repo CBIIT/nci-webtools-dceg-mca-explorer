@@ -13,7 +13,6 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { initialY } from "../../../mosaicTiler/rangeView";
 
 const hovertip = (d) => {
   return (
@@ -80,6 +79,8 @@ export default function CirclePlotTest(props) {
   const [figureHeight, setFigureHeight] = useState(0);
   //
   const [isLoaded, setIsLoaded] = useState(false);
+  const [zoomRange, setZoomRange] = useState();
+  const [historyRange, setHistoryRange] = useState([]);
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
@@ -215,6 +216,7 @@ export default function CirclePlotTest(props) {
   const handleBack = () => {
     setShowChart(false);
     sendClickedId(-1);
+    setZoomRange(null);
     props.onClickedChr(false);
     setIsCompare(false);
     setForm({
@@ -257,7 +259,7 @@ export default function CirclePlotTest(props) {
     setZoomRangeB(null);
     clearBtn.click();
   };
-  const handleZoomChange = (event, group) => {
+  const handleZoomChange = (event, group, lastView) => {
     //Apply the zoom range only to the plot that did not trigger
     if (group === "A") {
       setZoomRangeB(event);
@@ -266,6 +268,18 @@ export default function CirclePlotTest(props) {
     if (group === "B") {
       setZoomRangeA(event);
       //setZoomRangeB(null);
+    }
+    if (lastView !== undefined) {
+      const zr =
+        Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
+        " -- " +
+        Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
+      setZoomRange(zr);
+
+      setHistoryRange([...historyRange, zr]);
+      console.log(historyRange);
+    } else {
+      setZoomRange(null);
     }
   };
 
@@ -496,15 +510,14 @@ export default function CirclePlotTest(props) {
           pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
           //pdf.save("comparison.pdf");zoomRangeA
           // console.log(zoomRangeA["xaxis.range[0]"]);
-          if (zoomRangeA !== null && zoomRangeA["xaxis.range[0]"] !== undefined) {
-            const zoomRanges =
-              Math.trunc(zoomRangeA["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
-              " -- " +
-              Math.trunc(zoomRangeA["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
-
-            pdf.text(zoomRanges, width * 0.5, width + 30, { align: "center" });
-            pdf.text(zoomRanges, width * 1.5, width + 30, { align: "center" });
-          }
+          //if (zoomRangeA !== null && zoomRangeA["xaxis.range[0]"] !== undefined) {
+          // const zoomRanges =
+          //   Math.trunc(zoomRangeA["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
+          //   " -- " +
+          //   Math.trunc(zoomRangeA["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
+          pdf.text(zoomRange, width * 0.5, width + 30, { align: "center" });
+          pdf.text(zoomRange, width * 1.5, width + 30, { align: "center" });
+          //}
           setTimeout(() => pdf.save("comparison.pdf"), 500);
           setIsLoaded(false);
         });
@@ -537,6 +550,16 @@ export default function CirclePlotTest(props) {
       });
   };
 
+  const handleZoomback = () => {
+    //setZoomRange(lastView);
+    const zoombackbtnA = document.getElementById("zoomBackA");
+    const zoombackbtnB = document.getElementById("zoomBackB");
+    zoombackbtnA.click();
+    zoombackbtnB.click();
+    const temp = historyRange.pop();
+    setZoomRange(temp);
+    console.log(historyRange, temp);
+  };
   useEffect(() => {
     //console.log("showChart: ", showChart, isCompare);
     const handleResize = () => {
@@ -592,6 +615,30 @@ export default function CirclePlotTest(props) {
           // <div style={{ height: compareCircleSize + figureHeight + 620, left: 0 }}>
           <div>
             <p>Chromosome {chromesomeId}</p>
+            <div style={{ justifyContent: "flex-left" }}>
+              <Button variant="link" onClick={handleBack}>
+                Back to circle chromosomes &#8592;
+              </Button>
+
+              <Button variant="link" onClick={handleBackChromo}>
+                Back to chromosome {chromesomeId} &#8592;
+              </Button>
+
+              {(zoomRangeA !== null && zoomRangeA["xaxis.range[0]"] !== undefined) ||
+              (zoomRangeB !== null && zoomRangeB["xaxis.range[0]"] !== undefined) ? (
+                zoomRange !== undefined ? (
+                  <Button variant="link" onClick={handleZoomback}>
+                    Previous Zoom {zoomRange}
+                  </Button>
+                ) : (
+                  <Button variant="link" onClick={handleZoomback}>
+                    Previous Zoom
+                  </Button>
+                )
+              ) : (
+                ""
+              )}
+            </div>
             {form.compare && (
               <>
                 <div className="d-flex" style={{ justifyContent: "flex-end" }}>
@@ -603,13 +650,6 @@ export default function CirclePlotTest(props) {
                     </Button>
                   )}
                 </div>
-                <Row className="justify-content-center">
-                  <Col>
-                    <Button variant="link" onClick={handleBackChromo}>
-                      Back to chromosome
-                    </Button>
-                  </Col>
-                </Row>
                 <Row className="justify-content-center">
                   <Col
                     className="col d-flex justify-content-center"
@@ -656,12 +696,6 @@ export default function CirclePlotTest(props) {
             )}
             {!form.compare && (
               <>
-                <Row className="justify-content-center">
-                  <Button variant="link" onClick={handleBack}>
-                    Back to circle summary
-                  </Button>
-                </Row>
-
                 <Row className="justify-content-center">
                   <Col className="col-xl-12 d-flex justify-content-center align-items-center">
                     <SingleChromosome

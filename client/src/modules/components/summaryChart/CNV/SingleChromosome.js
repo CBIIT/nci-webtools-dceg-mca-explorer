@@ -80,7 +80,7 @@ function SingleChromosome(props) {
       //difficient zoom in on single chromosome  or on comparison by name
       if (props.details !== undefined && name === undefined) {
         //if (props.zoomRange === null) {
-        props.onZoomChange(event, props.details);
+        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - 1]);
         //}
       }
       if (event["xaxis.autorange"]) {
@@ -270,7 +270,7 @@ function SingleChromosome(props) {
         {props.title}
         {props.title && <br></br>}
         <Button id={"zoomBack" + props.details} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
-          {zoomHistory.length > 0 ? backtoprev : ""}
+          {/* {zoomHistory.length > 0 ? backtoprev : ""} */}
         </Button>
         <div id={props.details}>
           <Plot

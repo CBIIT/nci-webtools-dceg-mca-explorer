@@ -1,5 +1,5 @@
 import Container from "react-bootstrap/Container";
-import genomeImage from "./mca2.jpeg";
+import genomeImage from "./mca1.jpeg";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
@@ -15,10 +15,10 @@ export default function Home({ links }) {
               <Col md={6}>
                 <div className="d-flex h-100 align-items-center my-4">
                   <div style={{ marginTop: "10px" }}>
-                    <h2 className="font-title text-light mb-3">mCA Explorer</h2>
-                    <hr className="border-light" />
-                    <p className="lead text-light">Interactive mCA visualization and analysis in large populations.</p>
-                    <Link to="/mosaic" className="btn btn-outline-light text-decoration-none">
+                    <h2 className="font-title text-dark mb-3">mCA Explorer</h2>
+                    <hr className="border-dark" />
+                    <p className="lead text-dark">Interactive mCA visualization and analysis in large populations.</p>
+                    <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
                       Explore mosaic
                     </Link>
                   </div>
@@ -42,6 +42,49 @@ export default function Home({ links }) {
             </Col>
           </Row>
         </Container>
+        <div className="bg-egg ">
+          <div className="container  text-dark">
+            <h2 className="h4">Credits</h2>
+            <p>
+              Mitchell Machiela, Hubbard Aubrey, Chapman Lesley and colleagues at the{" "}
+              <a href="https://dceg.cancer.gov/" target="_blank">
+                Division of Cancer Epidemiology and Genetics (DCEG)
+              </a>
+              ,{" "}
+              <a href="https://www.cancer.gov/" target="_blank">
+                National Cancer Institute (NCI)
+              </a>
+              ,{" "}
+              <a href="https://www.nih.gov/" target="_blank">
+                National Institutes of Health (NIH)
+              </a>
+              , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Brian Park, Xiaozheng Yao, Ben
+              Chen, Kanigicherla Madhu, Kai-Ling Chen and staff at{" "}
+              <a href="https://www.essential-soft.com/" target="_blank">
+                Essential Software Inc.
+              </a>
+              ,{" "}
+              <a href="https://datascience.cancer.gov/" target="_blank">
+                Center for Biomedical Informatics and Information Technology, NCI.
+              </a>
+            </p>
+            {/* Citation: TBD
+          <br /> */}
+            Mosaic Explorer's{" "}
+            <a href="https://github.com/CBIIT/nci-webtools-dceg-plco-atlas" target="_blank" alt="Link to open GitHub">
+              source code
+            </a>{" "}
+            is available under the{" "}
+            <a href="./assets/license.txt" target="_blank" alt="Link to MIT license">
+              MIT license
+            </a>
+            , an{" "}
+            <a href="https://opensource.org" target="_blank" alt="Link to open source initiative">
+              Open Source Initiative
+            </a>{" "}
+            approved license.
+          </div>
+        </div>
       </div>
       {/* 
       <div className="bg-white text-center">
@@ -58,49 +101,6 @@ export default function Home({ links }) {
           <h4 className="container mt-3 text-dark" style={{ fontSize: "16pt" }}></h4>
         </div>
       </div> */}
-      <div className="bg-egg ">
-        <div className="container  text-dark">
-          <h2 className="h4">Credits</h2>
-          <p>
-            Mitchell Machiela, Hubbard Aubrey, Chapman Lesley and colleagues at the{" "}
-            <a href="https://dceg.cancer.gov/" target="_blank">
-              Division of Cancer Epidemiology and Genetics (DCEG)
-            </a>
-            ,{" "}
-            <a href="https://www.cancer.gov/" target="_blank">
-              National Cancer Institute (NCI)
-            </a>
-            ,{" "}
-            <a href="https://www.nih.gov/" target="_blank">
-              National Institutes of Health (NIH)
-            </a>
-            , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Brian Park, Xiaozheng Yao, Ben Chen,
-            Kanigicherla, Madhu, Kai-Ling Chen and staff at{" "}
-            <a href="https://www.essential-soft.com/" target="_blank">
-              Essential Software Inc.
-            </a>
-            ,{" "}
-            <a href="https://datascience.cancer.gov/" target="_blank">
-              Center for Biomedical Informatics and Information Technology, NCI.
-            </a>
-          </p>
-          {/* Citation: TBD
-          <br /> */}
-          Mosaic Explorer's{" "}
-          <a href="https://github.com/CBIIT/nci-webtools-dceg-plco-atlas" target="_blank" alt="Link to open GitHub">
-            source code
-          </a>{" "}
-          is available under the{" "}
-          <a href="./assets/license.txt" target="_blank" alt="Link to MIT license">
-            MIT license
-          </a>
-          , an{" "}
-          <a href="https://opensource.org" target="_blank" alt="Link to open source initiative">
-            Open Source Initiative
-          </a>{" "}
-          approved license.
-        </div>
-      </div>
     </>
   );
 }
