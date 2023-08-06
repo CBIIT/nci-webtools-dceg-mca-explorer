@@ -13,6 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
+import ChromosomeCompare from "./ChromosomeCompare";
 
 const hovertip = (d) => {
   return (
@@ -650,13 +651,25 @@ export default function CirclePlotTest(props) {
                     </Button>
                   )}
                 </div>
+                {/* <ChromosomeCompare
+                  compareCircleSize={compareCircleSize}
+                  onZoomChange={handleZoomChange}
+                  zoomRangeA={zoomRangeA}
+                  zoomRangeB={zoomRangeB}
+                  dataA={groupA}
+                  dataB={groupB}
+                  titleA={titleA}
+                  detailsA="A"
+                  titleB={titleB}
+                  detailsB="B"
+                  chromesomeId={chromesomeId}
+                  width={singleFigWidth}
+                  height={singleFigWidth}
+                  onHeightChange={props.onHeightChange}
+                  onCompareHeightChange={handleCompareHeightChange}></ChromosomeCompare>
+                */}
                 <Row className="justify-content-center">
-                  <Col
-                    className="col d-flex justify-content-center"
-                    xs={12}
-                    md={6}
-                    lg={6}
-                    style={{ width: compareCircleSize }}>
+                  <Col>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
@@ -665,18 +678,14 @@ export default function CirclePlotTest(props) {
                         title={titleA}
                         details="A"
                         chromesomeId={chromesomeId}
-                        width={singleFigWidth}
-                        height={singleFigWidth}
-                        onHeightChange={props.onHeightChange}
-                        onCompareHeightChange={handleCompareHeightChange}></SingleChromosome>
+                        //width={singleFigWidth}
+                        //height={singleFigWidth}
+                        //onHeightChange={props.onHeightChange}
+                        //onCompareHeightChange={handleCompareHeightChange}
+                      ></SingleChromosome>
                     </div>
                   </Col>
-                  <Col
-                    className="col d-flex justify-content-center"
-                    xs={12}
-                    md={6}
-                    lg={6}
-                    style={{ width: compareCircleSize }}>
+                  <Col>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
@@ -685,10 +694,11 @@ export default function CirclePlotTest(props) {
                         title={titleB}
                         details="B"
                         chromesomeId={chromesomeId}
-                        width={singleFigWidth}
-                        height={singleFigWidth}
-                        onHeightChange={props.onHeightChange}
-                        onCompareHeightChange={handleCompareHeightChange}></SingleChromosome>
+                        //width={singleFigWidth}
+                        //height={singleFigWidth}
+                        //onHeightChange={props.onHeightChange}
+                        //onCompareHeightChange={handleCompareHeightChange}
+                      ></SingleChromosome>
                     </div>
                   </Col>
                 </Row>

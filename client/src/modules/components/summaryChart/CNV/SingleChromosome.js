@@ -305,15 +305,17 @@ function SingleChromosome(props) {
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}
-              onHeightChange={props.onHeightChange}></SnpPlot>
+              //</div>onHeightChange={props.onHeightChange}
+            ></SnpPlot>
             <br></br>
             <GenePlot
               width={width}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}
-              onHeightChange={props.onHeightChange}
-              onCompareHeightChange={props.onCompareHeightChange}></GenePlot>
+              //onHeightChange={props.onHeightChange}
+              //</div>onCompareHeightChange={props.onCompareHeightChange}
+            ></GenePlot>
             <br></br>
           </div>
         ) : (

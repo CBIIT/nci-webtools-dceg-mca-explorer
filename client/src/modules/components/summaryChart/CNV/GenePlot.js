@@ -110,8 +110,8 @@ function GenePlot(props) {
     });
   });
   //console.log(props)
-  props.onHeightChange(genePlotHeight + 200);
-  if (props.onCompareHeightChange) props.onCompareHeightChange(genePlotHeight + 200);
+  //props.onHeightChange(genePlotHeight + 200);
+  //if (props.onCompareHeightChange) props.onCompareHeightChange(genePlotHeight + 200);
 
   const data = geneLine;
 
