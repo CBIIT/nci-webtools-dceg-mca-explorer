@@ -79,9 +79,10 @@ function SingleChromosome(props) {
       //trigger synchronize another plot to zoom, make sue only trigger for one plot
       //difficient zoom in on single chromosome  or on comparison by name
       if (props.details !== undefined && name === undefined) {
-        //if (props.zoomRange === null) {
         props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - 1]);
-        //}
+      }
+      if (props.details === undefined && name === undefined) {
+        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - 1]);
       }
       if (event["xaxis.autorange"]) {
         setZoomHistory([]);
@@ -258,24 +259,26 @@ function SingleChromosome(props) {
 
   const prev = zoomHistory[zoomHistory.length - 2];
   let backtoprev = "Back to initial";
-  if (prev != undefined) {
+  if (prev !== undefined) {
     const pxmin = prev["xaxis.range[0]"];
     const pxmax = prev["xaxis.range[1]"];
-    backtoprev = "Back to " + (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
+    backtoprev = (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
   }
+  let btnid = props.details !== undefined ? props.details : "";
+  btnid = "zoomBack" + btnid;
 
   return (
     <>
       <div className="" style={{ justifyContent: "center" }}>
         {props.title}
         {props.title && <br></br>}
-        <Button id={"zoomBack" + props.details} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
-          {/* {zoomHistory.length > 0 ? backtoprev : ""} */}
+        <Button id={btnid} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
+          {zoomHistory.length > 0 ? backtoprev : ""}
         </Button>
         <div id={props.details}>
           <Plot
             data={data}
-            layout={{ ...layout, width, height }}
+            layout={props.size !== undefined ? { ...layout, height, width } : { ...layout, height }}
             //  onInitialized={handleInitialized}
             config={{
               ...defaultConfig,
@@ -309,7 +312,7 @@ function SingleChromosome(props) {
             ></SnpPlot>
             <br></br>
             <GenePlot
-              width={width}
+              // width={width}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}

@@ -218,6 +218,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </Form.Group>
       ) : (
         <Form.Group className="mb-3">
+          <Form.Label className="">Include Chromosome (Optional)</Form.Label>
           <Form.Check
             ref={formRef}
             type="checkbox"
@@ -426,6 +427,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>
             <Accordion.Body>
               <Card.Body>
+                <Form.Label>Please choose attributes to compare:</Form.Label>
                 {compareChecks.map((ck) => (
                   <div key={ck.id}>
                     <label>
@@ -439,9 +441,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                   </div>
                 ))}
                 <br></br>
-                Group A
                 <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
-                Group B
+                <br></br>
                 <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
               </Card.Body>
               <Card.Body>

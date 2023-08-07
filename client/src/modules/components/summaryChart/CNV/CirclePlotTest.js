@@ -80,7 +80,7 @@ export default function CirclePlotTest(props) {
   const [figureHeight, setFigureHeight] = useState(0);
   //
   const [isLoaded, setIsLoaded] = useState(false);
-  const [zoomRange, setZoomRange] = useState();
+  const [zoomRange, setZoomRange] = useState(null);
   const [historyRange, setHistoryRange] = useState([]);
 
   const compareRef = useRef(isCompare);
@@ -235,7 +235,7 @@ export default function CirclePlotTest(props) {
     setChromesomeId(0);
     setFigureHeight(0);
     //clearBtn.click();
-    console.log(window.innerWidth, size);
+    //console.log(window.innerWidth, size);
     const summarybtn2 = document.getElementById("summarySubmit");
     //summarybtn2.click();
     if (window.innerWidth < 1200 && size > 850) {
@@ -270,15 +270,16 @@ export default function CirclePlotTest(props) {
       setZoomRangeA(event);
       //setZoomRangeB(null);
     }
-    if (lastView !== undefined) {
+    // (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
+    console.log("zoomRange:", zoomRange);
+    if (lastView !== undefined && lastView !== null) {
       const zr =
         Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
         " -- " +
         Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
       setZoomRange(zr);
-
       setHistoryRange([...historyRange, zr]);
-      console.log(historyRange);
+      console.log(historyRange, lastView);
     } else {
       setZoomRange(null);
     }
@@ -552,21 +553,26 @@ export default function CirclePlotTest(props) {
   };
 
   const handleZoomback = () => {
-    //setZoomRange(lastView);
     const zoombackbtnA = document.getElementById("zoomBackA");
     const zoombackbtnB = document.getElementById("zoomBackB");
-    zoombackbtnA.click();
-    zoombackbtnB.click();
-    const temp = historyRange.pop();
+    const zoombackbtn = document.getElementById("zoomBack");
+    if (zoombackbtnA !== null) zoombackbtnA.click();
+    if (zoombackbtnB !== null) zoombackbtnB.click();
+    if (zoombackbtn !== null) zoombackbtn.click();
+    let temp = null;
+    if (historyRange.length > 1) {
+      historyRange.pop();
+      temp = historyRange.pop();
+    } else if (historyRange.length <= 1) temp = null;
     setZoomRange(temp);
-    console.log(historyRange, temp);
+    console.log(historyRange, zoomRange);
   };
   useEffect(() => {
     //console.log("showChart: ", showChart, isCompare);
     const handleResize = () => {
       // window.innerWidth < 700;
       const summarybtn = document.getElementById("summarySubmit");
-      console.log(window.innerWidth, size, singleFigWidth);
+      // console.log(window.innerWidth, size, singleFigWidth);
       //console.log("showChart: ", showChartRef.current, compareRef.current);
       if (!compareRef.current) {
         if (!showChartRef.current) {
@@ -620,11 +626,6 @@ export default function CirclePlotTest(props) {
               <Button variant="link" onClick={handleBack}>
                 Back to circle chromosomes &#8592;
               </Button>
-
-              <Button variant="link" onClick={handleBackChromo}>
-                Back to chromosome {chromesomeId} &#8592;
-              </Button>
-
               {form.compare ? (
                 <Button variant="link" onClick={handleBackChromo}>
                   Back to chromosome {chromesomeId} &#8592;
@@ -635,10 +636,6 @@ export default function CirclePlotTest(props) {
               {zoomRange !== null ? (
                 <Button variant="link" onClick={handleZoomback}>
                   Previous Zoom {zoomRange}
-                </Button>
-              ) : zoomRange === "" ? (
-                <Button variant="link" onClick={handleZoomback}>
-                  Previous Zoom
                 </Button>
               ) : (
                 ""
@@ -682,8 +679,8 @@ export default function CirclePlotTest(props) {
                         title={titleA}
                         details="A"
                         chromesomeId={chromesomeId}
-                        //width={singleFigWidth}
-                        //height={singleFigWidth}
+                        width={singleFigWidth}
+                        height={singleFigWidth}
                         //onHeightChange={props.onHeightChange}
                         //onCompareHeightChange={handleCompareHeightChange}
                       ></SingleChromosome>
@@ -698,8 +695,8 @@ export default function CirclePlotTest(props) {
                         title={titleB}
                         details="B"
                         chromesomeId={chromesomeId}
-                        //width={singleFigWidth}
-                        //height={singleFigWidth}
+                        width={singleFigWidth}
+                        height={singleFigWidth}
                         //onHeightChange={props.onHeightChange}
                         //onCompareHeightChange={handleCompareHeightChange}
                       ></SingleChromosome>
@@ -713,6 +710,7 @@ export default function CirclePlotTest(props) {
                 <Row className="justify-content-center">
                   <Col className="col-xl-12 d-flex justify-content-center align-items-center">
                     <SingleChromosome
+                      onZoomChange={handleZoomChange}
                       data={data}
                       chromesomeId={chromesomeId}
                       size={singleChromeSize}
