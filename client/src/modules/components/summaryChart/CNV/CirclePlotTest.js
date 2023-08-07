@@ -625,17 +625,21 @@ export default function CirclePlotTest(props) {
                 Back to chromosome {chromesomeId} &#8592;
               </Button>
 
-              {(zoomRangeA !== null && zoomRangeA["xaxis.range[0]"] !== undefined) ||
-              (zoomRangeB !== null && zoomRangeB["xaxis.range[0]"] !== undefined) ? (
-                zoomRange !== undefined ? (
-                  <Button variant="link" onClick={handleZoomback}>
-                    Previous Zoom {zoomRange}
-                  </Button>
-                ) : (
-                  <Button variant="link" onClick={handleZoomback}>
-                    Previous Zoom
-                  </Button>
-                )
+              {form.compare ? (
+                <Button variant="link" onClick={handleBackChromo}>
+                  Back to chromosome {chromesomeId} &#8592;
+                </Button>
+              ) : (
+                ""
+              )}
+              {zoomRange !== null ? (
+                <Button variant="link" onClick={handleZoomback}>
+                  Previous Zoom {zoomRange}
+                </Button>
+              ) : zoomRange === "" ? (
+                <Button variant="link" onClick={handleZoomback}>
+                  Previous Zoom
+                </Button>
               ) : (
                 ""
               )}
