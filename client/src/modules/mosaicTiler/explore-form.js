@@ -75,7 +75,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       if (allindex == 0 && selection.length > 1) {
         selection.splice(allindex, 1);
       } else if (allindex > 0 && selection.length > 1) {
-        selection = all;
+        selection = [all];
       }
     }
 
