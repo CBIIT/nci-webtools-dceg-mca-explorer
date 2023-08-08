@@ -68,26 +68,33 @@ function SingleChromosome(props) {
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
-    // console.log("zooming...", event);
-    if (event !== undefined && event.dragmode !== "zoom") {
+    //console.log("zooming...", event);
+    if (
+      event !== undefined &&
+      event.dragmode !== "zoom" &&
+      event["autorange"] === undefined &&
+      event["autosize"] === undefined &&
+      event["xaxis.autorange"] === undefined &&
+      event["xaxis.autosize"] === undefined
+    ) {
       const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
       setXMax(xMax);
       setXMin(xMin);
-      //console.log(xMin, xMax);
+      console.log(xMin, xMax);
       xMax - xMin < zoomWindow ? setLoading(true) : setLoading(false);
-      var hnum = 0;
-      if (zoomHistory.length > 1) hnum = 1;
-      else if (zoomHistory.length === 1) hnum = 1;
-      console.log(zoomHistory);
       //trigger synchronize another plot to zoom, make sue only trigger for one plot
       //difficient zoom in on single chromosome  or on comparison by name
-      if (props.details !== undefined && name === undefined) {
-        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - hnum]);
+      if (name === undefined) {
+        if (
+          event["autorange"] ||
+          event["autosize"] ||
+          event["xaxis.autorange"] ||
+          event["xaxis.autosize"] === undefined
+        ) {
+          props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - 1]);
+        }
       }
-      if (props.details === undefined && name === undefined) {
-        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - hnum]);
-      }
-      if (event["xaxis.autorange"]) {
+      if (event["xaxis.autorange"] !== undefined || event["xaxis.autosize"] !== undefined) {
         setZoomHistory([]);
       } else {
         setZoomHistory((prevHistory) => [...prevHistory, event]);
@@ -111,7 +118,6 @@ function SingleChromosome(props) {
       }
       setNewRange([]);
       setZoomHistory([]);
-      console.log(zoomHistory);
     }
   };
 
@@ -252,14 +258,17 @@ function SingleChromosome(props) {
   }, [data]);
 
   const prev = zoomHistory[zoomHistory.length - 2];
-  let backtoprev = "Back to initial";
-  if (prev !== undefined) {
+  let backtoprev = "Previous zoom ";
+  if (prev !== undefined && prev["xaxis.range[0]"] !== undefined) {
     const pxmin = prev["xaxis.range[0]"];
     const pxmax = prev["xaxis.range[1]"];
-    backtoprev = (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
+    backtoprev += (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
   }
   let btnid = props.details !== undefined ? props.details : "";
   btnid = "zoomBack" + btnid;
+  if (zoomHistory.length == 0) backtoprev = "";
+  props.zoomHistory(backtoprev);
+  //console.log(zoomHistory);
 
   return (
     <>
@@ -267,7 +276,7 @@ function SingleChromosome(props) {
         {props.title}
         {props.title && <br></br>}
         <Button id={btnid} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
-          {zoomHistory.length > 0 ? backtoprev : ""}
+          {/* {zoomHistory.length > 0 ? backtoprev : ""} */}
         </Button>
         <div id={props.details}>
           <Plot
@@ -298,7 +307,7 @@ function SingleChromosome(props) {
         {loading && xMax - xMin < zoomWindow ? (
           <div>
             <SnpPlot
-              width={width}
+              width={document.getElementById(props.details).offsetWidth}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}

@@ -14,6 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import ChromosomeCompare from "./ChromosomeCompare";
+import { groupSort } from "d3";
 
 const hovertip = (d) => {
   return (
@@ -96,15 +97,15 @@ export default function CirclePlotTest(props) {
   }, [showChart]);
 
   let adjustWidth = 1;
-  const minFigSize = 550;
+  let minFigSize = window.innerWidth < 600 ? 450 : 550;
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
 
-  const size = browserSize.width < 900 ? minFigSize - 100 : browserSize.width * adjustWidth;
-  const compareCircleSize = size < 900 ? minFigSize : size * (adjustWidth + 0.1);
+  const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
+  const compareCircleSize = minFigSize;
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
-  let singleFigWidth = size < 900 ? minFigSize : size * 0.7;
+  let singleFigWidth = minFigSize;
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -270,19 +271,20 @@ export default function CirclePlotTest(props) {
       setZoomRangeA(event);
       //setZoomRangeB(null);
     }
+
     // (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
-    console.log("zoomRange:", zoomRange);
-    if (lastView !== undefined) {
-      const zr =
-        Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
-        " -- " +
-        Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
-      setZoomRange(zr);
-      setHistoryRange([...historyRange, zr]);
-      console.log(historyRange, lastView);
-    } else {
-      setZoomRange(null);
-    }
+    // console.log("zoomRange:", zoomRange);
+    // if (lastView !== undefined) {
+    //   const zr =
+    //     Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
+    //     " -- " +
+    //     Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
+    //   setZoomRange(zr);
+    //   setHistoryRange([...historyRange, zr]);
+    //   console.log(historyRange, lastView);
+    // } else {
+    //   //setZoomRange(null);
+    // }
   };
 
   let data = [];
@@ -419,6 +421,7 @@ export default function CirclePlotTest(props) {
   }, [groupB]);
   const groupTitle = (group) => {
     let title = "";
+    // console.log(group);
     if (group != undefined) {
       if (group.study !== undefined) {
         group.study.forEach((s) => {
@@ -437,6 +440,27 @@ export default function CirclePlotTest(props) {
       }
       if (group.ancestry !== undefined) {
         group.ancestry.forEach((s) => {
+          title += s.label + ", ";
+        });
+      }
+      if (group.maxAge !== undefined) {
+        if (group.minAge !== undefined) title += "Age(" + group.minAge + "-" + group.maxAge + "), ";
+        else title += "Age(0-" + group.maxAge + "), ";
+      }
+      if (group.maxFraction !== undefined) {
+        if (group.minFraction !== undefined) title += "CF(" + group.minFraction + "-" + group.maxFraction + "), ";
+        else title += "CF(0-" + group.maxAge + "), ";
+      }
+      if (group.smoking !== undefined) {
+        title += "Smoking(";
+        group.smoking.forEach((s, index) => {
+          title += s.label;
+          if (index < group.smoking.length - 1) title += ",";
+        });
+        title += "), ";
+      }
+      if (group.types !== undefined) {
+        group.types.forEach((s) => {
           title += s.label + ", ";
         });
       }
@@ -517,8 +541,8 @@ export default function CirclePlotTest(props) {
           //   Math.trunc(zoomRangeA["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
           //   " -- " +
           //   Math.trunc(zoomRangeA["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
-          pdf.text(zoomRange, width * 0.5, width + 30, { align: "center" });
-          pdf.text(zoomRange, width * 1.5, width + 30, { align: "center" });
+          if (chromesomeId) pdf.text(zoomRange, width * 0.5, width + 30, { align: "center" });
+          if (chromesomeId) pdf.text(zoomRange, width * 1.5, width + 30, { align: "center" });
           //}
           setTimeout(() => pdf.save("comparison.pdf"), 500);
           setIsLoaded(false);
@@ -560,18 +584,21 @@ export default function CirclePlotTest(props) {
     if (zoombackbtnB !== null) zoombackbtnB.click();
     if (zoombackbtn !== null) zoombackbtn.click();
 
-    historyRange.pop();
-    const temp = historyRange.pop();
+    // historyRange.pop();
+    // const temp = historyRange.pop();
 
-    setZoomRange(temp);
-    console.log(historyRange, zoomRange);
+    // setZoomRange(temp);
+    //console.log(historyRange, zoomRange, temp);
+  };
+  const handleZoomHistory = (zoomHistory) => {
+    setZoomRange(zoomHistory);
   };
   useEffect(() => {
     //console.log("showChart: ", showChart, isCompare);
     const handleResize = () => {
       // window.innerWidth < 700;
       const summarybtn = document.getElementById("summarySubmit");
-      // console.log(window.innerWidth, size, singleFigWidth);
+      //console.log(window.innerWidth, size, singleFigWidth);
       //console.log("showChart: ", showChartRef.current, compareRef.current);
       if (!compareRef.current) {
         if (!showChartRef.current) {
@@ -586,6 +613,13 @@ export default function CirclePlotTest(props) {
           singleChromeSize = window.innerWidth * 0.8;
         }
       } else {
+        if (!showChartRef.current) {
+          if (window.innerWidth < 600) {
+            // console.log(window.innerWidth, singleFigWidth);
+            const comparebtn = document.getElementById("compareSubmit");
+            comparebtn.click();
+          }
+        }
       }
     };
     window.addEventListener("resize", handleResize);
@@ -593,6 +627,7 @@ export default function CirclePlotTest(props) {
       window.removeEventListener("resize", handleResize);
     };
   }, [window.innerWidth]);
+
   //console.log(data,dataCompared)
   //only disply 200 events for X and Y
   const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];
@@ -610,8 +645,8 @@ export default function CirclePlotTest(props) {
   let layout_xy = !form.chrX || form.chrX === undefined ? layoutxy.filter((l) => l.label !== "X") : layoutxy;
   layout_xy = !form.chrY || form.chrY === undefined ? layout_xy.filter((l) => l.label !== "Y") : layout_xy;
 
-  singleFigWidth = form.compare ? size * 0.45 : size;
-  singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
+  //singleFigWidth = form.compare ? size * 0.45 : size;
+  //singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
   props.getData(tableData);
 
   return (
@@ -632,13 +667,9 @@ export default function CirclePlotTest(props) {
               ) : (
                 ""
               )}
-              {zoomRange !== null ? (
-                <Button variant="link" onClick={handleZoomback}>
-                  Previous Zoom {zoomRange}
-                </Button>
-              ) : (
-                ""
-              )}
+              <Button variant="link" onClick={handleZoomback}>
+                {zoomRange}
+              </Button>
             </div>
             {form.compare && (
               <>
@@ -680,6 +711,7 @@ export default function CirclePlotTest(props) {
                         chromesomeId={chromesomeId}
                         width={singleFigWidth}
                         height={singleFigWidth}
+                        zoomHistory={handleZoomHistory}
                         //onHeightChange={props.onHeightChange}
                         //onCompareHeightChange={handleCompareHeightChange}
                       ></SingleChromosome>
@@ -696,6 +728,7 @@ export default function CirclePlotTest(props) {
                         chromesomeId={chromesomeId}
                         width={singleFigWidth}
                         height={singleFigWidth}
+                        zoomHistory={handleZoomHistory}
                         //onHeightChange={props.onHeightChange}
                         //onCompareHeightChange={handleCompareHeightChange}
                       ></SingleChromosome>
@@ -711,8 +744,10 @@ export default function CirclePlotTest(props) {
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       data={data}
+                      details={"One"}
                       chromesomeId={chromesomeId}
                       size={singleChromeSize}
+                      zoomHistory={handleZoomHistory}
                       onHeightChange={props.onHeightChange}></SingleChromosome>
                   </Col>
                 </Row>

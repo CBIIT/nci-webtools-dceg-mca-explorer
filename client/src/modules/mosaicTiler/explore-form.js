@@ -259,26 +259,6 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <Accordion.Item eventKey="0">
           <Accordion.Header style={{ backgroundColor: "#343a40" }}>Optional Fields</Accordion.Header>
           <Accordion.Body>
-            {/* {form.chromosome.length >=0 ? <Form.Group className="mb-3" controlId="start">
-                <Form.Label className="required">Event Start Position</Form.Label>
-                <Form.Control
-                name="start"
-                type="number"
-                value={form.start}
-                onChange={handleChange}
-                min="0"
-              />
-            </Form.Group> : <></>}
-            {form.chromosome.length >=0 ? <Form.Group className="mb-3" controlId="end">
-              <Form.Label className="required">Event End Position</Form.Label>
-              <Form.Control
-                name="end"
-                type="number"
-                value={form.end}
-                onChange={handleChange}
-                min="0"
-              />
-            </Form.Group> : <></>} */}
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
               <Select
