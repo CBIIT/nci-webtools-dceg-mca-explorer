@@ -74,12 +74,7 @@ export const defaultFormState = {
   submitted: false,
   chrX: false,
   chrY: false,
-  types: [
-    { value: "loh", label: "CN-LOH" },
-    { value: "loss", label: "Loss" },
-    { value: "gain", label: "Gain" },
-    { value: "undetermined", label: "Undetermined" },
-  ],
+  types: [{ value: "all", label: "All Types" }],
   compare: false,
   minAge: "",
   maxAge: "",

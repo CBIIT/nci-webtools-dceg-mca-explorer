@@ -88,6 +88,7 @@ export default function RangeView(props) {
     setChrX([]);
     setChrY([]);
     //setLoading(true)
+
     const response = await axios.post("api/opensearch/mca", {
       dataset: qdataset,
       sex: qform.sex,
@@ -150,10 +151,17 @@ export default function RangeView(props) {
       }
     });
     // setLoading(false)
-    if (form.types.find((e) => e.value === "gain")) setGain(gainTemp);
-    if (form.types.find((e) => e.value === "loss")) setLoss(lossTemp);
-    if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
-    if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
+    if (form.types.find((e) => e.value === "all")) {
+      setGain(gainTemp);
+      setLoss(lossTemp);
+      setLoh(lohTemp);
+      setUndetermined(undeterTemp);
+    } else {
+      if (form.types.find((e) => e.value === "gain")) setGain(gainTemp);
+      if (form.types.find((e) => e.value === "loss")) setLoss(lossTemp);
+      if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
+      if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
+    }
     setChrX(chrXTemp);
     setChrY(chrYTemp);
   }

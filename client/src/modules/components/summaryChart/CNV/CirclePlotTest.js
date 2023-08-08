@@ -272,7 +272,7 @@ export default function CirclePlotTest(props) {
     }
     // (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
     console.log("zoomRange:", zoomRange);
-    if (lastView !== undefined && lastView !== null) {
+    if (lastView !== undefined) {
       const zr =
         Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
         " -- " +
@@ -559,11 +559,10 @@ export default function CirclePlotTest(props) {
     if (zoombackbtnA !== null) zoombackbtnA.click();
     if (zoombackbtnB !== null) zoombackbtnB.click();
     if (zoombackbtn !== null) zoombackbtn.click();
-    let temp = null;
-    if (historyRange.length > 1) {
-      historyRange.pop();
-      temp = historyRange.pop();
-    } else if (historyRange.length <= 1) temp = null;
+
+    historyRange.pop();
+    const temp = historyRange.pop();
+
     setZoomRange(temp);
     console.log(historyRange, zoomRange);
   };

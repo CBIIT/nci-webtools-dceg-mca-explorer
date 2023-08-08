@@ -69,13 +69,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       selection = chromosomes.slice(1);
     }
 
-    if (name === "types" && selection.find((option) => option.value === "all")) {
-      selection = [
-        { value: "loh", label: "CN-LOH" },
-        { value: "loss", label: "Loss" },
-        { value: "gain", label: "Gain" },
-        { value: "undetermined", label: "Undetermined" },
-      ];
+    if (name === "types") {
+      const all = selection.find((option) => option.value === "all");
+      const allindex = selection.indexOf(all);
+      if (allindex == 0 && selection.length > 1) {
+        selection.splice(allindex, 1);
+      } else if (allindex > 0 && selection.length > 1) {
+        selection = all;
+      }
     }
 
     if (name === "study" && selection.find((option) => option.value === "all")) {

@@ -75,14 +75,17 @@ function SingleChromosome(props) {
       setXMin(xMin);
       //console.log(xMin, xMax);
       xMax - xMin < zoomWindow ? setLoading(true) : setLoading(false);
-
+      var hnum = 0;
+      if (zoomHistory.length > 1) hnum = 1;
+      else if (zoomHistory.length === 1) hnum = 1;
+      console.log(zoomHistory);
       //trigger synchronize another plot to zoom, make sue only trigger for one plot
       //difficient zoom in on single chromosome  or on comparison by name
       if (props.details !== undefined && name === undefined) {
-        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - 1]);
+        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - hnum]);
       }
       if (props.details === undefined && name === undefined) {
-        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - 1]);
+        props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - hnum]);
       }
       if (event["xaxis.autorange"]) {
         setZoomHistory([]);
@@ -94,15 +97,6 @@ function SingleChromosome(props) {
   const handleZoomHistory = (event) => {
     if (zoomHistory.length > 1) {
       setZoomHistory((prevHistory) => prevHistory.slice(0, -1));
-      // let bbutton = null;
-      // if (props.details.includes("A")) {
-      //   bbutton = document.getElementById("zoomBackB");
-      //   bbutton.click();
-      // }
-      // if (props.details.includes("B")) {
-      //   bbutton = document.getElementById("zoomBackA");
-      //   bbutton.click();
-      // }
     } else {
       if (props.details != undefined) {
         let resetBtnA = null;
@@ -115,9 +109,9 @@ function SingleChromosome(props) {
         let resetBtn = document.querySelectorAll('a[data-val*="reset"]')[0];
         resetBtn.click();
       }
-
       setNewRange([]);
       setZoomHistory([]);
+      console.log(zoomHistory);
     }
   };
 
