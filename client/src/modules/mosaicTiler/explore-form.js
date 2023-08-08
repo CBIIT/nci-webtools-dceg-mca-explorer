@@ -72,6 +72,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     if (name === "types") {
       const all = selection.find((option) => option.value === "all");
       const allindex = selection.indexOf(all);
+      //if all selected, then another option select, remove all
+      //if other option selected, and select all again, then remove other, keep all
       if (allindex == 0 && selection.length > 1) {
         selection.splice(allindex, 1);
       } else if (allindex > 0 && selection.length > 1) {
