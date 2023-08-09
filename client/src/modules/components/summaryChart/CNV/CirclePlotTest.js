@@ -105,7 +105,7 @@ export default function CirclePlotTest(props) {
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
   const compareCircleSize = minFigSize;
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
-  let singleFigWidth = size < 900 ? minFigSize : size * 0.7;
+  let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -700,7 +700,7 @@ export default function CirclePlotTest(props) {
                   onCompareHeightChange={handleCompareHeightChange}></ChromosomeCompare>
                 */}
                 <Row className="justify-content-center">
-                  <Col>
+                  <Col xs={12} md={6} lg={6}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}
@@ -717,7 +717,7 @@ export default function CirclePlotTest(props) {
                       ></SingleChromosome>
                     </div>
                   </Col>
-                  <Col>
+                  <Col xs={12} md={6} lg={6}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
                         onZoomChange={handleZoomChange}

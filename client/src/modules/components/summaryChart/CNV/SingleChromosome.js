@@ -281,9 +281,9 @@ function SingleChromosome(props) {
         <div id={props.details}>
           <Plot
             data={data}
-            // layout={props.size !== undefined ? { ...layout, height, width } : { ...layout, height }}
+            layout={props.size !== undefined ? { ...layout, height, width } : { ...layout, height }}
             //  onInitialized={handleInitialized}
-            layout={{ ...layout, height, width }}
+            // layout={{ ...layout, height, width }}
             config={{
               ...defaultConfig,
               toImageButtonOptions: {
