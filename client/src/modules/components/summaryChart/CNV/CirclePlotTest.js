@@ -105,7 +105,7 @@ export default function CirclePlotTest(props) {
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
   const compareCircleSize = minFigSize;
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
-  let singleFigWidth = minFigSize;
+  let singleFigWidth = minFigSize - 150;
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -579,7 +579,7 @@ export default function CirclePlotTest(props) {
   const handleZoomback = () => {
     const zoombackbtnA = document.getElementById("zoomBackA");
     const zoombackbtnB = document.getElementById("zoomBackB");
-    const zoombackbtn = document.getElementById("zoomBack");
+    const zoombackbtn = document.getElementById("zoomBackOne");
     if (zoombackbtnA !== null) zoombackbtnA.click();
     if (zoombackbtnB !== null) zoombackbtnB.click();
     if (zoombackbtn !== null) zoombackbtn.click();

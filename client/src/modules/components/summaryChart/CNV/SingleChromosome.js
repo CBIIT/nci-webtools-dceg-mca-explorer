@@ -281,8 +281,9 @@ function SingleChromosome(props) {
         <div id={props.details}>
           <Plot
             data={data}
-            layout={props.size !== undefined ? { ...layout, height, width } : { ...layout, height }}
+            // layout={props.size !== undefined ? { ...layout, height, width } : { ...layout, height }}
             //  onInitialized={handleInitialized}
+            layout={{ ...layout, height, width }}
             config={{
               ...defaultConfig,
               toImageButtonOptions: {
@@ -307,7 +308,7 @@ function SingleChromosome(props) {
         {loading && xMax - xMin < zoomWindow ? (
           <div>
             <SnpPlot
-              width={document.getElementById(props.details).offsetWidth}
+              width={width}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}
@@ -315,7 +316,7 @@ function SingleChromosome(props) {
             ></SnpPlot>
             <br></br>
             <GenePlot
-              // width={width}
+              width={width}
               xMax={xMax}
               xMin={xMin}
               chr={props.chromesomeId}

@@ -72,7 +72,7 @@ function SnpPlot(props) {
       title: "SNP",
     },
     height: snpPlotHeight,
-    width: props.width,
+    // width: props.width,
     showlegend: false, // turn off the legend icon
     autosize: true, // disable autosize to fix the x-axis zoom issue
     //annotations:annotation,
