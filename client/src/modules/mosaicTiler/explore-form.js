@@ -404,7 +404,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </OverlayTrigger>
       </div>
       <hr></hr>
-      {isOpen && (
+      {/* {isOpen && (
         <Accordion defaultActiveKey="0">
           <Accordion.Item eventKey="0">
             <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>
@@ -448,7 +448,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
-      )}
+      )} */}
     </Form>
   );
 }

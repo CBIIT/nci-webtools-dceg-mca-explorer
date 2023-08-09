@@ -1,9 +1,10 @@
 import { Suspense, useEffect, useState, Text } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loadingState } from "./explore.state";
-import { Button, OverlayTrigger, Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Card, Tabs, Tab } from "react-bootstrap";
 
 import ExploreForm from "./explore-form";
+import CompareForm from "./compare-form";
 import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 
@@ -20,6 +21,7 @@ export default function Explore() {
   const [counter, setCounter] = useState(0);
   const [isOpenCompare, setIsOpenCompare] = useState(false);
   const [clear, setClear] = useState(0);
+  const [tab, setTab] = useState("summary");
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
@@ -63,7 +65,7 @@ export default function Explore() {
   }
 
   function handleClick(value) {
-    setIsOpenCompare(true);
+    //setIsOpenCompare(true);
     //console.log("in explore", value);
   }
 
@@ -74,17 +76,34 @@ export default function Explore() {
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
         <SidebarPanel>
-          <Card className="shadow">
-            <Card.Body>
-              <ExploreForm
-                onSubmit={handleSubmit}
-                onFilter={handleFilter}
-                onClear={handleFilterClear}
-                isOpen={isOpenCompare}
-                onFilterClear
-              />
-            </Card.Body>
-          </Card>
+          <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
+            <Tab eventKey="summary" title="Summary">
+              <Card className="shadow">
+                <Card.Body>
+                  <ExploreForm
+                    onSubmit={handleSubmit}
+                    onFilter={handleFilter}
+                    onClear={handleFilterClear}
+                    isOpen={isOpenCompare}
+                    onFilterClear
+                  />
+                </Card.Body>
+              </Card>
+            </Tab>
+            <Tab eventKey="compare" title="Comparison">
+              <Card className="shadow">
+                <Card.Body>
+                  <CompareForm
+                    onSubmit={handleSubmit}
+                    onFilter={handleFilter}
+                    onClear={handleFilterClear}
+                    isOpen={isOpenCompare}
+                    onFilterClear
+                  />
+                </Card.Body>
+              </Card>
+            </Tab>
+          </Tabs>
         </SidebarPanel>
         <MainPanel>
           <div className="h-100 mb-5 align-self-center">
