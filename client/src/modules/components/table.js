@@ -151,14 +151,17 @@ export default function Table({ columns, data, options, defaultSort }) {
 
           <Pagination className="mb-0">
             <Pagination.First
+              href={`#/`}
               onClick={(e) => {
                 e.preventDefault();
+
                 gotoPage(0);
               }}
               disabled={!canPreviousPage}>
               First
             </Pagination.First>
             <Pagination.Prev
+              href={`#/`}
               onClick={(e) => {
                 e.preventDefault();
                 previousPage();
@@ -167,6 +170,7 @@ export default function Table({ columns, data, options, defaultSort }) {
               Previous
             </Pagination.Prev>
             <Pagination.Next
+              href={`#/`}
               onClick={(e) => {
                 e.preventDefault();
                 nextPage();
@@ -174,7 +178,13 @@ export default function Table({ columns, data, options, defaultSort }) {
               disabled={!canNextPage}>
               Next
             </Pagination.Next>
-            <Pagination.Last onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+            <Pagination.Last
+              href={`#/`}
+              onClick={(e) => {
+                e.preventDefault();
+                gotoPage(pageCount - 1);
+              }}
+              disabled={!canNextPage}>
               Last
             </Pagination.Last>
           </Pagination>
