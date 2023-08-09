@@ -738,20 +738,18 @@ export default function CirclePlotTest(props) {
               </>
             )}
             {!form.compare && (
-              <>
-                <Row className="">
-                  <Col lg={10}>
-                    <SingleChromosome
-                      onZoomChange={handleZoomChange}
-                      data={data}
-                      details={"One"}
-                      chromesomeId={chromesomeId}
-                      size={singleChromeSize}
-                      zoomHistory={handleZoomHistory}
-                      onHeightChange={props.onHeightChange}></SingleChromosome>
-                  </Col>
-                </Row>
-              </>
+              <Row className="">
+                <Col lg={12}>
+                  <SingleChromosome
+                    onZoomChange={handleZoomChange}
+                    data={data}
+                    details={"One"}
+                    chromesomeId={chromesomeId}
+                    size={singleChromeSize}
+                    zoomHistory={handleZoomHistory}
+                    onHeightChange={props.onHeightChange}></SingleChromosome>
+                </Col>
+              </Row>
             )}
           </div>
         ) : form.compare ? (
