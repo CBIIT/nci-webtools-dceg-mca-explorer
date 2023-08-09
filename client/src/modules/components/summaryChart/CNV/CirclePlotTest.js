@@ -105,7 +105,7 @@ export default function CirclePlotTest(props) {
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
   const compareCircleSize = minFigSize;
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
-  let singleFigWidth = minFigSize - 150;
+  let singleFigWidth = size < 900 ? minFigSize : size * 0.7;
 
   const clearBtn = document.getElementById("clearCompare");
   //console.log(browserSize.width, size);
@@ -645,8 +645,8 @@ export default function CirclePlotTest(props) {
   let layout_xy = !form.chrX || form.chrX === undefined ? layoutxy.filter((l) => l.label !== "X") : layoutxy;
   layout_xy = !form.chrY || form.chrY === undefined ? layout_xy.filter((l) => l.label !== "Y") : layout_xy;
 
-  //singleFigWidth = form.compare ? size * 0.45 : size;
-  //singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
+  singleFigWidth = form.compare ? size * 0.45 : size;
+  singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
   props.getData(tableData);
 
   return (
