@@ -259,7 +259,7 @@ export default function CirclePlotTest(props) {
     props.onResetHeight();
     setZoomRangeA(null);
     setZoomRangeB(null);
-    clearBtn.click();
+    //clearBtn.click();
   };
   const handleZoomChange = (event, group, lastView) => {
     //Apply the zoom range only to the plot that did not trigger
@@ -699,7 +699,7 @@ export default function CirclePlotTest(props) {
                   onHeightChange={props.onHeightChange}
                   onCompareHeightChange={handleCompareHeightChange}></ChromosomeCompare>
                 */}
-                <Row className="justify-content-center">
+                <Row className="">
                   <Col xs={12} md={6} lg={6}>
                     <div style={{ position: "sticky", top: 0 }}>
                       <SingleChromosome
@@ -739,8 +739,8 @@ export default function CirclePlotTest(props) {
             )}
             {!form.compare && (
               <>
-                <Row className="justify-content-center">
-                  <Col className="col-xl-12 d-flex justify-content-center align-items-center">
+                <Row className="">
+                  <Col lg={10}>
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       data={data}

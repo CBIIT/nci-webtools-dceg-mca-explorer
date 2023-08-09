@@ -272,7 +272,7 @@ function SingleChromosome(props) {
 
   return (
     <>
-      <div className="" style={{ justifyContent: "center" }}>
+      <div xs={12} md={6} lg={6} className="" style={{ justifyContent: "center" }}>
         {props.title}
         {props.title && <br></br>}
         <Button id={btnid} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
@@ -281,7 +281,7 @@ function SingleChromosome(props) {
         <div id={props.details}>
           <Plot
             data={data}
-            layout={props.size !== undefined ? { ...layout, height, width } : { ...layout, height }}
+            layout={props.size !== undefined ? { ...layout, height } : { ...layout, height }}
             //  onInitialized={handleInitialized}
             // layout={{ ...layout, height, width }}
             config={{
