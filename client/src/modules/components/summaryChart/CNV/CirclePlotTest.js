@@ -82,7 +82,7 @@ export default function CirclePlotTest(props) {
   //
   const [isLoaded, setIsLoaded] = useState(false);
   const [zoomRange, setZoomRange] = useState(null);
-  const [historyRange, setHistoryRange] = useState([]);
+  const [rangeLabel, setRangeLabel] = useState("");
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
@@ -271,18 +271,16 @@ export default function CirclePlotTest(props) {
       setZoomRangeA(event);
       //setZoomRangeB(null);
     }
-
     // (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
     // console.log("zoomRange:", zoomRange);
-    // if (lastView !== undefined) {
-    //   const zr =
-    //     Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
-    //     " -- " +
-    //     Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
-    //   setZoomRange(zr);
-    //   setHistoryRange([...historyRange, zr]);
-    //   console.log(historyRange, lastView);
-    // } else {
+    if (lastView !== undefined) {
+      const zr =
+        Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
+        " -- " +
+        Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
+      setRangeLabel(zr);
+    }
+    //else {
     //   //setZoomRange(null);
     // }
   };
@@ -496,10 +494,10 @@ export default function CirclePlotTest(props) {
     var imageBs = document.getElementById("B");
     var imageB = imageBs.querySelectorAll("svg")[0];
     const initalY = 15;
-    const legendSize = 3;
+    const legendSize = 2;
     const legendY = 5;
-    const legendY2 = 8;
-    const legendX = 8;
+    const legendY2 = 7;
+    const legendX = 150;
     htmlToImage
       .toPng(imageA, { quality: 0.8, pixelRatio: 0.8, backgroundColor: "white" })
       .then((dataUrl1) => {
@@ -508,28 +506,28 @@ export default function CirclePlotTest(props) {
           const width = pdf.internal.pageSize.getWidth() / 2;
           pdf.setFillColor(0, 128, 0);
           pdf.rect(legendX, legendY, legendSize, legendSize, "F");
-          pdf.setFontSize(10);
+          pdf.setFontSize(8);
           pdf.setTextColor(0, 128, 0);
-          pdf.text("Gain", legendX + 5, legendY2);
+          pdf.text("Gain", legendX + 3, legendY2);
 
           pdf.setFillColor(0, 0, 255);
-          pdf.rect(legendX + 20, legendY, legendSize, legendSize, "F");
+          pdf.rect(legendX + 10, legendY, legendSize, legendSize, "F");
           pdf.setTextColor(0, 0, 255);
-          pdf.text("Neutral", legendX + 25, legendY2);
+          pdf.text("Neutral", legendX + 13, legendY2);
 
           pdf.setFillColor(255, 0, 0);
-          pdf.rect(legendX + 40, legendY, legendSize, legendSize, "F");
+          pdf.rect(legendX + 24, legendY, legendSize, legendSize, "F");
           pdf.setTextColor(255, 0, 0);
-          pdf.text("Loss", legendX + 45, legendY2);
+          pdf.text("Loss", legendX + 27, legendY2);
 
           pdf.setFillColor(128, 128, 128);
-          pdf.rect(legendX + 60, legendY, legendSize, legendSize, "F");
+          pdf.rect(legendX + 34, legendY, legendSize, legendSize, "F");
           pdf.setTextColor(128, 128, 128);
-          pdf.text("Undetermined", legendX + 65, legendY2);
+          pdf.text("Undetermined", legendX + 37, legendY2);
 
           pdf.setTextColor(0, 0, 0);
-          pdf.setFontSize(10);
-          if (chromesomeId) pdf.text("Chromesome " + chromesomeId, width, initalY, { align: "center" });
+          pdf.setFontSize(8);
+          if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
           pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
           pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
           pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
@@ -541,8 +539,8 @@ export default function CirclePlotTest(props) {
           //   Math.trunc(zoomRangeA["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
           //   " -- " +
           //   Math.trunc(zoomRangeA["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
-          if (chromesomeId) pdf.text(zoomRange, width * 0.5, width + 30, { align: "center" });
-          if (chromesomeId) pdf.text(zoomRange, width * 1.5, width + 30, { align: "center" });
+          if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
+          if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
           //}
           setTimeout(() => pdf.save("comparison.pdf"), 500);
           setIsLoaded(false);
@@ -658,15 +656,19 @@ export default function CirclePlotTest(props) {
             <p>Chromosome {chromesomeId}</p>
             <div style={{ justifyContent: "flex-left" }}>
               <Button variant="link" onClick={handleBack}>
-                Back to circle chromosomes &#8592;
+                Back to Circos plot
               </Button>
               {form.compare ? (
-                <Button variant="link" onClick={handleBackChromo}>
-                  Back to chromosome {chromesomeId} &#8592;
-                </Button>
+                <>
+                  &#8592;
+                  <Button variant="link" onClick={handleBackChromo}>
+                    Back to chromosome {chromesomeId}
+                  </Button>
+                </>
               ) : (
                 ""
               )}
+              {zoomRange ? <>&#8592;</> : ""}
               <Button variant="link" onClick={handleZoomback}>
                 {zoomRange}
               </Button>
@@ -756,7 +758,7 @@ export default function CirclePlotTest(props) {
           // <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
           <div>
             <Button variant="link" onClick={handleBack} className="">
-              Back to circle summary
+              Back to Circos plot
             </Button>
             <div className="d-flex" style={{ justifyContent: "flex-end" }}>
               {isLoaded ? (
