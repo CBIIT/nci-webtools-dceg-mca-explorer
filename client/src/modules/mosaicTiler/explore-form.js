@@ -219,7 +219,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </Form.Group>
       ) : (
         <Form.Group className="mb-3">
-          <Form.Label className="">Include Chromosome (Optional)</Form.Label>
+          <Form.Label className="">Include Chromosome</Form.Label>
           <Form.Check
             ref={formRef}
             type="checkbox"
@@ -255,7 +255,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       </Form.Group>
       <Accordion>
         <Accordion.Item eventKey="0">
-          <Accordion.Header style={{ backgroundColor: "#343a40" }}>Optional Fields</Accordion.Header>
+          <Accordion.Header>Advanced Fields</Accordion.Header>
           <Accordion.Body>
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>

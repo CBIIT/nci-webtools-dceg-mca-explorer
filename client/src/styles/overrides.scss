@@ -45,3 +45,18 @@ div svg path {
   }
 }
 
+
+.accordion-item {
+  --bs-accordion-border-color: rgb(198, 214, 233)
+}
+.accordion-button{
+  background-color: rgb(220, 230, 243);
+  background-image:none;
+}
+.accordion-button::after {
+  background-image: none;
+}
+.accordion-button:not(.collapsed)::after {
+ 
+  background-image: none;
+}
