@@ -74,7 +74,7 @@ export default function Table({ columns, data, options, defaultSort }) {
   return (
     <>
       <div className="table-responsive">
-        <BootstrapTable responsive {...getTableProps()} striped hover style={{ overflowY: "auto" }} tabIndex="0">
+        <BootstrapTable responsive {...getTableProps()} striped hover>
           <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
@@ -150,16 +150,41 @@ export default function Table({ columns, data, options, defaultSort }) {
           </Form.Control>
 
           <Pagination className="mb-0">
-            <Pagination.First onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            <Pagination.First
+              href={`#/`}
+              onClick={(e) => {
+                e.preventDefault();
+
+                gotoPage(0);
+              }}
+              disabled={!canPreviousPage}>
               First
             </Pagination.First>
-            <Pagination.Prev onClick={() => previousPage()} disabled={!canPreviousPage}>
+            <Pagination.Prev
+              href={`#/`}
+              onClick={(e) => {
+                e.preventDefault();
+                previousPage();
+              }}
+              disabled={!canPreviousPage}>
               Previous
             </Pagination.Prev>
-            <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage}>
+            <Pagination.Next
+              href={`#/`}
+              onClick={(e) => {
+                e.preventDefault();
+                nextPage();
+              }}
+              disabled={!canNextPage}>
               Next
             </Pagination.Next>
-            <Pagination.Last onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+            <Pagination.Last
+              href={`#/`}
+              onClick={(e) => {
+                e.preventDefault();
+                gotoPage(pageCount - 1);
+              }}
+              disabled={!canNextPage}>
               Last
             </Pagination.Last>
           </Pagination>

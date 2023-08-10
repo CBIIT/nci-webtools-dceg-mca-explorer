@@ -112,7 +112,7 @@ export default function Explore() {
                 fallback={
                   <div style={{ color: "red" }}>
                     The server encountered an internal error or misconfiguration. Please contact{" "}
-                    <a href="mailto:NCImosaicTilerWebAdmin@mail.nih.gov">NCImosaicTilerWebAdmin@mail.nih.gov</a> and
+                    <a href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov">NCImcaExplorerWebAdmin@mail.nih.gov</a> and
                     inform them your configuration settings and the time that the error occured.{" "}
                   </div>
                 }>

@@ -91,7 +91,7 @@ function SingleChromosome(props) {
           event["xaxis.autorange"] ||
           event["xaxis.autosize"] === undefined
         ) {
-          props.onZoomChange(event, props.details, zoomHistory[zoomHistory.length - 1]);
+          props.onZoomChange(event, props.details, event);
         }
       }
       if (event["xaxis.autorange"] !== undefined || event["xaxis.autosize"] !== undefined) {
@@ -267,7 +267,16 @@ function SingleChromosome(props) {
   let btnid = props.details !== undefined ? props.details : "";
   btnid = "zoomBack" + btnid;
   if (zoomHistory.length == 0) backtoprev = "";
+  let rangeLable = xMin
+    ? "Chr" +
+      props.chromesomeId +
+      ": " +
+      Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
+      " -- " +
+      Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
+    : "";
   props.zoomHistory(backtoprev);
+
   //console.log(zoomHistory);
 
   return (
@@ -333,14 +342,7 @@ function SingleChromosome(props) {
             </p>
           )
         )}
-        {xMin
-          ? "Chr" +
-            props.chromesomeId +
-            ": " +
-            Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
-            " -- " +
-            Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
-          : ""}
+        {xMin ? rangeLable : ""}
         {/* <ResolutionPlot></ResolutionPlot> */}
       </div>
     </>

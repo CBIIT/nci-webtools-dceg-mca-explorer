@@ -59,7 +59,7 @@ export default function Home({ links }) {
                 National Institutes of Health (NIH)
               </a>
               , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Brian Park, Xiaozheng Yao, Ben
-              Chen, Kanigicherla Madhu, Kai-Ling Chen and staff at{" "}
+              Chen, Madhu Kanigicherla, Kai-Ling Chen and staff at{" "}
               <a href="https://www.essential-soft.com/" target="_blank">
                 Essential Software Inc.
               </a>

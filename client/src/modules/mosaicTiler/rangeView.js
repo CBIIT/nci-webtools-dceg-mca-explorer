@@ -367,8 +367,8 @@ export default function RangeView(props) {
               </Col>
             </Row>
             <Row>
-              <div className="">
-                <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+              <div className="m-3">
+                <div className="d-flex " style={{ justifyContent: "flex-end" }}>
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                     element={<a href="javascript:void(0)">Export Data</a>}>
@@ -379,13 +379,11 @@ export default function RangeView(props) {
                   </ExcelFile>
                 </div>
 
-                <div className="mx-3">
-                  <Table
-                    columns={columns}
-                    defaultSort={[{ id: "start", asc: true }]}
-                    data={tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData}
-                  />
-                </div>
+                <Table
+                  columns={columns}
+                  defaultSort={[{ id: "start", asc: true }]}
+                  data={tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData}
+                />
               </div>
             </Row>
           </div>
@@ -432,8 +430,8 @@ export default function RangeView(props) {
           </Col>
         </Row>
         <Row>
-          <div className="">
-            <div className="d-flex mx-3" style={{ justifyContent: "flex-end" }}>
+          <div className="m-3">
+            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
               <ExcelFile
                 filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                 element={<a href="javascript:void(0)">Export Data</a>}>
@@ -443,14 +441,11 @@ export default function RangeView(props) {
                 />
               </ExcelFile>
             </div>
-
-            <div className="mx-3">
-              <Table
-                columns={columns}
-                defaultSort={[{ id: "start", asc: true }]}
-                data={chromoId >= 0 ? allValue : allValues}
-              />
-            </div>
+            <Table
+              columns={columns}
+              defaultSort={[{ id: "start", asc: true }]}
+              data={chromoId >= 0 ? allValue : allValues}
+            />
           </div>
         </Row>
       </Tab>

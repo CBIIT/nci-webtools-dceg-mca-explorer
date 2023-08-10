@@ -121,8 +121,18 @@ export default function ComparePanel(props) {
   });
 
   return (
-    <div style={showBorder ? { border: "thin solid #dcdcdc" } : {}}>
+    <div
+      style={
+        showBorder ? { border: "thin solid #dcdcdc", boxShadow: "0px 2px 4px rgba(0,0,0,0.2)", padding: "2px" } : {}
+      }>
       <Container>
+        {props.compareItem.find((e) => {
+          return e.isChecked;
+        }) ? (
+          <Form.Label>Group {props.name}</Form.Label>
+        ) : (
+          ""
+        )}
         {props.compareItem[0].isChecked ? (
           <Form.Group className="mb-3">
             <Form.Label>Genotyping Array</Form.Label>
@@ -245,7 +255,7 @@ export default function ComparePanel(props) {
           ""
         )}
         {props.compareItem[5].isChecked ? (
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>Cellular Fraction</Form.Label>
             <Row>
               <Col xl={6}>

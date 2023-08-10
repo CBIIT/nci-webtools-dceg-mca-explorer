@@ -163,9 +163,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const handleDisplayCompare = () => {
     setCompare(true);
   };
-  useEffect(() => {
-    //console.log("display compare", form);
-  });
+
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
@@ -424,8 +422,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                   </div>
                 ))}
                 <br></br>
+
                 <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
                 <br></br>
+
                 <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
               </Card.Body>
               <Card.Body>
