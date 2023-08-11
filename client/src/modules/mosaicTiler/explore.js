@@ -120,7 +120,7 @@ export default function Explore() {
                   {form.submitted ? (
                     <RangeView handleClick={handleClick} />
                   ) : form.compare ? (
-                    <RangeView />
+                    <RangeView handleClick={handleClick} />
                   ) : (
                     <div className="m-2">Please provide configuration settings on the left panel and click Submit.</div>
                   )}

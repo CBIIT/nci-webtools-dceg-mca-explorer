@@ -253,9 +253,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           options={TypeStateOptions}
         />
       </Form.Group>
+
       <Accordion>
         <Accordion.Item eventKey="0">
-          <Accordion.Header>Advanced Fields</Accordion.Header>
+          <Accordion.Header eventKey="0">Advanced settings</Accordion.Header>
           <Accordion.Body>
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>

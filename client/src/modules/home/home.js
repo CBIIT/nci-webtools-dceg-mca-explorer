@@ -1,5 +1,5 @@
 import Container from "react-bootstrap/Container";
-import genomeImage from "./mca1.jpeg";
+import genomeImage from "./mca1aa.jpeg";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
@@ -9,12 +9,12 @@ export default function Home({ links }) {
   return (
     <>
       <div className="bg-primary-dark">
-        <div className="cover-image" style={{ height: "300px", width: "100%", backgroundImage: `url(${genomeImage})` }}>
+        <div className="cover-image" style={{ height: "600px", width: "100%", backgroundImage: `url(${genomeImage})` }}>
           <Container>
             <Row>
               <Col md={6}>
                 <div className="d-flex h-100 align-items-center my-4">
-                  <div style={{ marginTop: "10px" }}>
+                  <div style={{ marginTop: "100px" }}>
                     <h2 className="font-title text-dark mb-3">mCA Explorer</h2>
                     <hr className="border-dark" />
                     <p className="lead text-dark">Interactive mCA visualization and analysis in large populations.</p>
