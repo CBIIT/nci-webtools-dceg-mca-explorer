@@ -50,7 +50,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   function handleSubmit(event) {
     event.preventDefault();
     if (onSubmit) onSubmit(form);
-    handleDisplayCompare();
+    //handleDisplayCompare();
   }
 
   function handleReset(event) {
@@ -60,7 +60,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setIsY(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
-    onSubmit(resetFormState, "reset"); //clean the plot
+    //onSubmit(resetFormState, "reset"); //clean the plot
   }
 
   function handleSelectChange(name, selection = []) {

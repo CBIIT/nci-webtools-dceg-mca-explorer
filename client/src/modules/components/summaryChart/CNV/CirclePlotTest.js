@@ -263,6 +263,13 @@ export default function CirclePlotTest(props) {
     setZoomRangeB(null);
     //clearBtn.click();
   };
+
+  const handleCircosCompareBack = () => {
+    setShowChart(false);
+    setChromesomeId(0);
+    //console.log(circleA);
+  };
+
   const handleZoomChange = (event, group, lastView) => {
     //Apply the zoom range only to the plot that did not trigger
     if (group === "A") {
@@ -293,13 +300,21 @@ export default function CirclePlotTest(props) {
     console.log(form.counterCompare, compareRef);
     if (form.compare) {
       console.log(showChart, form.groupA, form.groupB, compareRef);
-      setCircleA(null);
-      setCircleB(null);
       setIsCompare(true);
+      //if click back to Circos compare from single chromosome, do not clear circos data
+      if (chromesomeId === 0) {
+        setCircleA(null);
+        setCircleB(null);
+      }
       handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
       handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
     } else {
       //console.log("clear form");
+    }
+    if (form.groupA.length === 0 && form.groupB.length === 0) {
+      setCircleA(null);
+      setCircleB(null);
+      console.log("clear circle data");
     }
   }, [form.counterCompare]);
 
@@ -411,6 +426,7 @@ export default function CirclePlotTest(props) {
       setTableData([...circleB.loss, ...circleB.gain, ...circleB.loh, ...circleB.undetermined, ...tableData]);
     }
   }, [circleB]);
+
   useEffect(() => {
     if (groupA !== null) {
       setTableData([...groupA, ...tableData]);
@@ -684,16 +700,26 @@ export default function CirclePlotTest(props) {
         // <div style={{ height: compareCircleSize + figureHeight + 620, left: 0 }}>
         <div>
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-            <Button variant="link" onClick={handleBack}>
-              Circos plot
-            </Button>
+            {form.submitted ? (
+              <Button variant="link" onClick={handleBack}>
+                Circos plot
+              </Button>
+            ) : (
+              ""
+            )}
             {form.compare ? (
-              <>
-                &#8592;
-                <Button variant="link" onClick={handleBackChromo}>
-                  Chromosome {chromesomeId}
+              form.submitted ? (
+                <>
+                  &#8592;
+                  <Button variant="link" onClick={handleBackChromo}>
+                    Chromosome {chromesomeId}
+                  </Button>
+                </>
+              ) : (
+                <Button variant="link" onClick={handleCircosCompareBack}>
+                  Back to Circos compare
                 </Button>
-              </>
+              )
             ) : (
               ""
             )}
@@ -790,9 +816,13 @@ export default function CirclePlotTest(props) {
       ) : form.compare ? (
         // <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
         <div>
-          <Button variant="link" onClick={handleBack} className="">
-            Back to Circos plot
-          </Button>
+          {form.submitted ? (
+            <Button variant="link" onClick={handleBack} className="">
+              Back to Circos plot
+            </Button>
+          ) : (
+            ""
+          )}
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             {isLoaded ? (
               <p>Downloading...</p>

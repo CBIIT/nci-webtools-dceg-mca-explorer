@@ -170,35 +170,35 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
         <Form.Label>Please choose attributes to compare:</Form.Label>
-        {compareChecks.map((ck) => (
-          <div key={ck.id}>
-            <label>
-              <input type="checkbox" checked={ck.isChecked} onChange={() => handleCompareCheckboxChange(ck.id)} />
-              {ck.label}
-            </label>
-          </div>
-        ))}
+        <Card style={{ backgroundColor: "#f8f8f8" }}>
+          {compareChecks.map((ck) => (
+            <div key={ck.id}>
+              <label>
+                <input type="checkbox" checked={ck.isChecked} onChange={() => handleCompareCheckboxChange(ck.id)} />
+                {ck.label}
+              </label>
+            </div>
+          ))}
+        </Card>
         <br></br>
 
         <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
         <br></br>
         <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
         <br></br>
-        <Row>
-          <Col>
-            <Button
-              variant="outline-secondary"
-              className="me-1"
-              type="button"
-              id="clearCompare"
-              onClick={handleFilterClear}>
-              Reset
-            </Button>
-            <Button variant="primary" className="me-1" type="button" id="compareSubmit" onClick={handleFilter}>
-              Compare
-            </Button>
-          </Col>
-        </Row>
+        <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <Button
+            variant="outline-secondary"
+            className="me-3"
+            type="button"
+            id="clearCompare"
+            onClick={handleFilterClear}>
+            Reset
+          </Button>
+          <Button variant="primary" className="me-1" type="button" id="compareSubmit" onClick={handleFilter}>
+            Submit
+          </Button>
+        </div>
       </Form.Group>
     </Form>
   );

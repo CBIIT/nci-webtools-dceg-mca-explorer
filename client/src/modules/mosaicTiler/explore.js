@@ -21,7 +21,7 @@ export default function Explore() {
   const [counter, setCounter] = useState(0);
   const [isOpenCompare, setIsOpenCompare] = useState(false);
   const [clear, setClear] = useState(0);
-  const [tab, setTab] = useState("summary");
+
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
   }, [form.openSidebar]);
@@ -40,7 +40,7 @@ export default function Explore() {
     });
   }
   function handleFilter(event) {
-    //console.log("filter:", event, form);
+    console.log("filter:", event, form);
     setForm({
       ...form,
       compare: true,
@@ -53,15 +53,18 @@ export default function Explore() {
   function handleFilterClear(event) {
     // setForm({ ...form, counterCompare: form.counterCompare + 1 });
     setClear(clear + 1);
+    console.log("filterclear", form);
+    //setForm({ ...event, submitted: false });
   }
   useEffect(() => {
-    setForm({ ...form, groupA: [], groupB: [], counterCompare: form.counterCompare + 1 });
-    //console.log("clear...", form);
+    setForm({ ...form, submitted: false, groupA: [], groupB: [], counterCompare: form.counterCompare + 1 });
+    console.log("clear...", form);
   }, [clear]);
 
   function handleReset(event) {
-    setForm(event);
-    console.log("reset", event);
+    //setForm(event);
+    setForm({ ...form, submitted: false });
+    console.log("reset", form);
   }
 
   function handleClick(value) {
@@ -104,6 +107,7 @@ export default function Explore() {
                     onFilter={handleFilter}
                     onClear={handleFilterClear}
                     isOpen={isOpenCompare}
+                    onReset={handleReset}
                     onFilterClear
                   />
                 </Card.Body>
