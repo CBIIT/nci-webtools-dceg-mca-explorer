@@ -258,11 +258,11 @@ function SingleChromosome(props) {
   }, [data]);
 
   const prev = zoomHistory[zoomHistory.length - 2];
-  let backtoprev = "Previous zoom ";
+  let backtoprev = "Previous Zoom";
   if (prev !== undefined && prev["xaxis.range[0]"] !== undefined) {
     const pxmin = prev["xaxis.range[0]"];
     const pxmax = prev["xaxis.range[1]"];
-    backtoprev += (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
+    backtoprev += " (" + (pxmin / 1000000).toFixed(2) + " MB - " + (pxmax / 1000000).toFixed(2) + "MB)";
   }
   let btnid = props.details !== undefined ? props.details : "";
   btnid = "zoomBack" + btnid;

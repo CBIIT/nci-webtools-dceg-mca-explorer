@@ -67,7 +67,8 @@ export default function RangeView(props) {
 
   //console.log("review:", form);
   useEffect(() => {
-    if (true) {
+    console.log(form);
+    if (form.submitted) {
       handleSubmit(query_value, form);
     } else {
     }
@@ -389,66 +390,70 @@ export default function RangeView(props) {
           </div>
         </div>
       </Tab>
-      <Tab eventKey="scatter" title="Scatter">
-        <Row className="m-3">
-          <Col xl={12}>
-            <Plot
-              data={getScatterData()}
-              layout={{
-                xaxis: {
-                  title: "<b>Chromosomes</b>",
-                  zeroline: false,
-                  titlefont: {
-                    size: 16,
+      {!form.compare ? (
+        <Tab eventKey="scatter" title="Scatter">
+          <Row className="m-3">
+            <Col xl={12}>
+              <Plot
+                data={getScatterData()}
+                layout={{
+                  xaxis: {
+                    title: "<b>Chromosomes</b>",
+                    zeroline: false,
+                    titlefont: {
+                      size: 16,
+                    },
+                    type: "category",
                   },
-                  type: "category",
-                },
-                yaxis: {
-                  title: "<b>Cellular Fraction</b>",
-                  tickfont: {
-                    size: 14,
+                  yaxis: {
+                    title: "<b>Cellular Fraction</b>",
+                    tickfont: {
+                      size: 14,
+                    },
+                    automargin: true,
                   },
-                  automargin: true,
-                },
-                scattergap: 0.7,
-                autosize: true,
-                scattermode: "group",
-                tickmode: "linear",
-                title: "Cell Fraction Plot",
-              }}
-              config={{
-                ...defaultConfig,
-                toImageButtonOptions: {
-                  ...defaultConfig.toImageButtonOptions,
-                  filename: "All_Chromosomes",
-                },
-              }}
-              useResizeHandler
-              className="flex-fill w-100"
-              style={{ height: browserSize.height }}
-            />
-          </Col>
-        </Row>
-        <Row>
-          <div className="m-3">
-            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-              <ExcelFile
-                filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                element={<a href="javascript:void(0)">Export Data</a>}>
-                <ExcelSheet
-                  dataSet={exportTable(chromoId >= 0 ? allValue : allValues)}
-                  name="Autosomal mCA Distribution"
-                />
-              </ExcelFile>
+                  scattergap: 0.7,
+                  autosize: true,
+                  scattermode: "group",
+                  tickmode: "linear",
+                  title: "Cell Fraction Plot",
+                }}
+                config={{
+                  ...defaultConfig,
+                  toImageButtonOptions: {
+                    ...defaultConfig.toImageButtonOptions,
+                    filename: "All_Chromosomes",
+                  },
+                }}
+                useResizeHandler
+                className="flex-fill w-100"
+                style={{ height: browserSize.height }}
+              />
+            </Col>
+          </Row>
+          <Row>
+            <div className="m-3">
+              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+                <ExcelFile
+                  filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet
+                    dataSet={exportTable(chromoId >= 0 ? allValue : allValues)}
+                    name="Autosomal mCA Distribution"
+                  />
+                </ExcelFile>
+              </div>
+              <Table
+                columns={columns}
+                defaultSort={[{ id: "start", asc: true }]}
+                data={chromoId >= 0 ? allValue : allValues}
+              />
             </div>
-            <Table
-              columns={columns}
-              defaultSort={[{ id: "start", asc: true }]}
-              data={chromoId >= 0 ? allValue : allValues}
-            />
-          </div>
-        </Row>
-      </Tab>
+          </Row>
+        </Tab>
+      ) : (
+        ""
+      )}
     </Tabs>
   );
 }

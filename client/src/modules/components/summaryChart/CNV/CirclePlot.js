@@ -47,17 +47,17 @@ export default function CircosPlot(props) {
               config: {
                 innerRadius: 0.05,
                 outerRadius: 1,
-                thickness: 0.1,
+                thickness: 0.5,
                 margin: 0,
                 strokeWidth: 1,
                 strokeColor: "red",
                 direction: "out",
-                logScale: true,
+                // logScale: true,
                 color: "red",
                 backgrounds: [
                   {
                     start: 0,
-                    end: 0,
+                    end: 1,
                     color: "white",
                     opacity: 1,
                   },
@@ -65,14 +65,14 @@ export default function CircosPlot(props) {
                 tooltipContent: function (d) {
                   return hovertip(d);
                 },
-                events: {
-                  mouseover: function (d, i, nodes, event) {
-                    console.log("mouse over");
-                  },
-                  click: function (d, i, nodes, event) {
-                    console.log("mouse over");
-                  },
-                },
+                // events: {
+                //   mouseover: function (d, i, nodes, event) {
+                //     console.log("mouse over");
+                //   },
+                //   click: function (d, i, nodes, event) {
+                //     console.log("mouse over");
+                //   },
+                // },
               },
             },
           ]}
@@ -120,7 +120,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "grey",
                 direction: "out",
-                logScale: true,
+                // logScale: true,
                 color: "grey",
                 backgrounds: [
                   {
@@ -158,7 +158,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "red",
                 direction: "out",
-                logScale: true,
+                // logScale: true,
                 color: "red",
                 backgrounds: [
                   {
@@ -193,7 +193,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "blue",
                 direction: "out",
-                logScale: true,
+                //logScale: true,
                 color: "blue",
                 backgrounds: [
                   {
@@ -219,7 +219,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "green",
                 direction: "out",
-                logScale: true,
+                // logScale: true,
                 color: "green",
                 backgrounds: [
                   {

@@ -7,7 +7,7 @@ import ComparePanel from "./comparePanel";
 import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
 
 const compareArray = CompareArray;
-export default function CompareForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
+export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useState(defaultFormState);
@@ -50,7 +50,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, isOp
   function handleSubmit(event) {
     event.preventDefault();
     if (onSubmit) onSubmit(form);
-    handleDisplayCompare();
+    //handleDisplayCompare();
   }
 
   function handleReset(event) {
@@ -60,7 +60,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, isOp
     setIsY(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
-    onSubmit(resetFormState, "reset"); //clean the plot
+    //onSubmit(resetFormState, "reset"); //clean the plot
   }
 
   function handleSelectChange(name, selection = []) {
@@ -116,13 +116,13 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, isOp
     //mergeForm({ compare: true });
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
-    //setForm({ ...form, compare: true, counterCompare: counter + 1 });
+    setForm({ ...form, compare: true, counterCompare: counter + 1 });
     onFilter({ ...form });
     //onSubmit(form);
   }
 
   const handleFilterClear = (event) => {
-    //console.log("filterclear");
+    console.log("filterclear");
     setCompareChecks(compareArray);
 
     onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
@@ -168,10 +168,6 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, isOp
   });
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
-      {/* <Accordion defaultActiveKey="0">
-        <Accordion.Item eventKey="0">
-          <Accordion.Header style={{ backgroundColor: "#343a40" }}>Compare Group</Accordion.Header>
-          <Accordion.Body> */}
       <Form.Group className="mb-3">
         <Form.Label>Please choose attributes to compare:</Form.Label>
         {compareChecks.map((ck) => (
@@ -183,10 +179,11 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, isOp
           </div>
         ))}
         <br></br>
+
         <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
         <br></br>
         <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
-
+        <br></br>
         <Row>
           <Col>
             <Button
@@ -203,9 +200,6 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, isOp
           </Col>
         </Row>
       </Form.Group>
-      {/* </Accordion.Body>
-        </Accordion.Item>
-      </Accordion> */}
     </Form>
   );
 }

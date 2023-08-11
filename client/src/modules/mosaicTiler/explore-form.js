@@ -122,7 +122,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   }
 
   const handleFilterClear = (event) => {
-    //console.log("filterclear");
+    console.log("filterclear");
     setCompareChecks(compareArray);
 
     onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });

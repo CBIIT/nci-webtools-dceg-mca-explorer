@@ -14,10 +14,10 @@
 }
 
 .cover-image {
-  background-attachment: scroll;
+  background-attachment: local;
     background-position: 50%;
     background-repeat: no-repeat;
-    background-size:cover;
+    background-size:contain;
 }
 
 a {
