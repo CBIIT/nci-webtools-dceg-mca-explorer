@@ -64,6 +64,7 @@ div svg path {
 }
 .accordion-button::before {
   content: "+";
+  background-color: rgb(255, 255, 255);
 }
 
 .accordion-button[aria-expanded="true"]::before {

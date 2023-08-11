@@ -1,7 +1,7 @@
 import { Suspense, useEffect, useState, Text } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loadingState } from "./explore.state";
-import { Container, Card, Tabs, Tab } from "react-bootstrap";
+import { Container, Card, Tabs, Tab, FormCheck } from "react-bootstrap";
 
 import ExploreForm from "./explore-form";
 import CompareForm from "./compare-form";
@@ -31,7 +31,7 @@ export default function Explore() {
   });
 
   function handleSubmit(event, name) {
-    setIsOpenCompare(true);
+    // setIsOpenCompare(true);
     setForm({
       ...event,
       submitted: true,
@@ -68,6 +68,14 @@ export default function Explore() {
     //setIsOpenCompare(true);
     //console.log("in explore", value);
   }
+  function handleCheckboxChange() {
+    setIsOpenCompare(!isOpenCompare);
+    const tabs = document.querySelectorAll("[role=tabpanel");
+    console.log("click pair");
+    if (isOpenCompare) {
+      console.log(tabs);
+    }
+  }
 
   return (
     <Container className="my-3">
@@ -76,9 +84,20 @@ export default function Explore() {
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
         <SidebarPanel>
-          <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-            <Tab eventKey="summary" title="Summary">
-              <Card className="shadow">
+          <Card>
+            <label
+              style={{
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                padding: 10,
+                paddingBottom: 0,
+              }}>
+              <input type="checkbox" checked={isOpenCompare} onChange={handleCheckboxChange}></input>
+              <span style={{ marginLeft: "10px" }}>Pairwise Compare</span>
+            </label>
+            {!isOpenCompare ? (
+              <Card className="shadow" id="summary">
                 <Card.Body>
                   <ExploreForm
                     onSubmit={handleSubmit}
@@ -89,8 +108,7 @@ export default function Explore() {
                   />
                 </Card.Body>
               </Card>
-            </Tab>
-            <Tab eventKey="compare" title="Comparison">
+            ) : (
               <Card className="shadow">
                 <Card.Body>
                   <CompareForm
@@ -102,8 +120,8 @@ export default function Explore() {
                   />
                 </Card.Body>
               </Card>
-            </Tab>
-          </Tabs>
+            )}
+          </Card>
         </SidebarPanel>
         <MainPanel>
           <div className="h-100 mb-5 align-self-center">

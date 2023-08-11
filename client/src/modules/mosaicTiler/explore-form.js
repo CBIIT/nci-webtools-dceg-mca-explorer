@@ -391,8 +391,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-      <div className="m-3">
-        <Button variant="outline-secondary" className="me-1" type="reset">
+      <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Button variant="outline-secondary" className="me-3" type="reset">
           Reset
         </Button>
         <OverlayTrigger
