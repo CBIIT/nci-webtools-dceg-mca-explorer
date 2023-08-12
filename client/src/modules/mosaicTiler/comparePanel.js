@@ -140,7 +140,7 @@ export default function ComparePanel(props) {
               <Select
                 id={props.name + "array"}
                 aria-label={props.name + "array"}
-                placeholder="No array selected"
+                placeholder="- Select -"
                 name="array"
                 isMulti={true}
                 value={array}
@@ -149,6 +149,7 @@ export default function ComparePanel(props) {
                   { value: "gsa", label: "Illumina Global Screening Array" },
                   { value: "oncoArray", label: "Illumina OncoArray Array" },
                 ]}
+                blurInputOnSelect={true}
               />
             </Form.Group>
           ) : (
@@ -171,7 +172,7 @@ export default function ComparePanel(props) {
               <Select
                 id={props.name + "sex"}
                 aria-label={props.name + "sex"}
-                placeholder="No sex selected"
+                placeholder="- Select -"
                 name="sex"
                 isMulti={true}
                 value={sex}
@@ -189,10 +190,10 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
               <Row>
-                <Col xl={6}>
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Min age"
+                      placeholder="Min"
                       name="minAge"
                       id={props.name + "minAgeCompare"}
                       value={minAge}
@@ -201,10 +202,11 @@ export default function ComparePanel(props) {
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
                 </Col>
-                <Col xl={6}>
+                __
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Max age"
+                      placeholder="Max"
                       name="maxAge"
                       id={props.name + "maxAgeCompare"}
                       value={maxAge}
@@ -222,7 +224,7 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3">
               <Form.Label>Ancestry</Form.Label>
               <Select
-                placeholder="No ancestry selected"
+                placeholder="- Select -"
                 name="ancestry"
                 aria-label={props.name + "ancestry"}
                 id={props.name + "ancestry"}
@@ -239,7 +241,7 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3">
               <Form.Label>Study</Form.Label>
               <Select
-                placeholder="No study selected"
+                placeholder="- Select -"
                 name="study"
                 aria-label={props.name + "study"}
                 id={props.name + "study"}
@@ -259,10 +261,10 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
               <Row>
-                <Col xl={6}>
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Min percentage"
+                      placeholder="Min"
                       name="minFraction"
                       id={props.name + "minFractionCompare"}
                       value={minFraction}
@@ -271,10 +273,11 @@ export default function ComparePanel(props) {
                     <InputGroup.Text>%</InputGroup.Text>
                   </InputGroup>
                 </Col>
-                <Col xl={6}>
+                __
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Max percentage"
+                      placeholder="Max"
                       name="maxFraction"
                       id={props.name + "maxFractionCompare"}
                       value={maxFraction}
@@ -292,7 +295,7 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3" controlId="smoking">
               <Form.Label>Smoking Status</Form.Label>
               <Select
-                placeholder="No status selected"
+                placeholder="- Select -"
                 name="smoking"
                 aria-label={props.name + "smoking"}
                 id={props.name + "smoking"}
@@ -312,7 +315,7 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3" controlId="types">
               <Form.Label className="required">Copy Number State</Form.Label>
               <Select
-                placeholder="No types selected"
+                placeholder="- Select -"
                 name="types"
                 id={props.name + "types"}
                 aria-label={props.name + "types"}

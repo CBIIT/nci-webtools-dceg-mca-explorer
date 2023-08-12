@@ -296,7 +296,6 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    setTableData([]);
     console.log(form.counterCompare, compareRef);
     if (form.compare) {
       console.log(showChart, form.groupA, form.groupB, compareRef);
@@ -306,6 +305,7 @@ export default function CirclePlotTest(props) {
         setCircleA(null);
         setCircleB(null);
       }
+      setTableData([]);
       handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
       handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
     } else {
@@ -437,6 +437,7 @@ export default function CirclePlotTest(props) {
       setTableData([...groupB, ...tableData]);
     }
   }, [groupB]);
+
   const groupTitle = (group) => {
     let title = "";
     // console.log(group);
@@ -486,26 +487,26 @@ export default function CirclePlotTest(props) {
     return title.substring(0, title.length - 2);
   };
 
-  const isCircleNull = (circle) => {
-    if (circle !== null)
-      return circle.gain.length + circle.loh.length + circle.loss.length + circle.undetermined.length === 0;
-    else return true;
-  };
-  const circleTitle = (circle) => {
-    let title = "";
-    if (circle !== null) {
-      title +=
-        "\nGain: " +
-        circle.gain.length +
-        " Neutral: " +
-        circle.loh.length +
-        " Loss: " +
-        circle.loss.length +
-        " Undetermined: " +
-        circle.undetermined.length;
-    }
-    return title;
-  };
+  // const isCircleNull = (circle) => {
+  //   if (circle !== null)
+  //     return circle.gain.length + circle.loh.length + circle.loss.length + circle.undetermined.length === 0;
+  //   else return true;
+  // };
+  // const circleTitle = (circle) => {
+  //   let title = "";
+  //   if (circle !== null) {
+  //     title +=
+  //       "\nGain: " +
+  //       circle.gain.length +
+  //       " Neutral: " +
+  //       circle.loh.length +
+  //       " Loss: " +
+  //       circle.loss.length +
+  //       " Undetermined: " +
+  //       circle.undetermined.length;
+  //   }
+  //   return title;
+  // };
 
   const handleDownload = () => {
     setIsLoaded(true);

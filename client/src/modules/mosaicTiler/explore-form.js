@@ -261,7 +261,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
               <Select
-                placeholder="No array selected"
+                placeholder="- Select -"
                 name="array"
                 isMulti={true}
                 value={form.array}
@@ -270,24 +270,25 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                   { value: "gsa", label: "Illumina Global Screening Array" },
                   { value: "oncoArray", label: "Illumina OncoArray Array" },
                 ]}
+                classNamePrefix="select"
               />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="algorithm">
               <Form.Label>Detection Algorithm</Form.Label>
               <Select
-                placeholder="No algorithm selected"
+                placeholder="- Select -"
                 name="algorithm"
                 isMulti={true}
                 value={form.algorithm}
                 onChange={(ev) => handleSelectChange("algorithm", ev)}
-                options={[{ value: "test", label: "Placeholder" }]}
+                options={[{ value: "test", label: "Algorithm" }]}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="sex">
               <Form.Label>Genotype Sex</Form.Label>
               <Select
-                placeholder="No sex selected"
+                placeholder="- Select -"
                 name="sex"
                 isMulti={true}
                 value={form.sex}
@@ -308,10 +309,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 onChange={handleChange}
               /> */}
               <Row>
-                <Col xl={6}>
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Min age"
+                      placeholder="Min"
                       name="minAge"
                       id="minAge"
                       value={form.minAge}
@@ -320,10 +321,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
                 </Col>
-                <Col xl={6}>
+                __
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Max age"
+                      placeholder="Max"
                       name="maxAge"
                       id="maxAge"
                       value={form.maxAge}
@@ -337,7 +339,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Form.Group className="mb-3" controlId="ancestry">
               <Form.Label>Ancestry</Form.Label>
               <Select
-                placeholder="No ancestry selected"
+                placeholder="- Select -"
                 name="ancestry"
                 isMulti={true}
                 value={form.ancestry}
@@ -348,10 +350,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
               <Row>
-                <Col xl={6}>
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Min percentage"
+                      placeholder="Min"
                       name="minFraction"
                       id="minFraction"
                       value={form.minFraction}
@@ -360,10 +362,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                     <InputGroup.Text>%</InputGroup.Text>
                   </InputGroup>
                 </Col>
-                <Col xl={6}>
+                __
+                <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Max percentage"
+                      placeholder="Max"
                       name="maxFraction"
                       id="maxFraction"
                       value={form.maxFraction}
@@ -377,7 +380,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Form.Group className="mb-3" controlId="smoking">
               <Form.Label>Smoking Status</Form.Label>
               <Select
-                placeholder="No status selected"
+                placeholder="- Select -"
                 name="smoking"
                 isMulti={true}
                 value={form.smoking}

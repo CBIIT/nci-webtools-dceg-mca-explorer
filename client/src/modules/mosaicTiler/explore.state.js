@@ -63,7 +63,7 @@ export const resultsState = selector({
 export const defaultFormState = {
   openSidebar: true,
   study: { value: "plco", label: "PLCO" },
-  array: { value: "gsa", label: "Global Screening Array" },
+  array: [],
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
     .map((i) => {
       return { value: "chr" + i, label: i };
@@ -94,7 +94,7 @@ export const defaultFormState = {
 export const resetFormState = {
   openSidebar: true,
   study: { value: "plco", label: "PLCO" },
-  array: { value: "gsa", label: "Global Screening Array" },
+  array: [],
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
     .map((i) => {
       return { value: "chr" + i, label: i };

@@ -78,3 +78,24 @@ div svg path {
 .accordion-button:not(.collapsed)::after {
   background-image: none;
 }
+
+::placeholder{
+  font-size: 12px;
+  color: #f3f3f3;
+}
+[class$="-placeholder"]{
+    font-size: 12px;
+      color: #f3f3f3;
+}
+.nowrapSelect{
+  white-space: nowrap;
+}
+.select__input:focus {
+  outline: none;
+}
+
+.select__input-container{
+  //white-space: pre-line;
+  display: none!important;
+}
+

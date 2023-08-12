@@ -4,11 +4,11 @@ import Select from "react-select";
 import React, { useState } from "react";
 
 const formState = {
-  study: [{ value: 'plco', label: "PLCO" }],
-  array: '',
-  sex: '',
-  age: '',
-  ancestry: '',
+  study: [{ value: "plco", label: "PLCO" }],
+  array: "",
+  sex: "",
+  age: "",
+  ancestry: "",
   submitted: false,
 };
 
@@ -19,39 +19,37 @@ function FilterGroup() {
 
   function handleSelectChange(name, selection = []) {
     //console.log(name,selection);
-    mergeForm({ [name]: selection })
+    mergeForm({ [name]: selection });
     setSelectedOption(selection);
   }
 
-  function handleChange(event){
+  function handleChange(event) {
     const { name, value } = event.target;
-    mergeForm({[name]: value})
+    mergeForm({ [name]: value });
   }
 
   return (
-    <Form >
+    <Form>
       <Form.Group className="mb-3" controlId="study">
         <Form.Label className="required">Study</Form.Label>
         <Select
-          placeholder="No study selected"
+          placeholder="- Select -"
           name="study"
           isMulti={true}
           value={form.study}
           onChange={(ev) => handleSelectChange("study", ev)}
-          options={[
-            { value: "plco", label: "PLCO" }
-          ]}
+          options={[{ value: "plco", label: "PLCO" }]}
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="array">
         <Form.Label className="required">Array</Form.Label>
         <Select
           placeholder="No Array selected"
-          name='array'
+          name="array"
           isMulti={true}
           value={form.array}
           onChange={(ev) => handleSelectChange("array", ev)}
-          options=''
+          options=""
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="sex">
@@ -64,19 +62,13 @@ function FilterGroup() {
           onChange={(ev) => handleSelectChange("sex", ev)}
           options={[
             { value: "male", label: "Male" },
-            { value: "female", label: "Female" }
+            { value: "female", label: "Female" },
           ]}
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="age">
         <Form.Label>Age</Form.Label>
-        <Form.Control
-          placeholder="No age selected"
-          name="age"
-          type="number"
-          value={form.age}
-          onChange={handleChange}
-        />
+        <Form.Control placeholder="No age selected" name="age" type="number" value={form.age} onChange={handleChange} />
       </Form.Group>
       <Form.Group className="mb-3" controlId="ancestry">
         <Form.Label>Ancestry</Form.Label>
@@ -92,7 +84,7 @@ function FilterGroup() {
             { value: "afr_eur", label: "AFR_EUR" },
             { value: "asn", label: "ASN" },
             { value: "asn_eur", label: "ASN_EUR" },
-            { value: "eur", label: "EUR" }
+            { value: "eur", label: "EUR" },
           ]}
         />
       </Form.Group>
