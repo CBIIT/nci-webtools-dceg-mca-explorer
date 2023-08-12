@@ -77,6 +77,14 @@ div svg path {
 }
 .accordion-button:not(.collapsed)::after {
   background-image: none;
+
+}
+.accordion-button:not(.collapsed){
+  color: black;
+}
+.accordion-button:focus{
+  border-color:none;
+  box-shadow: none;
 }
 
 ::placeholder{
@@ -95,7 +103,17 @@ div svg path {
 }
 
 .select__input-container{
-  //white-space: pre-line;
-  display: none!important;
+  white-space:normal;
+  margin: 0!important;;
+  padding-top: 0!important;;
+  padding-bottom: 0!important;;
+ // display: none!important;
+  max-width:0
+}
+.select__multi-value {
+  max-width: 90%
+}
+.select__multi-value__label {
+  max-width: 90%
 }
 

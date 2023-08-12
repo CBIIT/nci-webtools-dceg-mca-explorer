@@ -149,7 +149,7 @@ export default function ComparePanel(props) {
                   { value: "gsa", label: "Illumina Global Screening Array" },
                   { value: "oncoArray", label: "Illumina OncoArray Array" },
                 ]}
-                blurInputOnSelect={true}
+                classNamePrefix="select"
               />
             </Form.Group>
           ) : (
@@ -181,6 +181,7 @@ export default function ComparePanel(props) {
                   { value: "male", label: "Male" },
                   { value: "female", label: "Female" },
                 ]}
+                classNamePrefix="select"
               />
             </Form.Group>
           ) : (
@@ -198,6 +199,7 @@ export default function ComparePanel(props) {
                       id={props.name + "minAgeCompare"}
                       value={minAge}
                       onChange={handleChange}
+                      classNamePrefix="select"
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
@@ -211,6 +213,7 @@ export default function ComparePanel(props) {
                       id={props.name + "maxAgeCompare"}
                       value={maxAge}
                       onChange={handleChange}
+                      classNamePrefix="select"
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
@@ -232,6 +235,7 @@ export default function ComparePanel(props) {
                 value={ancestry}
                 onChange={(ev) => handleSelectChange("ancestry", ev)}
                 options={AncestryOptions}
+                classNamePrefix="select"
               />
             </Form.Group>
           ) : (
@@ -252,6 +256,7 @@ export default function ComparePanel(props) {
                   { value: "plco", label: "PLCO" },
                   { value: "ukbb", label: "UK Biobank" },
                 ]}
+                classNamePrefix="select"
               />
             </Form.Group>
           ) : (
@@ -306,6 +311,7 @@ export default function ComparePanel(props) {
                   { value: "yes", label: "Yes" },
                   { value: "no", label: "No" },
                 ]}
+                classNamePrefix="select"
               />
             </Form.Group>
           ) : (
@@ -323,6 +329,7 @@ export default function ComparePanel(props) {
                 value={types}
                 onChange={(ev) => handleSelectChange("types", ev)}
                 options={TypeStateOptions}
+                classNamePrefix="select"
               />
             </Form.Group>
           ) : (

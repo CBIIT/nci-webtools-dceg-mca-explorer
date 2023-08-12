@@ -164,6 +164,27 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setCompare(true);
   };
 
+  // const selectStyle = {
+  //   option: (provided) => ({
+  //     ...provided,
+  //     whiteSpace: "normal",
+  //   }),
+  //   singleValue: (provided) => ({
+  //     ...provided,
+  //     whiteSpace: "normal",
+  //   }),
+  //   multiValue: (provided) => ({
+  //     ...provided,
+  //     // whiteSpace: "normal",
+  //     maxWidth: "95%",
+  //   }),
+  //   multiValueLabel: (provided) => ({
+  //     ...provided,
+  //     //whiteSpace: "normal",
+  //     maxWidth: "80%",
+  //   }),
+  // };
+
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
@@ -267,8 +288,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 value={form.array}
                 onChange={(ev) => handleSelectChange("array", ev)}
                 options={[
-                  { value: "gsa", label: "Illumina Global Screening Array" },
-                  { value: "oncoArray", label: "Illumina OncoArray Array" },
+                  { value: "gsa", label: "Illumina Global Screening" },
+                  { value: "oncoArray", label: "Illumina OncoArray" },
                 ]}
                 classNamePrefix="select"
               />
@@ -283,6 +304,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 value={form.algorithm}
                 onChange={(ev) => handleSelectChange("algorithm", ev)}
                 options={[{ value: "test", label: "Algorithm" }]}
+                classNamePrefix="select"
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="sex">
@@ -297,6 +319,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                   { value: "male", label: "Male" },
                   { value: "female", label: "Female" },
                 ]}
+                classNamePrefix="select"
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -345,6 +368,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 value={form.ancestry}
                 onChange={(ev) => handleSelectChange("ancestry", ev)}
                 options={AncestryOptions}
+                classNamePrefix="select"
               />
             </Form.Group>
             <Form.Group className="mb-3">

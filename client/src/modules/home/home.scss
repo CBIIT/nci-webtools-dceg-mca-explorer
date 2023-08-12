@@ -25,8 +25,8 @@ a {
 }
 
 .card {
-  position: inherit !important;
-  min-width: 250px !important;
+  //position: inherit !important;
+  //min-width: 250px !important;
   border: 0ch;
 }
 .card-example {
@@ -40,4 +40,10 @@ a {
 
 .g-0{
   --bs-gutter-x: 0rem;
+}
+
+.card2 {
+  position: inherit !important;
+  min-width: 250px !important;
+  border: 0ch;
 }
