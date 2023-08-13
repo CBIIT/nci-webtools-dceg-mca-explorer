@@ -1,65 +1,98 @@
 import { atom, selector, selectorFamily } from "recoil";
-import { query } from "../../services/query";
-
+import { query, post } from "../../services/query";
+import { initialX, initialY } from "./constants";
 export const loadingState = atom({
   key: "analysis.loadingState",
   default: false,
 });
-
-export const sampleState = selector({
-  key: "explore.sampleState",
-  get: ({ get }) =>
-    query("api/query", {
-      table: "sample",
-      orderBy: "id",
-      order: "asc",
-    }),
-});
-
-export async function getData(params, tumor, gene) {
-  var summary;
-  var participants;
-
-  participants = await query("api/query", {
-    "table": params.dataset.value,
-    "_cancerId:in": tumor,
-    "_geneId": gene,
-  });
-
-  return { summary, participants };
-}
-
-export const resultsState = selector({
-  key: "results",
+export const eventResults = selector({
+  key: "eventResults",
   get: async ({ get }) => {
     const params = get(formState);
     if (!params) return null;
-
     var results = [];
-    console.log("params:", params);
-
-    //Get Data Function Here, return array of json documents
-
-    results.map((e) => {
-      var chromosome = e.chromosome.slice(3);
-
-      if (chromosome === "X") chromosome = 23;
-
-      return {
-        ...e,
-        chromosome: chromosome,
-        sexMatch: e.sexMatch === 1 ? "Y" : "N",
-        sexDiscordant: e.sexDiscordant === 1 ? true : false,
-        unexpectedReplicate: e.unexpectedReplicate === 1 ? true : false,
-        mochaAutosomal: e.mochaAutosomal === 1 ? true : false,
-      };
+    const { gainTemp, lohTemp, lossTemp, undeterTemp, chrXTemp, chrYTemp } = await getData(params);
+    results.push({
+      gainTemp,
+      lohTemp,
+      lossTemp,
+      undeterTemp,
+      chrXTemp,
+      chrYTemp,
     });
-
-    // console.log(results);
     return results;
   },
 });
-
+//do db retrieve based on inputs
+export async function getData(params) {
+  var results;
+  var summary;
+  let gainTemp = [];
+  let lossTemp = [];
+  let lohTemp = [];
+  let undeterTemp = [];
+  //console.log(params, params.chrX);
+  //console.log(params.chrX, params.chrY);
+  if (params.chrX && params.chrY) {
+    gainTemp = [...initialX, ...initialY];
+    lossTemp = [...initialX, ...initialY];
+    lohTemp = [...initialX, ...initialY];
+    undeterTemp = [...initialX, ...initialY];
+  }
+  if (params.chrX && !params.chrY) {
+    gainTemp = [...initialX];
+    lossTemp = [...initialX];
+    lohTemp = [...initialX];
+    undeterTemp = [...initialX];
+  }
+  if (!params.chrX && params.chrY) {
+    gainTemp = [...initialY];
+    lossTemp = [...initialY];
+    lohTemp = [...initialY];
+    undeterTemp = [...initialY];
+  }
+  const chrXTemp = [];
+  const chrYTemp = [];
+  const study_value = params.study;
+  let query_value = [];
+  Array.isArray(study_value)
+    ? (query_value = [...study_value, params.chrX ? { value: "X" } : "", params.chrY ? { value: "Y" } : ""])
+    : (query_value = [study_value, params.chrX ? { value: "X" } : "", params.chrY ? { value: "Y" } : ""]);
+  results = await post("api/opensearch/mca", {
+    dataset: query_value,
+    sex: params.sex,
+    mincf: params.minFraction,
+    maxcf: params.maxFraction,
+    ancestry: params.ancestry,
+    types: params.types,
+  });
+  results.forEach((r) => {
+    if (r._source !== null) {
+      const d = r._source;
+      if (d.cf != "nan") {
+        d.block_id = d.chromosome.substring(3);
+        d.value = d.cf;
+        d.dataset = d.dataset.toUpperCase();
+        d.start = d.beginGrch38;
+        d.end = d.endGrch38;
+        if (d.chromosome != "chrX") {
+          if (d.type === "Gain") gainTemp.push(d);
+          else if (d.type === "CN-LOH") lohTemp.push(d);
+          else if (d.type === "Loss") lossTemp.push(d);
+          else if (d.type === "Undetermined") undeterTemp.push(d);
+        }
+        if (params.chrX && d.type == "mLOX") {
+          chrXTemp.push(d);
+        }
+        if (params.chrY && d.type == "mLOY") {
+          chrYTemp.push(d);
+          d.block_id = "Y";
+        }
+      }
+    }
+  });
+  return { gainTemp, lohTemp, lossTemp, undeterTemp, chrXTemp, chrYTemp };
+}
 export const defaultFormState = {
   openSidebar: true,
   study: { value: "plco", label: "PLCO" },
@@ -90,7 +123,6 @@ export const defaultFormState = {
   groupA: [],
   groupB: [],
 };
-
 export const resetFormState = {
   openSidebar: true,
   study: { value: "plco", label: "PLCO" },
@@ -121,7 +153,6 @@ export const resetFormState = {
   groupA: [],
   groupB: [],
 };
-
 export const formState = atom({
   key: "explore.formState",
   default: defaultFormState,

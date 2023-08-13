@@ -25,3 +25,16 @@ export const TypeStateOptions = [
   { value: "gain", label: "Gain" },
   { value: "undetermined", label: "Undetermined" },
 ];
+
+export const initialX = [
+  { block_id: "X", start: "0", end: "0", type: "Gain" },
+  { block_id: "X", start: "0", end: "0", type: "Loss" },
+  { block_id: "X", start: "0", end: "0", type: "CN-LOH" },
+  { block_id: "X", start: "0", end: "0", type: "Undetermined" },
+];
+export const initialY = [
+  { block_id: "Y", start: "0", end: "0", type: "Gain" },
+  { block_id: "Y", start: "0", end: "0", type: "Loss" },
+  { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
+  { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
+];

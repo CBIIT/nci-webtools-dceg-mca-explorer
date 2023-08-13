@@ -3,9 +3,7 @@ export function asQueryParams(params) {
     ? "?" +
         Object.entries(params)
           .map(
-            ([key, value]) =>
-              ![null, undefined, ""].includes(value) &&
-              [key, value].map(encodeURIComponent).join("="),
+            ([key, value]) => ![null, undefined, ""].includes(value) && [key, value].map(encodeURIComponent).join("=")
           )
           .filter(Boolean)
           .join("&")
@@ -28,3 +26,10 @@ export async function query(url, params, options) {
   const response = await fetch(url, fetchOptions);
   return await response.json();
 }
+
+export const post = (resource, params) =>
+  fetch(`${root}/${resource}`, {
+    method: "post",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(params),
+  }).then((r) => r.json());
