@@ -8,14 +8,14 @@ export const AncestryOptions = [
 ];
 
 export const CompareArray = [
-  { id: 1, label: " Genotype Array", isChecked: false },
-  { id: 2, label: " Genotype Sex", isChecked: false },
-  { id: 3, label: " Age", isChecked: false },
-  { id: 4, label: " Ancestry", isChecked: false },
-  { id: 5, label: " Study", isChecked: false },
-  { id: 6, label: " Cellular Fraction", isChecked: false },
-  { id: 7, label: " Smoking Status", isChecked: false },
-  { id: 8, label: " Copy Number State", isChecked: false },
+  { id: 1, value: "array", label: " Genotype Array", isChecked: false },
+  { id: 2, value: "sex", label: " Genotype Sex", isChecked: false },
+  { id: 3, value: "age", label: " Age", isChecked: false },
+  { id: 4, value: "ancestry", label: " Ancestry", isChecked: false },
+  { id: 5, value: "study", label: " Study", isChecked: true },
+  { id: 6, value: "cf", label: " Cellular Fraction", isChecked: false },
+  { id: 7, value: "smoking", label: " Smoking Status", isChecked: false },
+  { id: 8, value: "types", label: " Copy Number State", isChecked: false },
 ];
 
 export const TypeStateOptions = [

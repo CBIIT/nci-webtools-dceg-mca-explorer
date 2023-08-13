@@ -8,6 +8,7 @@ import { AncestryOptions, TypeStateOptions } from "./constants";
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
   const [compareform, setCompareForm] = useState();
+  console.log(form.groupA);
   const [study, setStudy] = useState([]);
   const [array, setArray] = useState([]);
   const [sex, setSex] = useState([]);
@@ -20,6 +21,11 @@ export default function ComparePanel(props) {
   const [maxFraction, setMaxFraction] = useState("");
   //console.log(props.compareItem[0]);
 
+  useEffect(() => {
+    setStudy(props.name === "A" ? form.groupA.study : form.groupB.study);
+    setSex(props.name === "A" ? form.groupA.sex : form.groupB.sex);
+    setAncestry(props.name === "A" ? form.groupA.ancestry : form.groupB.ancestry);
+  });
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
@@ -39,6 +45,7 @@ export default function ComparePanel(props) {
   }
 
   function handleSelectChange(name, selection = []) {
+    console.log(name, selection);
     if (props.compareItem[4].isChecked && name === "study") {
       setStudy(selection);
     }
@@ -74,7 +81,8 @@ export default function ComparePanel(props) {
   }
 
   const updateForm = () => {
-    console.log("UpdateForm:", props.name, compareform);
+    console.log("UpdateForm ", props.name, form.groupA);
+    //
     if (compareform !== undefined) {
       if (props.name === "A") {
         setForm({ ...form, groupA: { ...compareform } });
@@ -82,6 +90,29 @@ export default function ComparePanel(props) {
         setForm({ ...form, groupB: { ...compareform } });
       }
       props.onCompareChange(compareform, props.name);
+    }
+    if (compareform === undefined) {
+      if (!Array.isArray(form.groupA) && props.name === "A") {
+        let ga = Object.entries(form.groupA);
+        ga.forEach((g) => {
+          const name = g[0];
+          const selected = g[1];
+          console.log(name);
+          //setCompareForm({ name: selected });
+        });
+
+        // ga.forEach((g) => {
+        //   const name = g[0];
+        //   const selected = g[1];
+
+        //   if (name === "study") {
+        //     setStudy(selected);
+        //   }
+        //   if (name === "sex") {
+        //     setSex(selected);
+        //   }
+        // });
+      }
     }
   };
 

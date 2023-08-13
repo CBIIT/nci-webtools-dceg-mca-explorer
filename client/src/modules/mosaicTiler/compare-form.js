@@ -6,14 +6,13 @@ import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
 
-const compareArray = CompareArray;
 export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
   const [counter, setCounter] = useState(0);
-  //console.log("compareForm:", form);
+  console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }]
     .concat(
@@ -26,7 +25,12 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const formRef = useRef();
   const [isX, setIsX] = useState(false);
   const [isY, setIsY] = useState(false);
-  const [compareChecks, setCompareChecks] = useState(compareArray);
+  const initialSelection = CompareArray.map((option) => ({
+    ...option,
+    isChecked: form.groupA[option.value] ? true : false,
+  }));
+  console.log(initialSelection);
+  const [compareChecks, setCompareChecks] = useState(initialSelection);
   const [compare, setCompare] = useState(false);
 
   function handleChange(event) {
@@ -123,7 +127,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
 
   const handleFilterClear = (event) => {
     console.log("filterclear");
-    setCompareChecks(compareArray);
+    setCompareChecks(CompareArray);
 
     onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
     const resetBtns = document.querySelectorAll('a[data-val*="reset"]');
