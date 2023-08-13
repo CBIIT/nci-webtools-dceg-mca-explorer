@@ -9,19 +9,7 @@ import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
 import { Columns, exportTable } from "./tableColumns";
-
-export const initialX = [
-  { block_id: "X", start: "0", end: "0", type: "Gain" },
-  { block_id: "X", start: "0", end: "0", type: "Loss" },
-  { block_id: "X", start: "0", end: "0", type: "CN-LOH" },
-  { block_id: "X", start: "0", end: "0", type: "Undetermined" },
-];
-export const initialY = [
-  { block_id: "Y", start: "0", end: "0", type: "Gain" },
-  { block_id: "Y", start: "0", end: "0", type: "Loss" },
-  { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
-  { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
-];
+import { initialX, initialY } from "./constants";
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -67,7 +55,7 @@ export default function RangeView(props) {
 
   //console.log("review:", form);
   useEffect(() => {
-    console.log(form);
+    // console.log(form);
     if (form.submitted) {
       handleSubmit(query_value, form);
     } else {
@@ -199,9 +187,11 @@ export default function RangeView(props) {
   const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
+    //console.log(form);
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);
     setAllValue([...clickedValues]);
   }, [chromoId]);
+
   const columns = Columns;
 
   function getScatterData() {

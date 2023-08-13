@@ -10,10 +10,10 @@ const compareArray = CompareArray;
 export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
-  const [form, setForm] = useState(defaultFormState);
+  const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
   const [counter, setCounter] = useState(0);
-  //console.log(form)
+  // console.log("exploreform:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }]
     .concat(
@@ -134,34 +134,6 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
-  };
-
-  const handlegroupChange = (value, gname) => {
-    // console.log("compare group:", value, gname);
-    if (gname === "A") setForm({ ...form, groupA: value, compare: true });
-    if (gname === "B") setForm({ ...form, groupB: value, compare: true });
-  };
-  const handleCompareCheckboxChange = (id) => {
-    const updatedComparecheck = compareChecks.map((ck) => {
-      if (ck.id === id) {
-        return { ...ck, isChecked: !ck.isChecked };
-      }
-      return ck;
-    });
-    setCompareChecks(updatedComparecheck);
-  };
-  // useEffect(() => {
-  //   setCompare(compare);
-  //   setForm({ ...form });
-  //   console.log(compare, form);
-  // }, [compare]);
-  const updateGroup = (group) => {
-    console.log(group);
-    //if (group === "a") setForm({ ...form, groupA: form.group });
-    // else if (group === "b") setForm({ ...form, groupB: form.group });
-  };
-  const handleDisplayCompare = () => {
-    setCompare(true);
   };
 
   // const selectStyle = {

@@ -296,8 +296,8 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    console.log(form.counterCompare, compareRef);
-    if (form.compare) {
+    console.log(form.counterCompare, form.groupA, form.groupB);
+    if (form.compare && !Array.isArray(form.groupA) && !Array.isArray(form.groupB)) {
       console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
       //if click back to Circos compare from single chromosome, do not clear circos data

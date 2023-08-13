@@ -69,7 +69,7 @@ export default function Explore() {
 
   function handleClick(value) {
     //setIsOpenCompare(true);
-    //console.log("in explore", value);
+    //console.log("in explore", value, form);
   }
   function handleCheckboxChange() {
     setIsOpenCompare(!isOpenCompare);
@@ -78,6 +78,7 @@ export default function Explore() {
     if (isOpenCompare) {
       console.log(tabs);
     }
+    setForm({ ...form, compare: !isOpenCompare });
   }
 
   return (

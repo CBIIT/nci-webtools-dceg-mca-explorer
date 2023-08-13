@@ -10,10 +10,10 @@ const compareArray = CompareArray;
 export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
-  const [form, setForm] = useState(defaultFormState);
+  const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
   const [counter, setCounter] = useState(0);
-  //console.log(form)
+  //console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }]
     .concat(
@@ -137,9 +137,11 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   };
 
   const handlegroupChange = (value, gname) => {
-    // console.log("compare group:", value, gname);
-    if (gname === "A") setForm({ ...form, groupA: value, compare: true });
-    if (gname === "B") setForm({ ...form, groupB: value, compare: true });
+    //console.log("compare group:", value, gname);
+    if (value !== undefined) {
+      if (gname === "A") setForm({ ...form, groupA: value, compare: true });
+      else if (gname === "B") setForm({ ...form, groupB: value, compare: true });
+    }
   };
   const handleCompareCheckboxChange = (id) => {
     const updatedComparecheck = compareChecks.map((ck) => {
@@ -163,9 +165,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleDisplayCompare = () => {
     setCompare(true);
   };
-  useEffect(() => {
-    //console.log("display compare", form);
-  });
+  // useEffect(() => {
+  //   //console.log("display compare", form);
+  // });
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
@@ -182,9 +184,17 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
         </Card>
         <br></br>
 
-        <ComparePanel compareItem={compareChecks} name="A" onCompareChange={handlegroupChange}></ComparePanel>
+        <ComparePanel
+          id="groupA"
+          compareItem={compareChecks}
+          name="A"
+          onCompareChange={handlegroupChange}></ComparePanel>
         <br></br>
-        <ComparePanel compareItem={compareChecks} name="B" onCompareChange={handlegroupChange}></ComparePanel>
+        <ComparePanel
+          id="groupB"
+          compareItem={compareChecks}
+          name="B"
+          onCompareChange={handlegroupChange}></ComparePanel>
         <br></br>
         <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <Button
