@@ -77,6 +77,8 @@ function SnpPlot(props) {
     autosize: true, // disable autosize to fix the x-axis zoom issue
     //annotations:annotation,
     margin: { l: 20, r: 20, t: 5, b: 30 },
+    responsive: true,
+    //useResizeHandler: true,
   };
 
   return showSnp && isLoading ? (
@@ -88,7 +90,12 @@ function SnpPlot(props) {
     </>
   ) : !isLoading && showSnp ? (
     <div>
-      <Plot data={snps} layout={layout} style={{ width: "100%", height: "100%", display: "block" }} />
+      <Plot
+        data={snps}
+        layout={layout}
+        useResizeHandler={true}
+        style={{ width: "100%", height: "100%", display: "block" }}
+      />
     </div>
   ) : (
     <>

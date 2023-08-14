@@ -155,6 +155,7 @@ function GenePlot(props) {
       // vertical modebar button layout
       orientation: "v",
     },
+    responsive: true,
   };
 
   return !showGene && isLoading ? (
@@ -180,6 +181,7 @@ function GenePlot(props) {
             props.chr,
         },
       }}
+      useResizeHandler={true}
       style={{ width: "100%", height: "100%", display: "block" }}
     />
   ) : (

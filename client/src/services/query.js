@@ -1,3 +1,6 @@
+// set api root, removing trailing slashes
+export const root = window.location.pathname.replace(/\/+$/, "");
+
 export function asQueryParams(params) {
   return params
     ? "?" +

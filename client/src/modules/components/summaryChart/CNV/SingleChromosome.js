@@ -258,11 +258,18 @@ function SingleChromosome(props) {
   }, [data]);
 
   const prev = zoomHistory[zoomHistory.length - 2];
-  let backtoprev = "Previous Zoom";
+  let backtoprev = "Back to initial comparison";
   if (prev !== undefined && prev["xaxis.range[0]"] !== undefined) {
     const pxmin = prev["xaxis.range[0]"];
     const pxmax = prev["xaxis.range[1]"];
-    backtoprev += " (" + (pxmin / 1000000).toFixed(2) + " MB - " + (pxmax / 1000000).toFixed(2) + "MB)";
+    //backtoprev += " (" + (pxmin / 1000000).toFixed(2) + " MB - " + (pxmax / 1000000).toFixed(2) + "MB)";
+    backtoprev =
+      "chr" +
+      props.chromesomeId +
+      ":" +
+      Math.trunc(pxmin).toLocaleString("en-US", { style: "decimal" }) +
+      "-" +
+      Math.trunc(pxmax).toLocaleString("en-US", { style: "decimal" });
   }
   let btnid = props.details !== undefined ? props.details : "";
   btnid = "zoomBack" + btnid;
@@ -276,7 +283,7 @@ function SingleChromosome(props) {
       Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
     : "";
   props.zoomHistory(backtoprev);
-
+  if (zoomHistory.length == 0) rangeLable = "";
   //console.log(zoomHistory);
 
   return (

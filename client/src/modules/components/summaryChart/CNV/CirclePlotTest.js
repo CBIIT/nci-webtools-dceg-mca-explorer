@@ -13,8 +13,8 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import ChromosomeCompare from "./ChromosomeCompare";
-import { groupSort } from "d3";
+//import ChromosomeCompare from "./ChromosomeCompare";
+//import { groupSort } from "d3";
 
 const hovertip = (d) => {
   return (
@@ -293,7 +293,7 @@ export default function CirclePlotTest(props) {
         " -- " +
         Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
       setRangeLabel(zr);
-    }
+    } else setRangeLabel("");
     //else {
     //   //setZoomRange(null);
     // }
@@ -476,7 +476,18 @@ export default function CirclePlotTest(props) {
     }
     return title.substring(0, title.length - 2);
   };
-
+  const circosTitle = groupTitle({
+    types: form.types,
+    sex: form.sex,
+    study: form.study,
+    ancestry: form.ancestry,
+    array: form.array,
+    smoking: form.smoking,
+    maxAge: form.maxAge,
+    minAge: form.minAge,
+    maxFraction: form.maxFraction,
+    minFraction: form.minFraction,
+  });
   const handleDownload = () => {
     setIsLoaded(true);
     var imageAs = document.getElementById("A");
@@ -580,8 +591,12 @@ export default function CirclePlotTest(props) {
           const width = pdf.internal.pageSize.getWidth();
           //const height = pdf.internal.pageSize.getHeight();
           //pdf.text("", width *0.5, 10, { align: "center" });
-          pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
-          pdf.addImage(dataUrl2, "PNG", 0, 10, width, width);
+          pdf.setTextColor(0, 0, 0);
+          pdf.setFontSize(12);
+          pdf.text(circosTitle, width * 0.5, 15, { align: "center" });
+
+          pdf.addImage(dataUrl, "PNG", 0, 20, width, width);
+          pdf.addImage(dataUrl2, "PNG", 0, 20, width, width);
           pdf.save("summaryCircle.pdf");
           setIsLoaded(false);
         });
@@ -679,19 +694,15 @@ export default function CirclePlotTest(props) {
   }, [circleB]);
 
   useEffect(() => {
-    if (groupA !== null) {
-      setTableData([...groupA, ...tableData]);
+    if (groupA !== null || groupB !== null) {
+      setTableData([...groupA, ...groupB]);
     }
-  }, [groupA]);
-  useEffect(() => {
-    if (groupB !== null) {
-      setTableData([...groupB, ...tableData]);
-    }
-  }, [groupB]);
+  }, [groupA, groupB]);
+
   if (chromesomeId > 0 && circle !== null) {
     //setTableData([...circle.loss, ...circle.gain, ...circle.loh, ...circle.undetermined]);
   } else {
-    setTableData(data);
+    //setTableData(data);
   }
 
   // if (form.compare && circleA != null && circleB != null) {

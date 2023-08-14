@@ -45,7 +45,7 @@ export default function RangeView(props) {
   const [undetermined, setUndetermined] = useState([]);
   const [chrX, setChrX] = useState([]);
   const [chrY, setChrY] = useState([]);
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState([]); //for compare data
 
   const study_value = form.study;
   let query_value = [];
@@ -185,11 +185,13 @@ export default function RangeView(props) {
   const sortY = chrY.filter((e) => chromosomes.includes("Y")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
 
   const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
+
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     //console.log(form);
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);
-    setAllValue([...clickedValues]); //this is for single chromosome
+    setAllValue([...clickedValues]);
+    //this is for single chromosome
   }, [chromoId]);
 
   const columns = Columns;
@@ -311,15 +313,23 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    console.log("checking...:", data);
     setTableData(data);
-    //if circle summary, use allValue, if single chromosome summary, use allValues
-    //if from compare, use data
-    //chromoId >= 0 ? allValue : allValues;
   };
   const handleCheckboxChange = () => {
     props.onPair();
   };
+
+  //set tableData based on status
+  //if compare, and no chromoid => add circleA and circleB
+  //if compare with chromoid => add groupA and groupB
+  //if not compare, no chromoid => add circle
+  //if not compare, with chromid => add data
+  let resultData = tableData;
+  if (!form.compare) {
+    if (chromoId > 0) {
+      resultData = allValue;
+    } else resultData = allValues;
+  }
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -367,11 +377,11 @@ export default function RangeView(props) {
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                     element={<a href="javascript:void(0)">Export Data</a>}>
-                    <ExcelSheet dataSet={exportTable(tableData)} name="Autosomal mCA Distribution" />
+                    <ExcelSheet dataSet={exportTable(resultData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
                 </div>
 
-                <Table columns={columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
+                <Table columns={columns} defaultSort={[{ id: "start", asc: true }]} data={resultData} />
               </div>
             </Row>
           </div>
@@ -412,7 +422,6 @@ export default function RangeView(props) {
                     filename: "All_Chromosomes",
                   },
                 }}
-                useResizeHandler
                 className="flex-fill w-100"
                 style={{ height: browserSize.height }}
               />
@@ -424,17 +433,10 @@ export default function RangeView(props) {
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                   element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet
-                    dataSet={exportTable(chromoId >= 0 ? allValue : allValues)}
-                    name="Autosomal mCA Distribution"
-                  />
+                  <ExcelSheet dataSet={exportTable(resultData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
               </div>
-              <Table
-                columns={columns}
-                defaultSort={[{ id: "start", asc: true }]}
-                data={chromoId >= 0 ? allValue : allValues}
-              />
+              <Table columns={columns} defaultSort={[{ id: "start", asc: true }]} data={resultData} />
             </div>
           </Row>
         </Tab>
