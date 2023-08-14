@@ -255,7 +255,9 @@ export default function CirclePlotTest(props) {
       //console.log("back:", window.innerWidth, size);
     }
     //if pairwise is checked, then uncheck it
-    props.onPair();
+    if (document.getElementById("paircheck").checked === true) {
+      props.onPair();
+    }
   };
   const handleBackChromo = () => {
     setForm({ ...form, compare: false });
@@ -724,10 +726,10 @@ export default function CirclePlotTest(props) {
                   <Button variant="link" onClick={handleBackChromo}>
                     Chromosome {chromesomeId}
                   </Button>
-                  {/* &#8592;
+                  &#8592;
                   <Button variant="link" onClick={handleCircosCompareBack}>
                     Back to circos compare
-                  </Button> */}
+                  </Button>
                 </>
               ) : (
                 <Button variant="link" onClick={handleCircosCompareBack}>
