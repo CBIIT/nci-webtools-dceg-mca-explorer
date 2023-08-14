@@ -14,13 +14,18 @@ export default function Home({ links }) {
             <Row>
               <Col md={6}>
                 <div className="d-flex h-100 align-items-center my-4">
-                  <div style={{ marginTop: "100px" }}>
+                  <div style={{ marginTop: "20px" }}>
                     <h2 className="font-title text-dark mb-3">mCA Explorer</h2>
                     <hr className="border-dark" />
-                    <p className="lead text-dark">Interactive mCA visualization and analysis in large populations.</p>
-                    <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
+                    <p className="lead text-dark">
+                      An interactive mCA visualization and analysis tools that allows for aggregation, visualization,
+                      and analysis of mCAs in large populations.The tool will require a standard data input format
+                      including mCA location (e.g., chromosome and bp position), mCA type (e.g., loss, gain, neutral),
+                      and cell fraction (e.g., percentage of cells impacted by the event).
+                    </p>
+                    {/* <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
                       Explore mosaic
-                    </Link>
+                    </Link> */}
                   </div>
                 </div>
               </Col>
@@ -30,7 +35,7 @@ export default function Home({ links }) {
       </div>
 
       <div className="bg-light py-4">
-        <Container>
+        {/* <Container>
           <Row>
             <Col>
               <p>
@@ -41,7 +46,7 @@ export default function Home({ links }) {
               </p>
             </Col>
           </Row>
-        </Container>
+        </Container> */}
         <div className="bg-egg ">
           <div className="container  text-dark">
             <h2 className="h4">Credits</h2>

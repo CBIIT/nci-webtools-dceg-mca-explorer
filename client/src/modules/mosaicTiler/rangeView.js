@@ -317,6 +317,9 @@ export default function RangeView(props) {
     //if from compare, use data
     //chromoId >= 0 ? allValue : allValues;
   };
+  const handleCheckboxChange = () => {
+    props.onPair();
+  };
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -354,7 +357,8 @@ export default function RangeView(props) {
                   onHeightChange={handleheightChange}
                   onResetHeight={resetHeight}
                   onClickedChr={handleClickChr}
-                  getData={handleDataChange}></CirclePlotTest>
+                  getData={handleDataChange}
+                  onPair={handleCheckboxChange}></CirclePlotTest>
               </Col>
             </Row>
             <Row>

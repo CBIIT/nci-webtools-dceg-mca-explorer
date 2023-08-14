@@ -101,7 +101,7 @@ export default function Explore() {
                 padding: 10,
                 paddingBottom: 0,
               }}>
-              <input type="checkbox" checked={isOpenCompare} onChange={handleCheckboxChange}></input>
+              <input id="paircheck" type="checkbox" checked={isOpenCompare} onChange={handleCheckboxChange}></input>
               <span style={{ marginLeft: "10px" }}>Pairwise Compare</span>
             </label>
             {!isOpenCompare ? (
@@ -125,7 +125,6 @@ export default function Explore() {
                     onFilter={handleFilter}
                     onClear={handleFilterClear}
                     isOpen={isOpenCompare}
-                    onFilterClear
                   />
                 </Card.Body>
               </Card>
@@ -145,9 +144,9 @@ export default function Explore() {
                 }>
                 <Suspense fallback="Loading...">
                   {form.submitted ? (
-                    <RangeView handleClick={handleClick} />
+                    <RangeView handleClick={handleClick} onPair={handleCheckboxChange} />
                   ) : form.compare ? (
-                    <RangeView handleClick={handleClick} />
+                    <RangeView handleClick={handleClick} onPair={handleCheckboxChange} />
                   ) : (
                     <div className="m-2">Please provide configuration settings on the left panel and click Submit.</div>
                   )}

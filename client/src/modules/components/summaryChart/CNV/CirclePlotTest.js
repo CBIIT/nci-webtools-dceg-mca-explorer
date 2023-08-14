@@ -254,6 +254,8 @@ export default function CirclePlotTest(props) {
       summarybtn2.click();
       //console.log("back:", window.innerWidth, size);
     }
+    //if pairwise is checked, then uncheck it
+    props.onPair();
   };
   const handleBackChromo = () => {
     setForm({ ...form, compare: false });
@@ -842,7 +844,7 @@ export default function CirclePlotTest(props) {
         <div>
           {form.submitted ? (
             <Button variant="link" onClick={handleBack} className="">
-              Back to Circos plot
+              Back to circos plot
             </Button>
           ) : (
             ""
