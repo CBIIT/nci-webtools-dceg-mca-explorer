@@ -267,6 +267,7 @@ export default function CirclePlotTest(props) {
   const handleCircosCompareBack = () => {
     setShowChart(false);
     setChromesomeId(0);
+    document.getElementById("compareSubmit").click();
     //console.log(circleA);
   };
 
@@ -443,9 +444,13 @@ export default function CirclePlotTest(props) {
     // console.log(group);
     if (group != undefined) {
       if (group.study !== undefined) {
-        group.study.forEach((s) => {
-          title += s.label + ", ";
-        });
+        if (!Array.isArray(group.study)) {
+          title += group.study.label + ", ";
+        } else {
+          group.study.forEach((s) => {
+            title += s.label + ", ";
+          });
+        }
       }
       if (group.sex !== undefined) {
         group.sex.forEach((s) => {
@@ -462,12 +467,14 @@ export default function CirclePlotTest(props) {
           title += s.label + ", ";
         });
       }
-      if (group.maxAge !== undefined) {
-        if (group.minAge !== undefined) title += "Age(" + group.minAge + "-" + group.maxAge + "), ";
+      if (group.maxAge !== undefined && group.maxAge !== "") {
+        if (group.minAge !== undefined && group.minAge !== "")
+          title += "Age(" + group.minAge + "-" + group.maxAge + "), ";
         else title += "Age(0-" + group.maxAge + "), ";
       }
-      if (group.maxFraction !== undefined) {
-        if (group.minFraction !== undefined) title += "CF(" + group.minFraction + "-" + group.maxFraction + "), ";
+      if (group.maxFraction !== undefined && group.maxFraction !== "") {
+        if (group.minFraction !== undefined && group.minFraction !== "")
+          title += "CF(" + group.minFraction + "-" + group.maxFraction + "), ";
         else title += "CF(0-" + group.maxAge + "), ";
       }
       if (group.smoking !== undefined) {
@@ -715,10 +722,14 @@ export default function CirclePlotTest(props) {
                   <Button variant="link" onClick={handleBackChromo}>
                     Chromosome {chromesomeId}
                   </Button>
+                  {/* &#8592;
+                  <Button variant="link" onClick={handleCircosCompareBack}>
+                    Back to circos compare
+                  </Button> */}
                 </>
               ) : (
                 <Button variant="link" onClick={handleCircosCompareBack}>
-                  Back to Circos compare
+                  Back to circos compare
                 </Button>
               )
             ) : (
@@ -806,6 +817,18 @@ export default function CirclePlotTest(props) {
                   onZoomChange={handleZoomChange}
                   data={data}
                   details={"One"}
+                  title={groupTitle({
+                    types: form.types,
+                    sex: form.sex,
+                    study: form.study,
+                    ancestry: form.ancestry,
+                    array: form.array,
+                    smoking: form.smoking,
+                    maxAge: form.maxAge,
+                    minAge: form.minAge,
+                    maxFraction: form.maxFraction,
+                    minFraction: form.minFraction,
+                  })}
                   chromesomeId={chromesomeId}
                   size={singleChromeSize}
                   zoomHistory={handleZoomHistory}
@@ -900,7 +923,18 @@ export default function CirclePlotTest(props) {
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
-                title="Autosomal mCA Distribution "
+                title={groupTitle({
+                  types: form.types,
+                  sex: form.sex,
+                  study: form.study,
+                  ancestry: form.ancestry,
+                  array: form.array,
+                  smoking: form.smoking,
+                  maxAge: form.maxAge,
+                  minAge: form.minAge,
+                  maxFraction: form.maxFraction,
+                  minFraction: form.minFraction,
+                })}
                 size={size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}

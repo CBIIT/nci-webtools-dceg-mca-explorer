@@ -322,7 +322,7 @@ export default function RangeView(props) {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
-          {allValues.length == 0 && form.counterSubmitted > 0 ? (
+          {allValues.length == 0 && form.counterSubmitted > 0 && !form.compare ? (
             <h6 className="d-flex mx-3">Loading and rendering...</h6>
           ) : (
             ""

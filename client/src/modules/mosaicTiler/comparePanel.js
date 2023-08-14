@@ -8,7 +8,6 @@ import { AncestryOptions, TypeStateOptions } from "./constants";
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
   const [compareform, setCompareForm] = useState();
-  console.log(form.groupA);
   const [study, setStudy] = useState([]);
   const [array, setArray] = useState([]);
   const [sex, setSex] = useState([]);

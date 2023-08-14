@@ -60,7 +60,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setIsY(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
-    //onSubmit(resetFormState, "reset"); //clean the plot
+    onSubmit(resetFormState, "reset"); //clean the plot
   }
 
   function handleSelectChange(name, selection = []) {
@@ -394,12 +394,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <Button variant="outline-secondary" className="me-3" type="reset">
           Reset
         </Button>
-        <OverlayTrigger
-          overlay={!isValid() ? <Tooltip id="phos_tumor_val">Missing Required Parameters</Tooltip> : <></>}>
-          <Button variant="primary" type="submit" id="summarySubmit" disabled={!isValid()}>
-            Submit
-          </Button>
-        </OverlayTrigger>
+        {/* <OverlayTrigger overlay={!isValid() ? <Tooltip id="config_val">Missing Required Parameters</Tooltip> : <></>}> */}
+        {/* <Button variant="primary" type="submit" id="summarySubmit" disabled={!isValid()}> */}
+        <Button variant="primary" type="submit" id="summarySubmit">
+          Submit
+        </Button>
+        {/* </OverlayTrigger> */}
       </div>
       <hr></hr>
       {/* {isOpen && (
