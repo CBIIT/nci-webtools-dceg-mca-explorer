@@ -93,25 +93,6 @@ export default function ComparePanel(props) {
     }
     if (compareform === undefined) {
       if (!Array.isArray(form.groupA) && props.name === "A") {
-        let ga = Object.entries(form.groupA);
-        ga.forEach((g) => {
-          const name = g[0];
-          const selected = g[1];
-          console.log(name);
-          //setCompareForm({ name: selected });
-        });
-
-        // ga.forEach((g) => {
-        //   const name = g[0];
-        //   const selected = g[1];
-
-        //   if (name === "study") {
-        //     setStudy(selected);
-        //   }
-        //   if (name === "sex") {
-        //     setSex(selected);
-        //   }
-        // });
       }
     }
   };
@@ -123,27 +104,28 @@ export default function ComparePanel(props) {
       if (!element.isChecked && compareform) {
         if (element.label === " Study") {
           setStudy([]);
-          if (compareform.hasOwnProperty("study")) delete compareform.study;
+          //form.groupA.study;
+          //if (compareform.hasOwnProperty("study")) delete compareform.study;
         } else if (element.label === " Genotype Array") {
           setArray([]);
-          if (compareform.hasOwnProperty("array")) delete compareform.array;
+          //if (compareform.hasOwnProperty("array")) delete compareform.array;
         } else if (element.label === " Genotype Sex") {
           setSex([]);
-          if (compareform.hasOwnProperty("sex")) delete compareform.sex;
+          // if (compareform.hasOwnProperty("sex")) delete compareform.sex;
         } else if (element.label === " Age") {
           setMinAge(0);
           setMaxAge(0);
-          if (compareform.hasOwnProperty("minAge")) delete compareform.minAge;
-          if (compareform.hasOwnProperty("maxAge")) delete compareform.maxAge;
+          //if (compareform.hasOwnProperty("minAge")) delete compareform.minAge;
+          // if (compareform.hasOwnProperty("maxAge")) delete compareform.maxAge;
         } else if (element.label === " Ancestry") {
           setAncestry([]);
-          if (compareform.hasOwnProperty("ancestry")) delete compareform.ancestry;
+          //  if (compareform.hasOwnProperty("ancestry")) delete compareform.ancestry;
         } else if (element.label === " Smoking Status") {
           setSmoking([]);
-          if (compareform.hasOwnProperty("smoking")) delete compareform.smoking;
+          // if (compareform.hasOwnProperty("smoking")) delete compareform.smoking;
         } else if (element.label === " Copy Number State") {
           setTypes(null);
-          if (compareform.hasOwnProperty("types")) delete compareform.types;
+          // if (compareform.hasOwnProperty("types")) delete compareform.types;
         }
       }
     });

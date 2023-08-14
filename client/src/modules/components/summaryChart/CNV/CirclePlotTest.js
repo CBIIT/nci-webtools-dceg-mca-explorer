@@ -579,47 +579,47 @@ export default function CirclePlotTest(props) {
     var images = document.getElementById("summaryCircle");
     var image = images.querySelectorAll("svg")[1];
     var imageXY = images.querySelectorAll("svg")[0];
-    function filter(node) {
-      return node.tagName !== "i";
-    }
-    function download(href, name) {
-      var a = document.createElement("a");
+    // function filter(node) {
+    //   return node.tagName !== "i";
+    // }
+    // function download(href, name) {
+    //   var a = document.createElement("a");
 
-      a.download = name;
-      a.href = href;
+    //   a.download = name;
+    //   a.href = href;
 
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    }
+    //   document.body.appendChild(a);
+    //   a.click();
+    //   document.body.removeChild(a);
+    // }
 
-    htmlToImage.toSvg(image, { filter: filter, quality: 1, pixelRatio: 1, cacheBust: true }).then((dataUrl) => {
-      // const pdf = new jsPDF();
-      // const width = pdf.internal.pageSize.getWidth();
-      //const height = pdf.internal.pageSize.getHeight();
-      //pdf.text("", width *0.5, 10, { align: "center" });
-      // pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
-      // pdf.save("summaryCircle.pdf");
-      download(dataUrl, "svg");
-    });
+    // htmlToImage.toSvg(image, { filter: filter, quality: 1, pixelRatio: 1, cacheBust: true }).then((dataUrl) => {
+    //   // const pdf = new jsPDF();
+    //   // const width = pdf.internal.pageSize.getWidth();
+    //   //const height = pdf.internal.pageSize.getHeight();
+    //   //pdf.text("", width *0.5, 10, { align: "center" });
+    //   // pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
+    //   // pdf.save("summaryCircle.pdf");
+    //   download(dataUrl, "svg");
+    // });
 
-    // htmlToImage
-    //   .toPng(image, { quality: 1, pixelRatio: 1 })
-    //   .then((dataUrl) => {
-    //     htmlToImage.toPng(imageXY, { quality: 1, pixelRatio: 1 }).then((dataUrl2) => {
-    //       const pdf = new jsPDF();
-    //       const width = pdf.internal.pageSize.getWidth();
-    //       //const height = pdf.internal.pageSize.getHeight();
-    //       //pdf.text("", width *0.5, 10, { align: "center" });
-    //       pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
-    //       pdf.addImage(dataUrl2, "PNG", 0, 10, width, width);
-    //       pdf.save("summaryCircle.pdf");
-    //       setIsLoaded(false);
-    //     });
-    //   })
-    //   .catch(function (error) {
-    //     console.error("oops, something went wrong!", error);
-    //   });
+    htmlToImage
+      .toPng(image, { quality: 1, pixelRatio: 1 })
+      .then((dataUrl) => {
+        htmlToImage.toPng(imageXY, { quality: 1, pixelRatio: 1 }).then((dataUrl2) => {
+          const pdf = new jsPDF();
+          const width = pdf.internal.pageSize.getWidth();
+          //const height = pdf.internal.pageSize.getHeight();
+          //pdf.text("", width *0.5, 10, { align: "center" });
+          pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
+          pdf.addImage(dataUrl2, "PNG", 0, 10, width, width);
+          pdf.save("summaryCircle.pdf");
+          setIsLoaded(false);
+        });
+      })
+      .catch(function (error) {
+        console.error("oops, something went wrong!", error);
+      });
   };
 
   const handleZoomback = () => {
