@@ -189,7 +189,7 @@ export default function RangeView(props) {
   useEffect(() => {
     //console.log(form);
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);
-    setAllValue([...clickedValues]);
+    setAllValue([...clickedValues]); //this is for single chromosome
   }, [chromoId]);
 
   const columns = Columns;
@@ -311,7 +311,7 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    // console.log(data);
+    console.log("checking...:", data);
     setTableData(data);
     //if circle summary, use allValue, if single chromosome summary, use allValues
     //if from compare, use data
@@ -367,18 +367,11 @@ export default function RangeView(props) {
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                     element={<a href="javascript:void(0)">Export Data</a>}>
-                    <ExcelSheet
-                      dataSet={exportTable(tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData)}
-                      name="Autosomal mCA Distribution"
-                    />
+                    <ExcelSheet dataSet={exportTable(tableData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
                 </div>
 
-                <Table
-                  columns={columns}
-                  defaultSort={[{ id: "start", asc: true }]}
-                  data={tableData.length === 0 ? (chromoId >= 0 ? allValue : allValues) : tableData}
-                />
+                <Table columns={columns} defaultSort={[{ id: "start", asc: true }]} data={tableData} />
               </div>
             </Row>
           </div>

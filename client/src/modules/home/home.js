@@ -8,7 +8,7 @@ import "./home.scss";
 export default function Home({ links }) {
   return (
     <>
-      <div className="bg-primary-dark">
+      <div className="">
         <div className="cover-image" style={{ height: "600px", width: "100%", backgroundImage: `url(${genomeImage})` }}>
           <Container>
             <Row>

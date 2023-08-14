@@ -301,9 +301,9 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    console.log(form.counterCompare, form.groupA, form.groupB);
+    //console.log(form.counterCompare, form.groupA, form.groupB);
     if (form.compare && !Array.isArray(form.groupA) && !Array.isArray(form.groupB)) {
-      console.log(showChart, form.groupA, form.groupB, compareRef);
+      //console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
       //if click back to Circos compare from single chromosome, do not clear circos data
       if (chromesomeId === 0) {
@@ -319,13 +319,14 @@ export default function CirclePlotTest(props) {
     if (form.groupA.length === 0 && form.groupB.length === 0) {
       setCircleA(null);
       setCircleB(null);
+      setTableData([]);
       console.log("clear circle data");
     }
   }, [form.counterCompare]);
 
-  const handleCompareHeightChange = (height) => {
-    setFigureHeight(height);
-  };
+  // const handleCompareHeightChange = (height) => {
+  //   setFigureHeight(height);
+  // };
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId),
@@ -421,31 +422,9 @@ export default function CirclePlotTest(props) {
       setTitleB(groupTitle(form.groupB)); // + "; " + circleTitle(circleB));
     }
   });
-  useEffect(() => {
-    if (circleA !== null) {
-      setTableData([...circleA.loss, ...circleA.gain, ...circleA.loh, ...circleA.undetermined, ...tableData]);
-    }
-  }, [circleA]);
-  useEffect(() => {
-    if (circleB !== null) {
-      setTableData([...circleB.loss, ...circleB.gain, ...circleB.loh, ...circleB.undetermined, ...tableData]);
-    }
-  }, [circleB]);
-
-  useEffect(() => {
-    if (groupA !== null) {
-      setTableData([...groupA, ...tableData]);
-    }
-  }, [groupA]);
-  useEffect(() => {
-    if (groupB !== null) {
-      setTableData([...groupB, ...tableData]);
-    }
-  }, [groupB]);
 
   const groupTitle = (group) => {
     let title = "";
-    // console.log(group);
     if (group != undefined) {
       if (group.study !== undefined) {
         if (!Array.isArray(group.study)) {
@@ -497,27 +476,6 @@ export default function CirclePlotTest(props) {
     }
     return title.substring(0, title.length - 2);
   };
-
-  // const isCircleNull = (circle) => {
-  //   if (circle !== null)
-  //     return circle.gain.length + circle.loh.length + circle.loss.length + circle.undetermined.length === 0;
-  //   else return true;
-  // };
-  // const circleTitle = (circle) => {
-  //   let title = "";
-  //   if (circle !== null) {
-  //     title +=
-  //       "\nGain: " +
-  //       circle.gain.length +
-  //       " Neutral: " +
-  //       circle.loh.length +
-  //       " Loss: " +
-  //       circle.loss.length +
-  //       " Undetermined: " +
-  //       circle.undetermined.length;
-  //   }
-  //   return title;
-  // };
 
   const handleDownload = () => {
     setIsLoaded(true);
@@ -704,6 +662,57 @@ export default function CirclePlotTest(props) {
 
   singleFigWidth = form.compare ? size * 0.45 : size;
   singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
+  //set tableData based on status
+  //if compare, and no chromoid => add circleA and circleB
+  //if compare with chromoid => add groupA and groupB
+  //if not compare, no chromoid => add circle
+  //if not compare, with chromid => add data
+  useEffect(() => {
+    if (circleA !== null) {
+      setTableData([...circleA.loss, ...circleA.gain, ...circleA.loh, ...circleA.undetermined, ...tableData]);
+    }
+  }, [circleA]);
+  useEffect(() => {
+    if (circleB !== null) {
+      setTableData([...circleB.loss, ...circleB.gain, ...circleB.loh, ...circleB.undetermined, ...tableData]);
+    }
+  }, [circleB]);
+
+  useEffect(() => {
+    if (groupA !== null) {
+      setTableData([...groupA, ...tableData]);
+    }
+  }, [groupA]);
+  useEffect(() => {
+    if (groupB !== null) {
+      setTableData([...groupB, ...tableData]);
+    }
+  }, [groupB]);
+  if (chromesomeId > 0 && circle !== null) {
+    //setTableData([...circle.loss, ...circle.gain, ...circle.loh, ...circle.undetermined]);
+  } else {
+    setTableData(data);
+  }
+
+  // if (form.compare && circleA != null && circleB != null) {
+  //   if (chromesomeId > 0) {
+  //     setTableData([...circleA.loss, ...circleA.gain, ...circleA.loh, ...circleA.undetermined]);
+  //     setTableData([...circleB.loss, ...circleB.gain, ...circleB.loh, ...circleB.undetermined]);
+  //   } else if (groupA != null && groupB != null) {
+  //     setTableData([...groupA]);
+  //     setTableData([...groupB]);
+  //   }
+  // } else {
+  //   if (chromesomeId > 0 && circle !== null) {
+  //     setTableData([...circle.loss, ...circle.gain, ...circle.loh, ...circle.undetermined]);
+  //   } else {
+  //     setTableData(data);
+  //   }
+  // }
+  //}, [circleA, circleB, groupA, groupB, circle]);
+
+  //
+
   props.getData(tableData);
 
   return (
@@ -854,10 +863,12 @@ export default function CirclePlotTest(props) {
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             {isLoaded ? (
               <p>Downloading...</p>
-            ) : (
+            ) : circleA ? (
               <Button variant="link" onClick={handleDownload}>
                 Download comparison images
               </Button>
+            ) : (
+              ""
             )}
           </div>
           <div>

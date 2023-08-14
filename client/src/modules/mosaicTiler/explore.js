@@ -6,7 +6,7 @@ import { Container, Card, Tabs, Tab, FormCheck } from "react-bootstrap";
 import ExploreForm from "./explore-form";
 import CompareForm from "./compare-form";
 import ErrorBoundary from "../components/error-boundary";
-import { formState } from "./explore.state";
+import { formState, defaultFormState } from "./explore.state";
 
 import RangeView from "./rangeView";
 import Loader from "../components/loader";
@@ -63,7 +63,7 @@ export default function Explore() {
 
   function handleReset(event) {
     //setForm(event);
-    setForm({ ...form, submitted: false });
+    setForm(defaultFormState);
     console.log("reset", form);
   }
 
@@ -102,7 +102,7 @@ export default function Explore() {
                 paddingBottom: 0,
               }}>
               <input id="paircheck" type="checkbox" checked={isOpenCompare} onChange={handleCheckboxChange}></input>
-              <span style={{ marginLeft: "10px" }}>Pairwise Compare</span>
+              <span style={{ marginLeft: "10px" }}>Pair Comparison</span>
             </label>
             {!isOpenCompare ? (
               <Card className="shadow" id="summary">
