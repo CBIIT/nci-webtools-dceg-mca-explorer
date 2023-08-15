@@ -83,9 +83,11 @@ export default function CirclePlotTest(props) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [zoomRange, setZoomRange] = useState(null);
   const [rangeLabel, setRangeLabel] = useState("");
+  const [isinit, setIsinit] = useState(false);
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
+  const zoomRangeRef = useRef(zoomRange);
 
   //update compareRef when isCompare changes
   useEffect(() => {
@@ -95,6 +97,9 @@ export default function CirclePlotTest(props) {
   useEffect(() => {
     showChartRef.current = showChart;
   }, [showChart]);
+  useEffect(() => {
+    zoomRangeRef.current = zoomRange;
+  }, [zoomRange]);
 
   let adjustWidth = 1;
   let minFigSize = window.innerWidth < 600 ? 450 : 550;
@@ -287,16 +292,17 @@ export default function CirclePlotTest(props) {
     }
     // (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
     // console.log("zoomRange:", zoomRange);
-    if (lastView !== undefined) {
-      const zr =
-        Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
-        " -- " +
-        Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
-      setRangeLabel(zr);
-    } else setRangeLabel("");
-    //else {
-    //   //setZoomRange(null);
-    // }
+    //   if (lastView !== undefined) {
+    //     const zr =
+    //       Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
+    //       " -- " +
+    //       Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
+    //     setRangeLabel(zr);
+    //   } else setRangeLabel("");
+    //   //else {
+    //   //   //setZoomRange(null);
+    //   // }
+    //
   };
 
   let data = [];
@@ -613,15 +619,24 @@ export default function CirclePlotTest(props) {
     if (zoombackbtnA !== null) zoombackbtnA.click();
     if (zoombackbtnB !== null) zoombackbtnB.click();
     if (zoombackbtn !== null) zoombackbtn.click();
-
-    // historyRange.pop();
-    // const temp = historyRange.pop();
-
-    // setZoomRange(temp);
-    //console.log(historyRange, zoomRange, temp);
+    //if the last one, click autorange button
   };
+
+  const handleZoomInitial = () => {
+    //setIsinit(true);
+    let resetBtnA = null;
+    let resetBtnB = null;
+    resetBtnA = document.querySelectorAll('a[data-val*="reset"]')[0];
+    resetBtnB = document.querySelectorAll('a[data-val*="reset"]')[1];
+    resetBtnA.click();
+    resetBtnB.click();
+  };
+
   const handleZoomHistory = (zoomHistory) => {
-    setZoomRange(zoomHistory);
+    if (zoomHistory.length == 2) {
+      setZoomRange(zoomHistory[0]);
+      setRangeLabel(zoomHistory[1]);
+    }
   };
   useEffect(() => {
     //console.log("showChart: ", showChart, isCompare);
@@ -742,14 +757,14 @@ export default function CirclePlotTest(props) {
             {form.compare ? (
               form.submitted ? (
                 <>
-                  &#8592;
+                  {/* &#8592;
                   <Button variant="link" onClick={handleBackChromo}>
-                    Chromosome {chromesomeId}
+                    Chr {chromesomeId}
                   </Button>
                   &#8592;
                   <Button variant="link" onClick={handleCircosCompareBack}>
                     Back to circos compare
-                  </Button>
+                  </Button> */}
                 </>
               ) : (
                 <Button variant="link" onClick={handleCircosCompareBack}>
@@ -759,15 +774,23 @@ export default function CirclePlotTest(props) {
             ) : (
               ""
             )}
+            {rangeLabel ? (
+              <>
+                &#8592;
+                <Button variant="link" onClick={handleZoomInitial}>
+                  Chr{chromesomeId}
+                </Button>
+              </>
+            ) : (
+              ""
+            )}
             {zoomRange ? <>&#8592;</> : ""}
+
             <Button variant="link" onClick={handleZoomback}>
               {zoomRange}
             </Button>
           </div>
-          <p>
-            Chromosome {chromesomeId} {rangeLabel ? "-" : ""}
-            {rangeLabel}
-          </p>
+          <p>{rangeLabel}</p>
           {form.compare && (
             <>
               <div className="d-flex" style={{ justifyContent: "flex-end" }}>

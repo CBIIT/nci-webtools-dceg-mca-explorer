@@ -68,7 +68,7 @@ function SingleChromosome(props) {
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
-    //console.log("zooming...", event);
+    console.log("zooming...", event);
     if (
       event !== undefined &&
       event.dragmode !== "zoom" &&
@@ -99,6 +99,8 @@ function SingleChromosome(props) {
       } else {
         setZoomHistory((prevHistory) => [...prevHistory, event]);
       }
+    } else if (event["xaxis.autorange"]) {
+      setZoomHistory([]);
     }
   }
   const handleZoomHistory = (event) => {
@@ -258,13 +260,14 @@ function SingleChromosome(props) {
   }, [data]);
 
   const prev = zoomHistory[zoomHistory.length - 2];
-  let backtoprev = "Back to initial comparison";
+  let backtochr = "Chr" + props.chromesomeId + " ";
+  let backtoprev = "";
   if (prev !== undefined && prev["xaxis.range[0]"] !== undefined) {
     const pxmin = prev["xaxis.range[0]"];
     const pxmax = prev["xaxis.range[1]"];
     //backtoprev += " (" + (pxmin / 1000000).toFixed(2) + " MB - " + (pxmax / 1000000).toFixed(2) + "MB)";
     backtoprev =
-      "chr" +
+      "Chr" +
       props.chromesomeId +
       ":" +
       Math.trunc(pxmin).toLocaleString("en-US", { style: "decimal" }) +
@@ -279,11 +282,12 @@ function SingleChromosome(props) {
       props.chromesomeId +
       ": " +
       Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
-      " -- " +
+      "-" +
       Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
     : "";
-  props.zoomHistory(backtoprev);
+
   if (zoomHistory.length == 0) rangeLable = "";
+  props.zoomHistory([backtoprev, rangeLable]);
   //console.log(zoomHistory);
 
   return (
