@@ -747,7 +747,7 @@ export default function CirclePlotTest(props) {
         // <div style={{ height: compareCircleSize + figureHeight + 620, left: 0 }}>
         <div>
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
-            {form.submitted ? (
+            {!form.compare ? (
               <Button variant="link" onClick={handleBack}>
                 Circos plot
               </Button>
@@ -755,22 +755,27 @@ export default function CirclePlotTest(props) {
               ""
             )}
             {form.compare ? (
-              form.submitted ? (
-                <>
-                  {/* &#8592;
-                  <Button variant="link" onClick={handleBackChromo}>
-                    Chr {chromesomeId}
-                  </Button>
-                  &#8592;
-                  <Button variant="link" onClick={handleCircosCompareBack}>
-                    Back to circos compare
-                  </Button> */}
-                </>
-              ) : (
-                <Button variant="link" onClick={handleCircosCompareBack}>
-                  Back to circos compare
-                </Button>
-              )
+              // (
+              //   form.submitted ? (
+              //     <>
+              //       {/* &#8592;
+              //       <Button variant="link" onClick={handleBackChromo}>
+              //         Chr {chromesomeId}
+              //       </Button>
+              //       &#8592;
+              //       <Button variant="link" onClick={handleCircosCompareBack}>
+              //         Back to circos compare
+              //       </Button> */}
+              //     </>
+              //   ) : (
+              //     <Button variant="link" onClick={handleCircosCompareBack}>
+              //       Back to circos compare
+              //     </Button>
+              //   )
+              // )
+              <Button variant="link" onClick={handleCircosCompareBack}>
+                Back to circos compare
+              </Button>
             ) : (
               ""
             )}
@@ -887,13 +892,13 @@ export default function CirclePlotTest(props) {
       ) : form.compare ? (
         // <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
         <div>
-          {form.submitted ? (
+          {/* {form.submitted ? (
             <Button variant="link" onClick={handleBack} className="">
               Back to circos plot
             </Button>
           ) : (
             ""
-          )}
+          )} */}
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             {isLoaded ? (
               <p>Downloading...</p>
