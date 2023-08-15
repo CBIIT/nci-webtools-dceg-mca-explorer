@@ -99,7 +99,8 @@ function SingleChromosome(props) {
       } else {
         setZoomHistory((prevHistory) => [...prevHistory, event]);
       }
-    } else if (
+    }
+    if (
       event !== undefined &&
       (event["autorange"] || event["autosize"] || event["xaxis.autorange"] || event["xaxis.autosize"])
     ) {

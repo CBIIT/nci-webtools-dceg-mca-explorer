@@ -278,6 +278,8 @@ export default function CirclePlotTest(props) {
     setChromesomeId(0);
     document.getElementById("compareSubmit").click();
     //console.log(circleA);
+    setZoomRangeA(null);
+    setZoomRangeB(null);
   };
 
   const handleZoomChange = (event, group, lastView) => {
