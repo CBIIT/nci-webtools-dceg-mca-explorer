@@ -79,6 +79,7 @@ export default function Explore() {
     //   console.log(tabs);
     // }
     setForm({ ...form, compare: !isOpenCompare });
+    setForm(defaultFormState);
     // if (Array.isArray(form.groupA)) {
     //   const combtn = document.getElementById("compareSubmit");
     //   if (combtn !== null) combtn.click();

@@ -20,11 +20,11 @@ export default function ComparePanel(props) {
   const [maxFraction, setMaxFraction] = useState("");
   //console.log(props.compareItem[0]);
 
-  useEffect(() => {
-    setStudy(props.name === "A" ? form.groupA.study : form.groupB.study);
-    setSex(props.name === "A" ? form.groupA.sex : form.groupB.sex);
-    setAncestry(props.name === "A" ? form.groupA.ancestry : form.groupB.ancestry);
-  });
+  // useEffect(() => {
+  //   setStudy(props.name === "A" ? form.groupA.study : form.groupB.study);
+  //   setSex(props.name === "A" ? form.groupA.sex : form.groupB.sex);
+  //   setAncestry(props.name === "A" ? form.groupA.ancestry : form.groupB.ancestry);
+  // });
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
