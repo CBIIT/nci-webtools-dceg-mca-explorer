@@ -68,7 +68,7 @@ function SingleChromosome(props) {
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
-    console.log("zooming...", event);
+    console.log("zooming...", event, name);
     if (
       event !== undefined &&
       event.dragmode !== "zoom" &&
@@ -99,7 +99,10 @@ function SingleChromosome(props) {
       } else {
         setZoomHistory((prevHistory) => [...prevHistory, event]);
       }
-    } else if (event !== undefined && event["xaxis.autorange"]) {
+    } else if (
+      event !== undefined &&
+      (event["autorange"] || event["autosize"] || event["xaxis.autorange"] || event["xaxis.autosize"])
+    ) {
       setZoomHistory([]);
     }
   }
