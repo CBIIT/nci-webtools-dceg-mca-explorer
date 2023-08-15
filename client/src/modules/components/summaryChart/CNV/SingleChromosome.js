@@ -280,7 +280,7 @@ function SingleChromosome(props) {
   let rangeLable = xMin
     ? "Chr" +
       props.chromesomeId +
-      ": " +
+      ":" +
       Math.trunc(xMin).toLocaleString("en-US", { style: "decimal" }) +
       "-" +
       Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })

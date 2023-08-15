@@ -16,31 +16,30 @@ body {
   border-bottom: 3px solid transparent;
   border-left: none;
   border-right: none;
-  color: $primary;
+  color: black;
   text-decoration: none;
   transition: all 0.1s;
   background-color: transparent;
  // font-weight: 500;
-  font-size: 17px !important;
+  font-size: 20px !important;
   padding-left: 1rem;
   padding-right: 1rem;
   
 
   &:hover,
   &:focus {
-    color: $body-color;
+    color: $primary!important;
     border-color:transparent;
   }
   &.active {
-    color: $body-color;
     border-color: transparent;
     border-bottom-color: $primary;
     background-color: transparent;//#a0ade6 !important;
-    color: #333c4e !important;
+    color: $primary !important;
     
       button {
         background-color: white !important;
-        color: black !important;
+        color: #333c4e !important;
         font-weight: 700 !important;
       }
     }
