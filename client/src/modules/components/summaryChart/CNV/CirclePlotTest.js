@@ -13,6 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
+import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
 //import { groupSort } from "d3";
 
@@ -510,9 +511,22 @@ export default function CirclePlotTest(props) {
     var imagegene = imageAs.querySelectorAll("svg")[1];
 
     var snp = document.getElementById("snpplots");
-    if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
+    // if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
+    if (snp !== null) imagesnp = snp;
     var gene = document.getElementById("geneplots");
-    if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
+    // if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
+    if (gene !== null) imagegene = gene;
+
+    //  htmlToImage
+    //    .toPng(imageall, { quality: 1, pixelRatio: 1 })
+    //    .then(function (dataUrl) {
+    //      const blob = dataURLtoBlob(dataUrl);
+    //      saveAs(blob, "summaryChromosome.png");
+    //    })
+    //    .catch(function (error) {
+    //      console.error("oops, something went wrong on png!", error);
+    //    });
+
     const initalY = 15;
     const legendSize = 2;
     const legendY = 5;
@@ -524,6 +538,7 @@ export default function CirclePlotTest(props) {
       figResolution = 1;
       downloadname = rangeLabel ? rangeLabel : "Chr" + chromesomeId + ".pdf";
     }
+
     htmlToImage
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
       .then((dataUrl1) => {
@@ -580,6 +595,8 @@ export default function CirclePlotTest(props) {
                     pdf.save(downloadname);
                     //setTimeout(() => pdf.save(downloadname), 500);
                     setIsLoaded(false);
+                    //const blob = dataURLtoBlob(dataUrl4);
+                    //saveAs(blob, "gene.png");
                   });
               });
           });
@@ -587,6 +604,17 @@ export default function CirclePlotTest(props) {
       .catch(function (error) {
         console.error("oops, something went wrong!", error);
       });
+  };
+  const dataURLtoBlob = (dataUrl) => {
+    const arr = dataUrl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
   };
   const handleSummaryDownload = () => {
     setIsLoaded(true);
@@ -616,6 +644,16 @@ export default function CirclePlotTest(props) {
     //   // pdf.save("summaryCircle.pdf");
     //   download(dataUrl, "svg");
     // });
+
+    // htmlToImage
+    //   .toPng(image, { quality: 1, pixelRatio: 1 })
+    //   .then(function (dataUrl) {
+    //     const blob = dataURLtoBlob(dataUrl);
+    //     saveAs(blob, "summaryCircle.png");
+    //   })
+    //   .catch(function (error) {
+    //     console.error("oops, something went wrong!", error);
+    //   });
 
     htmlToImage
       .toPng(image, { quality: 1, pixelRatio: 1 })
