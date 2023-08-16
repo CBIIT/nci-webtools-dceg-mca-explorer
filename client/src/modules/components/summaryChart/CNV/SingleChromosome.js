@@ -330,25 +330,29 @@ function SingleChromosome(props) {
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />
         {loading && xMax - xMin < zoomWindow ? (
-          <div>
-            <SnpPlot
-              width={width}
-              xMax={xMax}
-              xMin={xMin}
-              chr={props.chromesomeId}
-              //</div>onHeightChange={props.onHeightChange}
-            ></SnpPlot>
+          <>
+            <div id="snpplots">
+              <SnpPlot
+                width={width}
+                xMax={xMax}
+                xMin={xMin}
+                chr={props.chromesomeId}
+                //</div>onHeightChange={props.onHeightChange}
+              ></SnpPlot>
+            </div>
             <br></br>
-            <GenePlot
-              width={width}
-              xMax={xMax}
-              xMin={xMin}
-              chr={props.chromesomeId}
-              //onHeightChange={props.onHeightChange}
-              //</div>onCompareHeightChange={props.onCompareHeightChange}
-            ></GenePlot>
+            <div id="geneplots">
+              <GenePlot
+                width={width}
+                xMax={xMax}
+                xMin={xMin}
+                chr={props.chromesomeId}
+                //onHeightChange={props.onHeightChange}
+                //</div>onCompareHeightChange={props.onCompareHeightChange}
+              ></GenePlot>
+            </div>
             <br></br>
-          </div>
+          </>
         ) : (
           !props.title && (
             <p style={{ fontSize: "14px" }}>

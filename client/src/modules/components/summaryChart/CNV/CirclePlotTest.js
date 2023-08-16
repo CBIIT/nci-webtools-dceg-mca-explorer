@@ -504,6 +504,14 @@ export default function CirclePlotTest(props) {
     var imageA = imageAs.querySelectorAll("svg")[0];
     var imageBs = document.getElementById("B");
     var imageB = imageBs.querySelectorAll("svg")[0];
+    //initial
+    var imagesnp = imageAs.querySelectorAll("svg")[1];
+    var imagegene = imageAs.querySelectorAll("svg")[1];
+
+    var snp = document.getElementById("snpplots");
+    if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
+    var gene = document.getElementById("geneplots");
+    if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
     const initalY = 15;
     const legendSize = 2;
     const legendY = 5;
@@ -513,7 +521,7 @@ export default function CirclePlotTest(props) {
     let downloadname = "compareSummary.pdf";
     if (chromesomeId) {
       figResolution = 1;
-      downloadname = "chr" + chromesomeId + ":" + rangeLabel + ".pdf";
+      downloadname = rangeLabel + ".pdf";
     }
     htmlToImage
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
@@ -521,43 +529,58 @@ export default function CirclePlotTest(props) {
         htmlToImage
           .toPng(imageB, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
           .then((dataUrl2) => {
-            const pdf = new jsPDF();
-            const width = pdf.internal.pageSize.getWidth() / 2;
-            pdf.setFillColor(0, 128, 0);
-            pdf.rect(legendX, legendY, legendSize, legendSize, "F");
-            pdf.setFontSize(8);
-            pdf.setTextColor(0, 128, 0);
-            pdf.text("Gain", legendX + 3, legendY2);
+            htmlToImage
+              .toPng(imagesnp, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+              .then((dataUrl3) => {
+                htmlToImage
+                  .toPng(imagegene, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+                  .then((dataUrl4) => {
+                    const pdf = new jsPDF();
+                    const width = pdf.internal.pageSize.getWidth() / 2;
+                    pdf.setFillColor(0, 128, 0);
+                    pdf.rect(legendX, legendY, legendSize, legendSize, "F");
+                    pdf.setFontSize(8);
+                    pdf.setTextColor(0, 128, 0);
+                    pdf.text("Gain", legendX + 3, legendY2);
 
-            pdf.setFillColor(0, 0, 255);
-            pdf.rect(legendX + 10, legendY, legendSize, legendSize, "F");
-            pdf.setTextColor(0, 0, 255);
-            pdf.text("Neutral", legendX + 13, legendY2);
+                    pdf.setFillColor(0, 0, 255);
+                    pdf.rect(legendX + 10, legendY, legendSize, legendSize, "F");
+                    pdf.setTextColor(0, 0, 255);
+                    pdf.text("Neutral", legendX + 13, legendY2);
 
-            pdf.setFillColor(255, 0, 0);
-            pdf.rect(legendX + 24, legendY, legendSize, legendSize, "F");
-            pdf.setTextColor(255, 0, 0);
-            pdf.text("Loss", legendX + 27, legendY2);
+                    pdf.setFillColor(255, 0, 0);
+                    pdf.rect(legendX + 24, legendY, legendSize, legendSize, "F");
+                    pdf.setTextColor(255, 0, 0);
+                    pdf.text("Loss", legendX + 27, legendY2);
 
-            pdf.setFillColor(128, 128, 128);
-            pdf.rect(legendX + 34, legendY, legendSize, legendSize, "F");
-            pdf.setTextColor(128, 128, 128);
-            pdf.text("Undetermined", legendX + 37, legendY2);
+                    pdf.setFillColor(128, 128, 128);
+                    pdf.rect(legendX + 34, legendY, legendSize, legendSize, "F");
+                    pdf.setTextColor(128, 128, 128);
+                    pdf.text("Undetermined", legendX + 37, legendY2);
 
-            pdf.setTextColor(0, 0, 0);
-            pdf.setFontSize(8);
-            if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
-            pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
-            pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
-            pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
-            pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
-            if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
-            if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
-            //}
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.setFontSize(8);
+                    if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
+                    pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
+                    pdf.text(titleB, 1.5 * width, initalY + 10, { align: "center" });
 
-            pdf.save(downloadname);
-            //setTimeout(() => pdf.save(downloadname), 500);
-            setIsLoaded(false);
+                    pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
+                    pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
+
+                    pdf.addImage(dataUrl3, "PNG", 0, width + initalY + 20, width, 0);
+                    pdf.addImage(dataUrl3, "PNG", width, width + initalY + 20, width, 0);
+                    pdf.addImage(dataUrl4, "PNG", 0, width + initalY + 40, width, 0);
+                    pdf.addImage(dataUrl4, "PNG", width, width + initalY + 40, width, 0);
+
+                    if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
+                    if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
+                    //}
+
+                    pdf.save(downloadname);
+                    //setTimeout(() => pdf.save(downloadname), 500);
+                    setIsLoaded(false);
+                  });
+              });
           });
       })
       .catch(function (error) {
