@@ -80,7 +80,7 @@ export default function ComparePanel(props) {
     //console.log(compareform);
   }
 
-  const updateForm = () => {
+  useEffect(() => {
     console.log("UpdateForm ", props.name, form.groupA);
     //
     if (compareform !== undefined) {
@@ -95,10 +95,10 @@ export default function ComparePanel(props) {
       if (!Array.isArray(form.groupA) && props.name === "A") {
       }
     }
-  };
+  }, [compareform]);
 
   useEffect(() => {
-    updateForm();
+    //updateForm();
     console.log("this is compare filter");
     const updatedcompareform = {};
     //props.compareItem.forEach((element) => {
@@ -127,9 +127,9 @@ export default function ComparePanel(props) {
         }
       }
     }
-    //console.log(updatedcompareform);
+    setCompareForm(updatedcompareform);
     props.onCompareChange(updatedcompareform, props.name);
-  }, [compareform, props.compareItem]);
+  }, [props.compareItem]);
 
   let showBorder = false;
   props.compareItem.forEach((e) => {
