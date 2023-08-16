@@ -144,8 +144,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handlegroupChange = (value, gname) => {
     console.log("compare group:", value, gname);
     if (value !== undefined) {
-      if (gname === "A") setForm({ ...form, groupA: value, compare: true });
-      else if (gname === "B") setForm({ ...form, groupB: value, compare: true });
+      if (gname === "A") setForm((prevForm) => ({ ...prevForm, groupA: value }));
+      else if (gname === "B") setForm((prevForm) => ({ ...prevForm, groupB: value }));
     }
   };
   const handleCompareCheckboxChange = (id) => {

@@ -100,35 +100,35 @@ export default function ComparePanel(props) {
   useEffect(() => {
     updateForm();
     console.log("this is compare filter");
-    props.compareItem.forEach((element) => {
-      if (!element.isChecked && compareform) {
-        if (element.label === " Study") {
-          setStudy([]);
-          //form.groupA.study;
-          //if (compareform.hasOwnProperty("study")) delete compareform.study;
-        } else if (element.label === " Genotype Array") {
-          setArray([]);
-          //if (compareform.hasOwnProperty("array")) delete compareform.array;
-        } else if (element.label === " Genotype Sex") {
-          setSex([]);
-          // if (compareform.hasOwnProperty("sex")) delete compareform.sex;
-        } else if (element.label === " Age") {
-          setMinAge(0);
-          setMaxAge(0);
-          //if (compareform.hasOwnProperty("minAge")) delete compareform.minAge;
-          // if (compareform.hasOwnProperty("maxAge")) delete compareform.maxAge;
-        } else if (element.label === " Ancestry") {
-          setAncestry([]);
-          //  if (compareform.hasOwnProperty("ancestry")) delete compareform.ancestry;
-        } else if (element.label === " Smoking Status") {
-          setSmoking([]);
-          // if (compareform.hasOwnProperty("smoking")) delete compareform.smoking;
-        } else if (element.label === " Copy Number State") {
-          setTypes(null);
-          // if (compareform.hasOwnProperty("types")) delete compareform.types;
+    const updatedcompareform = {};
+    //props.compareItem.forEach((element) => {
+    if (compareform !== undefined) {
+      for (const element of props.compareItem) {
+        if (element.isChecked) {
+          updatedcompareform[element.value] = compareform[element.value];
+        }
+        if (!element.isChecked) {
+          if (element.label === " Study") {
+            setStudy([]);
+          } else if (element.label === " Genotype Array") {
+            setArray([]);
+          } else if (element.label === " Genotype Sex") {
+            setSex([]);
+          } else if (element.label === " Age") {
+            setMinAge(0);
+            setMaxAge(0);
+          } else if (element.label === " Ancestry") {
+            setAncestry([]);
+          } else if (element.label === " Smoking Status") {
+            setSmoking([]);
+          } else if (element.label === " Copy Number State") {
+            setTypes(null);
+          }
         }
       }
-    });
+    }
+    //console.log(updatedcompareform);
+    props.onCompareChange(updatedcompareform, props.name);
   }, [compareform, props.compareItem]);
 
   let showBorder = false;

@@ -57,7 +57,15 @@ export default function Explore() {
     //setForm({ ...event, submitted: false });
   }
   useEffect(() => {
-    setForm({ ...form, submitted: false, groupA: [], groupB: [], counterCompare: form.counterCompare + 1 });
+    setForm({
+      ...form,
+      submitted: false,
+      // groupA: { study: [{ value: "plco", label: "PLCO" }] },
+      // groupB: { study: [{ value: "plco", label: "PLCO" }] },
+      groupA: [],
+      groupB: [],
+      counterCompare: form.counterCompare + 1,
+    });
     console.log("clear...", form);
   }, [clear]);
 
