@@ -359,9 +359,10 @@ export default function CirclePlotTest(props) {
     const undeterTemp = [];
     const chrXTemp = [];
     const chrYTemp = [];
-    if (!Array.isArray(group)) {
+    if (true) {
       if (chromesomeId > 0) {
         query = { ...group, chr: chromesomeId };
+        console.log(query);
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
         console.log("do query...", form.counterCompare, chromesomeId);
@@ -521,7 +522,7 @@ export default function CirclePlotTest(props) {
     let downloadname = "compareSummary.pdf";
     if (chromesomeId) {
       figResolution = 1;
-      downloadname = rangeLabel + ".pdf";
+      downloadname = rangeLabel ? rangeLabel : "Chr" + chromesomeId + ".pdf";
     }
     htmlToImage
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
@@ -822,7 +823,7 @@ export default function CirclePlotTest(props) {
               {zoomRange}
             </Button>
           </div>
-          <p>{rangeLabel}</p>
+          <p>{rangeLabel ? rangeLabel : "Chr" + chromesomeId}</p>
           {form.compare && form.counterCompare > 0 && (
             <>
               <div className="d-flex" style={{ justifyContent: "flex-end" }}>
