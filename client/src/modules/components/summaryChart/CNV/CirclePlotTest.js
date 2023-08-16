@@ -309,7 +309,7 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    console.log(form.counterCompare, form.groupA, form.groupB);
+    // console.log(form.counterCompare, form.groupA, form.groupB);
     if (form.compare) {
       //console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
@@ -800,7 +800,7 @@ export default function CirclePlotTest(props) {
             </Button>
           </div>
           <p>{rangeLabel}</p>
-          {form.compare && (
+          {form.compare && form.counterCompare > 0 && (
             <>
               <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                 {isLoaded ? (
@@ -811,23 +811,6 @@ export default function CirclePlotTest(props) {
                   </Button>
                 )}
               </div>
-              {/* <ChromosomeCompare
-                  compareCircleSize={compareCircleSize}
-                  onZoomChange={handleZoomChange}
-                  zoomRangeA={zoomRangeA}
-                  zoomRangeB={zoomRangeB}
-                  dataA={groupA}
-                  dataB={groupB}
-                  titleA={titleA}
-                  detailsA="A"
-                  titleB={titleB}
-                  detailsB="B"
-                  chromesomeId={chromesomeId}
-                  width={singleFigWidth}
-                  height={singleFigWidth}
-                  onHeightChange={props.onHeightChange}
-                  onCompareHeightChange={handleCompareHeightChange}></ChromosomeCompare>
-                */}
               <Row className="">
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>

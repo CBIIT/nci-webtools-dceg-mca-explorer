@@ -18,11 +18,12 @@ export default function ComparePanel(props) {
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
   const [compareform, setCompareForm] = useState({ study: study });
+  const compareRef = useRef(compareform);
 
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
-    setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
-    console.log("&&&&", compareform);
+    // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
+    console.log("&&&&", StudyOptions[0], compareform);
   }, [props.onReset]);
   function handleChange(event) {
     const { name, value } = event.target;

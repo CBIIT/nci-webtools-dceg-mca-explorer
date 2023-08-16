@@ -59,7 +59,7 @@ export default function Explore() {
   }
   useEffect(() => {
     setForm({
-      ...form,
+      ...defaultFormState,
       submitted: false,
       groupA: { study: [{ value: "plco", label: "PLCO" }] },
       groupB: { study: [{ value: "plco", label: "PLCO" }] },
@@ -134,6 +134,7 @@ export default function Explore() {
                     onSubmit={handleSubmit}
                     onFilter={handleFilter}
                     onClear={handleFilterClear}
+                    onReset={handleReset}
                     isOpen={isOpenCompare}
                   />
                 </Card.Body>
