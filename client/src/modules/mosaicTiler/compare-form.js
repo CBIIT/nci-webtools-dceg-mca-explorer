@@ -12,6 +12,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
   const [counter, setCounter] = useState(0);
+  const [resetCounter, setResetCounter] = useState(0);
   // console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }]
@@ -129,14 +130,26 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleFilterClear = (event) => {
     console.log("filterclear");
     setCompareChecks(CompareArray);
-    // handlegroupChange("", "A");
-    onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
-    const resetBtns = document.querySelectorAll('a[data-val*="reset"]');
-    if (resetBtns !== undefined) {
-      for (let i = 0; i < resetBtns.length; i++) {
-        resetBtns[i].click();
-      }
-    }
+    updateGroup();
+    onClear({
+      ...form,
+      //groupA: [],
+      //groupB: [],
+      groupA: { study: [{ value: "plco", label: "PLCO" }] },
+      groupB: { study: [{ value: "plco", label: "PLCO" }] },
+      //counterCompare: counter + 1,
+    });
+    //clear all reset
+    // const resetBtns = document.querySelectorAll('a[data-val*="reset"]');
+    // if (resetBtns !== undefined) {
+    //   for (let i = 0; i < resetBtns.length; i++) {
+    //     resetBtns[i].click();
+    //     resetBtns[i].click();
+
+    //   }
+    // }
+    const resetBtn = document.getElementById("clearCompare");
+    resetBtn.click();
 
     //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
   };
@@ -162,10 +175,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   //   setForm({ ...form });
   //   console.log(compare, form);
   // }, [compare]);
-  const updateGroup = (group) => {
-    console.log(group);
-    //if (group === "a") setForm({ ...form, groupA: form.group });
-    // else if (group === "b") setForm({ ...form, groupB: form.group });
+  const updateGroup = () => {
+    setResetCounter((prevCounter) => prevCounter + 1);
   };
   const handleDisplayCompare = () => {
     setCompare(true);
@@ -198,13 +209,15 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           id="groupA"
           compareItem={compareChecks}
           name="A"
-          onCompareChange={handlegroupChange}></ComparePanel>
+          onCompareChange={handlegroupChange}
+          onReset={resetCounter}></ComparePanel>
         <br></br>
         <ComparePanel
           id="groupB"
           compareItem={compareChecks}
           name="B"
-          onCompareChange={handlegroupChange}></ComparePanel>
+          onCompareChange={handlegroupChange}
+          onReset={resetCounter}></ComparePanel>
         <br></br>
         <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <Button

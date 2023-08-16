@@ -51,20 +51,21 @@ export default function Explore() {
     });
   }
   function handleFilterClear(event) {
-    // setForm({ ...form, counterCompare: form.counterCompare + 1 });
+    setForm({ ...event });
     setClear(clear + 1);
-    console.log("filterclear", form);
+
+    console.log("filterclear", event);
     //setForm({ ...event, submitted: false });
   }
   useEffect(() => {
     setForm({
       ...form,
       submitted: false,
-      // groupA: { study: [{ value: "plco", label: "PLCO" }] },
-      // groupB: { study: [{ value: "plco", label: "PLCO" }] },
-      groupA: [],
-      groupB: [],
-      counterCompare: form.counterCompare + 1,
+      groupA: { study: [{ value: "plco", label: "PLCO" }] },
+      groupB: { study: [{ value: "plco", label: "PLCO" }] },
+      // groupA: [],
+      // groupB: [],
+      counterCompare: 0,
     });
     console.log("clear...", form);
   }, [clear]);

@@ -18,14 +18,12 @@ export default function ComparePanel(props) {
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
   const [compareform, setCompareForm] = useState({ study: study });
-  //console.log(props.compareItem[0]);
-  console.log(compareform);
-  // setForm({ ...form, groupA: compareform, groupB: compareform, compare: true });
-  // useEffect(() => {
-  //   setStudy(props.name === "A" ? form.groupA.study : form.groupB.study);
-  //   setSex(props.name === "A" ? form.groupA.sex : form.groupB.sex);
-  //   setAncestry(props.name === "A" ? form.groupA.ancestry : form.groupB.ancestry);
-  // });
+
+  useEffect(() => {
+    handleSelectChange("study", [StudyOptions[0]]);
+    setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
+    console.log("&&&&", compareform);
+  }, [props.onReset]);
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
@@ -81,7 +79,7 @@ export default function ComparePanel(props) {
   }
 
   useEffect(() => {
-    console.log("UpdateForm ", props.name, form.groupA);
+    console.log("UpdateForm ", compareform);
     //
     if (compareform !== undefined) {
       // if (props.name === "A") {
@@ -89,6 +87,7 @@ export default function ComparePanel(props) {
       // } else if (props.name === "B") {
       //   setForm({ ...form, groupB: { ...compareform } });
       // }
+
       props.onCompareChange(compareform, props.name);
     }
     if (compareform === undefined) {

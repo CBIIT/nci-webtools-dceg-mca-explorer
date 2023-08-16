@@ -309,8 +309,8 @@ export default function CirclePlotTest(props) {
 
   let data = [];
   useEffect(() => {
-    //console.log(form.counterCompare, form.groupA, form.groupB);
-    if (form.compare && !Array.isArray(form.groupA) && !Array.isArray(form.groupB)) {
+    console.log(form.counterCompare, form.groupA, form.groupB);
+    if (form.compare) {
       //console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
       //if click back to Circos compare from single chromosome, do not clear circos data
@@ -319,8 +319,10 @@ export default function CirclePlotTest(props) {
         setCircleB(null);
       }
       setTableData([]);
-      handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
-      handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
+      if (form.counterCompare > 0) {
+        handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
+        handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
+      }
     } else {
       //console.log("clear form");
     }
