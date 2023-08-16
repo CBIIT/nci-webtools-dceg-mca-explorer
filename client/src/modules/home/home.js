@@ -1,5 +1,5 @@
 import Container from "react-bootstrap/Container";
-import genomeImage from "./mca1aa.jpeg";
+import genomeImage from "./mca1.jpeg";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Link } from "react-router-dom";
@@ -15,7 +15,7 @@ export default function Home({ links }) {
               <Col md={6}>
                 <div className="d-flex h-100 align-items-center my-4">
                   <div style={{ marginTop: "20px" }}>
-                    <h2 className="font-title text-dark mb-3">mCA Explorer</h2>
+                    <h2 className="font-title text-dark mb-3">Mosaic Chromosomal Alteration Explorer</h2>
                     <hr className="border-dark" />
                     <p className="lead text-dark">
                       An interactive mCA visualization and analysis tools that allows for aggregation, visualization,
@@ -23,9 +23,9 @@ export default function Home({ links }) {
                       including mCA location (e.g., chromosome and bp position), mCA type (e.g., loss, gain, neutral),
                       and cell fraction (e.g., percentage of cells impacted by the event).
                     </p>
-                    {/* <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
+                    <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
                       Explore mosaic
-                    </Link> */}
+                    </Link>
                   </div>
                 </div>
               </Col>

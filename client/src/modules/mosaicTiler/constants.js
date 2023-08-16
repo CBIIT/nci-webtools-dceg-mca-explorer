@@ -12,7 +12,7 @@ export const CompareArray = [
   { id: 2, value: "sex", label: " Genotype Sex", isChecked: false },
   { id: 3, value: "age", label: " Age", isChecked: false },
   { id: 4, value: "ancestry", label: " Ancestry", isChecked: false },
-  { id: 5, value: "study", label: " Study", isChecked: false },
+  { id: 5, value: "study", label: " Study", isChecked: true },
   { id: 6, value: "cf", label: " Cellular Fraction", isChecked: false },
   { id: 7, value: "smoking", label: " Smoking Status", isChecked: false },
   { id: 8, value: "types", label: " Copy Number State", isChecked: false },
@@ -24,6 +24,11 @@ export const TypeStateOptions = [
   { value: "loss", label: "Loss" },
   { value: "gain", label: "Gain" },
   { value: "undetermined", label: "Undetermined" },
+];
+
+export const StudyOptions = [
+  { value: "plco", label: "PLCO" },
+  { value: "ukbb", label: "UK Biobank" },
 ];
 
 export const initialX = [

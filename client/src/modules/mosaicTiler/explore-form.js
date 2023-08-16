@@ -249,7 +249,9 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
       <Accordion>
         <Accordion.Item eventKey="0">
-          <Accordion.Header eventKey="0">Advanced settings</Accordion.Header>
+          <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+            Advanced settings
+          </Accordion.Header>
           <Accordion.Body>
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
@@ -401,7 +403,6 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </Button>
         {/* </OverlayTrigger> */}
       </div>
-      <hr></hr>
       {/* {isOpen && (
         <Accordion defaultActiveKey="0">
           <Accordion.Item eventKey="0">

@@ -3,12 +3,11 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { AncestryOptions, TypeStateOptions } from "./constants";
+import { AncestryOptions, TypeStateOptions, StudyOptions } from "./constants";
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
-  const [compareform, setCompareForm] = useState();
-  const [study, setStudy] = useState([]);
+  const [study, setStudy] = useState(StudyOptions[0]);
   const [array, setArray] = useState([]);
   const [sex, setSex] = useState([]);
   const [ancestry, setAncestry] = useState([]);
@@ -18,8 +17,10 @@ export default function ComparePanel(props) {
   const [types, setTypes] = useState(null);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
+  const [compareform, setCompareForm] = useState({ study: study });
   //console.log(props.compareItem[0]);
-
+  console.log(compareform);
+  // setForm({ ...form, groupA: compareform, groupB: compareform, compare: true });
   // useEffect(() => {
   //   setStudy(props.name === "A" ? form.groupA.study : form.groupB.study);
   //   setSex(props.name === "A" ? form.groupA.sex : form.groupB.sex);
@@ -83,11 +84,11 @@ export default function ComparePanel(props) {
     console.log("UpdateForm ", props.name, form.groupA);
     //
     if (compareform !== undefined) {
-      if (props.name === "A") {
-        setForm({ ...form, groupA: { ...compareform } });
-      } else if (props.name === "B") {
-        setForm({ ...form, groupB: { ...compareform } });
-      }
+      // if (props.name === "A") {
+      //   setForm({ ...form, groupA: { ...compareform } });
+      // } else if (props.name === "B") {
+      //   setForm({ ...form, groupB: { ...compareform } });
+      // }
       props.onCompareChange(compareform, props.name);
     }
     if (compareform === undefined) {
@@ -98,7 +99,7 @@ export default function ComparePanel(props) {
 
   useEffect(() => {
     updateForm();
-    //console.log("this is compare filter");
+    console.log("this is compare filter");
     props.compareItem.forEach((element) => {
       if (!element.isChecked && compareform) {
         if (element.label === " Study") {

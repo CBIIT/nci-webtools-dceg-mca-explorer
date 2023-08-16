@@ -12,7 +12,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
   const [counter, setCounter] = useState(0);
-  console.log("compareForm:", form);
+  // console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const chromosomes = [{ value: "all", label: "All Chromosomes" }]
     .concat(
@@ -27,9 +27,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [isY, setIsY] = useState(false);
   const initialSelection = CompareArray.map((option) => ({
     ...option,
-    isChecked: form.groupA[option.value] ? true : false,
+    //isChecked: form.groupA[option.value] ? true : false,
   }));
-  console.log(initialSelection);
+  // console.log(initialSelection);
   const [compareChecks, setCompareChecks] = useState(initialSelection);
   const [compare, setCompare] = useState(false);
 
@@ -64,6 +64,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     setIsY(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
+
     //onSubmit(resetFormState, "reset"); //clean the plot
   }
 
@@ -128,7 +129,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleFilterClear = (event) => {
     console.log("filterclear");
     setCompareChecks(CompareArray);
-
+    // handlegroupChange("", "A");
     onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });
     const resetBtns = document.querySelectorAll('a[data-val*="reset"]');
     if (resetBtns !== undefined) {
@@ -141,7 +142,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   };
 
   const handlegroupChange = (value, gname) => {
-    //console.log("compare group:", value, gname);
+    console.log("compare group:", value, gname);
     if (value !== undefined) {
       if (gname === "A") setForm({ ...form, groupA: value, compare: true });
       else if (gname === "B") setForm({ ...form, groupB: value, compare: true });
@@ -169,22 +170,27 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleDisplayCompare = () => {
     setCompare(true);
   };
-  // useEffect(() => {
-  //   //console.log("display compare", form);
-  // });
+  useEffect(() => {
+    console.log("display compare", form);
+  });
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
         <Form.Label>Please choose attributes to compare:</Form.Label>
         <Card style={{ backgroundColor: "#f8f8f8" }}>
-          {compareChecks.map((ck) => (
-            <div key={ck.id}>
-              <label>
-                <input type="checkbox" checked={ck.isChecked} onChange={() => handleCompareCheckboxChange(ck.id)} />
-                {ck.label}
-              </label>
-            </div>
-          ))}
+          {compareChecks.map((ck) => {
+            //do not display study in the selection panel
+            if (ck.value !== "study") {
+              return (
+                <div key={ck.id}>
+                  <label>
+                    <input type="checkbox" checked={ck.isChecked} onChange={() => handleCompareCheckboxChange(ck.id)} />
+                    {ck.label}
+                  </label>
+                </div>
+              );
+            } else return null;
+          })}
         </Card>
         <br></br>
 

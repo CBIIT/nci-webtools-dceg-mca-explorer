@@ -61,6 +61,8 @@ div svg path {
   background-image:none;
   font-size: small;
   padding: 0 0;
+  text-align: right;
+  display: block;
 }
 .accordion-button::before {
   content: "+";
