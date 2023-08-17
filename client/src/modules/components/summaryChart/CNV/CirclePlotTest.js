@@ -622,39 +622,6 @@ export default function CirclePlotTest(props) {
     var images = document.getElementById("summaryCircle");
     var image = images.querySelectorAll("svg")[1];
     var imageXY = images.querySelectorAll("svg")[0];
-    // function filter(node) {
-    //   return node.tagName !== "i";
-    // }
-    // function download(href, name) {
-    //   var a = document.createElement("a");
-
-    //   a.download = name;
-    //   a.href = href;
-
-    //   document.body.appendChild(a);
-    //   a.click();
-    //   document.body.removeChild(a);
-    // }
-
-    // htmlToImage.toSvg(image, { filter: filter, quality: 1, pixelRatio: 1, cacheBust: true }).then((dataUrl) => {
-    //   // const pdf = new jsPDF();
-    //   // const width = pdf.internal.pageSize.getWidth();
-    //   //const height = pdf.internal.pageSize.getHeight();
-    //   //pdf.text("", width *0.5, 10, { align: "center" });
-    //   // pdf.addImage(dataUrl, "PNG", 0, 10, width, width);
-    //   // pdf.save("summaryCircle.pdf");
-    //   download(dataUrl, "svg");
-    // });
-
-    // htmlToImage
-    //   .toPng(image, { quality: 1, pixelRatio: 1 })
-    //   .then(function (dataUrl) {
-    //     const blob = dataURLtoBlob(dataUrl);
-    //     saveAs(blob, "summaryCircle.png");
-    //   })
-    //   .catch(function (error) {
-    //     console.error("oops, something went wrong!", error);
-    //   });
 
     htmlToImage
       .toPng(image, { quality: 1, pixelRatio: 1 })
@@ -670,9 +637,91 @@ export default function CirclePlotTest(props) {
 
           pdf.addImage(dataUrl, "PNG", 0, 20, width, width);
           pdf.addImage(dataUrl2, "PNG", 0, 20, width, width);
-          pdf.save("summaryCircle.pdf");
+          pdf.save(circosTitle + ".pdf");
           setIsLoaded(false);
         });
+      })
+      .catch(function (error) {
+        console.error("oops, something went wrong!", error);
+      });
+  };
+
+  const handleSingleChrDownload = () => {
+    setIsLoaded(true);
+    var image = document.getElementById("One");
+    var imageA = image.querySelectorAll("svg")[0];
+    var snp = document.getElementById("snpplots");
+    var imagesnp = image.querySelectorAll("svg")[1];
+    var imagegene = image.querySelectorAll("svg")[1];
+    if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
+    //if (snp !== null) imagesnp = snp;
+    var gene = document.getElementById("geneplots");
+    //if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
+    if (gene !== null) imagegene = gene;
+
+    const initalY = 15;
+    const legendSize = 2;
+    const legendY = 5;
+    const legendY2 = 7;
+    const legendX = 150;
+    let figResolution = 0.8;
+    let downloadname = "Chr" + chromesomeId + ".pdf";
+    if (chromesomeId) {
+      figResolution = 1;
+      downloadname = rangeLabel ? rangeLabel : "Chr" + chromesomeId + ".pdf";
+    }
+
+    htmlToImage
+      .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+      .then((dataUrl1) => {
+        htmlToImage
+          .toPng(imagegene, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+          .then((dataUrl4) => {
+            htmlToImage
+              .toPng(imagesnp, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+              .then((dataUrl3) => {
+                const pdf = new jsPDF();
+                const width = pdf.internal.pageSize.getWidth();
+                pdf.setFillColor(0, 128, 0);
+                pdf.rect(legendX, legendY, legendSize, legendSize, "F");
+                pdf.setFontSize(8);
+                pdf.setTextColor(0, 128, 0);
+                pdf.text("Gain", legendX + 3, legendY2);
+
+                pdf.setFillColor(0, 0, 255);
+                pdf.rect(legendX + 10, legendY, legendSize, legendSize, "F");
+                pdf.setTextColor(0, 0, 255);
+                pdf.text("Neutral", legendX + 13, legendY2);
+
+                pdf.setFillColor(255, 0, 0);
+                pdf.rect(legendX + 24, legendY, legendSize, legendSize, "F");
+                pdf.setTextColor(255, 0, 0);
+                pdf.text("Loss", legendX + 27, legendY2);
+
+                pdf.setFillColor(128, 128, 128);
+                pdf.rect(legendX + 34, legendY, legendSize, legendSize, "F");
+                pdf.setTextColor(128, 128, 128);
+                pdf.text("Undetermined", legendX + 37, legendY2);
+
+                pdf.setTextColor(0, 0, 0);
+                pdf.setFontSize(8);
+                if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width * 0.5, initalY, { align: "center" });
+                pdf.text(circosTitle, width * 0.5, initalY + 5, { align: "center" });
+
+                pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
+                pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
+                pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20, width / 2, 0);
+                pdf.setFontSize(5);
+                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
+                //}
+
+                pdf.save(downloadname);
+                //setTimeout(() => pdf.save(downloadname), 500);
+                setIsLoaded(false);
+                //const blob = dataURLtoBlob(dataUrl4);
+                //saveAs(blob, "gene.png");
+              });
+          });
       })
       .catch(function (error) {
         console.error("oops, something went wrong!", error);
@@ -913,30 +962,30 @@ export default function CirclePlotTest(props) {
             </>
           )}
           {!form.compare && (
-            <Row className="">
-              <Col lg={12}>
-                <SingleChromosome
-                  onZoomChange={handleZoomChange}
-                  data={data}
-                  details={"One"}
-                  title={groupTitle({
-                    types: form.types,
-                    sex: form.sex,
-                    study: form.study,
-                    ancestry: form.ancestry,
-                    array: form.array,
-                    smoking: form.smoking,
-                    maxAge: form.maxAge,
-                    minAge: form.minAge,
-                    maxFraction: form.maxFraction,
-                    minFraction: form.minFraction,
-                  })}
-                  chromesomeId={chromesomeId}
-                  size={singleChromeSize}
-                  zoomHistory={handleZoomHistory}
-                  onHeightChange={props.onHeightChange}></SingleChromosome>
-              </Col>
-            </Row>
+            <>
+              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+                {isLoaded ? (
+                  <p>Downloading...</p>
+                ) : (
+                  <Button variant="link" onClick={handleSingleChrDownload}>
+                    Download images
+                  </Button>
+                )}
+              </div>
+              <Row className="">
+                <Col lg={12}>
+                  <SingleChromosome
+                    onZoomChange={handleZoomChange}
+                    data={data}
+                    details={"One"}
+                    title={circosTitle}
+                    chromesomeId={chromesomeId}
+                    size={singleChromeSize}
+                    zoomHistory={handleZoomHistory}
+                    onHeightChange={props.onHeightChange}></SingleChromosome>
+                </Col>
+              </Row>
+            </>
           )}
         </div>
       ) : form.compare ? (
@@ -1027,18 +1076,7 @@ export default function CirclePlotTest(props) {
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
-                title={groupTitle({
-                  types: form.types,
-                  sex: form.sex,
-                  study: form.study,
-                  ancestry: form.ancestry,
-                  array: form.array,
-                  smoking: form.smoking,
-                  maxAge: form.maxAge,
-                  minAge: form.minAge,
-                  maxFraction: form.maxFraction,
-                  minFraction: form.minFraction,
-                })}
+                title={circosTitle}
                 size={size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}
