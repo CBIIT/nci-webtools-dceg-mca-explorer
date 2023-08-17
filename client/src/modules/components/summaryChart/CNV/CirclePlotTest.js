@@ -13,7 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { saveAs } from "file-saver";
+//import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
 //import { groupSort } from "d3";
 
