@@ -104,6 +104,7 @@ export default function CirclePlotTest(props) {
 
   let adjustWidth = 1;
   let minFigSize = window.innerWidth < 600 ? 450 : 535;
+  minFigSize = window.innerWidth < 500 ? 350 : 450;
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
