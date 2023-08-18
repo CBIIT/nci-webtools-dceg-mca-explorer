@@ -514,10 +514,14 @@ export default function CirclePlotTest(props) {
 
     var snp = document.getElementById("snpplots");
     // if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
-    if (snp !== null) imagesnp = snp;
+    if (snp !== null) {
+      if (snp.querySelectorAll("svg")[0] !== undefined) imagesnp = snp;
+    }
     var gene = document.getElementById("geneplots");
     // if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
-    if (gene !== null) imagegene = gene;
+    if (gene !== null) {
+      if (gene.querySelectorAll("svg")[0] !== undefined) imagegene = gene;
+    }
 
     //  htmlToImage
     //    .toPng(imageall, { quality: 1, pixelRatio: 1 })
@@ -580,7 +584,7 @@ export default function CirclePlotTest(props) {
                     pdf.setFontSize(8);
                     if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
                     pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
-                    pdf.text(titleB, 1.5 * width, initalY + 10, { align: "center" });
+                    pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
 
                     pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
                     pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
@@ -661,8 +665,8 @@ export default function CirclePlotTest(props) {
     var imageA = image.querySelectorAll("svg")[0];
     var snp = document.getElementById("snpplots");
     var imagesnp = image.querySelectorAll("svg")[1];
-    if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
-    //if (snp !== null) imagesnp = snp;
+    // if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
+    if (snp !== null) imagesnp = snp;
 
     var gene = document.getElementById("geneplots");
     var imagegene = image.querySelectorAll("svg")[1]; //set an intial value
