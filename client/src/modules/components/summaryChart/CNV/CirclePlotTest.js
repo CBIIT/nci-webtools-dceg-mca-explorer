@@ -748,6 +748,7 @@ export default function CirclePlotTest(props) {
     const zoombackbtnB = document.getElementById("zoomBackB");
     const zoombackbtn = document.getElementById("zoomBackOne");
     if (zoombackbtnA !== null) zoombackbtnA.click();
+
     if (zoombackbtnB !== null) zoombackbtnB.click();
     if (zoombackbtn !== null) zoombackbtn.click();
     //if the last one, click autorange button
@@ -757,8 +758,8 @@ export default function CirclePlotTest(props) {
     //setIsinit(true);
     let resetBtnA = null;
     let resetBtnB = null;
-    resetBtnA = document.querySelectorAll('a[data-val*="reset"]')[0];
-    resetBtnB = document.querySelectorAll('a[data-val*="reset"]')[1];
+    resetBtnA = document.querySelectorAll('a[data-val*="auto"]')[0];
+    resetBtnB = document.querySelectorAll('a[data-val*="auto"]')[1];
     resetBtnA.click();
     resetBtnB.click();
   };

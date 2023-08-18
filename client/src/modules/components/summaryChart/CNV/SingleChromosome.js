@@ -104,8 +104,10 @@ function SingleChromosome(props) {
       event !== undefined &&
       (event["autorange"] || event["autosize"] || event["xaxis.autorange"] || event["xaxis.autosize"])
     ) {
+      console.log("reset to initial");
       setZoomHistory([]);
     }
+    // if (event !== undefined) setZoomHistory([]);
   }
   const handleZoomHistory = (event) => {
     if (zoomHistory.length > 1) {
@@ -280,7 +282,9 @@ function SingleChromosome(props) {
   }
   let btnid = props.details !== undefined ? props.details : "";
   btnid = "zoomBack" + btnid;
-  if (zoomHistory.length == 0) backtoprev = "";
+  if (zoomHistory.length == 0) {
+    backtoprev = "";
+  }
   let rangeLable = xMin
     ? "Chr" +
       props.chromesomeId +
@@ -300,7 +304,7 @@ function SingleChromosome(props) {
         {props.title}
         {props.title && <br></br>}
         <Button id={btnid} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
-          {/* {zoomHistory.length > 0 ? backtoprev : ""} */}
+          {zoomHistory.length > 0 ? backtoprev : ""}
         </Button>
         <div id={props.details}>
           <Plot
@@ -329,7 +333,7 @@ function SingleChromosome(props) {
         </div>
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />
-        {loading && xMax - xMin < zoomWindow ? (
+        {loading && xMax - xMin < zoomWindow && zoomHistory.length > 0 ? (
           <>
             <div id="snpplots">
               <SnpPlot
