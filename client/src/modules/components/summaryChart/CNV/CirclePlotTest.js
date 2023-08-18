@@ -13,6 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
+
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
 //import { groupSort } from "d3";
@@ -617,16 +618,24 @@ export default function CirclePlotTest(props) {
     }
     return new Blob([u8arr], { type: mime });
   };
-  const handleSummaryDownload = () => {
+  const handleSummaryDownload = async () => {
     setIsLoaded(true);
     var images = document.getElementById("summaryCircle");
     var image = images.querySelectorAll("svg")[1];
     var imageXY = images.querySelectorAll("svg")[0];
-
+    const imgconfig = {
+      quality: 1,
+      pixelRatio: 1,
+    };
+    // const canvas = await htmlToImage.toCanvas(image);
+    // const base64fDataUrl = canvas.toDataURL("image/png");
+    // const canvasxy = await htmlToImage.toCanvas(imageXY);
+    // const base64fDataUrlxy = canvas.toDataURL("image/png");
+    // console.log(base64fDataUrl);
     htmlToImage
-      .toPng(image, { quality: 1, pixelRatio: 1 })
+      .toPng(image, imgconfig)
       .then((dataUrl) => {
-        htmlToImage.toPng(imageXY, { quality: 1, pixelRatio: 1 }).then((dataUrl2) => {
+        htmlToImage.toPng(imageXY, imgconfig).then((dataUrl2) => {
           const pdf = new jsPDF();
           const width = pdf.internal.pageSize.getWidth();
           //const height = pdf.internal.pageSize.getHeight();
@@ -652,13 +661,15 @@ export default function CirclePlotTest(props) {
     var imageA = image.querySelectorAll("svg")[0];
     var snp = document.getElementById("snpplots");
     var imagesnp = image.querySelectorAll("svg")[1];
-    var imagegene = image.querySelectorAll("svg")[1];
     if (snp !== null) imagesnp = snp.querySelectorAll("svg")[0];
     //if (snp !== null) imagesnp = snp;
-    var gene = document.getElementById("geneplots");
-    //if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
-    if (gene !== null) imagegene = gene;
 
+    var gene = document.getElementById("geneplots");
+    var imagegene = image.querySelectorAll("svg")[1]; //set an intial value
+    //if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
+    if (gene !== null) {
+      if (gene.querySelectorAll("svg")[0] !== undefined) imagegene = gene;
+    }
     const initalY = 15;
     const legendSize = 2;
     const legendY = 5;
@@ -675,11 +686,11 @@ export default function CirclePlotTest(props) {
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
       .then((dataUrl1) => {
         htmlToImage
-          .toPng(imagegene, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
-          .then((dataUrl4) => {
+          .toPng(imagesnp, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+          .then((dataUrl3) => {
             htmlToImage
-              .toPng(imagesnp, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
-              .then((dataUrl3) => {
+              .toPng(imagegene, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+              .then((dataUrl4) => {
                 const pdf = new jsPDF();
                 const width = pdf.internal.pageSize.getWidth();
                 pdf.setFillColor(0, 128, 0);
