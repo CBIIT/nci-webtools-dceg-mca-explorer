@@ -304,7 +304,7 @@ function SingleChromosome(props) {
         {props.title}
         {props.title && <br></br>}
         <Button id={btnid} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
-          {zoomHistory.length > 0 ? backtoprev : ""}
+          {/* {zoomHistory.length > 0 ? backtoprev : ""} */}
         </Button>
         <div id={props.details}>
           <Plot
