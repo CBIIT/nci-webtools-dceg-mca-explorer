@@ -611,6 +611,77 @@ export default function CirclePlotTest(props) {
         console.error("oops, something went wrong!", error);
       });
   };
+
+  const handlecircleDownload = () => {
+    setIsLoaded(true);
+    var imageAs = document.getElementById("A");
+    var imageA = imageAs.querySelectorAll("svg")[0];
+    var imageBs = document.getElementById("B");
+    var imageB = imageBs.querySelectorAll("svg")[0];
+    //initial
+
+    const initalY = 15;
+    const legendSize = 2;
+    const legendY = 5;
+    const legendY2 = 7;
+    const legendX = 150;
+    let figResolution = 1;
+    let downloadname = "compareSummary.pdf";
+
+    htmlToImage
+      .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+      .then((dataUrl1) => {
+        htmlToImage
+          .toPng(imageB, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+          .then((dataUrl2) => {
+            const pdf = new jsPDF();
+            const width = pdf.internal.pageSize.getWidth() / 2;
+            pdf.setFillColor(0, 128, 0);
+            pdf.rect(legendX, legendY, legendSize, legendSize, "F");
+            pdf.setFontSize(8);
+            pdf.setTextColor(0, 128, 0);
+            pdf.text("Gain", legendX + 3, legendY2);
+
+            pdf.setFillColor(0, 0, 255);
+            pdf.rect(legendX + 10, legendY, legendSize, legendSize, "F");
+            pdf.setTextColor(0, 0, 255);
+            pdf.text("Neutral", legendX + 13, legendY2);
+
+            pdf.setFillColor(255, 0, 0);
+            pdf.rect(legendX + 24, legendY, legendSize, legendSize, "F");
+            pdf.setTextColor(255, 0, 0);
+            pdf.text("Loss", legendX + 27, legendY2);
+
+            pdf.setFillColor(128, 128, 128);
+            pdf.rect(legendX + 34, legendY, legendSize, legendSize, "F");
+            pdf.setTextColor(128, 128, 128);
+            pdf.text("Undetermined", legendX + 37, legendY2);
+
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFontSize(8);
+            // if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
+            pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
+            pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
+
+            pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
+            pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
+
+            //if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
+            // if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
+            //}
+
+            pdf.save(downloadname);
+            //setTimeout(() => pdf.save(downloadname), 500);
+            setIsLoaded(false);
+            //const blob = dataURLtoBlob(dataUrl4);
+            //saveAs(blob, "gene.png");
+          });
+      })
+      .catch(function (error) {
+        console.error("oops, something went wrong!", error);
+      });
+  };
+
   const dataURLtoBlob = (dataUrl) => {
     const arr = dataUrl.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
@@ -1018,7 +1089,7 @@ export default function CirclePlotTest(props) {
             {isLoaded ? (
               <p>Downloading...</p>
             ) : circleA ? (
-              <Button variant="link" onClick={handleDownload}>
+              <Button variant="link" onClick={handlecircleDownload}>
                 Download comparison images
               </Button>
             ) : (

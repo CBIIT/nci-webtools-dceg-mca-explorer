@@ -4,6 +4,8 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Pagination from "react-bootstrap/Pagination";
 import { useTable, useFilters, usePagination, useSortBy } from "react-table";
+import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/DropdownButton";
 
 export function TextFilter({ column: { filterValue, setFilter, placeholder, aria } }) {
   return (
@@ -135,8 +137,8 @@ export default function Table({ columns, data, options, defaultSort }) {
         </div>
 
         <div className="d-flex">
-          <Form.Control
-            as="select"
+          <DropdownButton
+            as="dropdown"
             className="mr-2"
             name="select-page-size"
             aria-label="Select page size"
@@ -147,7 +149,7 @@ export default function Table({ columns, data, options, defaultSort }) {
                 Show {pageSize}
               </option>
             ))}
-          </Form.Control>
+          </DropdownButton>
 
           <Pagination className="mb-0">
             <Pagination.First
