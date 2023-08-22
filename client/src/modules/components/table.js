@@ -137,8 +137,8 @@ export default function Table({ columns, data, options, defaultSort }) {
         </div>
 
         <div className="d-flex">
-          <DropdownButton
-            as="dropdown"
+          <Form.Control
+            as="select"
             className="mr-2"
             name="select-page-size"
             aria-label="Select page size"
@@ -149,7 +149,7 @@ export default function Table({ columns, data, options, defaultSort }) {
                 Show {pageSize}
               </option>
             ))}
-          </DropdownButton>
+          </Form.Control>
 
           <Pagination className="mb-0">
             <Pagination.First
