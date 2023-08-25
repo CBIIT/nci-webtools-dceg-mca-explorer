@@ -96,6 +96,9 @@ export default function CirclePlotTest(props) {
     showChartRef.current = form.plotType.value === "static";
     form.plotType.value === "static" ? setChromesomeId(form.chrCompare.label) : setChromesomeId(0);
   }, [form]);
+  useEffect(() => {
+    if (!showChart) setForm({ ...form, plotType: { value: "circos", label: "Circos" } });
+  }, [showChart]);
   //update compareRef when isCompare changes
   useEffect(() => {
     compareRef.current = isCompare;
@@ -213,14 +216,19 @@ export default function CirclePlotTest(props) {
             else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0));
           });
           bck.addEventListener("click", () => {
-            //console.log("click",b.__data__.key)
+            console.log("click", b.__data__.key);
             setShowChart(true);
             props.onClickedChr(true);
             setChromesomeId(b.__data__.key);
             sendClickedId(b.__data__.key);
             const cid = "chr" + b.__data__.key;
             const chrid = form.chromosome.filter((c) => c.value === cid);
-            setForm({ ...form, chromosome: chrid });
+            setForm({
+              ...form,
+              chromosome: chrid,
+              plotType: { value: "static", label: "Static" },
+              chrCompare: { value: "chr" + b.__data__.key, label: b.__data__.key },
+            });
             if (form.compare) {
               document.getElementById("compareSubmit").click();
             }
@@ -284,10 +292,12 @@ export default function CirclePlotTest(props) {
   const handleCircosCompareBack = () => {
     setShowChart(false);
     setChromesomeId(0);
+    setForm({ ...form, plotType: { value: "circos", label: "Circos" } });
     document.getElementById("compareSubmit").click();
     //console.log(circleA);
     setZoomRangeA(null);
     setZoomRangeB(null);
+    console.log("back", form);
   };
 
   const handleZoomChange = (event, group, lastView) => {
