@@ -71,8 +71,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
 
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
-    if (name === "chromosome" && selection.find((option) => option.value === "all")) {
-      selection = chromosomes.slice(1);
+    if (name === "chrCompare") {
+      //selection = chromosomes.slice(1);
+      //setCompareChecks()
     }
 
     if (name === "types") {
@@ -93,6 +94,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
         { value: "ukbb", label: "UK Bio Bank" },
       ];
     }
+    // if (name === "plotType") {
+
+    // }
     mergeForm({ [name]: selection });
   }
 
@@ -122,6 +126,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     //mergeForm({ compare: true });
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
+    // console.log(form);
     setForm({ ...form, compare: true, counterCompare: counter + 1 });
     onFilter({ ...form });
     //onSubmit(form);
@@ -187,30 +192,107 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
-        <Form.Label>Please choose attributes to compare:</Form.Label>
-        <Card style={{ backgroundColor: "#f8f8f8" }}>
-          {compareChecks.map((ck) => {
-            //do not display study in the selection panel
-            if (ck.value !== "study") {
-              return (
-                <div key={ck.id}>
-                  <label>
-                    <input type="checkbox" checked={ck.isChecked} onChange={() => handleCompareCheckboxChange(ck.id)} />
-                    {ck.label}
-                  </label>
-                </div>
-              );
-            } else return null;
-          })}
-        </Card>
-        <br></br>
-
+        <Form.Group className="mb-3">
+          <Form.Label className="required">Plot Type</Form.Label>
+          <OverlayTrigger
+            overlay={
+              <Tooltip id="plotType_tooltip">
+                Circos plot displays all chromosomes, select Static plot to visualize a subset of chromosomes
+              </Tooltip>
+            }>
+            <Select
+              aria-label="plotType"
+              placeholder="- Select -"
+              name="plotType"
+              value={form.plotType}
+              onChange={(ev) => handleSelectChange("plotType", ev)}
+              options={[
+                { value: "circos", label: "Circos" },
+                { value: "static", label: "Static" },
+              ]}
+            />
+            {/* {isCircos?<Button></Button>} */}
+          </OverlayTrigger>
+        </Form.Group>
+        {form.plotType.value === "static" ? (
+          <Form.Group className="mb-3">
+            <Form.Label className="required">Chromosome</Form.Label>
+            <Select
+              aria-label="chromosome"
+              placeholder="- Select -"
+              name="chromosome"
+              isMulti={false}
+              value={form.chrCompare}
+              onChange={(ev) => handleSelectChange("chrCompare", ev)}
+              options={chromosomes}
+            />
+          </Form.Group>
+        ) : (
+          <Form.Group className="mb-3">
+            <Form.Label className="">Include Chromosome</Form.Label>
+            <Form.Check
+              ref={formRef}
+              type="checkbox"
+              inline
+              label="X"
+              name="chrX"
+              id={`inline-X-1`}
+              onChange={handleChange}
+              checked={isX}
+            />
+            <Form.Check
+              type="checkbox"
+              inline
+              label="Y"
+              name="chrY"
+              id={`inline-Y-2`}
+              onChange={handleChange}
+              checked={isY}
+            />
+          </Form.Group>
+        )}
+        <hr></hr>
+        {/* */}
         <ComparePanel
           id="groupA"
           compareItem={compareChecks}
           name="A"
           onCompareChange={handlegroupChange}
           onReset={resetCounter}></ComparePanel>
+        <Accordion>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+              Advanced settings
+            </Accordion.Header>
+            <Accordion.Body>
+              <Form.Label>Choose attributes:</Form.Label>
+              <Card style={{ backgroundColor: "#f8f8f8" }}>
+                {compareChecks.map((ck) => {
+                  //do not display study and types in the selection panel
+                  if (
+                    ck.value !== "study" &&
+                    ck.value !== "types" &&
+                    (form.plotType.value === "circos" ? ck.value !== "range" : true)
+                  ) {
+                    //if plot type is circus, then do not display range
+                    return (
+                      <div key={ck.id}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={ck.isChecked}
+                            onChange={() => handleCompareCheckboxChange(ck.id)}
+                          />
+                          {ck.label}
+                        </label>
+                      </div>
+                    );
+                  } else return null;
+                })}
+              </Card>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
         <br></br>
         <ComparePanel
           id="groupB"
@@ -218,6 +300,35 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           name="B"
           onCompareChange={handlegroupChange}
           onReset={resetCounter}></ComparePanel>
+        <Accordion>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+              Advanced settings
+            </Accordion.Header>
+            <Accordion.Body>
+              <Form.Label>Choose attributes:</Form.Label>
+              <Card style={{ backgroundColor: "#f8f8f8" }}>
+                {compareChecks.map((ck) => {
+                  //do not display study in the selection panel
+                  if (ck.value !== "study" && ck.value !== "types") {
+                    return (
+                      <div key={ck.id}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={ck.isChecked}
+                            onChange={() => handleCompareCheckboxChange(ck.id)}
+                          />
+                          {ck.label}
+                        </label>
+                      </div>
+                    );
+                  } else return null;
+                })}
+              </Card>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
         <br></br>
         <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <Button

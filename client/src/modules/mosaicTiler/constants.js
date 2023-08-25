@@ -15,7 +15,8 @@ export const CompareArray = [
   { id: 5, value: "study", label: " Study", isChecked: true },
   { id: 6, value: "cf", label: " Cellular Fraction", isChecked: false },
   { id: 7, value: "smoking", label: " Smoking Status", isChecked: false },
-  { id: 8, value: "types", label: " Copy Number State", isChecked: false },
+  { id: 8, value: "types", label: " Copy Number State", isChecked: true },
+  { id: 9, value: "range", label: " Range", isChecked: false },
 ];
 
 export const TypeStateOptions = [

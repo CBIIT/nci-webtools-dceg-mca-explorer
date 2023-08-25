@@ -103,6 +103,7 @@ export const defaultFormState = {
     })
     .concat({ value: "chrX", label: "X" })
     .concat({ value: "chrY", label: "Y" }),
+  chrCompare: "",
   plotType: { value: "circos", label: "Circos" },
   submitted: false,
   chrX: false,
@@ -133,6 +134,7 @@ export const resetFormState = {
     })
     .concat({ value: "chrX", label: "X" })
     .concat({ value: "chrY", label: "Y" }),
+  chrCompare: "",
   plotType: { value: "circos", label: "Circos" },
   submitted: false,
   chrX: false,

@@ -58,9 +58,9 @@ function changeBackground(track, chromesomeId, opacity) {
 
 export default function CirclePlotTest(props) {
   //to show singleChrome chart
-  const [showChart, setShowChart] = useState(false);
-  const [chromesomeId, setChromesomeId] = useState(0);
   const [form, setForm] = useRecoilState(formState);
+  const [chromesomeId, setChromesomeId] = useState(form.chrCompare === "" ? 0 : form.chrCompare.label);
+  const [showChart, setShowChart] = useState(form.plotType.value === "circos" ? false : true);
   const [countFilter, setCountFilter] = useState(0);
   const [groupA, setGroupA] = useState([]);
   const [groupB, setGroupB] = useState([]);
@@ -91,6 +91,11 @@ export default function CirclePlotTest(props) {
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
 
+  useEffect(() => {
+    setShowChart(form.plotType.value === "static");
+    showChartRef.current = form.plotType.value === "static";
+    form.plotType.value === "static" ? setChromesomeId(form.chrCompare.label) : setChromesomeId(0);
+  }, [form]);
   //update compareRef when isCompare changes
   useEffect(() => {
     compareRef.current = isCompare;
@@ -946,7 +951,7 @@ export default function CirclePlotTest(props) {
 
   return (
     <Container className="compareContainer align-middle text-center">
-      {showChart ? (
+      {showChartRef.current ? (
         // <div style={{ height: compareCircleSize + figureHeight + 620, left: 0 }}>
         <div>
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>

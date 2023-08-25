@@ -51,7 +51,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "red",
                 direction: "out",
-                logScale: true,
+                // logScale: true,
                 color: "red",
                 backgrounds: [
                   {
@@ -161,7 +161,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "red",
                 direction: "out",
-                logScale: true,
+                //logScale: true,
                 color: "red",
                 backgrounds: [
                   {
@@ -196,7 +196,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "blue",
                 direction: "out",
-                logScale: true,
+                // logScale: true,
                 color: "blue",
                 backgrounds: [
                   {
@@ -222,7 +222,7 @@ export default function CircosPlot(props) {
                 strokeWidth: 1,
                 strokeColor: "green",
                 direction: "out",
-                logScale: true,
+                // logScale: true,
                 color: "green",
                 backgrounds: [
                   {

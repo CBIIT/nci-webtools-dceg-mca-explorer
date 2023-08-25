@@ -238,7 +238,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <Form.Label className="required">Copy Number State</Form.Label>
         <Select
           aria-label="state"
-          placeholder="No types selected"
+          placeholder="- Select -"
           name="types"
           isMulti={true}
           value={form.types}

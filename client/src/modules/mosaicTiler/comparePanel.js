@@ -14,10 +14,12 @@ export default function ComparePanel(props) {
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
-  const [types, setTypes] = useState(null);
+  const [types, setTypes] = useState([{ value: "all", label: "All Types" }]);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
   const [compareform, setCompareForm] = useState({ study: study });
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
 
   useEffect(() => {
@@ -39,6 +41,12 @@ export default function ComparePanel(props) {
     }
     if (name === "maxFraction") {
       setMaxFraction(value);
+    }
+    if (name === "start") {
+      setStart(value);
+    }
+    if (name === "end") {
+      setEnd(value);
     }
     setCompareForm({ ...compareform, [name]: value });
   }
@@ -64,13 +72,14 @@ export default function ComparePanel(props) {
     }
 
     if (props.compareItem[7].isChecked && name === "types") {
-      if (selection.find((option) => option.value === "all")) {
-        selection = [
-          { value: "loh", label: "CN-LOH" },
-          { value: "loss", label: "Loss" },
-          { value: "gain", label: "Gain" },
-          { value: "undetermined", label: "Undetermined" },
-        ];
+      const all = selection.find((option) => option.value === "all");
+      const allindex = selection.indexOf(all);
+      //if all selected, then another option select, remove all
+      //if other option selected, and select all again, then remove other, keep all
+      if (allindex == 0 && selection.length > 1) {
+        selection.splice(allindex, 1);
+      } else if (allindex > 0 && selection.length > 1) {
+        selection = [all];
       }
       setTypes(selection);
     }
@@ -347,6 +356,40 @@ export default function ComparePanel(props) {
                 options={TypeStateOptions}
                 classNamePrefix="select"
               />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+          {props.compareItem[8].isChecked ? (
+            <Form.Group className="mb-3">
+              <Form.Label>Range</Form.Label>
+              <Row>
+                <Col xl={5}>
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="Start"
+                      name="start"
+                      id={props.name + "Start"}
+                      value={start}
+                      onChange={handleChange}
+                    />
+                    {/* <InputGroup.Text>%</InputGroup.Text> */}
+                  </InputGroup>
+                </Col>
+                __
+                <Col xl={5}>
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="End"
+                      name="end"
+                      id={props.name + "end"}
+                      value={end}
+                      onChange={handleChange}
+                    />
+                    {/* <InputGroup.Text>%</InputGroup.Text> */}
+                  </InputGroup>
+                </Col>
+              </Row>
             </Form.Group>
           ) : (
             ""
