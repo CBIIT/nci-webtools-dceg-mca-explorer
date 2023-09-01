@@ -252,14 +252,13 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           </Form.Group>
         )}
         <hr></hr>
-        {/* */}
         <ComparePanel
           id="groupA"
           compareItem={compareChecks}
           name="A"
           onCompareChange={handlegroupChange}
           onReset={resetCounter}></ComparePanel>
-        <Accordion>
+        <Accordion style={{ paddingTop: "5px" }}>
           <Accordion.Item eventKey="0">
             <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
               Advanced settings
@@ -269,6 +268,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               <Card style={{ backgroundColor: "#f8f8f8" }}>
                 {compareChecks.map((ck) => {
                   //do not display study and types in the selection panel
+                  //if plot type is circos, do not show range option
                   if (
                     ck.value !== "study" &&
                     ck.value !== "types" &&
@@ -293,14 +293,13 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
-        <br></br>
         <ComparePanel
           id="groupB"
           compareItem={compareChecks}
           name="B"
           onCompareChange={handlegroupChange}
           onReset={resetCounter}></ComparePanel>
-        <Accordion>
+        <Accordion style={{ paddingTop: "5px" }}>
           <Accordion.Item eventKey="0">
             <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
               Advanced settings
@@ -310,7 +309,11 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               <Card style={{ backgroundColor: "#f8f8f8" }}>
                 {compareChecks.map((ck) => {
                   //do not display study in the selection panel
-                  if (ck.value !== "study" && ck.value !== "types") {
+                  if (
+                    ck.value !== "study" &&
+                    ck.value !== "types" &&
+                    (form.plotType.value === "circos" ? ck.value !== "range" : true)
+                  ) {
                     return (
                       <div key={ck.id}>
                         <label>

@@ -205,10 +205,10 @@ export default function CirclePlotTest(props) {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
           bck.addEventListener("mouseover", () => {
-            //console.log('mouseover',bck,b.__data__.key);//b.__data__.key is the chromesome id
-            if (b.__data__.key !== "X" && b.__data__.key !== "Y") {
+            console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id
+            if (b.__data__.key !== "X" && b.__data__.key !== "Y")
               alltracks.forEach((t) => changeBackground(t, b.__data__.key, 1));
-            } else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
+            else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
           });
           bck.addEventListener("mouseout", () => {
             if (b.__data__.key !== "X" && b.__data__.key !== "Y")
@@ -378,15 +378,15 @@ export default function CirclePlotTest(props) {
     const chrXTemp = [];
     const chrYTemp = [];
     if (true) {
-      if (chromesomeId > 0) {
+      if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
         query = { ...group, chr: chromesomeId };
-        console.log(query);
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
         console.log("do query...", form.counterCompare, chromesomeId);
-        const dataset = group.study;
+        //const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
+        const dataset = [...group.study, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""];
         response = await axios.post("api/opensearch/mca", {
           dataset: dataset,
           sex: sex,
@@ -419,6 +419,7 @@ export default function CirclePlotTest(props) {
             }
             if (form.chrX && d.type == "mLOX") {
               chrXTemp.push(d);
+              d.block_id = "X";
             }
             if (form.chrY && d.type == "mLOY") {
               chrYTemp.push(d);
@@ -438,7 +439,7 @@ export default function CirclePlotTest(props) {
       chry: chrYTemp,
     };
     //setTableData([...result, ...tableData]);
-
+    //console.log(circleTemp);
     if (showChart) return result;
     else return circleTemp;
   }
@@ -917,12 +918,28 @@ export default function CirclePlotTest(props) {
   //if not compare, with chromid => add data
   useEffect(() => {
     if (circleA !== null) {
-      setTableData([...circleA.loss, ...circleA.gain, ...circleA.loh, ...circleA.undetermined, ...tableData]);
+      setTableData([
+        ...circleA.loss,
+        ...circleA.gain,
+        ...circleA.loh,
+        ...circleA.undetermined,
+        ...circleA.chrx,
+        ...circleA.chry,
+        ...tableData,
+      ]);
     }
   }, [circleA]);
   useEffect(() => {
     if (circleB !== null) {
-      setTableData([...circleB.loss, ...circleB.gain, ...circleB.loh, ...circleB.undetermined, ...tableData]);
+      setTableData([
+        ...circleB.loss,
+        ...circleB.gain,
+        ...circleB.loh,
+        ...circleB.undetermined,
+        ...circleB.chrx,
+        ...circleB.chry,
+        ...tableData,
+      ]);
     }
   }, [circleB]);
 

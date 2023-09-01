@@ -5,7 +5,7 @@ import band from "./band.json";
 export default function CircosPlot(props) {
   //return NGCircos01;
   const layoutAll = props.layoutAll;
-  const dataXY = props.dataXY;
+  const dataXY = [...props.circle.chrx, ...props.circle.chry];
   const size = props.size;
   const thicknessloss = props.thicknessloss;
   const thicknessgain = props.thicknessgain;
@@ -22,7 +22,7 @@ export default function CircosPlot(props) {
       {props.title}
       <div style={{ position: "absolute" }}>
         <Circos
-          layout={layoutAll}
+          layout={layoutxy}
           config={{
             innerRadius: size / 2 - 50,
             outerRadius: size / 2 - 30,
@@ -64,14 +64,14 @@ export default function CircosPlot(props) {
                 tooltipContent: function (d) {
                   return hovertip(d);
                 },
-                events: {
-                  mouseover: function (d, i, nodes, event) {
-                    console.log("mouse over");
-                  },
-                  click: function (d, i, nodes, event) {
-                    console.log("mouse over");
-                  },
-                },
+                // events: {
+                //   mouseover: function (d, i, nodes, event) {
+                //     console.log("mouse over");
+                //   },
+                //   click: function (d, i, nodes, event) {
+                //     console.log("mouse over");
+                //   },
+                // },
               },
             },
           ]}
