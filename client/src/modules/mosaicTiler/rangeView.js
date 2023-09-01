@@ -332,7 +332,6 @@ export default function RangeView(props) {
       resultData = allValue;
     } else resultData = allValues;
   } else {
-    console.log(resultData);
     resultData = resultData.filter((c) => c.end !== "0");
   }
 

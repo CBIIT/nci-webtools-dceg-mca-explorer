@@ -266,7 +266,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   const { logger } = request.app.locals;
   const group = request.body;
   if (group != undefined) {
-    // console.log("query group:", group);
+    console.log("query group:", group);
     const study = group.study;
     const array = group.array;
     const chromesome = group.chr;
@@ -277,6 +277,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const maxcf = group.maxFraction;
     const mincf = group.minFraction;
     const types = group.types;
+    const start = group.start ? group.start : "0";
+    const end = group.end ? group.end : "9999999999";
     //console.log("query string:", study, array, chromesome);
     const dataset = [];
     const queryString = [];
@@ -348,6 +350,22 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           size: 200000,
           query: {
             bool: {
+              filter: [
+                {
+                  range: {
+                    beginGrch38: {
+                      gte: start,
+                    },
+                  },
+                },
+                {
+                  range: {
+                    endGrch38: {
+                      lte: end,
+                    },
+                  },
+                },
+              ],
               must: queryString,
               // [
               //   { match: { chromosome: "chr2" } },

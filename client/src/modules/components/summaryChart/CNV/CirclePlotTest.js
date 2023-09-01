@@ -996,7 +996,6 @@ export default function CirclePlotTest(props) {
   //
   //const filterTableData = tableData.filter((c) => c.end !== "0");
   //console.log(filterTableData.length);
-  console.log(tableData);
   props.getData(tableData);
 
   return (
