@@ -13,6 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
+import { initialX, initialY } from "../../../mosaicTiler/constants";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -205,7 +206,7 @@ export default function CirclePlotTest(props) {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
           bck.addEventListener("mouseover", () => {
-            console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id
+            // console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id
             if (b.__data__.key !== "X" && b.__data__.key !== "Y")
               alltracks.forEach((t) => changeBackground(t, b.__data__.key, 1));
             else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
@@ -371,12 +372,32 @@ export default function CirclePlotTest(props) {
     let query = {};
     let response = "";
     let circleTemp = {};
-    const gainTemp = [];
-    const lohTemp = [];
-    const lossTemp = [];
-    const undeterTemp = [];
-    const chrXTemp = [];
-    const chrYTemp = [];
+    let gainTemp = [];
+    let lohTemp = [];
+    let lossTemp = [];
+    let undeterTemp = [];
+    let chrXTemp = [];
+    let chrYTemp = [];
+
+    if (form.chrX && form.chrY) {
+      gainTemp = [...initialX, ...initialY];
+      lossTemp = [...initialX, ...initialY];
+      lohTemp = [...initialX, ...initialY];
+      undeterTemp = [...initialX, ...initialY];
+    }
+    if (form.chrX && !form.chrY) {
+      gainTemp = [...initialX];
+      lossTemp = [...initialX];
+      lohTemp = [...initialX];
+      undeterTemp = [...initialX];
+    }
+    if (!form.chrX && form.chrY) {
+      gainTemp = [...initialY];
+      lossTemp = [...initialY];
+      lohTemp = [...initialY];
+      undeterTemp = [...initialY];
+    }
+
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
         query = { ...group, chr: chromesomeId };
@@ -949,11 +970,11 @@ export default function CirclePlotTest(props) {
     }
   }, [groupA, groupB]);
 
-  if (chromesomeId > 0 && circle !== null) {
-    //setTableData([...circle.loss, ...circle.gain, ...circle.loh, ...circle.undetermined]);
-  } else {
-    //setTableData(data);
-  }
+  // if (chromesomeId > 0 && circle !== null) {
+  //   //setTableData([...circle.loss, ...circle.gain, ...circle.loh, ...circle.undetermined]);
+  // } else {
+  //   //setTableData(data);
+  // }
 
   // if (form.compare && circleA != null && circleB != null) {
   //   if (chromesomeId > 0) {
@@ -973,7 +994,9 @@ export default function CirclePlotTest(props) {
   //}, [circleA, circleB, groupA, groupB, circle]);
 
   //
-
+  //const filterTableData = tableData.filter((c) => c.end !== "0");
+  //console.log(filterTableData.length);
+  console.log(tableData);
   props.getData(tableData);
 
   return (
@@ -1145,7 +1168,7 @@ export default function CirclePlotTest(props) {
                     thicknessloh={thicknessloh}
                     circle={circleA}
                     circleRef={circleRef}
-                    //circleClass="overlayX2"
+                    //circleClass="overlayX"
                     handleEnter={handleEnter}
                     hovertip={hovertip}></CircosPlotCompare>
                 ) : (
@@ -1168,7 +1191,7 @@ export default function CirclePlotTest(props) {
                     circle={circleB}
                     circleRef={circleRef}
                     handleEnter={handleEnter}
-                    //circleClass="overlayX3"
+                    //circleClass="overlayX"
                     hovertip={hovertip}></CircosPlotCompare>
                 ) : (
                   ""

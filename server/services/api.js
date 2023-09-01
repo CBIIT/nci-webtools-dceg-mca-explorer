@@ -132,7 +132,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     searchExclude.push({ match: { chromosome: "chrX" } });
   }
   if (!hasX && hasY) {
-    searchExclude.push({ match: { "type.keyword": "mLOX" } });
+    searchExclude.push({ match: { "type_.keyword": "mLOX" } });
   }
   if (!hasY && hasX) {
     searchExclude.push({ match: { "type.keyword": "mLOY" } });
@@ -280,8 +280,17 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //console.log("query string:", study, array, chromesome);
     const dataset = [];
     const queryString = [];
+    let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
+    //serach only rows which has chromosome, this will exclude plcoDenominator
+    //queryString.push({ terms: { "type.keyword": qfilter } });
+    if (chromesome === "Y") {
+      queryString.push({ match: { "type.keyword": "mLOY" } });
+      queryString.push({ match: { chromosome: "chrX" } });
+    } else if (chromesome === "X") {
+      queryString.push({ match: { chromosome: "chrX" } });
+      queryString.push({ match: { "type.keyword": "mLOX" } });
+    } else queryString.push({ match: { chromosome: "chr" + chromesome } });
 
-    queryString.push({ match: { chromosome: "chr" + chromesome } });
     if (study !== undefined && study.length > 0) queryString.push({ terms: { dataset: parseQueryStr(study) } });
     //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
     if (sex !== undefined && sex.length > 0)
@@ -311,7 +320,15 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
 
-    console.log(queryString);
+    //console.log(chromesome, queryString);
+    // const searchExclude = [];
+    // if (chromesome === "Y") {
+    //   //searchExclude.push({ match: { "type.keyword": "mLOX" } });
+    // }
+    // if (chromesome === "X") {
+    //   searchExclude.push({ match: { "type.keyword": "mLOY" } });
+    // }
+    // console.log(chromesome, queryString, searchExclude);
     const client = new Client({
       node: host,
       auth: {

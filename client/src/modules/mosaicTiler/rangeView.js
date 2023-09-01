@@ -90,6 +90,7 @@ export default function RangeView(props) {
     let lossTemp = [];
     let lohTemp = [];
     let undeterTemp = [];
+    //initial plot each type with value so that mouse move over can have value if X Y selected
     if (form.chrX && form.chrY) {
       gainTemp = [...initialX, ...initialY];
       lossTemp = [...initialX, ...initialY];
@@ -131,6 +132,7 @@ export default function RangeView(props) {
           }
           if (form.chrX && d.type == "mLOX") {
             chrXTemp.push(d);
+            d.block_id = "X";
           }
           if (form.chrY && d.type == "mLOY") {
             chrYTemp.push(d);
@@ -329,6 +331,9 @@ export default function RangeView(props) {
     if (chromoId > 0) {
       resultData = allValue;
     } else resultData = allValues;
+  } else {
+    console.log(resultData);
+    resultData = resultData.filter((c) => c.end !== "0");
   }
 
   return (
