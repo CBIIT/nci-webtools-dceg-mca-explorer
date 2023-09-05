@@ -344,7 +344,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
 
     try {
       const result = await client.search({
-        index: "mcaexplorer",
+        index: "mcaexplorer_index", //this index change beginGrch38 and endGrch38 as long type
         body: {
           track_total_hits: true,
           size: 200000,
