@@ -65,9 +65,9 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
-    if (name === "chromosome" && selection.find((option) => option.value === "all")) {
-      selection = chromosomes.slice(1);
-    }
+    // if (name === "chromosome") {
+    //   //selection = chromosomes.slice(1);
+    // }
 
     if (name === "types") {
       const all = selection.find((option) => option.value === "all");
@@ -136,62 +136,25 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
   };
 
-  // const selectStyle = {
-  //   option: (provided) => ({
-  //     ...provided,
-  //     whiteSpace: "normal",
-  //   }),
-  //   singleValue: (provided) => ({
-  //     ...provided,
-  //     whiteSpace: "normal",
-  //   }),
-  //   multiValue: (provided) => ({
-  //     ...provided,
-  //     // whiteSpace: "normal",
-  //     maxWidth: "95%",
-  //   }),
-  //   multiValueLabel: (provided) => ({
-  //     ...provided,
-  //     //whiteSpace: "normal",
-  //     maxWidth: "80%",
-  //   }),
-  // };
-
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
-      <Form.Group className="mb-3">
-        <Form.Label className="required">Study</Form.Label>
-        <Select
-          aria-label="study"
-          placeholder="No study selected"
-          name="study"
-          isMulti={true}
-          value={form.study}
-          onChange={(ev) => handleSelectChange("study", ev)}
-          options={[
-            { value: "all", label: "All Studies" },
-            { value: "plco", label: "PLCO" },
-            { value: "ukbb", label: "UK Biobank" },
-          ]}
-        />
-      </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label className="required">Plot Type</Form.Label>
         <OverlayTrigger
           overlay={
             <Tooltip id="plotType_tooltip">
-              Circos plot displays all chromosomes, select Static plot to visualize a subset of chromosomes
+              Circos plot displays all chromosomes, select chromosome level plot to visualize a single chromosome
             </Tooltip>
           }>
           <Select
             aria-label="plotType"
-            placeholder="No plot type selected"
+            placeholder="- Select -"
             name="plotType"
             value={form.plotType}
             onChange={(ev) => handleSelectChange("plotType", ev)}
             options={[
-              { value: "circos", label: "Circos" },
-              { value: "static", label: "Static" },
+              { value: "circos", label: "Whole chromosome" },
+              { value: "static", label: "Chromosome level" },
             ]}
           />
           {/* {isCircos?<Button></Button>} */}
@@ -202,11 +165,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           <Form.Label className="required">Chromosome</Form.Label>
           <Select
             aria-label="chromosome"
-            placeholder="No chromosome selected"
+            placeholder="- Select -"
             name="chromosome"
-            isMulti={true}
-            value={form.chromosome}
-            onChange={(ev) => handleSelectChange("chromosome", ev)}
+            isMulti={false}
+            value={form.chrSingle}
+            onChange={(ev) => handleSelectChange("chrSingle", ev)}
             options={chromosomes}
           />
         </Form.Group>
@@ -234,6 +197,22 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           />
         </Form.Group>
       )}
+      <Form.Group className="mb-3">
+        <Form.Label className="required">Study</Form.Label>
+        <Select
+          aria-label="study"
+          placeholder="No study selected"
+          name="study"
+          isMulti={true}
+          value={form.study}
+          onChange={(ev) => handleSelectChange("study", ev)}
+          options={[
+            { value: "all", label: "All Studies" },
+            { value: "plco", label: "PLCO" },
+            { value: "ukbb", label: "UK Biobank" },
+          ]}
+        />
+      </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Select

@@ -207,8 +207,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               value={form.plotType}
               onChange={(ev) => handleSelectChange("plotType", ev)}
               options={[
-                { value: "circos", label: "Circos" },
-                { value: "static", label: "Static" },
+                { value: "circos", label: "Whole chromosome" },
+                { value: "static", label: "Chromosome level" },
               ]}
             />
             {/* {isCircos?<Button></Button>} */}

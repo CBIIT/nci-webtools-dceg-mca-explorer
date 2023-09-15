@@ -69,22 +69,22 @@ export async function getData(params) {
   results.forEach((r) => {
     if (r._source !== null) {
       const d = r._source;
-      if (d.cf != "nan") {
+      if (d.cf !== "nan") {
         d.block_id = d.chromosome.substring(3);
         d.value = d.cf;
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
-        if (d.chromosome != "chrX") {
+        if (d.chromosome !== "chrX") {
           if (d.type === "Gain") gainTemp.push(d);
           else if (d.type === "CN-LOH") lohTemp.push(d);
           else if (d.type === "Loss") lossTemp.push(d);
           else if (d.type === "Undetermined") undeterTemp.push(d);
         }
-        if (params.chrX && d.type == "mLOX") {
+        if (params.chrX && d.type === "mLOX") {
           chrXTemp.push(d);
         }
-        if (params.chrY && d.type == "mLOY") {
+        if (params.chrY && d.type === "mLOY") {
           chrYTemp.push(d);
           d.block_id = "Y";
         }
@@ -97,6 +97,7 @@ export const defaultFormState = {
   openSidebar: true,
   study: [{ value: "plco", label: "PLCO" }],
   array: [],
+  chrSingle: "",
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
     .map((i) => {
       return { value: "chr" + i, label: i };
@@ -104,7 +105,7 @@ export const defaultFormState = {
     .concat({ value: "chrX", label: "X" })
     .concat({ value: "chrY", label: "Y" }),
   chrCompare: "",
-  plotType: { value: "circos", label: "Circos" },
+  plotType: { value: "circos", label: "Whole chromosome" },
   submitted: false,
   chrX: false,
   chrY: false,
@@ -135,7 +136,8 @@ export const resetFormState = {
     .concat({ value: "chrX", label: "X" })
     .concat({ value: "chrY", label: "Y" }),
   chrCompare: "",
-  plotType: { value: "circos", label: "Circos" },
+  chrSingle: "",
+  plotType: { value: "circos", label: "Whole chromosome" },
   submitted: false,
   chrX: false,
   chrY: false,

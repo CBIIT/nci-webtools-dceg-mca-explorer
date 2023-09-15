@@ -60,7 +60,7 @@ function changeBackground(track, chromesomeId, opacity) {
 export default function CirclePlotTest(props) {
   //to show singleChrome chart
   const [form, setForm] = useRecoilState(formState);
-  const [chromesomeId, setChromesomeId] = useState(form.chrCompare === "" ? 0 : form.chrCompare.label);
+  const [chromesomeId, setChromesomeId] = useState(props.compare ? 0 : form.chrCompare.label);
   const [showChart, setShowChart] = useState(form.plotType.value === "circos" ? false : true);
   const [countFilter, setCountFilter] = useState(0);
   const [groupA, setGroupA] = useState([]);
@@ -95,10 +95,14 @@ export default function CirclePlotTest(props) {
   useEffect(() => {
     setShowChart(form.plotType.value === "static");
     showChartRef.current = form.plotType.value === "static";
-    form.plotType.value === "static" ? setChromesomeId(form.chrCompare.label) : setChromesomeId(0);
+    form.plotType.value === "static"
+      ? form.compare
+        ? setChromesomeId(form.chrCompare.label)
+        : setChromesomeId(form.chrSingle.label)
+      : setChromesomeId(0);
   }, [form]);
   useEffect(() => {
-    if (!showChart) setForm({ ...form, plotType: { value: "circos", label: "Circos" } });
+    if (!showChart) setForm({ ...form, plotType: { value: "circos", label: "Whole chromosome" } });
   }, [showChart]);
   //update compareRef when isCompare changes
   useEffect(() => {
@@ -227,8 +231,9 @@ export default function CirclePlotTest(props) {
             setForm({
               ...form,
               chromosome: chrid,
-              plotType: { value: "static", label: "Static" },
+              plotType: { value: "static", label: "Chromosome level" },
               chrCompare: { value: "chr" + b.__data__.key, label: b.__data__.key },
+              chrSingle: { value: "chr" + b.__data__.key, label: b.__data__.key },
             });
             if (form.compare) {
               document.getElementById("compareSubmit").click();
@@ -311,19 +316,6 @@ export default function CirclePlotTest(props) {
       setZoomRangeA(event);
       //setZoomRangeB(null);
     }
-    // (pxmin / 1000000).toFixed(2) + "M - " + (pxmax / 1000000).toFixed(2) + "M";
-    // console.log("zoomRange:", zoomRange);
-    //   if (lastView !== undefined) {
-    //     const zr =
-    //       Math.trunc(lastView["xaxis.range[0]"]).toLocaleString("en-US", { style: "decimal" }) +
-    //       " -- " +
-    //       Math.trunc(lastView["xaxis.range[1]"]).toLocaleString("en-US", { style: "decimal" });
-    //     setRangeLabel(zr);
-    //   } else setRangeLabel("");
-    //   //else {
-    //   //   //setZoomRange(null);
-    //   // }
-    //
   };
 
   let data = [];
@@ -356,15 +348,17 @@ export default function CirclePlotTest(props) {
   // const handleCompareHeightChange = (height) => {
   //   setFigureHeight(height);
   // };
+
   data = [
-    ...props.gain.filter((chr) => chr.block_id === chromesomeId),
-    ...props.loh.filter((chr) => chr.block_id === chromesomeId),
-    ...props.loss.filter((chr) => chr.block_id === chromesomeId),
-    ...props.undetermined.filter((chr) => chr.block_id === chromesomeId),
-    ...props.chrx.filter((chr) => chr.block_id === chromesomeId),
-    ...props.chry.filter((chr) => chr.block_id === chromesomeId),
+    ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
+    ...props.loh.filter((chr) => chr.block_id === chromesomeId + ""),
+    ...props.loss.filter((chr) => chr.block_id === chromesomeId + ""),
+    ...props.undetermined.filter((chr) => chr.block_id === chromesomeId + ""),
+    ...props.chrx.filter((chr) => chr.block_id === chromesomeId + ""),
+    ...props.chry.filter((chr) => chr.block_id === chromesomeId + ""),
     // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
   ];
+
   //do query for group compare:
   async function handleGroupQuery(group) {
     //setLoading(true)
@@ -970,32 +964,6 @@ export default function CirclePlotTest(props) {
     }
   }, [groupA, groupB]);
 
-  // if (chromesomeId > 0 && circle !== null) {
-  //   //setTableData([...circle.loss, ...circle.gain, ...circle.loh, ...circle.undetermined]);
-  // } else {
-  //   //setTableData(data);
-  // }
-
-  // if (form.compare && circleA != null && circleB != null) {
-  //   if (chromesomeId > 0) {
-  //     setTableData([...circleA.loss, ...circleA.gain, ...circleA.loh, ...circleA.undetermined]);
-  //     setTableData([...circleB.loss, ...circleB.gain, ...circleB.loh, ...circleB.undetermined]);
-  //   } else if (groupA != null && groupB != null) {
-  //     setTableData([...groupA]);
-  //     setTableData([...groupB]);
-  //   }
-  // } else {
-  //   if (chromesomeId > 0 && circle !== null) {
-  //     setTableData([...circle.loss, ...circle.gain, ...circle.loh, ...circle.undetermined]);
-  //   } else {
-  //     setTableData(data);
-  //   }
-  // }
-  //}, [circleA, circleB, groupA, groupB, circle]);
-
-  //
-  //const filterTableData = tableData.filter((c) => c.end !== "0");
-  //console.log(filterTableData.length);
   props.getData(tableData);
 
   return (
@@ -1009,32 +977,9 @@ export default function CirclePlotTest(props) {
                 Circos plot
               </Button>
             ) : (
-              ""
-            )}
-            {form.compare ? (
-              // (
-              //   form.submitted ? (
-              //     <>
-              //       {/* &#8592;
-              //       <Button variant="link" onClick={handleBackChromo}>
-              //         Chr {chromesomeId}
-              //       </Button>
-              //       &#8592;
-              //       <Button variant="link" onClick={handleCircosCompareBack}>
-              //         Back to circos compare
-              //       </Button> */}
-              //     </>
-              //   ) : (
-              //     <Button variant="link" onClick={handleCircosCompareBack}>
-              //       Back to circos compare
-              //     </Button>
-              //   )
-              // )
               <Button variant="link" onClick={handleCircosCompareBack}>
                 Back to circos compare
               </Button>
-            ) : (
-              ""
             )}
             {rangeLabel ? (
               <>

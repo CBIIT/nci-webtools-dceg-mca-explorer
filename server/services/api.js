@@ -68,6 +68,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qmaxcf = request.body.maxcf ? request.body.maxcf : 1;
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
+  const qchromosomes = request.body.chromosomes;
   console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype);
   let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
   if (qtype !== undefined) {
@@ -95,6 +96,13 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         })
       : datasets.push(qdataset.value);
     searchdataset.push({ terms: { dataset: datasets } });
+  }
+  //if query for chromosome
+  if (qchromosomes !== undefined && qchromosomes !== null) {
+    console.log(qchromosomes);
+    let chrarr = [];
+    chrarr.push(qchromosomes.value);
+    searchdataset.push({ terms: { "chromosome.keyword": chrarr } });
   }
   //query sex
   let sexarr = [];

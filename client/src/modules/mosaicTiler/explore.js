@@ -112,7 +112,7 @@ export default function Explore() {
                 paddingBottom: 0,
               }}>
               <input id="paircheck" type="checkbox" checked={isOpenCompare} onChange={handleCheckboxChange}></input>
-              <span style={{ marginLeft: "10px" }}>Pair Comparison</span>
+              <span style={{ marginLeft: "10px" }}>Pairwise Plots</span>
             </label>
             {!isOpenCompare ? (
               <Card className="shadow" id="summary">

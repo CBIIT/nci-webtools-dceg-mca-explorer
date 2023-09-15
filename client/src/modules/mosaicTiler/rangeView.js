@@ -85,6 +85,7 @@ export default function RangeView(props) {
       maxcf: qform.maxFraction,
       ancestry: qform.ancestry,
       types: qform.types,
+      chromosomes: qform.plotType.value === "static" ? qform.chrSingle : null,
     });
     let gainTemp = [];
     let lossTemp = [];
@@ -169,7 +170,7 @@ export default function RangeView(props) {
 
   //console.log(clickedCounter)
   const chromosomes = form.chromosome.map((e) => e.label);
-
+  //const chromosomes = form.chromosome;
   const sortGain = gain
     .filter((e) => chromosomes.includes(Number(e.block_id)))
     .sort((a, b) => Number(a.block_id) - Number(b.block_id));
