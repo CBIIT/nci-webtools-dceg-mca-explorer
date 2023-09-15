@@ -5,6 +5,7 @@ import { sampleState, formState, loadingState, defaultFormState, resetFormState 
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
+import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 const compareArray = CompareArray;
 export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
@@ -28,10 +29,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [isY, setIsY] = useState(false);
   const [compareChecks, setCompareChecks] = useState(compareArray);
   const [compare, setCompare] = useState(false);
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
 
   function handleChange(event) {
     const { name, value } = event.target;
-    //console.log(name, value)
+    console.log(event, name, value);
+
     if (name === "chrX") {
       setIsX(event.target.checked);
       mergeForm({ [name]: event.target.checked });
@@ -39,11 +43,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
     }
-    // else if(name==="compare" ){
-    //   setCompare(event.target.checked)
-    //   mergeForm({ [name]: event.target.checked})
-    //   onCompare({compare:event.target.checked})
-    // }
+    //if(name === )
     else mergeForm({ [name]: value });
   }
 
@@ -87,8 +87,16 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         { value: "ukbb", label: "UK Bio Bank" },
       ];
     }
+
+    if (name === "chrSingle") {
+      const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
+      setEnd(selectedChromo[0].len + "");
+    }
     mergeForm({ [name]: selection });
   }
+  useEffect(() => {
+    setForm({ ...form, end: end });
+  }, [end]);
 
   // avoid loading all samples as Select options
   function filterSamples(value, limit = 100) {}
@@ -161,18 +169,43 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </OverlayTrigger>
       </Form.Group>
       {form.plotType.value === "static" ? (
-        <Form.Group className="mb-3">
-          <Form.Label className="required">Chromosome</Form.Label>
-          <Select
-            aria-label="chromosome"
-            placeholder="- Select -"
-            name="chromosome"
-            isMulti={false}
-            value={form.chrSingle}
-            onChange={(ev) => handleSelectChange("chrSingle", ev)}
-            options={chromosomes}
-          />
-        </Form.Group>
+        <>
+          <Form.Group className="mb-3">
+            <Form.Label className="required">Chromosome</Form.Label>
+            <Select
+              aria-label="chromosome"
+              placeholder="- Select -"
+              name="chromosome"
+              isMulti={false}
+              value={form.chrSingle}
+              onChange={(ev) => handleSelectChange("chrSingle", ev)}
+              options={chromosomes}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Range</Form.Label>
+            <Row>
+              <Col xl={5}>
+                <InputGroup>
+                  <Form.Control
+                    placeholder="Start"
+                    name="start"
+                    id={"ChrStart"}
+                    value={form.start}
+                    onChange={handleChange}
+                  />
+                  {/* <InputGroup.Text>%</InputGroup.Text> */}
+                </InputGroup>
+              </Col>
+              __
+              <Col xl={6}>
+                <InputGroup>
+                  <Form.Control placeholder="End" name="end" id="Chrend" value={form.end} onChange={handleChange} />
+                </InputGroup>
+              </Col>
+            </Row>
+          </Form.Group>
+        </>
       ) : (
         <Form.Group className="mb-3">
           <Form.Label className="">Include Chromosome</Form.Label>

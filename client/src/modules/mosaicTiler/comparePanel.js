@@ -25,7 +25,7 @@ export default function ComparePanel(props) {
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
-    console.log("&&&&", StudyOptions[0], compareform);
+    //console.log("&&&&", StudyOptions[0], compareform);
   }, [props.onReset]);
   function handleChange(event) {
     const { name, value } = event.target;
@@ -52,7 +52,7 @@ export default function ComparePanel(props) {
   }
 
   function handleSelectChange(name, selection = []) {
-    console.log(name, selection);
+    // console.log(name, selection);
     if (props.compareItem[4].isChecked && name === "study") {
       setStudy(selection);
     }
@@ -360,7 +360,7 @@ export default function ComparePanel(props) {
           ) : (
             ""
           )}
-          {props.compareItem[8].isChecked ? (
+          {/* {props.compareItem[8].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Range</Form.Label>
               <Row>
@@ -373,7 +373,6 @@ export default function ComparePanel(props) {
                       value={start}
                       onChange={handleChange}
                     />
-                    {/* <InputGroup.Text>%</InputGroup.Text> */}
                   </InputGroup>
                 </Col>
                 __
@@ -386,14 +385,15 @@ export default function ComparePanel(props) {
                       value={end}
                       onChange={handleChange}
                     />
-                    {/* <InputGroup.Text>%</InputGroup.Text> */}
+                  
                   </InputGroup>
                 </Col>
               </Row>
             </Form.Group>
           ) : (
             ""
-          )}
+          )
+          } */}
         </Container>
       </div>
     </>

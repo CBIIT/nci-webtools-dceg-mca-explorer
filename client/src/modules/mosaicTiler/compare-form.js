@@ -72,8 +72,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
     if (name === "chrCompare") {
-      //selection = chromosomes.slice(1);
-      //setCompareChecks()
+      mergeForm({ ["end"]: selection });
     }
 
     if (name === "types") {
@@ -197,7 +196,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           <OverlayTrigger
             overlay={
               <Tooltip id="plotType_tooltip">
-                Circos plot displays all chromosomes, select Static plot to visualize a subset of chromosomes
+                Whole chromosome plot displays all chromosomes, select chromosome level plot to visualize a subset of
+                chromosomes
               </Tooltip>
             }>
             <Select
@@ -215,18 +215,42 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           </OverlayTrigger>
         </Form.Group>
         {form.plotType.value === "static" ? (
-          <Form.Group className="mb-3">
-            <Form.Label className="required">Chromosome</Form.Label>
-            <Select
-              aria-label="chromosome"
-              placeholder="- Select -"
-              name="chromosome"
-              isMulti={false}
-              value={form.chrCompare}
-              onChange={(ev) => handleSelectChange("chrCompare", ev)}
-              options={chromosomes}
-            />
-          </Form.Group>
+          <>
+            <Form.Group className="mb-3">
+              <Form.Label className="required">Chromosome</Form.Label>
+              <Select
+                aria-label="chromosome"
+                placeholder="- Select -"
+                name="chromosome"
+                isMulti={false}
+                value={form.chrCompare}
+                onChange={(ev) => handleSelectChange("chrCompare", ev)}
+                options={chromosomes}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Range</Form.Label>
+              <Row>
+                <Col xl={5}>
+                  <InputGroup>
+                    <Form.Control
+                      placeholder="Start"
+                      name="start"
+                      id={"Start"}
+                      value={form.start}
+                      onChange={handleChange}
+                    />
+                  </InputGroup>
+                </Col>
+                <Col xl={2}>__</Col>
+                <Col xl={5}>
+                  <InputGroup>
+                    <Form.Control placeholder="End" name="end" id={"end"} value={form.end} onChange={handleChange} />
+                  </InputGroup>
+                </Col>
+              </Row>
+            </Form.Group>
+          </>
         ) : (
           <Form.Group className="mb-3">
             <Form.Label className="">Include Chromosome</Form.Label>
@@ -272,6 +296,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
                   if (
                     ck.value !== "study" &&
                     ck.value !== "types" &&
+                    ck.value !== "range" &&
                     (form.plotType.value === "circos" ? ck.value !== "range" : true)
                   ) {
                     //if plot type is circus, then do not display range
@@ -312,6 +337,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
                   if (
                     ck.value !== "study" &&
                     ck.value !== "types" &&
+                    ck.value !== "range" &&
                     (form.plotType.value === "circos" ? ck.value !== "range" : true)
                   ) {
                     return (
