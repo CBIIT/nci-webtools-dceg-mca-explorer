@@ -92,7 +92,6 @@ export default function CirclePlotTest(props) {
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
 
-  console.log(form);
   useEffect(() => {
     setShowChart(form.plotType.value === "static");
     showChartRef.current = form.plotType.value === "static";

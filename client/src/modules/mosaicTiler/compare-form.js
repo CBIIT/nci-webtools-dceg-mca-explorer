@@ -5,6 +5,7 @@ import { sampleState, formState, loadingState, defaultFormState, resetFormState 
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
+import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [selectedOption, setSelectedOption] = useState("none");
@@ -33,6 +34,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   // console.log(initialSelection);
   const [compareChecks, setCompareChecks] = useState(initialSelection);
   const [compare, setCompare] = useState(false);
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -72,7 +75,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
     if (name === "chrCompare") {
-      mergeForm({ ["end"]: selection });
+      const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
+      setEnd(selectedChromo[0].len + "");
+      setStart(0);
     }
 
     if (name === "types") {
@@ -99,6 +104,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     mergeForm({ [name]: selection });
   }
 
+  useEffect(() => {
+    setForm({ ...form, end: end, start: start });
+  }, [end, start]);
   // avoid loading all samples as Select options
   function filterSamples(value, limit = 100) {}
 

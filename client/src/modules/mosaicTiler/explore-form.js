@@ -34,7 +34,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleChange(event) {
     const { name, value } = event.target;
-    console.log(event, name, value);
+    // console.log(event, name, value);
 
     if (name === "chrX") {
       setIsX(event.target.checked);
@@ -91,12 +91,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     if (name === "chrSingle") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
+      setStart(0);
     }
     mergeForm({ [name]: selection });
   }
   useEffect(() => {
-    setForm({ ...form, end: end });
-  }, [end]);
+    setForm({ ...form, end: end, start: start });
+  }, [end, start]);
 
   // avoid loading all samples as Select options
   function filterSamples(value, limit = 100) {}
