@@ -394,7 +394,7 @@ export default function CirclePlotTest(props) {
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
-        query = { ...group, chr: chromesomeId };
+        query = { ...group, chr: chromesomeId, start: form.start, end: form.end };
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
         console.log("do query...", form.counterCompare, chromesomeId);

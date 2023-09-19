@@ -69,7 +69,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
   const qchromosomes = request.body.chromosomes;
-  console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype);
+  const qstart = request.body.start ? Number(request.body.start) : 0;
+  const qend = request.body.end ? Number(request.body.end) : 9999999999;
+  console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend);
   let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
   if (qtype !== undefined) {
     if (qtype.find((option) => option.value === "all") === undefined) {
@@ -118,7 +120,6 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   if (qmincf !== undefined || qmaxcf !== undefined) {
     if (qmincf === undefined) qmincf = "0";
     if (qmaxcf === undefined) qmaxcf = "1";
-
     filterString.push({ range: { cf: { gte: qmincf, lte: qmaxcf } } });
   }
 
@@ -129,6 +130,25 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       ancestryarr.push(a.value);
     });
     searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
+  }
+
+  if (qstart !== undefined) {
+    filterString.push({
+      range: {
+        beginGrch38: {
+          gte: qstart,
+        },
+      },
+    });
+  }
+  if (qend !== undefined) {
+    filterString.push({
+      range: {
+        endGrch38: {
+          lte: qend,
+        },
+      },
+    });
   }
 
   //searchdataset.push({ terms: { "expectedSex.keyword": ["F"] } });
@@ -160,7 +180,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
 
   try {
     const result = await client.search({
-      index: "mcaexplorer",
+      index: "mcaexplorer_index",
       body: {
         track_total_hits: true,
         size: 200000,
@@ -285,8 +305,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const maxcf = group.maxFraction;
     const mincf = group.minFraction;
     const types = group.types;
-    const start = group.start ? group.start : "0";
-    const end = group.end ? group.end : "9999999999";
+    const start = group.start ? Number(group.start) : 0;
+    const end = group.end ? Number(group.end) : 9999999999;
     //console.log("query string:", study, array, chromesome);
     const dataset = [];
     const queryString = [];

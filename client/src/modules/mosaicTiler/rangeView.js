@@ -86,6 +86,8 @@ export default function RangeView(props) {
       ancestry: qform.ancestry,
       types: qform.types,
       chromosomes: qform.plotType.value === "static" ? qform.chrSingle : null,
+      start: qform.start,
+      end: qform.end,
     });
     let gainTemp = [];
     let lossTemp = [];
