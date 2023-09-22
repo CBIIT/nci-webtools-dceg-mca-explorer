@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
+import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 const compareArray = CompareArray;
@@ -16,7 +16,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [counter, setCounter] = useState(0);
   // console.log("exploreform:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
-  const chromosomes = [{ value: "all", label: "All Chromosomes" }]
+  const chromosomes = []
     .concat(
       Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
         return { value: "chr" + i, label: i };
@@ -65,11 +65,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
-    // if (name === "chromosome") {
-    //   //selection = chromosomes.slice(1);
-    // }
-
-    if (name === "types") {
+    if (name === "types" || name === "ancestry" || name === "sex") {
       const all = selection.find((option) => option.value === "all");
       const allindex = selection.indexOf(all);
       //if all selected, then another option select, remove all
@@ -93,6 +89,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       setEnd(selectedChromo[0].len + "");
       setStart(0);
     }
+
     mergeForm({ [name]: selection });
   }
   useEffect(() => {
@@ -152,7 +149,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <OverlayTrigger
           overlay={
             <Tooltip id="plotType_tooltip">
-              Circos plot displays all chromosomes, select chromosome level plot to visualize a single chromosome
+              Whole chromosome displays all chromosomes, select chromosome level plot to visualize a single chromosome
             </Tooltip>
           }>
           <Select
@@ -302,10 +299,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 isMulti={true}
                 value={form.sex}
                 onChange={(ev) => handleSelectChange("sex", ev)}
-                options={[
-                  { value: "male", label: "Male" },
-                  { value: "female", label: "Female" },
-                ]}
+                options={SexOptions}
                 classNamePrefix="select"
               />
             </Form.Group>

@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { AncestryOptions, TypeStateOptions, StudyOptions } from "./constants";
+import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions } from "./constants";
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -62,9 +62,23 @@ export default function ComparePanel(props) {
       setArray(selection);
     }
     if (props.compareItem[1].isChecked && name === "sex") {
+      const all = selection.find((option) => option.value === "all");
+      const allindex = selection.indexOf(all);
+      if (allindex == 0 && selection.length > 1) {
+        selection.splice(allindex, 1);
+      } else if (allindex > 0 && selection.length > 1) {
+        selection = [all];
+      }
       setSex(selection);
     }
     if (props.compareItem[3].isChecked && name === "ancestry") {
+      const all = selection.find((option) => option.value === "all");
+      const allindex = selection.indexOf(all);
+      if (allindex == 0 && selection.length > 1) {
+        selection.splice(allindex, 1);
+      } else if (allindex > 0 && selection.length > 1) {
+        selection = [all];
+      }
       setAncestry(selection);
     }
     if (props.compareItem[6].isChecked && name === "smoking") {
@@ -202,10 +216,7 @@ export default function ComparePanel(props) {
                 isMulti={true}
                 value={sex}
                 onChange={(ev) => handleSelectChange("sex", ev)}
-                options={[
-                  { value: "male", label: "Male" },
-                  { value: "female", label: "Female" },
-                ]}
+                options={SexOptions}
                 classNamePrefix="select"
               />
             </Form.Group>

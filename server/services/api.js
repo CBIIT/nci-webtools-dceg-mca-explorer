@@ -1,13 +1,13 @@
 import express, { response } from "express";
 import Router from "express-promise-router";
-import { getStatus, getSamples } from "./query.js";
+import { getStatus, getSamples, AncestryOptions } from "./query.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const spec = require("./spec.json");
 const { APPLICATION_NAME, BASE_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_ENDPOINT } = process.env;
-
+//import  { AncestryOptions }  from "../../client/src/modules/mosaicTiler/constants.js";
 export const apiRouter = new Router();
 
 apiRouter.use(cors());
@@ -110,8 +110,13 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let sexarr = [];
   if (qsex !== undefined && qsex.length > 0) {
     qsex.forEach((e) => {
-      e.value === "male" ? sexarr.push("M") : "";
-      e.value === "female" ? sexarr.push("F") : "";
+      if (e.value === "all") {
+        sexarr.push("M");
+        sexarr.push("F");
+      } else {
+        e.value === "male" ? sexarr.push("M") : "";
+        e.value === "female" ? sexarr.push("F") : "";
+      }
     });
     console.log(sexarr);
     searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
@@ -127,7 +132,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let ancestryarr = [];
   if (qancestry !== undefined && qancestry.length > 0) {
     qancestry.forEach((a) => {
-      ancestryarr.push(a.value);
+      if (a.value === "all") {
+        AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
+      } else ancestryarr.push(a.value);
     });
     searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
   }

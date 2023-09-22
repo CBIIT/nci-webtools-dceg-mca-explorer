@@ -1,4 +1,5 @@
 export const AncestryOptions = [
+  { value: "all", label: "All Ancestries" },
   { value: "ADMIXED_EUR", label: "ADMIXED_EUR" },
   { value: "AFR", label: "African" },
   { value: "AFR_EUR", label: "AFR_EUR" },
@@ -30,6 +31,12 @@ export const TypeStateOptions = [
 export const StudyOptions = [
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
+];
+
+export const SexOptions = [
+  { value: "all", label: "All Sexes" },
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
 ];
 
 export const initialX = [

@@ -29,3 +29,13 @@ export async function getStatus(connection) {
   const results = await checkHeartbeat(connection);
   return results.isOk;
 }
+
+export const AncestryOptions = [
+  { value: "all", label: "All Ancestries" },
+  { value: "ADMIXED_EUR", label: "ADMIXED_EUR" },
+  { value: "AFR", label: "African" },
+  { value: "AFR_EUR", label: "AFR_EUR" },
+  { value: "ASN", label: "Asian" },
+  { value: "ASN_EUR", label: "ASN_EUR" },
+  { value: "EUR", label: "European" },
+];

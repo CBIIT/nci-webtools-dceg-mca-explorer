@@ -16,7 +16,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [resetCounter, setResetCounter] = useState(0);
   // console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
-  const chromosomes = [{ value: "all", label: "All Chromosomes" }]
+  const chromosomes = []
     .concat(
       Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
         return { value: "chr" + i, label: i };
@@ -80,7 +80,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       setStart(0);
     }
 
-    if (name === "types") {
+    if (name === "types" || name === "ancestry" || name === "sex") {
       const all = selection.find((option) => option.value === "all");
       const allindex = selection.indexOf(all);
       //if all selected, then another option select, remove all
