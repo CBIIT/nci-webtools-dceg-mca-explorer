@@ -348,7 +348,7 @@ export default function CirclePlotTest(props) {
   // const handleCompareHeightChange = (height) => {
   //   setFigureHeight(height);
   // };
-
+  // console.log(props.chrx);
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId + ""),
@@ -974,7 +974,7 @@ export default function CirclePlotTest(props) {
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             {!form.compare ? (
               <Button variant="link" onClick={handleBack}>
-                Circos plot
+                Whole plot
               </Button>
             ) : (
               <Button variant="link" onClick={handleCircosCompareBack}>

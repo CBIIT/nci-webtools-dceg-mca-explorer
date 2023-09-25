@@ -117,7 +117,7 @@ export default function RangeView(props) {
     const chrXTemp = [];
     const chrYTemp = [];
     const results = response.data;
-    //console.log(response)
+
     results.forEach((r) => {
       if (r._source !== null) {
         const d = r._source;
@@ -133,11 +133,21 @@ export default function RangeView(props) {
             else if (d.type === "Loss") lossTemp.push(d);
             else if (d.type === "Undetermined") undeterTemp.push(d);
           }
-          if (form.chrX && d.type == "mLOX") {
+          //for whole, and select X or Y
+          if (form.chrX && d.type === "mLOX") {
             chrXTemp.push(d);
             d.block_id = "X";
           }
-          if (form.chrY && d.type == "mLOY") {
+          if (form.chrY && d.type === "mLOY") {
+            chrYTemp.push(d);
+            d.block_id = "Y";
+          }
+
+          if (form.chrSingle && form.chrSingle.value === "chrX" && d.type === "mLOX") {
+            chrXTemp.push(d);
+            d.block_id = "X";
+          }
+          if (form.chrSingle && form.chrSingle.value === "chrY" && d.type === "mLOY") {
             chrYTemp.push(d);
             d.block_id = "Y";
           }
@@ -160,14 +170,9 @@ export default function RangeView(props) {
     setChrY(chrYTemp);
   }
 
-  // const gain = form.types.find((e) => e.value === "gain") ? form.study.length === 2? allgain: study_value.value==='plco'?plcogain:ukgain : []
-  // const loss = form.types.find((e) => e.value === "loss") ? form.study.length === 2? allloss: study_value.value==='plco'?plcoloss:ukloss : []
-  // const loh = form.types.find((e) => e.value === "loh") ? form.study.length === 2? allloh: study_value.value==='plco'?plcoloh:ukloh : []
-  // const undetermined = form.types.find((e) => e.value === "undetermined") ? form.study.length === 2 ? allundetermined :
-  //                         study_value.value ==='plco'?plcoundetermined:ukundetermined : []
-
   useEffect(() => {
     setClickedCounter(clickedCounter + 1);
+    console.log(chrX);
   }, [gain, loss, loh, undetermined, chrX, chrY]);
 
   //console.log(clickedCounter)

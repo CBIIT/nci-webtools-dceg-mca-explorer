@@ -71,40 +71,36 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qchromosomes = request.body.chromosomes;
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
-  console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend);
-  let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
-  if (qtype !== undefined) {
-    if (qtype.find((option) => option.value === "all") === undefined) {
-      qfilter = ["mLOX", "mLOY"];
-      qtype.forEach((t) => qfilter.push(t.label));
-    }
-  }
-
+  console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
+  let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined"];
   //serach only rows which has chromosome, this will exclude plcoDenominator
-  const filterString = [{ terms: { "type.keyword": qfilter } }];
+  const filterString = [];
   const searchdataset = [];
   const searchExclude = []; //{match:{"chromosome":"chrX"}},{terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined']}}
-  let hasX = false;
-  let hasY = false;
   const datasets = [];
   //if there is more studies, queryString is an array, if there is only one, study is json object
   if (qdataset !== undefined) {
     qdataset.length
       ? qdataset.forEach((element) => {
-          element.value === "X" ? (hasX = true) : "";
-          element.value === "Y" ? (hasY = true) : "";
+          element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
+          element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
           element.label ? datasets.push(element.value) : "";
           //element.label?searchdataset.push({match:{dataset:element.value}}):''
         })
       : datasets.push(qdataset.value);
     searchdataset.push({ terms: { dataset: datasets } });
   }
+
   //if query for chromosome
   if (qchromosomes !== undefined && qchromosomes !== null) {
     console.log(qchromosomes);
     let chrarr = [];
     chrarr.push(qchromosomes.value);
-    searchdataset.push({ terms: { "chromosome.keyword": chrarr } });
+    if (qchromosomes.value !== "chrX" && qchromosomes.value !== "chrY")
+      searchdataset.push({ terms: { "chromosome.keyword": chrarr } });
+    else {
+      qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
+    }
   }
   //query sex
   let sexarr = [];
@@ -136,7 +132,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
       } else ancestryarr.push(a.value);
     });
-    searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
+    // if (datasets.includes("plco")) {
+    //   searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
+    // }
   }
 
   if (qstart !== undefined) {
@@ -157,23 +155,8 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
   }
-
-  //searchdataset.push({ terms: { "expectedSex.keyword": ["F"] } });
-  // hasX?searchdataset.push({match:{type:"mLOX"}}):''
-  // hasY?searchdataset.push({match:{type:"mLOY"}}):''
-
-  if (!hasX && !hasY) {
-    searchExclude.push({ wildcard: { "type.keyword": "mLO*" } });
-    searchExclude.push({ match: { chromosome: "chrX" } });
-  }
-  if (!hasX && hasY) {
-    searchExclude.push({ match: { "type_.keyword": "mLOX" } });
-  }
-  if (!hasY && hasX) {
-    searchExclude.push({ match: { "type.keyword": "mLOY" } });
-  }
-
-  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString);
+  filterString.push({ terms: { "type.keyword": qfilter } });
+  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qstart, qend);
   const client = new Client({
     node: host,
     auth: {
