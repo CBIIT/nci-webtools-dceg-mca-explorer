@@ -234,6 +234,7 @@ export default function CirclePlotTest(props) {
               plotType: { value: "static", label: "Chromosome level" },
               chrCompare: { value: "chr" + b.__data__.key, label: b.__data__.key },
               chrSingle: { value: "chr" + b.__data__.key, label: b.__data__.key },
+              end: layout.filter((c) => c.id === b.__data__.key + "")[0].len,
             });
             if (form.compare) {
               document.getElementById("compareSubmit").click();
