@@ -86,8 +86,8 @@ export default function RangeView(props) {
       ancestry: qform.ancestry,
       types: qform.types,
       chromosomes: qform.plotType.value === "static" ? qform.chrSingle : null,
-      start: qform.start,
-      end: qform.end,
+      start: qform.plotType.value === "circos" ? "" : qform.start,
+      end: qform.plotType.value === "circos" ? "" : qform.end,
     });
     let gainTemp = [];
     let lossTemp = [];
@@ -176,6 +176,7 @@ export default function RangeView(props) {
     if (form.plotType.value === "static") {
       setAllValue([...allValues]);
     }
+    handleDataChange(allValues);
   }, [gain, loss, loh, undetermined, chrX, chrY]);
 
   const chromosomes = form.chromosome.map((e) => e.label);

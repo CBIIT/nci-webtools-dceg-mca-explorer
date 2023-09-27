@@ -91,10 +91,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     if (name === "plotType") {
-      if (form.plotType.value === "static") {
-        setEnd("");
-        setStart("");
-      }
+      // if (selection.value === "circos") {
+      //   setEnd("");
+      //   setStart("");
+      // }
+      // if (selection.value === "static") {
+      //   if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
+      //   setStart(0);
+      // }
     }
 
     mergeForm({ [name]: selection });
