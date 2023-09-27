@@ -15,7 +15,8 @@ export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
   const [tab, setTab] = useState("summary");
   const [clickedCounter, setClickedCounter] = useState(0);
-  const [chromoId, setChromoId] = useState(-1);
+  //console.log(form);
+  const [chromoId, setChromoId] = useState(form.chrSingle ? form.chrSingle.label : -1);
   const [allValue, setAllValue] = useState([]);
   const [browserSize, setBrowserSize] = useState({
     width: window.innerWidth,
@@ -77,7 +78,6 @@ export default function RangeView(props) {
     setChrX([]);
     setChrY([]);
     //setLoading(true)
-
     const response = await axios.post("api/opensearch/mca", {
       dataset: qdataset,
       sex: qform.sex,
@@ -172,10 +172,12 @@ export default function RangeView(props) {
 
   useEffect(() => {
     setClickedCounter(clickedCounter + 1);
-    console.log(chrX);
+    //console.log(chrX);
+    if (form.plotType.value === "static") {
+      setAllValue([...allValues]);
+    }
   }, [gain, loss, loh, undetermined, chrX, chrY]);
 
-  //console.log(clickedCounter)
   const chromosomes = form.chromosome.map((e) => e.label);
   //const chromosomes = form.chromosome;
   const sortGain = gain
@@ -198,7 +200,6 @@ export default function RangeView(props) {
 
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
-    //console.log(form);
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);
     setAllValue([...clickedValues]);
     //this is for single chromosome
@@ -337,6 +338,7 @@ export default function RangeView(props) {
   let resultData = tableData;
   if (!form.compare) {
     if (chromoId > 0) {
+      //console.log(allValue);
       resultData = allValue;
     } else resultData = allValues;
   } else {

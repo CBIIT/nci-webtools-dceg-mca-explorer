@@ -90,6 +90,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       setStart(0);
     }
 
+    if (name === "plotType") {
+      if (form.plotType.value === "static") {
+        setEnd("");
+        setStart("");
+      }
+    }
+
     mergeForm({ [name]: selection });
   }
   useEffect(() => {

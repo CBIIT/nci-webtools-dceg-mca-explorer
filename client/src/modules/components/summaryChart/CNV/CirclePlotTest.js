@@ -95,12 +95,13 @@ export default function CirclePlotTest(props) {
   useEffect(() => {
     setShowChart(form.plotType.value === "static");
     showChartRef.current = form.plotType.value === "static";
+
     form.plotType.value === "static"
       ? form.compare
-        ? setChromesomeId(form.chrCompare.label)
-        : setChromesomeId(form.chrSingle.label)
+        ? setChromesomeId(form.chrCompare ? form.chrCompare.label : "")
+        : setChromesomeId(form.chrSingle ? form.chrSingle.label : "")
       : setChromesomeId(0);
-  }, [form]);
+  }, [form.plotType]);
   useEffect(() => {
     if (!showChart) setForm({ ...form, plotType: { value: "circos", label: "Whole chromosome" } });
   }, [showChart]);
@@ -255,6 +256,11 @@ export default function CirclePlotTest(props) {
       ...form,
       compare: false,
       showCompare: false,
+      counterSubmitted: 0,
+      chrSingle: null,
+      start: 0,
+      end: "",
+      plotType: { value: "circos", label: "Whole chromosome" },
       chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
         .map((i) => {
           return { value: "chr" + i, label: i };
@@ -342,7 +348,7 @@ export default function CirclePlotTest(props) {
       setCircleA(null);
       setCircleB(null);
       setTableData([]);
-      console.log("clear circle data");
+      //console.log("clear circle data");
     }
   }, [form.counterCompare]);
 
