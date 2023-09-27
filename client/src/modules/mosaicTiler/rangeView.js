@@ -94,24 +94,7 @@ export default function RangeView(props) {
     let lohTemp = [];
     let undeterTemp = [];
     //initial plot each type with value so that mouse move over can have value if X Y selected
-    if (form.chrX && form.chrY) {
-      gainTemp = [...initialX, ...initialY];
-      lossTemp = [...initialX, ...initialY];
-      lohTemp = [...initialX, ...initialY];
-      undeterTemp = [...initialX, ...initialY];
-    }
-    if (form.chrX && !form.chrY) {
-      gainTemp = [...initialX];
-      lossTemp = [...initialX];
-      lohTemp = [...initialX];
-      undeterTemp = [...initialX];
-    }
-    if (!form.chrX && form.chrY) {
-      gainTemp = [...initialY];
-      lossTemp = [...initialY];
-      lohTemp = [...initialY];
-      undeterTemp = [...initialY];
-    }
+
     // if (form.chrY) {
     // }
     const chrXTemp = [];
@@ -179,26 +162,25 @@ export default function RangeView(props) {
     handleDataChange(allValues);
   }, [gain, loss, loh, undetermined, chrX, chrY]);
 
-  const chromosomes = form.chromosome.map((e) => e.label);
+  //const chromosomes = form.chromosome.map((e) => e.label);
   //const chromosomes = form.chromosome;
-  const sortGain = gain
-    .filter((e) => chromosomes.includes(Number(e.block_id)))
-    .sort((a, b) => Number(a.block_id) - Number(b.block_id));
-  const sortLoss = loss
-    .filter((e) => chromosomes.includes(Number(e.block_id)))
-    .sort((a, b) => Number(a.block_id) - Number(b.block_id));
-  const sortLoh = loh
-    .filter((e) => chromosomes.includes(Number(e.block_id)))
-    .sort((a, b) => Number(a.block_id) - Number(b.block_id));
-  const sortUndetermined = undetermined
-    .filter((e) => chromosomes.includes(Number(e.block_id)))
-    .sort((a, b) => Number(a.block_id) - Number(b.block_id));
+  // const sortGain = gain
+  //   .filter((e) => chromosomes.includes(Number(e.block_id)))
+  //   .sort((a, b) => Number(a.block_id) - Number(b.block_id));
+  // const sortLoss = loss
+  //   .filter((e) => chromosomes.includes(Number(e.block_id)))
+  //   .sort((a, b) => Number(a.block_id) - Number(b.block_id));
+  // const sortLoh = loh
+  //   .filter((e) => chromosomes.includes(Number(e.block_id)))
+  //   .sort((a, b) => Number(a.block_id) - Number(b.block_id));
+  // const sortUndetermined = undetermined
+  //   .filter((e) => chromosomes.includes(Number(e.block_id)))
+  //   .sort((a, b) => Number(a.block_id) - Number(b.block_id));
 
-  const sortX = chrX.filter((e) => chromosomes.includes("X")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
-  const sortY = chrY.filter((e) => chromosomes.includes("Y")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
-
-  const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
-
+  // const sortX = chrX.filter((e) => chromosomes.includes("X")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
+  // const sortY = chrY.filter((e) => chromosomes.includes("Y")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
+  // const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
+  const allValues = gain.concat(loss).concat(loh).concat(undetermined).concat(chrX).concat(chrY);
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     const clickedValues = allValues.filter((v) => v.block_id === chromoId);
@@ -209,11 +191,12 @@ export default function RangeView(props) {
   const columns = Columns;
 
   function getScatterData() {
+    gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
     const gainScatter = {
-      x: sortGain.map((e) => {
+      x: gain.map((e) => {
         return Number(e.block_id);
       }),
-      y: sortGain.map((e) => {
+      y: gain.map((e) => {
         return Number(e.value);
       }),
       name: "Gain",
@@ -222,7 +205,7 @@ export default function RangeView(props) {
       marker: {
         color: "rgb(26,150,46)",
       },
-      hovertext: sortGain.map((e) => {
+      hovertext: gain.map((e) => {
         var text = "<br>Start: " + e.start;
         text = text + "<br>End: " + e.end;
         return text;
@@ -231,10 +214,10 @@ export default function RangeView(props) {
     };
 
     const lossScatter = {
-      x: sortLoss.map((e) => {
+      x: loss.map((e) => {
         return Number(e.block_id);
       }),
-      y: sortLoss.map((e) => {
+      y: loss.map((e) => {
         return Number(e.value);
       }),
       name: "Loss",
@@ -243,7 +226,7 @@ export default function RangeView(props) {
       marker: {
         color: "rgb(255,0,0)",
       },
-      hovertext: sortLoss.map((e) => {
+      hovertext: loss.map((e) => {
         var text = "<br>Start: " + e.start;
         text = text + "<br>End: " + e.end;
         return text;
@@ -252,10 +235,10 @@ export default function RangeView(props) {
     };
 
     const lohScatter = {
-      x: sortLoh.map((e) => {
+      x: loh.map((e) => {
         return Number(e.block_id);
       }),
-      y: sortLoh.map((e) => {
+      y: loh.map((e) => {
         return Number(e.value);
       }),
       name: "LOH",
@@ -264,7 +247,7 @@ export default function RangeView(props) {
       marker: {
         color: "rgb(31,119,180)",
       },
-      hovertext: sortLoh.map((e) => {
+      hovertext: loh.map((e) => {
         var text = "<br>Start: " + e.start;
         text = text + "<br>End: " + e.end;
         return text;
@@ -273,10 +256,10 @@ export default function RangeView(props) {
     };
 
     const undeterminedScatter = {
-      x: sortUndetermined.map((e) => {
+      x: undetermined.map((e) => {
         return Number(e.block_id);
       }),
-      y: sortUndetermined.map((e) => {
+      y: undetermined.map((e) => {
         return Number(e.value);
       }),
       name: "Undetermined",
@@ -285,7 +268,7 @@ export default function RangeView(props) {
       marker: {
         color: "rgb(77,77,77)",
       },
-      hovertext: sortUndetermined.map((e) => {
+      hovertext: undetermined.map((e) => {
         var text = "<br>Start: " + e.start;
         text = text + "<br>End: " + e.end;
         return text;
@@ -339,12 +322,18 @@ export default function RangeView(props) {
   let resultData = tableData;
   if (!form.compare) {
     if (chromoId > 0) {
-      //console.log(allValue);
       resultData = allValue;
     } else resultData = allValues;
+
+    if (form.plotType.value === "circos") {
+      //console.log(allValues);
+      resultData = allValues;
+    }
+    //console.log(resultData, chromoId);
   } else {
     resultData = resultData.filter((c) => c.end !== "0");
   }
+  resultData.sort((a, b) => Number(a.block_id) - Number(b.block_id));
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -372,10 +361,10 @@ export default function RangeView(props) {
                 <CirclePlotTest
                   clickedChromoId={handleClickedChromoId}
                   key={clickedCounter}
-                  loss={loss}
-                  loh={loh}
-                  gain={gain}
-                  undetermined={undetermined}
+                  loss={[...loss, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
+                  loh={[...loh, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
+                  gain={[...gain, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
+                  undetermined={[...undetermined, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
                   chrx={chrX}
                   chry={chrY}
                   figureHeight={figureHeight}
