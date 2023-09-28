@@ -95,13 +95,12 @@ export default function CirclePlotTest(props) {
   useEffect(() => {
     setShowChart(form.plotType.value === "static");
     showChartRef.current = form.plotType.value === "static";
-
     form.plotType.value === "static"
       ? form.compare
         ? setChromesomeId(form.chrCompare ? form.chrCompare.label : "")
         : setChromesomeId(form.chrSingle ? form.chrSingle.label : "")
       : setChromesomeId(0);
-  }, [form.plotType]);
+  }, [form.plotType, form.chrCompare]);
   useEffect(() => {
     if (!showChart) setForm({ ...form, plotType: { value: "circos", label: "Whole chromosome" } });
   }, [showChart]);
