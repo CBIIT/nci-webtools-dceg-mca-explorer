@@ -87,10 +87,12 @@ export default function CirclePlotTest(props) {
   const [zoomRange, setZoomRange] = useState(null);
   const [rangeLabel, setRangeLabel] = useState("");
   const [isinit, setIsinit] = useState(false);
+  const [circleTableData, setCircleTableData] = useState([]);
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
+  const tableRef = useRef(tableData);
 
   useEffect(() => {
     setShowChart(form.plotType.value === "static");
@@ -115,6 +117,9 @@ export default function CirclePlotTest(props) {
   useEffect(() => {
     zoomRangeRef.current = zoomRange;
   }, [zoomRange]);
+  useEffect(() => {
+    tableRef.current = tableData;
+  }, [tableData]);
 
   let adjustWidth = 1;
   let minFigSize = window.innerWidth < 600 ? 450 : 535;
@@ -336,6 +341,7 @@ export default function CirclePlotTest(props) {
         setCircleB(null);
       }
       setTableData([]);
+      setCircleTableData([]);
       if (form.counterCompare > 0) {
         handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
         handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
@@ -347,6 +353,7 @@ export default function CirclePlotTest(props) {
       setCircleA(null);
       setCircleB(null);
       setTableData([]);
+      setCircleTableData([]);
       //console.log("clear circle data");
     }
   }, [form.counterCompare]);
@@ -937,40 +944,71 @@ export default function CirclePlotTest(props) {
   //if compare with chromoid => add groupA and groupB
   //if not compare, no chromoid => add circle
   //if not compare, with chromid => add data
+
   useEffect(() => {
     if (circleA !== null) {
-      setTableData([
+      setCircleTableData([
         ...circleA.loss,
         ...circleA.gain,
         ...circleA.loh,
         ...circleA.undetermined,
         ...circleA.chrx,
         ...circleA.chry,
-        ...tableData,
+        ...circleTableData,
       ]);
-    }
-  }, [circleA]);
+      // setTableData([
+      //   ...circleA.loss,
+      //   ...circleA.gain,
+      //   ...circleA.loh,
+      //   ...circleA.undetermined,
+      //   ...circleA.chrx,
+      //   ...circleA.chry,
+      //   ...tableData,
+      // ]);
+    } else setTableData([]);
+    // props.getData(circleTableData);
+  }, [circleA, form.plotType]);
   useEffect(() => {
     if (circleB !== null) {
-      setTableData([
+      setCircleTableData([
         ...circleB.loss,
         ...circleB.gain,
         ...circleB.loh,
         ...circleB.undetermined,
         ...circleB.chrx,
         ...circleB.chry,
-        ...tableData,
+        ...circleTableData,
       ]);
+      // setTableData([
+      //   ...circleB.loss,
+      //   ...circleB.gain,
+      //   ...circleB.loh,
+      //   ...circleB.undetermined,
+      //   ...circleB.chrx,
+      //   ...circleB.chry,
+      //   ...tableData,
+      // ]);
+    } else {
+      tableRef.current = [];
+      //console.log(tableRef.current, circleB);
     }
-  }, [circleB]);
+    // props.getData(circleTableData);
+  }, [circleB, form.plotType]);
 
   useEffect(() => {
     if (groupA !== null || groupB !== null) {
       setTableData([...groupA, ...groupB]);
     }
+    props.getData(tableData);
   }, [groupA, groupB]);
 
-  props.getData(tableData);
+  useEffect(() => {
+    if (form.plotType.value === "circos") {
+      console.log("whole chromosome", circleTableData);
+      props.getData(circleTableData);
+    } else props.getData(tableRef.current);
+  }, [tableData, form.plotType, circleTableData]);
+  //props.getData(tableData);
 
   return (
     <Container className="compareContainer align-middle text-center">
