@@ -160,7 +160,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <OverlayTrigger
           overlay={
             <Tooltip id="plotType_tooltip">
-              Whole chromosome displays all chromosomes, select chromosome level plot to visualize a single chromosome
+              All chromosomes displays all chromosomes, select chromosome level plot to visualize a single chromosome
             </Tooltip>
           }>
           <Select
@@ -170,7 +170,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             value={form.plotType}
             onChange={(ev) => handleSelectChange("plotType", ev)}
             options={[
-              { value: "circos", label: "Whole chromosome" },
+              { value: "circos", label: "All chromosomes" },
               { value: "static", label: "Chromosome level" },
             ]}
           />

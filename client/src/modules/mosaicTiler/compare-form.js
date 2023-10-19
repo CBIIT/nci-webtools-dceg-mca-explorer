@@ -204,7 +204,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           <OverlayTrigger
             overlay={
               <Tooltip id="plotType_tooltip">
-                Whole chromosome plot displays all chromosomes, select chromosome level plot to visualize a subset of
+                All chromosomes plot displays all chromosomes, select chromosome level plot to visualize a subset of
                 chromosomes
               </Tooltip>
             }>
@@ -215,7 +215,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               value={form.plotType}
               onChange={(ev) => handleSelectChange("plotType", ev)}
               options={[
-                { value: "circos", label: "Whole chromosome" },
+                { value: "circos", label: "All chromosomes" },
                 { value: "static", label: "Chromosome level" },
               ]}
             />

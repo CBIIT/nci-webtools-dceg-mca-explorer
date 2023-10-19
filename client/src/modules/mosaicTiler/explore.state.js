@@ -105,7 +105,7 @@ export const defaultFormState = {
     .concat({ value: "chrX", label: "X" })
     .concat({ value: "chrY", label: "Y" }),
   chrCompare: "",
-  plotType: { value: "circos", label: "Whole chromosome" },
+  plotType: { value: "circos", label: "All chromosomes" },
   submitted: false,
   chrX: false,
   chrY: false,
@@ -137,7 +137,7 @@ export const resetFormState = {
     .concat({ value: "chrY", label: "Y" }),
   chrCompare: "",
   chrSingle: "",
-  plotType: { value: "circos", label: "Whole chromosome" },
+  plotType: { value: "circos", label: "All chromosomes" },
   submitted: false,
   chrX: false,
   chrY: false,

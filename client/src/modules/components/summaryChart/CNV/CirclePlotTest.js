@@ -104,7 +104,7 @@ export default function CirclePlotTest(props) {
       : setChromesomeId(0);
   }, [form.plotType, form.chrCompare]);
   useEffect(() => {
-    if (!showChart) setForm({ ...form, plotType: { value: "circos", label: "Whole chromosome" } });
+    if (!showChart) setForm({ ...form, plotType: { value: "circos", label: "All chromosomes" } });
   }, [showChart]);
   //update compareRef when isCompare changes
   useEffect(() => {
@@ -1018,7 +1018,7 @@ export default function CirclePlotTest(props) {
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             {!form.compare ? (
               <Button variant="link" onClick={handleBack}>
-                Whole plot
+                All chromosomes plot
               </Button>
             ) : (
               <Button variant="link" onClick={handleCircosCompareBack}>
