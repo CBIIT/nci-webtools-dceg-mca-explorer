@@ -140,15 +140,15 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   }
 
   const handleFilterClear = (event) => {
-    console.log("filterclear");
+    console.log("filterclear", form);
     setCompareChecks(CompareArray);
     updateGroup();
     onClear({
       ...form,
       //groupA: [],
       //groupB: [],
-      groupA: { study: [{ value: "plco", label: "PLCO" }] },
-      groupB: { study: [{ value: "plco", label: "PLCO" }] },
+      groupA: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Types" }] },
+      groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Types" }] },
       //counterCompare: counter + 1,
     });
     //clear all reset

@@ -71,8 +71,15 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qchromosomes = request.body.chromosomes;
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
-  console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
-  let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+  console.log(request.body.types);
+  //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
+
+  let qfilter = [];
+  qtype.forEach((qt) => {
+    if (qt.value === "all") qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+    else qfilter.push(qt.label);
+  });
+
   //serach only rows which has chromosome, this will exclude plcoDenominator
   const filterString = [];
   const searchdataset = [];

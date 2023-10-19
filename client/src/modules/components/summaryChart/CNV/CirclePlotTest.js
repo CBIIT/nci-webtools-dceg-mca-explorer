@@ -88,6 +88,7 @@ export default function CirclePlotTest(props) {
   const [rangeLabel, setRangeLabel] = useState("");
   const [isinit, setIsinit] = useState(false);
   const [circleTableData, setCircleTableData] = useState([]);
+  const [circosTitle, setCircosTitle] = useState("");
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
@@ -342,6 +343,7 @@ export default function CirclePlotTest(props) {
       }
       setTableData([]);
       setCircleTableData([]);
+
       if (form.counterCompare > 0) {
         handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
         handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
@@ -410,7 +412,7 @@ export default function CirclePlotTest(props) {
         query = { ...group, chr: chromesomeId, start: form.start, end: form.end };
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
-        console.log("do query...", form.counterCompare, chromesomeId);
+        console.log("do query...", form.counterCompare, group.types);
         //const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
@@ -479,7 +481,7 @@ export default function CirclePlotTest(props) {
       setTitleA(groupTitle(form.groupA)); // + "; " + circleTitle(circleA));
       setTitleB(groupTitle(form.groupB)); // + "; " + circleTitle(circleB));
     }
-  });
+  }, [form.counterCompare]);
 
   const groupTitle = (group) => {
     let title = "";
@@ -534,18 +536,24 @@ export default function CirclePlotTest(props) {
     }
     return title.substring(0, title.length - 2);
   };
-  const circosTitle = groupTitle({
-    types: form.types,
-    sex: form.sex,
-    study: form.study,
-    ancestry: form.ancestry,
-    array: form.array,
-    smoking: form.smoking,
-    maxAge: form.maxAge,
-    minAge: form.minAge,
-    maxFraction: form.maxFraction,
-    minFraction: form.minFraction,
-  });
+
+  useEffect(() => {
+    setCircosTitle(
+      groupTitle({
+        types: form.types,
+        sex: form.sex,
+        study: form.study,
+        ancestry: form.ancestry,
+        array: form.array,
+        smoking: form.smoking,
+        maxAge: form.maxAge,
+        minAge: form.minAge,
+        maxFraction: form.maxFraction,
+        minFraction: form.minFraction,
+      })
+    );
+  }, [form.counterSubmitted]);
+
   const handleDownload = () => {
     setIsLoaded(true);
     var imageAs = document.getElementById("A");
