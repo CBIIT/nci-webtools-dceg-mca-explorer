@@ -75,10 +75,16 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
 
   let qfilter = [];
-  qtype.forEach((qt) => {
-    if (qt.value === "all") qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined"];
-    else qfilter.push(qt.label);
-  });
+  if (qtype !== undefined) {
+    qtype.forEach((qt) => {
+      if (qt.value != "all") {
+        qfilter.push(qt.label);
+      }
+    });
+  }
+  if (qfilter.length === 0) {
+    qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+  }
 
   //serach only rows which has chromosome, this will exclude plcoDenominator
   const filterString = [];
