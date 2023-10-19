@@ -64,8 +64,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const { logger } = request.app.locals;
   const qdataset = request.body.dataset;
   const qsex = request.body.sex;
-  const qmincf = request.body.mincf ? request.body.mincf : 0;
-  const qmaxcf = request.body.maxcf ? request.body.maxcf : 1;
+  const qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : 0;
+  const qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : 1;
+  console.log(qmincf, qmaxcf);
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
   const qchromosomes = request.body.chromosomes;
@@ -140,12 +141,13 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   //query ancestry
   let ancestryarr = [];
   if (qancestry !== undefined && qancestry.length > 0) {
+    console.log(qancestry);
     qancestry.forEach((a) => {
-      if (a.value === "all") {
-        AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
-      } else ancestryarr.push(a.value);
+      if (a.value !== "all") {
+        ancestryarr.push(a.value);
+      }
     });
-    // if (datasets.includes("plco")) {
+    // if (datasets.includes("plco")) {  AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
     //   searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
     // }
   }
@@ -168,6 +170,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
   }
+  ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
   filterString.push({ terms: { "type.keyword": qfilter } });
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qstart, qend);
   const client = new Client({

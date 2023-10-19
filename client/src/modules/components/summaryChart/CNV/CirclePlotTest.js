@@ -343,7 +343,7 @@ export default function CirclePlotTest(props) {
       }
       setTableData([]);
       setCircleTableData([]);
-
+      console.log(form);
       if (form.counterCompare > 0) {
         handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
         handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
@@ -416,6 +416,7 @@ export default function CirclePlotTest(props) {
         //const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
+        console.log(group);
         const dataset = [...group.study, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""];
         response = await axios.post("api/opensearch/mca", {
           dataset: dataset,
@@ -1012,7 +1013,7 @@ export default function CirclePlotTest(props) {
 
   useEffect(() => {
     if (form.plotType.value === "circos") {
-      console.log("whole chromosome", circleTableData);
+      //console.log("whole chromosome", circleTableData);
       props.getData(circleTableData);
     } else props.getData(tableRef.current);
   }, [tableData, form.plotType, circleTableData]);
