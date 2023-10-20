@@ -269,11 +269,19 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       </Form.Group>
 
       <Accordion>
+        {/* <Accordion.Item eventKey="0"> */}
+
         <Accordion.Item eventKey="0">
           <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
             Advanced settings
           </Accordion.Header>
-          <Accordion.Body>
+          <Accordion.Body
+            style={{
+              backgroundColor: "white",
+              border: "thin solid #dcdcdc",
+              boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
+              padding: "10px",
+            }}>
             <Form.Group className="mb-3" controlId="array">
               <Form.Label>Genotyping Array</Form.Label>
               <Select

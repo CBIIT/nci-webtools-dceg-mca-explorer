@@ -100,11 +100,8 @@ function SingleChromosome(props) {
         setZoomHistory((prevHistory) => [...prevHistory, event]);
       }
     }
-    if (
-      event !== undefined &&
-      (event["autorange"] || event["autosize"] || event["xaxis.autorange"] || event["xaxis.autosize"])
-    ) {
-      console.log("reset to initial");
+    if (event !== undefined && (event["xaxis.autorange"] || event["xaxis.autosize"])) {
+      console.log("reset to initial", zoomHistory.length);
       setZoomHistory([]);
     }
     // if (event !== undefined) setZoomHistory([]);

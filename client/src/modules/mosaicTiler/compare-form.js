@@ -291,9 +291,15 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
             <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
               Choose more attributes
             </Accordion.Header>
-            <Accordion.Body>
+            <Accordion.Body
+              style={{
+                backgroundColor: "white",
+                border: "thin solid #dcdcdc",
+                boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
+                padding: "10px",
+              }}>
               <Form.Label></Form.Label>
-              <Card style={{ backgroundColor: "#f8f8f8" }}>
+              <Card>
                 {compareChecks.map((ck) => {
                   //do not display study and types in the selection panel
                   //if plot type is circos, do not show range option
@@ -322,6 +328,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
+        <br></br>
         <ComparePanel
           id="groupA"
           compareItem={compareChecks}
