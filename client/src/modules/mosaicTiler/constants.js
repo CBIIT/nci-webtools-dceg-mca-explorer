@@ -9,19 +9,19 @@ export const AncestryOptions = [
 ];
 
 export const CompareArray = [
-  { id: 1, value: "array", label: " Genotype Array", isChecked: false },
-  { id: 2, value: "sex", label: " Genotype Sex", isChecked: false },
-  { id: 3, value: "age", label: " Age", isChecked: false },
-  { id: 4, value: "ancestry", label: " Ancestry", isChecked: false },
-  { id: 5, value: "study", label: " Study", isChecked: true },
-  { id: 6, value: "cf", label: " Cellular Fraction", isChecked: false },
-  { id: 7, value: "smoking", label: " Smoking Status", isChecked: false },
-  { id: 8, value: "types", label: " Copy Number State", isChecked: true },
-  { id: 9, value: "range", label: " Range", isChecked: false },
+  { id: 1, value: "array", label: " Genotype Array", isChecked: false, order: 3 },
+  { id: 2, value: "sex", label: " Genotype Sex", isChecked: false, order: 4 },
+  { id: 3, value: "age", label: " Age", isChecked: false, order: 5 },
+  { id: 4, value: "ancestry", label: " Ancestry", isChecked: false, order: 6 },
+  { id: 5, value: "study", label: " Study", isChecked: true, order: 1 },
+  { id: 6, value: "cf", label: " Cellular Fraction", isChecked: false, order: 7 },
+  { id: 7, value: "smoking", label: " Smoking Status", isChecked: false, order: 8 },
+  { id: 8, value: "types", label: " Copy Number State", isChecked: true, order: 2 },
+  { id: 9, value: "range", label: " Range", isChecked: false, order: 9 },
 ];
 
 export const TypeStateOptions = [
-  { value: "all", label: "All Types" },
+  { value: "all", label: "All Event Types" },
   { value: "loh", label: "CN-LOH" },
   { value: "loss", label: "Loss" },
   { value: "gain", label: "Gain" },

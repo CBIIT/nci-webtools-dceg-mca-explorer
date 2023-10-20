@@ -14,16 +14,18 @@ export default function ComparePanel(props) {
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
-  const [types, setTypes] = useState([{ value: "all", label: "All Types" }]);
+  const [types, setTypes] = useState([TypeStateOptions[0]]);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
-  const [compareform, setCompareForm] = useState({ study: study });
+  const [compareform, setCompareForm] = useState({ study: study, types: types });
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
 
+  //reset
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
+    handleSelectChange("types", [TypeStateOptions[0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
     //console.log("&&&&", StudyOptions[0], compareform);
   }, [props.onReset]);
@@ -173,6 +175,56 @@ export default function ComparePanel(props) {
           showBorder ? { border: "thin solid #dcdcdc", boxShadow: "0px 2px 4px rgba(0,0,0,0.2)", padding: "2px" } : {}
         }>
         <Container>
+          {/* <Form.Group className="mb-3" controlId="algorithm">
+        <Form.Label>Detection Algorithm</Form.Label>
+        <Select
+          placeholder="No algorithm selected"
+          name="algorithm"
+          isMulti={true}
+          value={form.algorithm}
+          onChange={(ev) => handleSelectChange("algorithm", ev)}
+          options={[{ value: "test", label: "Placeholder" }]}
+        />
+      </Form.Group> */}
+          {props.compareItem[4].isChecked ? (
+            <Form.Group className="mb-3">
+              <Form.Label>Study</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="study"
+                aria-label={props.name + "study"}
+                id={props.name + "study"}
+                isMulti={true}
+                value={study}
+                onChange={(ev) => handleSelectChange("study", ev)}
+                options={[
+                  { value: "plco", label: "PLCO" },
+                  { value: "ukbb", label: "UK Biobank" },
+                ]}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+          {props.compareItem[7].isChecked ? (
+            <Form.Group className="mb-3" controlId="types">
+              <Form.Label className="required">Copy Number State</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="types"
+                id={props.name + "types"}
+                aria-label={props.name + "types"}
+                isMulti={true}
+                value={types}
+                onChange={(ev) => handleSelectChange("types", ev)}
+                options={TypeStateOptions}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
           {props.compareItem[0].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Genotyping Array</Form.Label>
@@ -194,17 +246,6 @@ export default function ComparePanel(props) {
           ) : (
             ""
           )}
-          {/* <Form.Group className="mb-3" controlId="algorithm">
-        <Form.Label>Detection Algorithm</Form.Label>
-        <Select
-          placeholder="No algorithm selected"
-          name="algorithm"
-          isMulti={true}
-          value={form.algorithm}
-          onChange={(ev) => handleSelectChange("algorithm", ev)}
-          options={[{ value: "test", label: "Placeholder" }]}
-        />
-      </Form.Group> */}
           {props.compareItem[1].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Genotype Sex</Form.Label>
@@ -277,27 +318,7 @@ export default function ComparePanel(props) {
           ) : (
             ""
           )}
-          {props.compareItem[4].isChecked ? (
-            <Form.Group className="mb-3">
-              <Form.Label>Study</Form.Label>
-              <Select
-                placeholder="- Select -"
-                name="study"
-                aria-label={props.name + "study"}
-                id={props.name + "study"}
-                isMulti={true}
-                value={study}
-                onChange={(ev) => handleSelectChange("study", ev)}
-                options={[
-                  { value: "plco", label: "PLCO" },
-                  { value: "ukbb", label: "UK Biobank" },
-                ]}
-                classNamePrefix="select"
-              />
-            </Form.Group>
-          ) : (
-            ""
-          )}
+
           {props.compareItem[5].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
@@ -353,24 +374,7 @@ export default function ComparePanel(props) {
           ) : (
             ""
           )}
-          {props.compareItem[7].isChecked ? (
-            <Form.Group className="mb-3" controlId="types">
-              <Form.Label className="required">Copy Number State</Form.Label>
-              <Select
-                placeholder="- Select -"
-                name="types"
-                id={props.name + "types"}
-                aria-label={props.name + "types"}
-                isMulti={true}
-                value={types}
-                onChange={(ev) => handleSelectChange("types", ev)}
-                options={TypeStateOptions}
-                classNamePrefix="select"
-              />
-            </Form.Group>
-          ) : (
-            ""
-          )}
+
           {/* {props.compareItem[8].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Range</Form.Label>

@@ -409,14 +409,22 @@ export default function CirclePlotTest(props) {
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
-        query = { ...group, chr: chromesomeId, start: form.start, end: form.end };
+        query = {
+          ...group,
+          chr: chromesomeId,
+          start: form.start,
+          end: form.end,
+          mincf: group.minFraction,
+          maxcf: group.maxFraction,
+        };
+        console.log(query);
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
         console.log("do query...", form.counterCompare, group.types);
         //const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
-        console.log(group);
+        // console.log(group);
         const dataset = [...group.study, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""];
         response = await axios.post("api/opensearch/mca", {
           dataset: dataset,
@@ -533,6 +541,9 @@ export default function CirclePlotTest(props) {
         group.types.forEach((s) => {
           title += s.label + ", ";
         });
+      }
+      if (group.types === undefined) {
+        title += "All Event Types, ";
       }
     }
     return title.substring(0, title.length - 2);
@@ -880,12 +891,12 @@ export default function CirclePlotTest(props) {
 
   const handleZoomInitial = () => {
     //setIsinit(true);
-    let resetBtnA = null;
-    let resetBtnB = null;
-    resetBtnA = document.querySelectorAll('#A a[data-val*="auto"')[0];
-    resetBtnB = document.querySelectorAll('#B a[data-val*="auto"]')[0];
-    resetBtnB.click();
-    resetBtnA.click();
+    const resetBtnA = document.querySelectorAll('#A a[data-val*="auto"]')[0];
+    const resetBtnB = document.querySelectorAll('#B a[data-val*="auto"]')[0];
+    const resetBtnOne = document.querySelectorAll('#One a[data-val*="auto"]')[0];
+    if (resetBtnA !== undefined) resetBtnA.click();
+    if (resetBtnB !== undefined) resetBtnB.click();
+    if (resetBtnOne !== undefined) resetBtnOne.click();
   };
 
   const handleZoomHistory = (zoomHistory) => {
@@ -1026,29 +1037,27 @@ export default function CirclePlotTest(props) {
         <div>
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             {!form.compare ? (
-              <Button variant="link" onClick={handleBack}>
-                All chromosomes plot
+              <Button variant="link" style={{ padding: "2px" }} onClick={handleBack}>
+                All chromosomes &#8592;
               </Button>
             ) : (
-              <Button variant="link" onClick={handleCircosCompareBack}>
-                Back to circos compare
+              <Button variant="link" style={{ padding: "2px " }} onClick={handleCircosCompareBack}>
+                Back to circos compare &#8592;
               </Button>
             )}
             {rangeLabel ? (
               <>
-                &#8592;
-                <Button variant="link" onClick={handleZoomInitial}>
-                  Chr{chromesomeId}
+                <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomInitial}>
+                  Chr{chromesomeId} &#8592;
                 </Button>
               </>
             ) : (
               ""
             )}
-            {zoomRange ? <>&#8592;</> : ""}
-
-            <Button variant="link" onClick={handleZoomback}>
+            <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomback}>
               {zoomRange}
             </Button>
+            {zoomRange ? <>&#8592;</> : ""}
           </div>
           <p>{rangeLabel ? rangeLabel : "Chr" + chromesomeId}</p>
           {form.compare && form.counterCompare > 0 && (

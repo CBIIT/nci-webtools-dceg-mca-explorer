@@ -308,8 +308,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const ancestry = group.ancestry;
     const maxAge = group.maxAge;
     const minAge = group.minAge;
-    const maxcf = group.maxFraction;
-    const mincf = group.minFraction;
+    const maxcf = Number(group.maxcf) / 100.0;
+    const mincf = Number(group.mincf) / 100.0;
     const types = group.types;
     const start = group.start ? Number(group.start) : 0;
     const end = group.end ? Number(group.end) : 9999999999;
@@ -327,32 +327,34 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       queryString.push({ match: { "type.keyword": "mLOX" } });
     } else queryString.push({ match: { chromosome: "chr" + chromesome } });
 
-    if (study !== undefined && study.length > 0) queryString.push({ terms: { dataset: parseQueryStr(study) } });
+    if (study !== undefined && study.length > 0)
+      queryString.push({ terms: { dataset: parseQueryStr("study", study) } });
     //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
     if (sex !== undefined && sex.length > 0)
-      queryString.push({ terms: { "computedGender.keyword": parseQueryStr(sex) } });
+      queryString.push({ terms: { "computedGender.keyword": parseQueryStr("sex", sex) } });
     //add query for ancestry
     let atemp = [];
     if (ancestry !== undefined) {
       ancestry.forEach((a) => {
-        atemp.push(a.value);
+        if (a.value !== "all") atemp.push(a.value);
       });
-      queryString.push({ terms: { "ancestry.keyword": atemp } });
+      if (atemp.length > 0) queryString.push({ terms: { "ancestry.keyword": atemp } });
     }
     atemp = [];
     //add query for types
     if (types !== undefined) {
       types.forEach((t) => {
-        atemp.push(t.label);
+        if (t.value !== "all") atemp.push(t.label);
+        else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
       });
-      queryString.push({ terms: { "type.keyword": atemp } });
     }
+    if (atemp.length === 0) atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+    queryString.push({ terms: { "type.keyword": atemp } });
     //add query for cf
     //query cf within the range, add query range in filter
     if (mincf !== undefined || maxcf !== undefined) {
       if (mincf === undefined) mincf = "0";
       if (maxcf === undefined) maxcf = "1";
-
       queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
 
@@ -418,7 +420,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   }
 });
 
-const parseQueryStr = (query) => {
+const parseQueryStr = (name, query) => {
   // query.forEach((e) => {
   //   e.value === "male" ? sexarr.push("M") : "";
   //   e.value === "female" ? sexarr.push("F") : "";
@@ -428,6 +430,14 @@ const parseQueryStr = (query) => {
     if (e.value === "male" || e.value === "female") {
       values.push(e.value.substring(0, 1).toUpperCase());
     } else values.push(e.value);
+    if (e.value === "all") {
+      if (name === "sex") {
+        values.push("M");
+        values.push("F");
+      } else if (name === "ancestry") {
+        values.push();
+      }
+    }
   });
   console.log(values);
   return values;

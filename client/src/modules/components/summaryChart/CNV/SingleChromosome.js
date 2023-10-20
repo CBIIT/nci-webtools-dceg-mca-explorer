@@ -170,6 +170,7 @@ function SingleChromosome(props) {
   );
   //console.log(props.data);
   props.data.forEach((element, index) => {
+    //console.log(index);
     data1.push(element.start);
     data2.push(element.length);
     types.push(element.type);

@@ -147,8 +147,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       ...form,
       //groupA: [],
       //groupB: [],
-      groupA: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Types" }] },
-      groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Types" }] },
+      groupA: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
+      groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
       //counterCompare: counter + 1,
     });
     //clear all reset
@@ -180,6 +180,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       }
       return ck;
     });
+    //updatedComparecheck.sort((a, b) => a.order - b.order);
+
     setCompareChecks(updatedComparecheck);
   };
   // useEffect(() => {
@@ -284,19 +286,13 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           </Form.Group>
         )}
         <hr></hr>
-        <ComparePanel
-          id="groupA"
-          compareItem={compareChecks}
-          name="A"
-          onCompareChange={handlegroupChange}
-          onReset={resetCounter}></ComparePanel>
         <Accordion style={{ paddingTop: "5px" }}>
           <Accordion.Item eventKey="0">
             <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
-              Advanced settings
+              Choose more attributes
             </Accordion.Header>
             <Accordion.Body>
-              <Form.Label>Choose attributes:</Form.Label>
+              <Form.Label></Form.Label>
               <Card style={{ backgroundColor: "#f8f8f8" }}>
                 {compareChecks.map((ck) => {
                   //do not display study and types in the selection panel
@@ -327,45 +323,19 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           </Accordion.Item>
         </Accordion>
         <ComparePanel
+          id="groupA"
+          compareItem={compareChecks}
+          name="A"
+          onCompareChange={handlegroupChange}
+          onReset={resetCounter}></ComparePanel>
+        <br></br>
+        <ComparePanel
           id="groupB"
           compareItem={compareChecks}
           name="B"
           onCompareChange={handlegroupChange}
           onReset={resetCounter}></ComparePanel>
-        <Accordion style={{ paddingTop: "5px" }}>
-          <Accordion.Item eventKey="0">
-            <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
-              Advanced settings
-            </Accordion.Header>
-            <Accordion.Body>
-              <Form.Label>Choose attributes:</Form.Label>
-              <Card style={{ backgroundColor: "#f8f8f8" }}>
-                {compareChecks.map((ck) => {
-                  //do not display study in the selection panel
-                  if (
-                    ck.value !== "study" &&
-                    ck.value !== "types" &&
-                    ck.value !== "range" &&
-                    (form.plotType.value === "circos" ? ck.value !== "range" : true)
-                  ) {
-                    return (
-                      <div key={ck.id}>
-                        <label>
-                          <input
-                            type="checkbox"
-                            checked={ck.isChecked}
-                            onChange={() => handleCompareCheckboxChange(ck.id)}
-                          />
-                          {ck.label}
-                        </label>
-                      </div>
-                    );
-                  } else return null;
-                })}
-              </Card>
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
+
         <br></br>
         <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <Button
