@@ -320,12 +320,13 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //serach only rows which has chromosome, this will exclude plcoDenominator
     //queryString.push({ terms: { "type.keyword": qfilter } });
     if (chromesome === "Y") {
-      queryString.push({ match: { "type.keyword": "mLOY" } });
+      queryString.push({ terms: { "type.keyword": ["mLOY"] } });
       queryString.push({ match: { chromosome: "chrX" } });
     } else if (chromesome === "X") {
       queryString.push({ match: { chromosome: "chrX" } });
-      queryString.push({ match: { "type.keyword": "mLOX" } });
+      queryString.push({ terms: { "type.keyword": ["mLOX"] } });
     } else queryString.push({ match: { chromosome: "chr" + chromesome } });
+    console.log(queryString);
 
     if (study !== undefined && study.length > 0)
       queryString.push({ terms: { dataset: parseQueryStr("study", study) } });
@@ -345,7 +346,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     if (types !== undefined) {
       types.forEach((t) => {
         if (t.value !== "all") atemp.push(t.label);
-        else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+        else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
       });
     }
     if (atemp.length === 0) atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
