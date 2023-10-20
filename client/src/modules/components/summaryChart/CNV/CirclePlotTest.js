@@ -518,8 +518,8 @@ export default function CirclePlotTest(props) {
       }
       if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "CF(" + group.minFraction + "-" + group.maxFraction + "), ";
-        else title += "CF(0-" + group.maxAge + "), ";
+          title += "CF(" + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0 + "), ";
+        else title += "CF(0-" + group.maxFraction + "), ";
       }
       if (group.smoking !== undefined) {
         title += "Smoking(";
@@ -882,10 +882,10 @@ export default function CirclePlotTest(props) {
     //setIsinit(true);
     let resetBtnA = null;
     let resetBtnB = null;
-    resetBtnA = document.querySelectorAll('a[data-val*="auto"]')[0];
-    resetBtnB = document.querySelectorAll('a[data-val*="auto"]')[1];
-    resetBtnA.click();
+    resetBtnA = document.querySelectorAll('#A a[data-val*="auto"')[0];
+    resetBtnB = document.querySelectorAll('#B a[data-val*="auto"]')[0];
     resetBtnB.click();
+    resetBtnA.click();
   };
 
   const handleZoomHistory = (zoomHistory) => {
