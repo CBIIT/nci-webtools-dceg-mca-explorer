@@ -529,7 +529,7 @@ export default function CirclePlotTest(props) {
           title += "CF(" + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0 + "), ";
         else title += "CF(0-" + group.maxFraction + "), ";
       }
-      if (group.smoking !== undefined) {
+      if (group.smoking !== undefined && group.smoking.length > 0) {
         title += "Smoking(";
         group.smoking.forEach((s, index) => {
           title += s.label;
@@ -543,7 +543,7 @@ export default function CirclePlotTest(props) {
         });
       }
       if (group.types === undefined) {
-        title += "All Event Types, ";
+        title += "All Copy Number Types, ";
       }
     }
     return title.substring(0, title.length - 2);
