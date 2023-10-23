@@ -188,7 +188,7 @@ export default function ComparePanel(props) {
       </Form.Group> */}
           {props.compareItem[4].isChecked ? (
             <Form.Group className="mb-3">
-              <Form.Label>Study</Form.Label>
+              <Form.Label className="required">Study</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="study"

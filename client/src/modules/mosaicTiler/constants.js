@@ -21,7 +21,7 @@ export const CompareArray = [
 ];
 
 export const TypeStateOptions = [
-  { value: "all", label: "All Event Types" },
+  { value: "all", label: "All Copy Number Types" },
   { value: "loh", label: "CN-LOH" },
   { value: "loss", label: "Loss" },
   { value: "gain", label: "Gain" },
