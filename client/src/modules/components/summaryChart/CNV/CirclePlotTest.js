@@ -7,6 +7,7 @@ import SingleChromosome from "./SingleChromosome";
 import { Row, Col, Button, Container } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
+import Legend from "../../../components/legend";
 
 import axios from "axios";
 import CircosPlot from "./CirclePlot";
@@ -67,6 +68,7 @@ export default function CirclePlotTest(props) {
   const [groupB, setGroupB] = useState([]);
   const [titleA, setTitleA] = useState("A");
   const [titleB, setTitleB] = useState("B");
+  const [commonTitle, setCommonTitle] = useState("Test");
   const [circleA, setCircleA] = useState(null);
   const [circleB, setCircleB] = useState(null);
   const [tableData, setTableData] = useState([]);
@@ -492,58 +494,68 @@ export default function CirclePlotTest(props) {
     }
   }, [form.counterCompare]);
 
-  const groupTitle = (group) => {
-    let title = "";
-    if (group != undefined) {
-      if (group.study !== undefined) {
-        if (!Array.isArray(group.study)) {
-          title += group.study.label + ", ";
-        } else {
-          group.study.forEach((s) => {
-            title += s.label + ", ";
-          });
+  useEffect(() => {
+    setCommonTitle(checkGroupTitleForDup());
+  }, [titleA, titleB]);
+  const checkGroupTitleForDup = () => {
+    let titleGroup = "";
+
+    for (let key in form.groupA) {
+      console.log(form.groupA[key], form.groupB[key]);
+      let itemA = form.groupA[key];
+      let itemB = form.groupB[key];
+      let itemTitle = "";
+
+      if (Array.isArray(itemA) && itemA.length === itemB.length) {
+        itemTitle = key.toUpperCase() + ": ";
+        for (let i = 0; i < itemA.length; i++) {
+          if (itemA[i].value !== itemB[i].value) {
+            itemTitle = "";
+            break;
+          } else {
+            itemTitle += itemA[i].label;
+          }
         }
       }
-      if (group.sex !== undefined) {
-        group.sex.forEach((s) => {
-          title += s.label + ", ";
-        });
+      titleGroup += itemTitle + " ";
+    }
+    console.log(titleA, titleB, titleGroup);
+    setTitleA(titleA.replace(titleGroup.trim(), ""));
+    setTitleB(titleB.replace(titleGroup.trim(), ""));
+    return titleGroup;
+  };
+
+  const groupTitle = (group) => {
+    let title = "";
+    //console.log(group);
+    for (let key in group) {
+      const values = group[key];
+      if (values !== undefined) {
+        if (typeof values === "object") {
+          title += key.toUpperCase() + ": ";
+          values.forEach((s) => {
+            title += s.label + ", ";
+          });
+          title = title.slice(0, -2) + "; ";
+        } else {
+        }
       }
-      if (group.array !== undefined) {
-        group.array.forEach((s) => {
-          title += s.label + ", ";
-        });
-      }
-      if (group.ancestry !== undefined) {
-        group.ancestry.forEach((s) => {
-          title += s.label + ", ";
-        });
-      }
+    }
+    if (group != undefined) {
       if (group.maxAge !== undefined && group.maxAge !== "") {
         if (group.minAge !== undefined && group.minAge !== "")
-          title += "Age(" + group.minAge + "-" + group.maxAge + "), ";
-        else title += "Age(0-" + group.maxAge + "), ";
+          title += "Age: " + group.minAge + "-" + group.maxAge + "; ";
+        else title += "Age: 0-" + group.maxAge + "; ";
       }
       if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "CF(" + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0 + "), ";
-        else title += "CF(0-" + group.maxFraction + "), ";
+          title += "CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0 + "; ";
+        else title += "CF: 0-" + group.maxFraction + "; ";
       }
-      if (group.smoking !== undefined && group.smoking.length > 0) {
-        title += "Smoking(";
-        group.smoking.forEach((s, index) => {
-          title += s.label;
-          if (index < group.smoking.length - 1) title += ",";
-        });
-        title += "), ";
-      }
-      if (group.types !== undefined) {
-        group.types.forEach((s) => {
-          title += s.label + ", ";
-        });
-      }
+
       if (group.types === undefined) {
-        title += "All Copy Number Types, ";
+        title += "Event Type: ";
+        title += "All Event Types; ";
       }
     }
     return title.substring(0, title.length - 2);
@@ -1059,18 +1071,27 @@ export default function CirclePlotTest(props) {
             </Button>
             {zoomRange ? <>&#8592;</> : ""}
           </div>
-          <p>{rangeLabel ? rangeLabel : "Chr" + chromesomeId}</p>
+
           {form.compare && form.counterCompare > 0 && (
             <>
-              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-                {isLoaded ? (
-                  <p>Downloading...</p>
-                ) : (
-                  <Button variant="link" onClick={handleDownload}>
-                    Download comparison images
-                  </Button>
-                )}
-              </div>
+              <Row>
+                <Col className="d-flex" style={{ alignItems: "center" }}>
+                  <Legend></Legend>
+                </Col>
+                <Col>
+                  {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
+                  <br></br> {commonTitle}
+                </Col>
+                <Col className="d-flex" style={{ justifyContent: "flex-end" }}>
+                  {isLoaded ? (
+                    <p>Downloading...</p>
+                  ) : (
+                    <Button variant="link" onClick={handleDownload}>
+                      Download comparison images
+                    </Button>
+                  )}
+                </Col>
+              </Row>
               <Row className="">
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>
@@ -1111,22 +1132,32 @@ export default function CirclePlotTest(props) {
           )}
           {!form.compare && (
             <>
-              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-                {isLoaded ? (
-                  <p>Downloading...</p>
-                ) : (
-                  <Button variant="link" onClick={handleSingleChrDownload}>
-                    Download images
-                  </Button>
-                )}
-              </div>
+              <Row>
+                <Col className="d-flex" style={{ alignItems: "center" }}>
+                  <Legend></Legend>
+                </Col>
+                <Col xs={6} md={6} lg={6}>
+                  {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
+                  <br></br>
+                  {circosTitle}
+                </Col>
+                <Col className="d-flex" style={{ justifyContent: "flex-end" }}>
+                  {isLoaded ? (
+                    <p>Downloading...</p>
+                  ) : (
+                    <Button variant="link" onClick={handleSingleChrDownload}>
+                      Download images
+                    </Button>
+                  )}
+                </Col>
+              </Row>
               <Row className="">
                 <Col lg={12}>
                   <SingleChromosome
                     onZoomChange={handleZoomChange}
                     data={data}
                     details={"One"}
-                    title={circosTitle}
+                    title={""}
                     chromesomeId={chromesomeId}
                     size={singleChromeSize}
                     zoomHistory={handleZoomHistory}
@@ -1139,24 +1170,23 @@ export default function CirclePlotTest(props) {
       ) : form.compare ? (
         // <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
         <div>
-          {/* {form.submitted ? (
-            <Button variant="link" onClick={handleBack} className="">
-              Back to circos plot
-            </Button>
-          ) : (
-            ""
-          )} */}
-          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            {isLoaded ? (
-              <p>Downloading...</p>
-            ) : circleA ? (
-              <Button variant="link" onClick={handlecircleDownload}>
-                Download comparison images
-              </Button>
-            ) : (
-              ""
-            )}
-          </div>
+          <Row>
+            <Col className="d-flex" style={{ alignItems: "center" }}>
+              <Legend></Legend>
+            </Col>
+            <Col style={{ alignItems: "center" }}>{commonTitle}</Col>
+            <Col className="d-flex" style={{ justifyContent: "flex-end", alignItems: "center" }}>
+              {isLoaded ? (
+                <p>Downloading...</p>
+              ) : circleA ? (
+                <Button variant="link" onClick={handlecircleDownload}>
+                  Download comparison images
+                </Button>
+              ) : (
+                ""
+              )}
+            </Col>
+          </Row>
           <div>
             <Row className="justify-content-center g-0">
               <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
@@ -1208,16 +1238,20 @@ export default function CirclePlotTest(props) {
         </div>
       ) : (
         <div>
-          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            {isLoaded ? (
-              <p>Downloading...</p>
-            ) : (
-              <Button variant="link" onClick={handleSummaryDownload} style={{ justifyContent: "flex-end" }}>
-                Download image
-              </Button>
-            )}
-          </div>
-
+          <Row>
+            <Col className="d-flex" style={{ alignItems: "center" }}>
+              <Legend></Legend>
+            </Col>
+            <Col className="d-flex" style={{ justifyContent: "flex-end" }}>
+              {isLoaded ? (
+                <p>Downloading...</p>
+              ) : (
+                <Button variant="link" onClick={handleSummaryDownload} style={{ justifyContent: "flex-end" }}>
+                  Download image
+                </Button>
+              )}
+            </Col>
+          </Row>
           <Row className="justify-content-center">
             <Col xs={12} md={12} lg={12} style={{ width: size, height: size + 15 }}>
               <CircosPlot

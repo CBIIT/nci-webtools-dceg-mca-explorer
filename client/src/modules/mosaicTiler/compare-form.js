@@ -147,8 +147,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       ...form,
       //groupA: [],
       //groupB: [],
-      groupA: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Copy Number Types" }] },
-      groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Copy Number Types" }] },
+      groupA: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
+      groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
       //counterCompare: counter + 1,
     });
     //clear all reset

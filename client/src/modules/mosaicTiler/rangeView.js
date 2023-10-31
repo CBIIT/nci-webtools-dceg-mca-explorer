@@ -350,12 +350,11 @@ export default function RangeView(props) {
             ""
           )}
           <div className="">
-            <Row>
-              {/* <Col className="col col-xl-3 col-lg-3 col-md-3 col-sm-1"></Col> */}
+            {/* <Row>
               <Col className="col col-xl-12 d-flex justify-content-end ">
                 <Legend></Legend>
               </Col>
-            </Row>
+            </Row> */}
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
                 <CirclePlotTest

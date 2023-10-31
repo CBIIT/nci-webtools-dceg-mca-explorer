@@ -29,6 +29,7 @@ export default function ComparePanel(props) {
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
     //console.log("&&&&", StudyOptions[0], compareform);
   }, [props.onReset]);
+
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
@@ -129,8 +130,15 @@ export default function ComparePanel(props) {
     //props.compareItem.forEach((element) => {
     if (compareform !== undefined) {
       for (const element of props.compareItem) {
+        //console.log(element);
         if (element.isChecked) {
-          updatedcompareform[element.value] = compareform[element.value];
+          if (element.value === "age") {
+            updatedcompareform["minAge"] = compareform["minAge"];
+            updatedcompareform["maxAge"] = compareform["maxAge"];
+          } else if (element.value === "cf") {
+            updatedcompareform["minFraction"] = compareform["minFraction"];
+            updatedcompareform["maxFraction"] = compareform["maxFraction"];
+          } else updatedcompareform[element.value] = compareform[element.value];
         }
         if (!element.isChecked) {
           if (element.label === " Study") {
@@ -140,14 +148,17 @@ export default function ComparePanel(props) {
           } else if (element.label === " Genotype Sex") {
             setSex([]);
           } else if (element.label === " Age") {
-            setMinAge(0);
-            setMaxAge(0);
+            setMinAge("0");
+            setMaxAge("0");
           } else if (element.label === " Ancestry") {
             setAncestry([]);
           } else if (element.label === " Smoking Status") {
             setSmoking([]);
           } else if (element.label === " Copy Number State") {
             setTypes(null);
+          } else if (element.label === " Cellular Fraction") {
+            setMaxFraction("0");
+            setMinFraction("0");
           }
         }
       }
