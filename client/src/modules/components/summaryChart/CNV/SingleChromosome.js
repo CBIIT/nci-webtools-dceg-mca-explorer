@@ -298,7 +298,7 @@ function SingleChromosome(props) {
 
   return (
     <>
-      <div xs={12} md={6} lg={6} className="" style={{ justifyContent: "center" }}>
+      <div xs={12} md={6} lg={6} className="" style={{ justifyContent: "center", fontSize: "14px" }}>
         {props.title}
         {props.title && <br></br>}
         <Button id={btnid} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">

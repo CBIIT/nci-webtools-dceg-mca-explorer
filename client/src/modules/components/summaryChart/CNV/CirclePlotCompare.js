@@ -19,7 +19,7 @@ export default function CircosPlot(props) {
   const layoutxy = props.layoutxy;
   return (
     <div style={{ justifyContent: "center" }}>
-      {props.title}
+      <div style={{ fontSize: "14px" }}>{props.title}</div>
       <div style={{ position: "absolute" }}>
         <Circos
           layout={layoutxy}

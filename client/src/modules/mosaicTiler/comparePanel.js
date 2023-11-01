@@ -55,7 +55,7 @@ export default function ComparePanel(props) {
   }
 
   function handleSelectChange(name, selection = []) {
-    // console.log(name, selection);
+    console.log(name, selection);
     if (props.compareItem[4].isChecked && name === "study") {
       setStudy(selection);
     }
@@ -102,35 +102,24 @@ export default function ComparePanel(props) {
     }
 
     setCompareForm({ ...compareform, [name]: selection });
-    //console.log(compareform);
   }
 
   useEffect(() => {
     console.log("UpdateForm ", compareform);
-    //
-    if (compareform !== undefined) {
-      // if (props.name === "A") {
-      //   setForm({ ...form, groupA: { ...compareform } });
-      // } else if (props.name === "B") {
-      //   setForm({ ...form, groupB: { ...compareform } });
-      // }
 
+    if (compareform !== undefined) {
       props.onCompareChange(compareform, props.name);
-    }
-    if (compareform === undefined) {
-      if (!Array.isArray(form.groupA) && props.name === "A") {
-      }
     }
   }, [compareform]);
 
   useEffect(() => {
     //updateForm();
-    console.log("this is compare filter");
+    console.log("this is compare filter", compareform);
     const updatedcompareform = {};
+
     //props.compareItem.forEach((element) => {
     if (compareform !== undefined) {
       for (const element of props.compareItem) {
-        //console.log(element);
         if (element.isChecked) {
           if (element.value === "age") {
             updatedcompareform["minAge"] = compareform["minAge"];
@@ -138,12 +127,14 @@ export default function ComparePanel(props) {
           } else if (element.value === "cf") {
             updatedcompareform["minFraction"] = compareform["minFraction"];
             updatedcompareform["maxFraction"] = compareform["maxFraction"];
-          } else updatedcompareform[element.value] = compareform[element.value];
+          } else
+            updatedcompareform[element.value] =
+              compareform[element.value] === undefined ? [] : compareform[element.value];
         }
         if (!element.isChecked) {
           if (element.label === " Study") {
             setStudy([]);
-          } else if (element.label === " Genotype approach") {
+          } else if (element.label === " Detection Approach") {
             setApproach([]);
           } else if (element.label === " Genotype Sex") {
             setSex([]);

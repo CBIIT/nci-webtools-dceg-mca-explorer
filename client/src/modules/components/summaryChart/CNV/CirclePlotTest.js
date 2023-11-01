@@ -501,17 +501,26 @@ export default function CirclePlotTest(props) {
       let itemB = form.groupB[key];
       let itemTitle = "";
 
-      if (Array.isArray(itemA) && itemA.length === itemB.length) {
-        itemTitle = ";" + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
-        for (let i = 0; i < itemA.length; i++) {
-          if (itemA[i].value !== itemB[i].value) {
-            itemTitle = "";
-            tempA += groupTitle({ [key]: itemA });
-            tempB += groupTitle({ [key]: itemB });
-            break;
+      if (Array.isArray(itemA)) {
+        if (itemA.length === itemB.length) {
+          itemTitle = ";" + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
+          if (itemA.length > 0) {
+            for (let i = 0; i < itemA.length; i++) {
+              if (itemA[i].value !== itemB[i].value) {
+                itemTitle = "";
+                tempA += groupTitle({ [key]: itemA });
+                tempB += groupTitle({ [key]: itemB });
+                break;
+              } else {
+                itemTitle += itemA[i].label;
+              }
+            }
           } else {
-            itemTitle += itemA[i].label;
+            itemTitle += " all";
           }
+        } else {
+          tempA += groupTitle({ [key]: itemA });
+          tempB += groupTitle({ [key]: itemB });
         }
       }
       titleGroup += itemTitle;
@@ -544,18 +553,20 @@ export default function CirclePlotTest(props) {
     for (let key in group) {
       const values = group[key];
       if (values !== undefined) {
-        if (typeof values === "object" && values.length > 0) {
+        if (typeof values === "object" && Array.isArray(values) && values.length > 0) {
           title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           values.forEach((s) => {
             title += s.label + ",";
           });
           title = title.slice(0, -1);
+        } else if (typeof values === "object" && Array.isArray(values) && values.length === 0) {
+          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": all";
         }
       }
     }
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
-    return title.slice(1);
+    return title;
   };
 
   const groupAgeTitle = (group) => {
@@ -1161,7 +1172,7 @@ export default function CirclePlotTest(props) {
                 <Col xs={6} md={6} lg={6} style={{ fontSize: "14px" }}>
                   {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
                   <br></br>
-                  {circosTitle}
+                  {circosTitle.slice(1)}
                 </Col>
                 <Col className="d-flex" style={{ justifyContent: "flex-end" }}>
                   {isLoaded ? (
@@ -1267,10 +1278,18 @@ export default function CirclePlotTest(props) {
       ) : (
         <div>
           <Row className="align-items-start">
-            <Col className="d-flex" style={{ alignItems: "top" }}>
+            <Col xs={3} md={3} lg={3} className="d-flex" style={{ paddingTop: 0, border: 0 }}>
               <Legend></Legend>
             </Col>
-            <Col className="d-flex" style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+            <Col xs={6} md={6} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
+              {circosTitle.slice(1)}
+            </Col>
+            <Col
+              xs={3}
+              md={3}
+              lg={3}
+              className="d-flex"
+              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
               {isLoaded ? (
                 <p>Downloading...</p>
               ) : (
@@ -1289,7 +1308,7 @@ export default function CirclePlotTest(props) {
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
-                title={circosTitle}
+                title={""}
                 size={size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}

@@ -340,7 +340,9 @@ export default function RangeView(props) {
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
           {allValues.length == 0 && form.counterSubmitted > 0 && !form.compare ? (
-            <h6 className="d-flex mx-3">Loading and rendering...</h6>
+            <h6 className="d-flex mx-2" style={{ margin: "10px" }}>
+              Loading and rendering...
+            </h6>
           ) : (
             ""
           )}

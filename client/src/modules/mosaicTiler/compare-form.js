@@ -31,7 +31,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     ...option,
     //isChecked: form.groupA[option.value] ? true : false,
   }));
-  // console.log(initialSelection);
+
   const [compareChecks, setCompareChecks] = useState(initialSelection);
   const [compare, setCompare] = useState(false);
   const [start, setStart] = useState("");
@@ -73,14 +73,14 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    //console.log(name, selection);
+    // console.log(name, selection);
     if (name === "chrCompare") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
       setStart(0);
     }
 
-    if (name === "types" || name === "ancestry" || name === "sex") {
+    if (name === "types" || name === "ancestry" || name === "sex" || name === "approach") {
       const all = selection.find((option) => option.value === "all");
       const allindex = selection.indexOf(all);
       //if all selected, then another option select, remove all
@@ -101,6 +101,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     // if (name === "plotType") {
 
     // }
+
     mergeForm({ [name]: selection });
   }
 
@@ -184,11 +185,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
 
     setCompareChecks(updatedComparecheck);
   };
-  // useEffect(() => {
-  //   setCompare(compare);
-  //   setForm({ ...form });
-  //   console.log(compare, form);
-  // }, [compare]);
+
   const updateGroup = () => {
     setResetCounter((prevCounter) => prevCounter + 1);
   };

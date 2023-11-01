@@ -21,7 +21,7 @@ export default function CircosPlot(props) {
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
       <div className={classCircle}>
-        <div style={{ justifyContent: "flex-start" }}>{props.title}</div>
+        <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div>
         <Circos
           layout={layoutxy}
           config={{
@@ -80,7 +80,7 @@ export default function CircosPlot(props) {
         />
       </div>
       <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
-        {props.title}
+        <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div>
         <Circos
           layout={layoutAll}
           config={{
