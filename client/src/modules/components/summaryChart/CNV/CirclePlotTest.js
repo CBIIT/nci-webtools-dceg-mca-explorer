@@ -503,7 +503,7 @@ export default function CirclePlotTest(props) {
 
       if (Array.isArray(itemA)) {
         if (itemA.length === itemB.length) {
-          itemTitle = ";" + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
+          itemTitle = "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           if (itemA.length > 0) {
             for (let i = 0; i < itemA.length; i++) {
               if (itemA[i].value !== itemB[i].value) {
@@ -516,7 +516,7 @@ export default function CirclePlotTest(props) {
               }
             }
           } else {
-            itemTitle += " all";
+            itemTitle += " All";
           }
         } else {
           tempA += groupTitle({ [key]: itemA });
@@ -530,8 +530,8 @@ export default function CirclePlotTest(props) {
     let agecfB = groupAgeTitle(form.groupB);
     if (agecfA === agecfB) titleGroup += agecfA;
     else {
-      tempA += agecfA === "" ? "; Age: all" : agecfA;
-      tempB += agecfB === "" ? "; Age: all" : agecfB;
+      tempA += agecfA === "" ? "; Age: All" : agecfA;
+      tempB += agecfB === "" ? "; Age: All" : agecfB;
     }
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
@@ -560,7 +560,7 @@ export default function CirclePlotTest(props) {
           });
           title = title.slice(0, -1);
         } else if (typeof values === "object" && Array.isArray(values) && values.length === 0) {
-          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": all";
+          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": All";
         }
       }
     }

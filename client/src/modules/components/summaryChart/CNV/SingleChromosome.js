@@ -46,6 +46,7 @@ function SingleChromosome(props) {
   const [zoomHistory, setZoomHistory] = useState([]);
   const [newRange, setNewRange] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState([]);
 
   //update sizeRef when width changes
   useEffect(() => {
@@ -80,7 +81,7 @@ function SingleChromosome(props) {
       const { "xaxis.range[0]": xMin, "xaxis.range[1]": xMax } = event;
       setXMax(xMax);
       setXMin(xMin);
-      console.log(xMin, xMax);
+      //console.log(xMin, xMax);
       xMax - xMin < zoomWindow ? setLoading(true) : setLoading(false);
       //trigger synchronize another plot to zoom, make sue only trigger for one plot
       //difficient zoom in on single chromosome  or on comparison by name
@@ -165,66 +166,88 @@ function SingleChromosome(props) {
   props.data.sort((a, b) =>
     a.type === b.type ? (a.start === b.start ? b.end - a.end : a.start - b.start) : a.type.localeCompare(b.type)
   );
-  //console.log(props.data);
-  props.data.forEach((element, index) => {
-    //console.log(index);
-    data1.push(element.start);
-    data2.push(element.length);
-    types.push(element.type);
-    ydata.push(index);
-  });
-  const data = [
-    {
-      x: data1,
-      y: ydata,
-      name: "",
-      orientation: "h",
-      type: "bar",
-      marker: {
-        color: "white",
+  console.log();
+  let zoomeddata = props.data;
+
+  // zoomeddata.forEach((element, index) => {
+  //   data1.push(element.start);
+  //   data2.push(element.length);
+  //   types.push(element.type);
+  //   ydata.push(index);
+  // });
+
+  useEffect(() => {
+    // if (xMin !== undefined && xMax !== undefined)
+    //   zoomeddata = props.data.filter(
+    //     (d) => d.end < (xMin === undefined ? 0 : xMin) || d.start > (xMax === undefined ? 99999999999 : xMax)
+    //   );
+    const addeddata = props.data.length - zoomeddata.length;
+    console.log();
+    for (var i = 0; i < addeddata; i++) {
+      zoomeddata.push("");
+    }
+    console.log(zoomeddata.length);
+    zoomeddata.forEach((element, index) => {
+      data1.push(element.start);
+      data2.push(element.length);
+      types.push(element.type);
+      ydata.push(index);
+    });
+    const datatemp = [
+      {
+        x: data1,
+        y: ydata,
+        name: "",
+        orientation: "h",
+        type: "bar",
+        marker: {
+          color: "white",
+        },
       },
-    },
-    {
-      x: data2,
-      y: ydata,
-      name: "",
-      orientation: "h",
-      type: "bar",
-      marker: {
-        color: types.map((t) => {
-          if (t === "Loss") return "red";
-          else if (t === "Gain") return "green";
-          else if (t === "CN-LOH") return "blue";
-          else if (t === "Undetermined") return "#ABABAB";
-          else return "red";
+      {
+        x: data2,
+        y: ydata,
+        name: "",
+        orientation: "h",
+        type: "bar",
+        marker: {
+          color: types.map((t) => {
+            if (t === "Loss") return "red";
+            else if (t === "Gain") return "green";
+            else if (t === "CN-LOH") return "blue";
+            else if (t === "Undetermined") return "#ABABAB";
+            else return "red";
+          }),
+        },
+        hovertext: props.data.map((e) => {
+          var text =
+            "Study: " +
+            e.dataset +
+            "<br>Sample ID: " +
+            e.sampleId +
+            "<br>Start: " +
+            e.start +
+            "<br>End: " +
+            e.end +
+            "<br>Type: " +
+            e.type +
+            "<br>Cellular Fraction:" +
+            e.value +
+            "<br>Ancestry: " +
+            e.ancestry +
+            "<br>Sex: " +
+            e.computedGender +
+            "<br>Age: " +
+            e.age;
+          return text;
         }),
+        hovertemplate: "<br>%{hovertext} <extra></extra>",
       },
-      hovertext: props.data.map((e) => {
-        var text =
-          "Study: " +
-          e.dataset +
-          "<br>Sample ID: " +
-          e.sampleId +
-          "<br>Start: " +
-          e.start +
-          "<br>End: " +
-          e.end +
-          "<br>Type: " +
-          e.type +
-          "<br>Cellular Fraction:" +
-          e.value +
-          "<br>Ancestry: " +
-          e.ancestry +
-          "<br>Sex: " +
-          e.computedGender +
-          "<br>Age: " +
-          e.age;
-        return text;
-      }),
-      hovertemplate: "<br>%{hovertext} <extra></extra>",
-    },
-  ];
-  //console.log(data,types)
+    ];
+    setData(datatemp);
+  }, [xMin, xMax, props.data]);
+
+  //console.log(data1, data2, ydata);
 
   const defaultConfig = {
     displayModeBar: true,
