@@ -485,44 +485,57 @@ export default function CirclePlotTest(props) {
     else return circleTemp;
   }
   useEffect(() => {
-    if (chromesomeId > 0) {
-      setTitleA(groupTitle(form.groupA)); // + "\nTotal: " + groupA.length);
-      setTitleB(groupTitle(form.groupB)); // + "\nTotal: " + groupB.length);
-    } else {
-      setTitleA(groupTitle(form.groupA)); // + "; " + circleTitle(circleA));
-      setTitleB(groupTitle(form.groupB)); // + "; " + circleTitle(circleB));
-    }
+    setCommonTitle(checkGroupTitleForDup());
   }, [form.counterCompare]);
 
-  useEffect(() => {
-    setCommonTitle(checkGroupTitleForDup());
-  }, [titleA, titleB]);
+  // useEffect(() => {
+  //   setCommonTitle(checkGroupTitleForDup());
+  // }, [titleA, titleB]);
   const checkGroupTitleForDup = () => {
     let titleGroup = "";
-
+    let tempA = "";
+    let tempB = "";
     for (let key in form.groupA) {
-      console.log(form.groupA[key], form.groupB[key]);
+      // console.log(form.groupA[key], form.groupB[key]);
       let itemA = form.groupA[key];
       let itemB = form.groupB[key];
       let itemTitle = "";
 
       if (Array.isArray(itemA) && itemA.length === itemB.length) {
-        itemTitle = key.toUpperCase() + ": ";
+        itemTitle = ";" + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
         for (let i = 0; i < itemA.length; i++) {
           if (itemA[i].value !== itemB[i].value) {
             itemTitle = "";
+            tempA += groupTitle({ [key]: itemA });
+            tempB += groupTitle({ [key]: itemB });
             break;
           } else {
             itemTitle += itemA[i].label;
           }
         }
       }
-      titleGroup += itemTitle + " ";
+      titleGroup += itemTitle;
     }
-    console.log(titleA, titleB, titleGroup);
-    setTitleA(titleA.replace(titleGroup.trim(), ""));
-    setTitleB(titleB.replace(titleGroup.trim(), ""));
-    return titleGroup;
+
+    let agecfA = groupAgeTitle(form.groupA);
+    let agecfB = groupAgeTitle(form.groupB);
+    if (agecfA === agecfB) titleGroup += agecfA;
+    else {
+      tempA += agecfA === "" ? ";Age: all" : agecfA;
+      tempB += agecfB === "" ? ";Age: all" : agecfB;
+    }
+    agecfA = groupCfTitle(form.groupA);
+    agecfB = groupCfTitle(form.groupB);
+    if (agecfA === agecfB) titleGroup += agecfA;
+    else {
+      tempA += agecfA === "" ? ";CF: 0-1" : agecfA;
+      tempB += agecfB === "" ? ";CF: 0-1" : agecfB;
+    }
+    console.log(agecfA, agecfB);
+
+    setTitleA(tempA.slice(1));
+    setTitleB(tempB.slice(1));
+    return titleGroup.slice(1);
   };
 
   const groupTitle = (group) => {
@@ -530,35 +543,39 @@ export default function CirclePlotTest(props) {
     //console.log(group);
     for (let key in group) {
       const values = group[key];
+
       if (values !== undefined) {
         if (typeof values === "object") {
-          title += key.toUpperCase() + ": ";
+          title += ";" + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           values.forEach((s) => {
             title += s.label + ", ";
           });
-          title = title.slice(0, -2) + "; ";
-        } else {
         }
       }
     }
+    return title;
+  };
+
+  const groupAgeTitle = (group) => {
+    let title = "";
     if (group != undefined) {
       if (group.maxAge !== undefined && group.maxAge !== "") {
-        if (group.minAge !== undefined && group.minAge !== "")
-          title += "Age: " + group.minAge + "-" + group.maxAge + "; ";
-        else title += "Age: 0-" + group.maxAge + "; ";
-      }
-      if (group.maxFraction !== undefined && group.maxFraction !== "") {
-        if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0 + "; ";
-        else title += "CF: 0-" + group.maxFraction + "; ";
-      }
-
-      if (group.types === undefined) {
-        title += "Event Type: ";
-        title += "All Event Types; ";
+        if (group.minAge !== undefined && group.minAge !== "") title += ";Age: " + group.minAge + "-" + group.maxAge;
+        else title += ";Age: 0-" + group.maxAge;
       }
     }
-    return title.substring(0, title.length - 2);
+    return title;
+  };
+  const groupCfTitle = (group) => {
+    let title = "";
+    if (group != undefined) {
+      if (group.maxFraction !== undefined && group.maxFraction !== "") {
+        if (group.minFraction !== undefined && group.minFraction !== "")
+          title += ";CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0;
+        else title += ";CF: 0-" + group.maxFraction / 100.0;
+      }
+    }
+    return title;
   };
 
   useEffect(() => {
@@ -568,7 +585,7 @@ export default function CirclePlotTest(props) {
         sex: form.sex,
         study: form.study,
         ancestry: form.ancestry,
-        array: form.array,
+        approach: form.approach,
         smoking: form.smoking,
         maxAge: form.maxAge,
         minAge: form.minAge,

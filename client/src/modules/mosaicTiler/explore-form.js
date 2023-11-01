@@ -282,14 +282,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               boxShadow: "0px 2px 4px rgba(0,0,0,0.2)",
               padding: "10px",
             }}>
-            <Form.Group className="mb-3" controlId="array">
-              <Form.Label>Genotyping Array</Form.Label>
+            <Form.Group className="mb-3" controlId="approach">
+              <Form.Label>Detection Approach</Form.Label>
               <Select
                 placeholder="- Select -"
-                name="array"
+                name="approach"
                 isMulti={true}
-                value={form.array}
-                onChange={(ev) => handleSelectChange("array", ev)}
+                value={form.approach}
+                onChange={(ev) => handleSelectChange("approach", ev)}
                 options={[
                   { value: "gsa", label: "Illumina Global Screening" },
                   { value: "oncoArray", label: "Illumina OncoArray" },

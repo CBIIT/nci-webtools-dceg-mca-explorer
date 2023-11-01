@@ -5,7 +5,7 @@ import React, { useState } from "react";
 
 const formState = {
   study: [{ value: "plco", label: "PLCO" }],
-  array: "",
+  approach: "",
   sex: "",
   age: "",
   ancestry: "",
@@ -41,14 +41,14 @@ function FilterGroup() {
           options={[{ value: "plco", label: "PLCO" }]}
         />
       </Form.Group>
-      <Form.Group className="mb-3" controlId="array">
-        <Form.Label className="required">Array</Form.Label>
+      <Form.Group className="mb-3" controlId="approach">
+        <Form.Label className="required">Approach</Form.Label>
         <Select
-          placeholder="No Array selected"
-          name="array"
+          placeholder="No approach selected"
+          name="approach"
           isMulti={true}
-          value={form.array}
-          onChange={(ev) => handleSelectChange("array", ev)}
+          value={form.approach}
+          onChange={(ev) => handleSelectChange("approach", ev)}
           options=""
         />
       </Form.Group>

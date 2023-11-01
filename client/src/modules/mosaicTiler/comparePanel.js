@@ -8,7 +8,7 @@ import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions } from "./c
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
   const [study, setStudy] = useState([StudyOptions[0]]);
-  const [array, setArray] = useState([]);
+  const [approach, setApproach] = useState([]);
   const [sex, setSex] = useState([]);
   const [ancestry, setAncestry] = useState([]);
   const [minAge, setMinAge] = useState("");
@@ -61,8 +61,8 @@ export default function ComparePanel(props) {
     }
     //mergeForm({ [name]: selection });
 
-    if (props.compareItem[0].isChecked && name === "array") {
-      setArray(selection);
+    if (props.compareItem[0].isChecked && name === "approach") {
+      setApproach(selection);
     }
     if (props.compareItem[1].isChecked && name === "sex") {
       const all = selection.find((option) => option.value === "all");
@@ -143,8 +143,8 @@ export default function ComparePanel(props) {
         if (!element.isChecked) {
           if (element.label === " Study") {
             setStudy([]);
-          } else if (element.label === " Genotype Array") {
-            setArray([]);
+          } else if (element.label === " Genotype approach") {
+            setApproach([]);
           } else if (element.label === " Genotype Sex") {
             setSex([]);
           } else if (element.label === " Age") {
@@ -238,15 +238,15 @@ export default function ComparePanel(props) {
           )}
           {props.compareItem[0].isChecked ? (
             <Form.Group className="mb-3">
-              <Form.Label>Genotyping Array</Form.Label>
+              <Form.Label>Detection Approach</Form.Label>
               <Select
-                id={props.name + "array"}
-                aria-label={props.name + "array"}
+                id={props.name + "approach"}
+                aria-label={props.name + "approach"}
                 placeholder="- Select -"
-                name="array"
+                name="approach"
                 isMulti={true}
-                value={array}
-                onChange={(ev) => handleSelectChange("array", ev)}
+                value={approach}
+                onChange={(ev) => handleSelectChange("approach", ev)}
                 options={[
                   { value: "gsa", label: "Illumina Global Screening Array" },
                   { value: "oncoArray", label: "Illumina OncoArray Array" },

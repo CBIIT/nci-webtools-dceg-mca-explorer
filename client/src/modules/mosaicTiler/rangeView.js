@@ -64,7 +64,7 @@ export default function RangeView(props) {
   }, [
     form.counterSubmitted,
     //form.study,form.types,form.chrX,form.chrY,form.submitted,form.chromosome,
-    // form.sex,form.array,form.maxAge,form.minAge,form.maxFraction,form.minFraction,
+    // form.sex,form.approach,form.maxAge,form.minAge,form.maxFraction,form.minFraction,
     // form.ancestry,form.algorithm
   ]);
 
@@ -384,7 +384,15 @@ export default function RangeView(props) {
                   </ExcelFile>
                 </div>
 
-                <Table columns={columns} defaultSort={[{ id: "start", asc: true }]} data={resultData} />
+                <Table
+                  columns={columns}
+                  defaultSort={[
+                    { id: "chromosome", asc: true },
+                    { id: "start", asc: true },
+                    { id: "end", asc: true },
+                  ]}
+                  data={resultData}
+                />
               </div>
             </Row>
           </div>
@@ -439,7 +447,15 @@ export default function RangeView(props) {
                   <ExcelSheet dataSet={exportTable(resultData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
               </div>
-              <Table columns={columns} defaultSort={[{ id: "start", asc: true }]} data={resultData} />
+              <Table
+                columns={columns}
+                defaultSort={[
+                  { id: "chromosome", asc: true },
+                  { id: "start", asc: true },
+                  { id: "end", asc: true },
+                ]}
+                data={resultData}
+              />
             </div>
           </Row>
         </Tab>

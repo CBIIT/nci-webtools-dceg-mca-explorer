@@ -96,7 +96,7 @@ export async function getData(params) {
 export const defaultFormState = {
   openSidebar: true,
   study: [{ value: "plco", label: "PLCO" }],
-  array: [],
+  approach: [],
   chrSingle: "",
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
     .map((i) => {
@@ -128,7 +128,7 @@ export const defaultFormState = {
 export const resetFormState = {
   openSidebar: true,
   study: [{ value: "plco", label: "PLCO" }],
-  array: [],
+  approach: [],
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
     .map((i) => {
       return { value: "chr" + i, label: i };
