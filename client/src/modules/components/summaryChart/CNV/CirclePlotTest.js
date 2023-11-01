@@ -521,15 +521,15 @@ export default function CirclePlotTest(props) {
     let agecfB = groupAgeTitle(form.groupB);
     if (agecfA === agecfB) titleGroup += agecfA;
     else {
-      tempA += agecfA === "" ? ";Age: all" : agecfA;
-      tempB += agecfB === "" ? ";Age: all" : agecfB;
+      tempA += agecfA === "" ? "; Age: all" : agecfA;
+      tempB += agecfB === "" ? "; Age: all" : agecfB;
     }
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
     if (agecfA === agecfB) titleGroup += agecfA;
     else {
-      tempA += agecfA === "" ? ";CF: 0-1" : agecfA;
-      tempB += agecfB === "" ? ";CF: 0-1" : agecfB;
+      tempA += agecfA === "" ? "; CF: 0-1" : agecfA;
+      tempB += agecfB === "" ? "; CF: 0-1" : agecfB;
     }
     console.log(agecfA, agecfB);
 
@@ -543,25 +543,27 @@ export default function CirclePlotTest(props) {
     //console.log(group);
     for (let key in group) {
       const values = group[key];
-
       if (values !== undefined) {
-        if (typeof values === "object") {
-          title += ";" + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
+        if (typeof values === "object" && values.length > 0) {
+          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           values.forEach((s) => {
-            title += s.label + ", ";
+            title += s.label + ",";
           });
+          title = title.slice(0, -1);
         }
       }
     }
-    return title;
+    title += groupAgeTitle(group);
+    title += groupCfTitle(group);
+    return title.slice(1);
   };
 
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
       if (group.maxAge !== undefined && group.maxAge !== "") {
-        if (group.minAge !== undefined && group.minAge !== "") title += ";Age: " + group.minAge + "-" + group.maxAge;
-        else title += ";Age: 0-" + group.maxAge;
+        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge;
+        else title += "; Age: 0-" + group.maxAge;
       }
     }
     return title;
@@ -571,8 +573,8 @@ export default function CirclePlotTest(props) {
     if (group != undefined) {
       if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += ";CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0;
-        else title += ";CF: 0-" + group.maxFraction / 100.0;
+          title += "; CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0;
+        else title += "; CF: 0-" + group.maxFraction / 100.0;
       }
     }
     return title;
@@ -1091,11 +1093,11 @@ export default function CirclePlotTest(props) {
 
           {form.compare && form.counterCompare > 0 && (
             <>
-              <Row>
-                <Col className="d-flex" style={{ alignItems: "center" }}>
+              <Row className="align-items-start">
+                <Col className="d-flex">
                   <Legend></Legend>
                 </Col>
-                <Col>
+                <Col style={{ fontSize: "14px" }}>
                   {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
                   <br></br> {commonTitle}
                 </Col>
@@ -1103,7 +1105,10 @@ export default function CirclePlotTest(props) {
                   {isLoaded ? (
                     <p>Downloading...</p>
                   ) : (
-                    <Button variant="link" onClick={handleDownload}>
+                    <Button
+                      variant="link"
+                      onClick={handleDownload}
+                      style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
                       Download comparison images
                     </Button>
                   )}
@@ -1149,11 +1154,11 @@ export default function CirclePlotTest(props) {
           )}
           {!form.compare && (
             <>
-              <Row>
-                <Col className="d-flex" style={{ alignItems: "center" }}>
+              <Row className="align-items-start">
+                <Col className="d-flex" style={{ alignItems: "top" }}>
                   <Legend></Legend>
                 </Col>
-                <Col xs={6} md={6} lg={6}>
+                <Col xs={6} md={6} lg={6} style={{ fontSize: "14px" }}>
                   {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
                   <br></br>
                   {circosTitle}
@@ -1162,7 +1167,10 @@ export default function CirclePlotTest(props) {
                   {isLoaded ? (
                     <p>Downloading...</p>
                   ) : (
-                    <Button variant="link" onClick={handleSingleChrDownload}>
+                    <Button
+                      variant="link"
+                      onClick={handleSingleChrDownload}
+                      style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
                       Download images
                     </Button>
                   )}
@@ -1187,16 +1195,19 @@ export default function CirclePlotTest(props) {
       ) : form.compare ? (
         // <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
         <div>
-          <Row>
-            <Col className="d-flex" style={{ alignItems: "center" }}>
+          <Row className="align-items-start">
+            <Col className="d-flex" style={{ alignItems: "top" }}>
               <Legend></Legend>
             </Col>
-            <Col style={{ alignItems: "center" }}>{commonTitle}</Col>
-            <Col className="d-flex" style={{ justifyContent: "flex-end", alignItems: "center" }}>
+            <Col style={{ fontSize: "14px" }}>{commonTitle}</Col>
+            <Col className="d-flex" style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
               {isLoaded ? (
                 <p>Downloading...</p>
               ) : circleA ? (
-                <Button variant="link" onClick={handlecircleDownload}>
+                <Button
+                  variant="link"
+                  onClick={handlecircleDownload}
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
                   Download comparison images
                 </Button>
               ) : (
@@ -1255,15 +1266,18 @@ export default function CirclePlotTest(props) {
         </div>
       ) : (
         <div>
-          <Row>
-            <Col className="d-flex" style={{ alignItems: "center" }}>
+          <Row className="align-items-start">
+            <Col className="d-flex" style={{ alignItems: "top" }}>
               <Legend></Legend>
             </Col>
-            <Col className="d-flex" style={{ justifyContent: "flex-end" }}>
+            <Col className="d-flex" style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
               {isLoaded ? (
                 <p>Downloading...</p>
               ) : (
-                <Button variant="link" onClick={handleSummaryDownload} style={{ justifyContent: "flex-end" }}>
+                <Button
+                  variant="link"
+                  onClick={handleSummaryDownload}
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
                   Download image
                 </Button>
               )}

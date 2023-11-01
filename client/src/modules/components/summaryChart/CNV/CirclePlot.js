@@ -21,7 +21,7 @@ export default function CircosPlot(props) {
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
       <div className={classCircle}>
-        {props.title}
+        <div style={{ justifyContent: "flex-start" }}>{props.title}</div>
         <Circos
           layout={layoutxy}
           config={{
