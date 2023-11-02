@@ -6,7 +6,7 @@ export default function Legend(props) {
   const yy = 10;
 
   return (
-    <div className="">
+    <div className="" style={{ alignItems: "top", paddingTop: "3px" }}>
       <svg
         version="1.1"
         baseProfile="full"
