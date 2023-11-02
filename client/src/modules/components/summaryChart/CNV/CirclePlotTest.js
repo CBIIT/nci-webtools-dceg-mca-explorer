@@ -127,7 +127,7 @@ export default function CirclePlotTest(props) {
   let adjustWidth = 1;
   let minFigSize = window.innerWidth < 600 ? 450 : 535;
   minFigSize = window.innerWidth < 500 ? 350 : 450;
-  console.log(browserSize.width);
+
   if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.64;
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
@@ -138,7 +138,7 @@ export default function CirclePlotTest(props) {
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;
 
   const clearBtn = document.getElementById("clearCompare");
-  console.log(browserSize.width, size);
+
   const handleBrowserResize = () => {
     setBrowserSize({
       width: window.innerWidth,

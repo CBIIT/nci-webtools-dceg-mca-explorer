@@ -69,7 +69,6 @@ function SingleChromosome(props) {
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
-    console.log("zooming...", event, name);
     if (
       event !== undefined &&
       event.dragmode !== "zoom" &&
@@ -104,6 +103,8 @@ function SingleChromosome(props) {
     if (event !== undefined && (event["xaxis.autorange"] || event["xaxis.autosize"])) {
       console.log("reset to initial", zoomHistory.length);
       setZoomHistory([]);
+      setXMax(undefined);
+      setXMin(0);
     }
     // if (event !== undefined) setZoomHistory([]);
   }
@@ -158,15 +159,10 @@ function SingleChromosome(props) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  var data1 = [];
-  var data2 = [];
-  var ydata = [];
-  var types = [];
-
   props.data.sort((a, b) =>
     a.type === b.type ? (a.start === b.start ? b.end - a.end : a.start - b.start) : a.type.localeCompare(b.type)
   );
-  console.log();
+
   let zoomeddata = props.data;
 
   // zoomeddata.forEach((element, index) => {
@@ -177,22 +173,25 @@ function SingleChromosome(props) {
   // });
 
   useEffect(() => {
-    // if (xMin !== undefined && xMax !== undefined)
-    //   zoomeddata = props.data.filter(
-    //     (d) => d.end < (xMin === undefined ? 0 : xMin) || d.start > (xMax === undefined ? 99999999999 : xMax)
-    //   );
-    const addeddata = props.data.length - zoomeddata.length;
-    console.log();
-    for (var i = 0; i < addeddata; i++) {
-      zoomeddata.push("");
+    if (xMin !== undefined && xMax !== undefined) {
+      zoomeddata = [];
+      props.data.forEach((d) => {
+        if (d.start > (xMin === undefined ? 0 : xMin) && d.start < (xMax === undefined ? 99999999999 : xMax))
+          zoomeddata.push(d);
+        if (d.start < (xMin === undefined ? 0 : xMin) && d.end > (xMin === undefined ? 0 : xMin)) zoomeddata.push(d);
+      });
     }
-    console.log(zoomeddata.length);
+    var data1 = [];
+    var data2 = [];
+    var ydata = [];
+    var types = [];
     zoomeddata.forEach((element, index) => {
       data1.push(element.start);
       data2.push(element.length);
       types.push(element.type);
       ydata.push(index);
     });
+    console.log(zoomeddata.length, data1.length, xMin, xMax);
     const datatemp = [
       {
         x: data1,
@@ -280,7 +279,7 @@ function SingleChromosome(props) {
   }, [props.chromesomeId, props.title, newRange]);
 
   useEffect(() => {
-    //console.log(layout, props.details);
+    // console.log(layout, props.details);
     if (data.length === 0) {
       setZoomHistory([]);
     }
