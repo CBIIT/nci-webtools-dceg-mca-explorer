@@ -1115,7 +1115,12 @@ export default function CirclePlotTest(props) {
                   {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
                   <br></br> {commonTitle}
                 </Col>
-                <Col xs={12} md={3} lg={3} className="d-flex" style={{ justifyContent: "flex-end" }}>
+                <Col
+                  xs={12}
+                  md={3}
+                  lg={3}
+                  className="d-flex"
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
                   {isLoaded ? (
                     <p>Downloading...</p>
                   ) : (
@@ -1177,7 +1182,12 @@ export default function CirclePlotTest(props) {
                   <br></br>
                   {circosTitle.slice(1)}
                 </Col>
-                <Col xs={12} md={3} lg={3} className="d-flex" style={{ justifyContent: "flex-end" }}>
+                <Col
+                  xs={12}
+                  md={3}
+                  lg={3}
+                  className="d-flex"
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
                   {isLoaded ? (
                     <p>Downloading...</p>
                   ) : (
@@ -1288,7 +1298,7 @@ export default function CirclePlotTest(props) {
       ) : (
         <div>
           <Row className="align-items-start">
-            <Col xs={12} md={12} lg={3} className="d-flex" style={{ paddingTop: 0, border: 0 }}>
+            <Col xs={12} md={12} lg={3} className="d-flex">
               <Legend></Legend>
             </Col>
             <Col xs={12} md={12} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
