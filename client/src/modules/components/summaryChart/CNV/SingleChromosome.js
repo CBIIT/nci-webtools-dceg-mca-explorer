@@ -191,7 +191,7 @@ function SingleChromosome(props) {
       types.push(element.type);
       ydata.push(index);
     });
-    console.log(zoomeddata.length, data1.length, xMin, xMax);
+    //console.log(zoomeddata.length, data1.length, xMin, xMax);
     const datatemp = [
       {
         x: data1,
