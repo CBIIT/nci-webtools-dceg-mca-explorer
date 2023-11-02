@@ -690,8 +690,9 @@ export default function CirclePlotTest(props) {
                     pdf.setTextColor(0, 0, 0);
                     pdf.setFontSize(8);
                     if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
-                    pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
-                    pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
+                    pdf.text(commonTitle, width, initalY + 4, { align: "center" });
+                    pdf.text(titleA, width * 0.5, initalY + 8, { align: "center" });
+                    pdf.text(titleB, 1.5 * width, initalY + 8, { align: "center" });
 
                     pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
                     pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
@@ -767,6 +768,7 @@ export default function CirclePlotTest(props) {
             pdf.setTextColor(0, 0, 0);
             pdf.setFontSize(8);
             // if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
+            pdf.text(commonTitle.slice(1), width, initalY, { align: "center" });
             pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
             pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
 
@@ -824,11 +826,11 @@ export default function CirclePlotTest(props) {
           //pdf.text("", width *0.5, 10, { align: "center" });
           pdf.setTextColor(0, 0, 0);
           pdf.setFontSize(12);
-          pdf.text(circosTitle, width * 0.5, 15, { align: "center" });
+          pdf.text(circosTitle.slice(1), width * 0.5, 15, { align: "center" });
 
           pdf.addImage(dataUrl, "PNG", 0, 20, width, width);
           pdf.addImage(dataUrl2, "PNG", 0, 20, width, width);
-          pdf.save(circosTitle + ".pdf");
+          pdf.save(circosTitle.slice(1) + ".pdf");
           setIsLoaded(false);
         });
       })
@@ -899,7 +901,7 @@ export default function CirclePlotTest(props) {
                 pdf.setTextColor(0, 0, 0);
                 pdf.setFontSize(8);
                 if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width * 0.5, initalY, { align: "center" });
-                pdf.text(circosTitle, width * 0.5, initalY + 5, { align: "center" });
+                pdf.text(circosTitle.slice(1), width * 0.5, initalY + 5, { align: "center" });
 
                 pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
                 pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
