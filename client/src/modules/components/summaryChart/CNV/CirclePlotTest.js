@@ -127,7 +127,8 @@ export default function CirclePlotTest(props) {
   let adjustWidth = 1;
   let minFigSize = window.innerWidth < 600 ? 450 : 535;
   minFigSize = window.innerWidth < 500 ? 350 : 450;
-  if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.55;
+  console.log(browserSize.width);
+  if (browserSize.width > 1200 && browserSize.width < 1600) adjustWidth = 0.64;
   else if (browserSize.width >= 1600) adjustWidth = 0.48;
   else adjustWidth = 0.7;
 
@@ -137,7 +138,7 @@ export default function CirclePlotTest(props) {
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;
 
   const clearBtn = document.getElementById("clearCompare");
-  //console.log(browserSize.width, size);
+  console.log(browserSize.width, size);
   const handleBrowserResize = () => {
     setBrowserSize({
       width: window.innerWidth,
@@ -1105,14 +1106,14 @@ export default function CirclePlotTest(props) {
           {form.compare && form.counterCompare > 0 && (
             <>
               <Row className="align-items-start">
-                <Col className="d-flex">
+                <Col xs={12} md={3} lg={3} className="d-flex">
                   <Legend></Legend>
                 </Col>
-                <Col style={{ fontSize: "14px" }}>
+                <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
                   {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
                   <br></br> {commonTitle}
                 </Col>
-                <Col className="d-flex" style={{ justifyContent: "flex-end" }}>
+                <Col xs={12} md={3} lg={3} className="d-flex" style={{ justifyContent: "flex-end" }}>
                   {isLoaded ? (
                     <p>Downloading...</p>
                   ) : (
@@ -1166,15 +1167,15 @@ export default function CirclePlotTest(props) {
           {!form.compare && (
             <>
               <Row className="align-items-start">
-                <Col className="d-flex" style={{ alignItems: "top" }}>
+                <Col xs={12} md={3} lg={3} className="d-flex" style={{ alignItems: "top" }}>
                   <Legend></Legend>
                 </Col>
-                <Col xs={6} md={6} lg={6} style={{ fontSize: "14px" }}>
+                <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
                   {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
                   <br></br>
                   {circosTitle.slice(1)}
                 </Col>
-                <Col className="d-flex" style={{ justifyContent: "flex-end" }}>
+                <Col xs={12} md={3} lg={3} className="d-flex" style={{ justifyContent: "flex-end" }}>
                   {isLoaded ? (
                     <p>Downloading...</p>
                   ) : (
@@ -1207,11 +1208,18 @@ export default function CirclePlotTest(props) {
         // <div style={{ height: 2 * compareCircleSize + 200, left: 0 }}>
         <div>
           <Row className="align-items-start">
-            <Col className="d-flex" style={{ alignItems: "top" }}>
+            <Col xs={12} md={12} lg={3} className="d-flex" style={{ alignItems: "top" }}>
               <Legend></Legend>
             </Col>
-            <Col style={{ fontSize: "14px" }}>{commonTitle}</Col>
-            <Col className="d-flex" style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+            <Col xs={12} md={12} lg={6} style={{ fontSize: "14px" }}>
+              {commonTitle}
+            </Col>
+            <Col
+              xs={12}
+              md={12}
+              lg={3}
+              className="d-flex"
+              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
               {isLoaded ? (
                 <p>Downloading...</p>
               ) : circleA ? (
@@ -1278,15 +1286,15 @@ export default function CirclePlotTest(props) {
       ) : (
         <div>
           <Row className="align-items-start">
-            <Col xs={3} md={3} lg={3} className="d-flex" style={{ paddingTop: 0, border: 0 }}>
+            <Col xs={12} md={12} lg={3} className="d-flex" style={{ paddingTop: 0, border: 0 }}>
               <Legend></Legend>
             </Col>
-            <Col xs={6} md={6} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
+            <Col xs={12} md={12} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
               {circosTitle.slice(1)}
             </Col>
             <Col
-              xs={3}
-              md={3}
+              xs={12}
+              md={12}
               lg={3}
               className="d-flex"
               style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
