@@ -9,12 +9,14 @@ export default function Home({ links }) {
   return (
     <>
       <div className="">
-        <div className="cover-image" style={{ height: "600px", width: "100%", backgroundImage: `url(${genomeImage})` }}>
-          <Container>
+        <div
+          className="cover-image"
+          style={{ height: "600px", width: "100%", backgroundImage: `url(${genomeImage})`, marginLeft: "0px" }}>
+          <Container style={{ marginLeft: "6rem" }}>
             <Row>
-              <Col md={6}>
+              <Col md={6} style={{ paddingLeft: "0px" }}>
                 <div className="d-flex h-100 align-items-center my-4">
-                  <div style={{ marginTop: "20px" }}>
+                  <div style={{ marginTop: "0px" }}>
                     <h2 className="font-title text-dark mb-3">Mosaic Chromosomal Alteration Explorer</h2>
                     <hr className="border-dark" />
                     <p className="lead text-dark">
@@ -34,7 +36,7 @@ export default function Home({ links }) {
         </div>
       </div>
 
-      <div className="bg-light py-4">
+      <div className="bg-light py-4" style={{ marginLeft: "-9rem" }}>
         {/* <Container>
           <Row>
             <Col>

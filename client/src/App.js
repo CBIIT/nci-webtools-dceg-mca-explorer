@@ -18,7 +18,7 @@ export default function App() {
   return (
     <RecoilRoot>
       <Router>
-        <Navbar links={navbarLinks} className="myshadow" />
+        {/* <Navbar links={navbarLinks} className="myshadow" /> */}
         <Routes>
           <Route path="/mosaic" exact="true" element={<Mosaic />} />
           <Route path="/about" element={<About />} />
