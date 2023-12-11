@@ -124,6 +124,7 @@ export const defaultFormState = {
   end: "",
   groupA: [],
   groupB: [],
+  smoking: [],
 };
 export const resetFormState = {
   openSidebar: true,
@@ -156,6 +157,7 @@ export const resetFormState = {
   end: "",
   groupA: [],
   groupB: [],
+  smoking: [],
 };
 export const formState = atom({
   key: "explore.formState",
