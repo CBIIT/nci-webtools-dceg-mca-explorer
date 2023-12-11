@@ -36,7 +36,8 @@ export default function ComparePanel(props) {
       setMinAge(value);
     }
     if (name === "maxAge") {
-      setMaxAge(value);
+      if (value < 150) setMaxAge(value);
+      else setMaxAge(150);
     }
     //  setCompareForm({ ...compareform, [name]: value });
     if (name === "minFraction") {

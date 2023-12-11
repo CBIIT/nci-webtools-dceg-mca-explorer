@@ -42,9 +42,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     } else if (name === "chrY") {
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
-    }
-    //if(name === )
-    else mergeForm({ [name]: value });
+    } else if (name === "maxAge") {
+      if (value >= 150) mergeForm({ [name]: 150 });
+      else mergeForm({ [name]: value });
+    } else mergeForm({ [name]: value });
   }
 
   function handleSubmit(event) {
