@@ -194,13 +194,13 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
           bool: {
             must_not: [
               ...searchExclude,
-              {
+              /*{
                 //in ukbb data, there is chrX with all other types, and will exclude them
-                bool: {
-                  filter: [
+              //  bool: {
+              /    filter: [
                     {
                       match: {
-                        chromosome: "chrX",
+                        "chromosome.keyword": "chrX",
                       },
                     },
                     {
@@ -210,7 +210,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                     },
                   ],
                 },
-              },
+              },*/
             ],
             must: searchdataset,
             filter: filterString,
@@ -321,11 +321,11 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //queryString.push({ terms: { "type.keyword": qfilter } });
     if (chromesome === "Y") {
       queryString.push({ terms: { "type.keyword": ["mLOY"] } });
-      queryString.push({ match: { chromosome: "chrX" } });
+      queryString.push({ match: { "chromosome.keyword": "chrX" } });
     } else if (chromesome === "X") {
-      queryString.push({ match: { chromosome: "chrX" } });
+      queryString.push({ match: { "chromosome.keyword": "chrX" } });
       queryString.push({ terms: { "type.keyword": ["mLOX"] } });
-    } else queryString.push({ match: { chromosome: "chr" + chromesome } });
+    } else queryString.push({ match: { "chromosome.keyword": "chr" + chromesome } });
     console.log(queryString);
 
     if (study !== undefined && study.length > 0)

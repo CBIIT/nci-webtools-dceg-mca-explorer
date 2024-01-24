@@ -17,15 +17,16 @@ const client = new Client({
 
 const sources = [
   // { path: "data/plcoAuto.json", index: "mcaexplorer" },
-  // { path: "data/plcoDenominator.json", index: "mcaexplorer" },
+  { path: "data/plcoDenominator.json", index: "denominator" },
   // { path: "data/plcomLOX.json", index: "mcaexplorer" },
   // { path: "data/plcomLOY.json", index: "mcaexplorer" },
   // { path: "data/ukbbAuto.json", index: "mcaexplorer" },
   // { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
   // { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
+  { path: "data/ukbbdenominator.json", index: "denominator" },
   // { path: "data/combined_gene_test.json", index: "combinedgene_test" },
   //{ path: "/Users/yaox5/Downloads/snp-platforms/snp_col.csv", index: "snp" },
-  { path: "data/snp_test2.csv", index: "snp" },
+  //{ path: "data/snp_test2.csv", index: "snp" },
 ];
 
 runImport(client, sources)
@@ -46,7 +47,7 @@ async function runImport(client, sources, logger = console) {
 
     let id = 0;
     for await (const line of reader) {
-      console.log(line);
+      // console.log(line);
       let contents = JSON.parse(line);
       if (!contents.index) {
         datasource.push({ id, ...contents });
