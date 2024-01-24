@@ -441,6 +441,16 @@ export default function CirclePlotTest(props) {
 
       const results = response.data;
 
+      //merge data from denominator
+      const resultsIds = results.map((item) => item._source.sampleId);
+      const responseDenominator = await axios.post("api/opensearch/denominator", {
+        query: {
+          sampleId: resultsIds,
+        },
+      });
+      const denominatorMap = new Map(responseDenominator.data.map((item) => [item._source.sampleId, item._source]));
+      console.log(denominatorMap);
+
       results.forEach((r) => {
         if (r._source !== null) {
           const d = r._source;
@@ -451,7 +461,7 @@ export default function CirclePlotTest(props) {
             d.start = Number(d.beginGrch38);
             d.end = Number(d.endGrch38);
             d.length = Number(d.length);
-
+            d.age = denominatorMap.get(d.sampleId).age;
             //
             if (d.chromosome != "chrX") {
               if (d.type === "Gain") gainTemp.push(d);
@@ -541,7 +551,7 @@ export default function CirclePlotTest(props) {
       tempA += agecfA === "" ? "; CF: 0-1" : agecfA;
       tempB += agecfB === "" ? "; CF: 0-1" : agecfB;
     }
-    console.log(agecfA, agecfB);
+    //console.log(agecfA, agecfB);
 
     setTitleA(tempA.slice(1));
     setTitleB(tempB.slice(1));

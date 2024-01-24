@@ -41,6 +41,17 @@ apiRouter.use((request, response, next) => {
   next();
 });
 
+const client = new Client({
+  node: host,
+  auth: {
+    username: OPENSEARCH_USERNAME,
+    password: OPENSEARCH_PASSWORD,
+  },
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+
 apiRouter.get("/", (request, response) => {
   spec.servers = [{ url: BASE_URL || "." }];
   //spec.servers = [{ url: "localhost" || "." }];
@@ -173,7 +184,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
   filterString.push({ terms: { "type.keyword": qfilter } });
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qstart, qend);
-  const client = new Client({
+  /* const client = new Client({
     node: host,
     auth: {
       username: OPENSEARCH_USERNAME,
@@ -182,7 +193,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     ssl: {
       rejectUnauthorized: false,
     },
-  });
+  });*/
 
   try {
     const result = await client.search({
@@ -238,7 +249,7 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
   const xMin = search.xMin;
   const chr = search.chr;
   //console.log(search, xMax,chr)
-  const client = new Client({
+  /*const client = new Client({
     node: host,
     auth: {
       username: OPENSEARCH_USERNAME,
@@ -252,7 +263,7 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
     //   ssl: {
     //     rejectUnauthorized: false
     //   }
-  });
+  });*/
   //console.log(client)
   try {
     const result = await client.search({
@@ -368,7 +379,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //   searchExclude.push({ match: { "type.keyword": "mLOY" } });
     // }
     // console.log(chromesome, queryString, searchExclude);
-    const client = new Client({
+    /*  const client = new Client({
       node: host,
       auth: {
         username: OPENSEARCH_USERNAME,
@@ -377,7 +388,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       ssl: {
         rejectUnauthorized: false,
       },
-    });
+    });*/
 
     try {
       const result = await client.search({
@@ -459,7 +470,7 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
   }
   //console.log(ranges);
 
-  const client = new Client({
+  /*const client = new Client({
     node: host,
     auth: {
       username: OPENSEARCH_USERNAME,
@@ -468,7 +479,7 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
     ssl: {
       rejectUnauthorized: false,
     },
-  });
+  });*/
   //console.log(client)
   try {
     const result = await client.search({
@@ -500,6 +511,34 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
     });
     console.log(result.body.aggregations.number_of_grch38_distribution.buckets.length);
     response.json(result.body.aggregations.number_of_grch38_distribution.buckets);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+apiRouter.post("/opensearch/denominator", async (request, response) => {
+  const query = request.body.query;
+  //console.log("denominator", query);
+  try {
+    const result = await client.search({
+      index: "denominator",
+      _source: ["sampleId", "age", "sex", "smokeNFC"],
+      body: {
+        track_total_hits: true,
+        size: 10000,
+        query: {
+          bool: {
+            must: [
+              {
+                terms: query,
+              },
+            ],
+          },
+        },
+      },
+    });
+    console.log(result.body.hits.hits.length);
+    response.json(result.body.hits.hits);
   } catch (error) {
     console.error(error);
   }
