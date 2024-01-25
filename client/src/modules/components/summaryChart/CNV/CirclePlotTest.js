@@ -439,9 +439,9 @@ export default function CirclePlotTest(props) {
         });
       }
 
-      const results = response.data.nondenomiator;
+      const results = response.data.nominator;
 
-      const responseDenominator = response.data.denomiator;
+      const responseDenominator = response.data.denominator;
 
       const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
 

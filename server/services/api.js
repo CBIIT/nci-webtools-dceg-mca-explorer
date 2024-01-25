@@ -256,7 +256,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       });
       console.log(resultdemo.body.hits.hits.length);
 
-      const mergedResult = { nondenomiator: result.body.hits.hits, denomiator: resultdemo.body.hits.hits };
+      const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
 
       response.json(mergedResult);
       //response.json(result.body.hits.hits);
@@ -482,7 +482,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         });
         console.log(resultdemo.body.hits.hits.length);
 
-        const mergedResult = { nondenomiator: result.body.hits.hits, denomiator: resultdemo.body.hits.hits };
+        const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
 
         response.json(mergedResult);
         //response.json(result.body.hits.hits);
