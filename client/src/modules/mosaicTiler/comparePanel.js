@@ -21,7 +21,7 @@ export default function ComparePanel(props) {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
-
+  console.log(study);
   //reset
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
@@ -244,7 +244,9 @@ export default function ComparePanel(props) {
                   { value: "oncoArray", label: "Illumina OncoArray Array" },
                   { value: "axiom", label: "Axiom" },
                   { value: "bileve", label: "BiLEVE" },
-                ].filter((obj, index) => (study === "plco" ? index < 2 : study === "ukbb" ? index >= 2 : true))}
+                ].filter((obj, index) =>
+                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 2 : index >= 2) : true
+                )}
                 classNamePrefix="select"
               />
             </Form.Group>

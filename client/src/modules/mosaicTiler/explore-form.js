@@ -296,7 +296,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                   { value: "oncoArray", label: "Illumina OncoArray" },
                   { value: "axiom", label: "Axiom" },
                   { value: "bileve", label: "BiLEVE" },
-                ]}
+                ].filter((obj, index) =>
+                  form.study.length < 2 && form.study.length > 0
+                    ? form.study[0].value === "plco"
+                      ? index < 2
+                      : index >= 2
+                    : true
+                )}
                 classNamePrefix="select"
               />
             </Form.Group>
