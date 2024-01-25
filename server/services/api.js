@@ -229,8 +229,41 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         },
       },
     });
-    console.log(result.body.hits.hits.length);
-    response.json(result.body.hits.hits);
+
+    // console.log(result.body.hits.hits);
+
+    const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
+
+    try {
+      const resultdemo = await client.search({
+        index: "denominator",
+        _source: ["sampleId", "age", "sex", "smokeNFC"],
+        body: {
+          track_total_hits: true,
+          size: 200000,
+          query: {
+            bool: {
+              must: [
+                {
+                  terms: {
+                    sampleId: resultsIds,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      });
+      console.log(resultdemo.body.hits.hits.length);
+
+      const mergedResult = { nondenomiator: result.body.hits.hits, denomiator: resultdemo.body.hits.hits };
+
+      response.json(mergedResult);
+      //response.json(result.body.hits.hits);
+    } catch (error) {
+      console.error(error);
+    }
+    ////
   } catch (error) {
     console.error(error);
   }
@@ -424,8 +457,41 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           },
         },
       });
-      console.log(result.body.hits.hits.length);
-      response.json(result.body.hits.hits);
+
+      const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
+
+      try {
+        const resultdemo = await client.search({
+          index: "denominator",
+          _source: ["sampleId", "age", "sex", "smokeNFC"],
+          body: {
+            track_total_hits: true,
+            size: 200000,
+            query: {
+              bool: {
+                must: [
+                  {
+                    terms: {
+                      sampleId: resultsIds,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        });
+        console.log(resultdemo.body.hits.hits.length);
+
+        const mergedResult = { nondenomiator: result.body.hits.hits, denomiator: resultdemo.body.hits.hits };
+
+        response.json(mergedResult);
+        //response.json(result.body.hits.hits);
+      } catch (error) {
+        console.error(error);
+      }
+
+      //console.log(result.body.hits.hits.length);
+      //response.json(result.body.hits.hits);
     } catch (error) {
       console.error(error);
     }
@@ -525,7 +591,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
       _source: ["sampleId", "age", "sex", "smokeNFC"],
       body: {
         track_total_hits: true,
-        size: 10000,
+        size: 200000,
         query: {
           bool: {
             must: [

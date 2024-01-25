@@ -97,16 +97,15 @@ export default function RangeView(props) {
 
     // if (form.chrY) {
     // }
+
+    // console.log(response);
     const chrXTemp = [];
     const chrYTemp = [];
-    const results = response.data;
-    const resultsIds = results.map((item) => item._source.sampleId);
-    const responseDenominator = await axios.post("api/opensearch/denominator", {
-      query: {
-        sampleId: resultsIds,
-      },
-    });
-    const denominatorMap = new Map(responseDenominator.data.map((item) => [item._source.sampleId, item._source]));
+    const results = response.data.nondenomiator;
+
+    const responseDenominator = response.data.denomiator;
+
+    const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
 
     results.forEach((r) => {
       if (r._source !== null) {

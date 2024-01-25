@@ -25,7 +25,6 @@ export const eventResults = selector({
 });
 //do db retrieve based on inputs
 export async function getData(params) {
-  var results;
   var summary;
   let gainTemp = [];
   let lossTemp = [];
@@ -58,7 +57,8 @@ export async function getData(params) {
   Array.isArray(study_value)
     ? (query_value = [...study_value, params.chrX ? { value: "X" } : "", params.chrY ? { value: "Y" } : ""])
     : (query_value = [study_value, params.chrX ? { value: "X" } : "", params.chrY ? { value: "Y" } : ""]);
-  results = await post("api/opensearch/mca", {
+
+  var response = await post("api/opensearch/mca", {
     dataset: query_value,
     sex: params.sex,
     mincf: params.minFraction,
@@ -67,13 +67,11 @@ export async function getData(params) {
     types: params.types,
   });
 
-  const resultsIds = results.map((item) => item._source.sampleId);
-  const responseDenominator = await post("api/opensearch/denominator", {
-    query: {
-      sampleId: resultsIds,
-    },
-  });
-  const denominatorMap = new Map(responseDenominator.data.map((item) => [item._source.sampleId, item._source]));
+  const results = response.data.nondenomiator;
+
+  const responseDenominator = response.data.denomiator;
+
+  const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
 
   results.forEach((r) => {
     if (r._source !== null) {

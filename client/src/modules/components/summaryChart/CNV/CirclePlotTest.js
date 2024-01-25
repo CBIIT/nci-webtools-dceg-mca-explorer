@@ -439,17 +439,11 @@ export default function CirclePlotTest(props) {
         });
       }
 
-      const results = response.data;
+      const results = response.data.nondenomiator;
 
-      //merge data from denominator
-      const resultsIds = results.map((item) => item._source.sampleId);
-      const responseDenominator = await axios.post("api/opensearch/denominator", {
-        query: {
-          sampleId: resultsIds,
-        },
-      });
-      const denominatorMap = new Map(responseDenominator.data.map((item) => [item._source.sampleId, item._source]));
-      // console.log(denominatorMap);
+      const responseDenominator = response.data.denomiator;
+
+      const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
 
       results.forEach((r) => {
         if (r._source !== null) {
