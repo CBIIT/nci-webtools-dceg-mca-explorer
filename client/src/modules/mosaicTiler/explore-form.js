@@ -284,7 +284,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               padding: "10px",
             }}>
             <Form.Group className="mb-3" controlId="approach">
-              <Form.Label>Detection Approach</Form.Label>
+              <Form.Label>Array Platform</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="approach"
@@ -294,12 +294,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 options={[
                   { value: "gsa", label: "Illumina Global Screening" },
                   { value: "oncoArray", label: "Illumina OncoArray" },
+                  { value: "axiom", label: "Axiom" },
+                  { value: "bileve", label: "BiLEVE" },
                 ]}
                 classNamePrefix="select"
               />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="algorithm">
+            {/* <Form.Group className="mb-3" controlId="algorithm">
               <Form.Label>Detection Algorithm</Form.Label>
               <Select
                 placeholder="- Select -"
@@ -310,7 +312,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 options={[{ value: "test", label: "Algorithm" }]}
                 classNamePrefix="select"
               />
-            </Form.Group>
+              </Form.Group>*/}
             <Form.Group className="mb-3" controlId="sex">
               <Form.Label>Genotype Sex</Form.Label>
               <Select

@@ -100,6 +100,13 @@ export default function RangeView(props) {
     const chrXTemp = [];
     const chrYTemp = [];
     const results = response.data;
+    const resultsIds = results.map((item) => item._source.sampleId);
+    const responseDenominator = await axios.post("api/opensearch/denominator", {
+      query: {
+        sampleId: resultsIds,
+      },
+    });
+    const denominatorMap = new Map(responseDenominator.data.map((item) => [item._source.sampleId, item._source]));
 
     results.forEach((r) => {
       if (r._source !== null) {
@@ -110,6 +117,8 @@ export default function RangeView(props) {
           d.dataset = d.dataset.toUpperCase();
           d.start = d.beginGrch38;
           d.end = d.endGrch38;
+          d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
+
           if (d.chromosome != "chrX") {
             if (d.type === "Gain") gainTemp.push(d);
             else if (d.type === "CN-LOH") lohTemp.push(d);

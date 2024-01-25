@@ -135,7 +135,7 @@ export default function ComparePanel(props) {
         if (!element.isChecked) {
           if (element.label === " Study") {
             setStudy([]);
-          } else if (element.label === " Detection Approach") {
+          } else if (element.label === " Array Platform") {
             setApproach([]);
           } else if (element.label === " Genotype Sex") {
             setSex([]);
@@ -230,7 +230,7 @@ export default function ComparePanel(props) {
           )}
           {props.compareItem[0].isChecked ? (
             <Form.Group className="mb-3">
-              <Form.Label>Detection Approach</Form.Label>
+              <Form.Label>Array Platform</Form.Label>
               <Select
                 id={props.name + "approach"}
                 aria-label={props.name + "approach"}
@@ -242,7 +242,9 @@ export default function ComparePanel(props) {
                 options={[
                   { value: "gsa", label: "Illumina Global Screening Array" },
                   { value: "oncoArray", label: "Illumina OncoArray Array" },
-                ]}
+                  { value: "axiom", label: "Axiom" },
+                  { value: "bileve", label: "BiLEVE" },
+                ].filter((obj, index) => (study === "plco" ? index < 2 : study === "ukbb" ? index >= 2 : true))}
                 classNamePrefix="select"
               />
             </Form.Group>

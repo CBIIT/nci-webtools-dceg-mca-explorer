@@ -449,7 +449,7 @@ export default function CirclePlotTest(props) {
         },
       });
       const denominatorMap = new Map(responseDenominator.data.map((item) => [item._source.sampleId, item._source]));
-      console.log(denominatorMap);
+      // console.log(denominatorMap);
 
       results.forEach((r) => {
         if (r._source !== null) {
@@ -461,7 +461,7 @@ export default function CirclePlotTest(props) {
             d.start = Number(d.beginGrch38);
             d.end = Number(d.endGrch38);
             d.length = Number(d.length);
-            d.age = denominatorMap.get(d.sampleId).age;
+            d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
             //
             if (d.chromosome != "chrX") {
               if (d.type === "Gain") gainTemp.push(d);

@@ -9,7 +9,7 @@ export const AncestryOptions = [
 ];
 
 export const CompareArray = [
-  { id: 1, value: "approach", label: " Detection Approach", isChecked: false, order: 3 },
+  { id: 1, value: "approach", label: " Array Platform", isChecked: false, order: 3 },
   { id: 2, value: "sex", label: " Genotype Sex", isChecked: false, order: 4 },
   { id: 3, value: "age", label: " Age", isChecked: false, order: 5 },
   { id: 4, value: "ancestry", label: " Ancestry", isChecked: false, order: 6 },
