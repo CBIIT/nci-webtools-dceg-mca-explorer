@@ -88,6 +88,10 @@ export default function RangeView(props) {
       chromosomes: qform.plotType.value === "static" ? qform.chrSingle : null,
       start: qform.plotType.value === "circos" ? "" : qform.start,
       end: qform.plotType.value === "circos" ? "" : qform.end,
+      array: qform.approach,
+      minAge: qform.minAge,
+      maxAge: qform.maxAge,
+      smoking: qform.smoking,
     });
     let gainTemp = [];
     let lossTemp = [];
@@ -105,45 +109,54 @@ export default function RangeView(props) {
 
     const responseDenominator = response.data.denominator;
 
-    const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
+    const mergedResult = responseDenominator.map((itemA) => {
+      let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
+      // const { age, sex, ancestry, ...restItems } = nominatorItem;
+      return {
+        ...itemA._source,
+        ...nominatorItem._source,
+      };
+    });
+    // console.log(mergedResult);
+    // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
 
-    results.forEach((r) => {
-      if (r._source !== null) {
-        const d = r._source;
-        if (d.cf != "nan") {
-          d.block_id = d.chromosome.substring(3);
-          d.value = d.cf;
-          d.dataset = d.dataset.toUpperCase();
-          d.start = d.beginGrch38;
-          d.end = d.endGrch38;
-          d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
+    mergedResult.forEach((r) => {
+      //if (r._source !== null) {
+      const d = r;
+      if (d.cf != "nan") {
+        d.block_id = d.chromosome.substring(3);
+        d.value = d.cf;
+        d.dataset = d.dataset.toUpperCase();
+        d.start = d.beginGrch38;
+        d.end = d.endGrch38;
+        //d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
 
-          if (d.chromosome != "chrX") {
-            if (d.type === "Gain") gainTemp.push(d);
-            else if (d.type === "CN-LOH") lohTemp.push(d);
-            else if (d.type === "Loss") lossTemp.push(d);
-            else if (d.type === "Undetermined") undeterTemp.push(d);
-          }
-          //for whole, and select X or Y
-          if (form.chrX && d.type === "mLOX") {
-            chrXTemp.push(d);
-            d.block_id = "X";
-          }
-          if (form.chrY && d.type === "mLOY") {
-            chrYTemp.push(d);
-            d.block_id = "Y";
-          }
+        if (d.chromosome != "chrX") {
+          if (d.type === "Gain") gainTemp.push(d);
+          else if (d.type === "CN-LOH") lohTemp.push(d);
+          else if (d.type === "Loss") lossTemp.push(d);
+          else if (d.type === "Undetermined") undeterTemp.push(d);
+        }
+        //for whole, and select X or Y
+        if (form.chrX && d.type === "mLOX") {
+          chrXTemp.push(d);
+          d.block_id = "X";
+        }
+        if (form.chrY && d.type === "mLOY") {
+          chrYTemp.push(d);
+          d.block_id = "Y";
+        }
 
-          if (form.chrSingle && form.chrSingle.value === "chrX" && d.type === "mLOX") {
-            chrXTemp.push(d);
-            d.block_id = "X";
-          }
-          if (form.chrSingle && form.chrSingle.value === "chrY" && d.type === "mLOY") {
-            chrYTemp.push(d);
-            d.block_id = "Y";
-          }
+        if (form.chrSingle && form.chrSingle.value === "chrX" && d.type === "mLOX") {
+          chrXTemp.push(d);
+          d.block_id = "X";
+        }
+        if (form.chrSingle && form.chrSingle.value === "chrY" && d.type === "mLOY") {
+          chrYTemp.push(d);
+          d.block_id = "Y";
         }
       }
+      //}
     });
     // setLoading(false)
     if (form.types.find((e) => e.value === "all")) {

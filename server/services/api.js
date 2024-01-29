@@ -83,6 +83,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qchromosomes = request.body.chromosomes;
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
+  const qsmokeNFC = request.body.smoking;
   console.log(request.body.types);
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
 
@@ -132,15 +133,15 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   if (qsex !== undefined && qsex.length > 0) {
     qsex.forEach((e) => {
       if (e.value === "all") {
-        sexarr.push("M");
-        sexarr.push("F");
+        sexarr.push("1");
+        sexarr.push("0");
       } else {
-        e.value === "male" ? sexarr.push("M") : "";
-        e.value === "female" ? sexarr.push("F") : "";
+        e.value === "male" ? sexarr.push("1") : "";
+        e.value === "female" ? sexarr.push("0") : "";
       }
     });
-    console.log(sexarr);
-    searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
+    // console.log(sexarr);
+    // searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
   }
   //query cf within the range, add query range in filter
   if (qmincf !== undefined || qmaxcf !== undefined) {
@@ -158,9 +159,21 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         ancestryarr.push(a.value);
       }
     });
-    // if (datasets.includes("plco")) {  AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
-    //   searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
-    // }
+  }
+  if (ancestryarr.length === 0) {
+    AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
+  }
+
+  let smokearr = [];
+  if (qsmokeNFC !== undefined && qsmokeNFC.length > 0) {
+    qsmokeNFC.forEach((a) => {
+      if (a.value !== "all") {
+        smokearr.push(a.value);
+      }
+    });
+  }
+  if (smokearr.length === 0) {
+    smokearr = ["0", "1", "2"];
   }
 
   if (qstart !== undefined) {
@@ -181,7 +194,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
   }
-  ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
+  // ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
   filterString.push({ terms: { "type.keyword": qfilter } });
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qstart, qend);
   /* const client = new Client({
@@ -230,14 +243,14 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
 
-    // console.log(result.body.hits.hits);
+    console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
-
+    console.log(sexarr, ancestryarr, smokearr);
     try {
       const resultdemo = await client.search({
         index: "denominator",
-        _source: ["sampleId", "age", "sex", "smokeNFC"],
+        _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"],
         body: {
           track_total_hits: true,
           size: 200000,
@@ -249,6 +262,21 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                     sampleId: resultsIds,
                   },
                 },
+                {
+                  terms: {
+                    sex: sexarr,
+                  },
+                },
+                {
+                  terms: {
+                    PopID: ancestryarr,
+                  },
+                },
+                {
+                  terms: {
+                    smokeNFC: smokearr,
+                  },
+                },
               ],
             },
           },
@@ -256,6 +284,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       });
       console.log(resultdemo.body.hits.hits.length);
 
+      //merge two results based on denominatore reulsts
       const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
 
       response.json(mergedResult);

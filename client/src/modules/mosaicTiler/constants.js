@@ -54,3 +54,10 @@ export const initialY = [
   { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
   { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
 ];
+
+export const smokeNFC = [
+  { value: "all", label: "All status" },
+  { value: "0", label: "Never" },
+  { value: "1", label: "Former" },
+  { value: "2", label: "Current" },
+];

@@ -235,7 +235,7 @@ function SingleChromosome(props) {
             "<br>Ancestry: " +
             e.ancestry +
             "<br>Sex: " +
-            e.computedGender +
+            e.sex +
             "<br>Age: " +
             e.age;
           return text;

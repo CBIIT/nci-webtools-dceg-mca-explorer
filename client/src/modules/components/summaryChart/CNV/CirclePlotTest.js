@@ -35,9 +35,9 @@ const hovertip = (d) => {
     "<br> End: " +
     d.end +
     "<br> Ancestry: " +
-    d.ancestry +
+    d.PopID +
     "<br> Sex: " +
-    d.computedGender +
+    d.sex +
     "<br> Age: " +
     d.age +
     " " +

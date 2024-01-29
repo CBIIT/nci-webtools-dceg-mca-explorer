@@ -52,13 +52,13 @@ export const Columns = [
     ),
   },
   {
-    accessor: "ancestry",
+    accessor: "PopID",
     id: "ancestry",
     label: "Ancestry",
     Header: <b>Ancestry</b>,
   },
   {
-    accessor: "computedGender",
+    accessor: "sex",
     id: "sex",
     label: "Sex",
     Header: <b>Sex</b>,
@@ -68,6 +68,18 @@ export const Columns = [
     id: "age",
     label: "Age",
     Header: <b>Age</b>,
+  },
+  {
+    accessor: "array",
+    id: "array",
+    label: "Array",
+    Header: <b>Array</b>,
+  },
+  {
+    accessor: "smokeNFC",
+    id: "smoke",
+    label: "Smoke",
+    Header: <b>Smoke</b>,
   },
 ];
 
@@ -86,9 +98,11 @@ export function exportTable(tableData) {
           { value: e.value },
           { value: e.start },
           { value: e.end },
-          { value: e.ancestry },
-          { value: e.computedGender },
+          { value: e.PopID },
+          { value: e.sex },
           { value: e.age },
+          { value: e.array },
+          { value: e.smokeNFC },
         ];
       }),
     },

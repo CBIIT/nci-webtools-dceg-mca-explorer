@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions } from "./constants";
+import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions, smokeNFC } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 const compareArray = CompareArray;
@@ -66,7 +66,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
-    if (name === "types" || name === "ancestry" || name === "sex") {
+    if (name === "types" || name === "ancestry" || name === "sex" || name === "smoking") {
       const all = selection.find((option) => option.value === "all");
       const allindex = selection.indexOf(all);
       //if all selected, then another option select, remove all
@@ -418,10 +418,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 isMulti={true}
                 value={form.smoking}
                 onChange={(ev) => handleSelectChange("smoking", ev)}
-                options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "no", label: "No" },
-                ]}
+                options={smokeNFC}
               />
             </Form.Group>
           </Accordion.Body>
