@@ -105,17 +105,33 @@ export default function RangeView(props) {
     // console.log(response);
     const chrXTemp = [];
     const chrYTemp = [];
-    const results = response.data.nominator;
-
-    const responseDenominator = response.data.denominator;
+    let results = null;
+    let responseDenominator = null;
+    if (
+      qform.smoking.length === 0 &&
+      qform.approach.length === 0 &&
+      qform.ancestry[0].value === "all" &&
+      qform.sex[0].value === "all"
+    ) {
+      results = response.data.denominator;
+      responseDenominator = response.data.nominator;
+    } else {
+      results = response.data.nominator;
+      responseDenominator = response.data.denominator;
+    }
 
     const mergedResult = responseDenominator.map((itemA) => {
       let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
       // const { age, sex, ancestry, ...restItems } = nominatorItem;
-      return {
-        ...itemA._source,
-        ...nominatorItem._source,
-      };
+      if (nominatorItem !== undefined)
+        return {
+          ...itemA._source,
+          ...nominatorItem._source,
+        };
+      else
+        return {
+          ...itemA._source,
+        };
     });
     // console.log(mergedResult);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
@@ -129,7 +145,8 @@ export default function RangeView(props) {
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
-        //d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
+
+        //d.sex = d.sex === 0?"F":"M"
 
         if (d.chromosome != "chrX") {
           if (d.type === "Gain") gainTemp.push(d);

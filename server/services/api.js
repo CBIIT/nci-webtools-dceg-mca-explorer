@@ -84,6 +84,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
   const qsmokeNFC = request.body.smoking;
+  const qplatform = request.body.array;
   console.log(request.body.types);
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
 
@@ -174,6 +175,18 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   }
   if (smokearr.length === 0) {
     smokearr = ["0", "1", "2"];
+  }
+
+  let platformarr = [];
+  if (qplatform !== undefined && qplatform.length > 0) {
+    qplatform.forEach((a) => {
+      if (a.value !== "all") {
+        platformarr.push(a.value);
+      }
+    });
+  }
+  if (platformarr.length === 0) {
+    platformarr = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
   }
 
   if (qstart !== undefined) {
@@ -275,6 +288,11 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                 {
                   terms: {
                     smokeNFC: smokearr,
+                  },
+                },
+                {
+                  terms: {
+                    array: platformarr,
                   },
                 },
               ],
