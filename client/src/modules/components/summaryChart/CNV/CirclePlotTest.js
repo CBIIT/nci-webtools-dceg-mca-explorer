@@ -423,7 +423,7 @@ export default function CirclePlotTest(props) {
         console.log(query);
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
-        console.log("do query...", form.counterCompare, group.types);
+        console.log("do query...", form.counterCompare, group);
         //const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
@@ -436,43 +436,70 @@ export default function CirclePlotTest(props) {
           maxcf: group.maxFraction,
           ancestry: group.ancestry,
           types: group.types,
+          smoking: group.smoking,
+          array: group.approach,
+          minAge: group.minAge,
+          maxAge: group.maxAge,
         });
       }
 
-      const results = response.data.nominator;
+      let results = null;
+      let responseDenominator = null;
+      console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
+      if (
+        group.smoking.length === 0 &&
+        group.approach.length === 0 &&
+        group.ancestry.length === 0 &&
+        group.sex.length === 0
+      ) {
+        results = response.data.denominator;
+        responseDenominator = response.data.nominator;
+      } else {
+        results = response.data.nominator;
+        responseDenominator = response.data.denominator;
+      }
 
-      const responseDenominator = response.data.denominator;
+      const mergedResult = responseDenominator.map((itemA) => {
+        let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
+        // const { age, sex, ancestry, ...restItems } = nominatorItem;
+        if (nominatorItem !== undefined)
+          return {
+            ...itemA._source,
+            ...nominatorItem._source,
+          };
+        else
+          return {
+            ...itemA._source,
+          };
+      });
 
-      const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
+      mergedResult.forEach((r) => {
+        //if (r._source !== null) {
+        const d = r;
+        if (d.cf != "nan") {
+          d.block_id = d.chromosome.substring(3);
+          d.value = d.cf;
+          d.dataset = d.dataset.toUpperCase();
+          d.start = Number(d.beginGrch38);
+          d.end = Number(d.endGrch38);
+          d.length = Number(d.length);
 
-      results.forEach((r) => {
-        if (r._source !== null) {
-          const d = r._source;
-          if (d.cf != "nan") {
-            d.block_id = d.chromosome.substring(3);
-            d.value = d.cf;
-            d.dataset = d.dataset.toUpperCase();
-            d.start = Number(d.beginGrch38);
-            d.end = Number(d.endGrch38);
-            d.length = Number(d.length);
-            d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
-            //
-            if (d.chromosome != "chrX") {
-              if (d.type === "Gain") gainTemp.push(d);
-              else if (d.type === "CN-LOH") lohTemp.push(d);
-              else if (d.type === "Loss") lossTemp.push(d);
-              else if (d.type === "Undetermined") undeterTemp.push(d);
-            }
-            if (form.chrX && d.type == "mLOX") {
-              chrXTemp.push(d);
-              d.block_id = "X";
-            }
-            if (form.chrY && d.type == "mLOY") {
-              chrYTemp.push(d);
-              d.block_id = "Y";
-            }
-            result.push(d);
+          //
+          if (d.chromosome != "chrX") {
+            if (d.type === "Gain") gainTemp.push(d);
+            else if (d.type === "CN-LOH") lohTemp.push(d);
+            else if (d.type === "Loss") lossTemp.push(d);
+            else if (d.type === "Undetermined") undeterTemp.push(d);
           }
+          if (form.chrX && d.type == "mLOX") {
+            chrXTemp.push(d);
+            d.block_id = "X";
+          }
+          if (form.chrY && d.type == "mLOY") {
+            chrYTemp.push(d);
+            d.block_id = "Y";
+          }
+          result.push(d);
         }
       });
     }

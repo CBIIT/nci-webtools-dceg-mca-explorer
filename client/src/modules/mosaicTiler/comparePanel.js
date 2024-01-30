@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions } from "./constants";
+import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions, platformArray, smokeNFC } from "./constants";
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -21,7 +21,7 @@ export default function ComparePanel(props) {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
-  console.log(study);
+  // console.log(study);
   //reset
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
@@ -239,12 +239,7 @@ export default function ComparePanel(props) {
                 isMulti={true}
                 value={approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={[
-                  { value: "gsa", label: "Illumina Global Screening Array" },
-                  { value: "oncoArray", label: "Illumina OncoArray Array" },
-                  { value: "axiom", label: "Axiom" },
-                  { value: "bileve", label: "BiLEVE" },
-                ].filter((obj, index) =>
+                options={platformArray.filter((obj, index) =>
                   study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 2 : index >= 2) : true
                 )}
                 classNamePrefix="select"
@@ -371,10 +366,7 @@ export default function ComparePanel(props) {
                 isMulti={true}
                 value={smoking}
                 onChange={(ev) => handleSelectChange("smoking", ev)}
-                options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "no", label: "No" },
-                ]}
+                options={smokeNFC}
                 classNamePrefix="select"
               />
             </Form.Group>

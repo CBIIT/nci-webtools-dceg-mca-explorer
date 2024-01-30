@@ -77,7 +77,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qsex = request.body.sex;
   const qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : 0;
   const qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : 1;
-  console.log(qmincf, qmaxcf);
+  // console.log(qmincf, qmaxcf);
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
   const qchromosomes = request.body.chromosomes;
@@ -85,7 +85,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
   const qsmokeNFC = request.body.smoking;
   const qplatform = request.body.array;
-  console.log(request.body.types);
+  console.log(qsex);
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
 
   let qfilter = [];
@@ -141,9 +141,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         e.value === "female" ? sexarr.push("0") : "";
       }
     });
-    // console.log(sexarr);
+    console.log(sexarr);
     // searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
   }
+  if (qsex.length === 0) sexarr = ["0", "1"];
   //query cf within the range, add query range in filter
   if (qmincf !== undefined || qmaxcf !== undefined) {
     if (qmincf === undefined) qmincf = "0";
@@ -210,16 +211,6 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   // ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
   filterString.push({ terms: { "type.keyword": qfilter } });
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qstart, qend);
-  /* const client = new Client({
-    node: host,
-    auth: {
-      username: OPENSEARCH_USERNAME,
-      password: OPENSEARCH_PASSWORD,
-    },
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });*/
 
   try {
     const result = await client.search({
@@ -229,26 +220,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         size: 200000,
         query: {
           bool: {
-            must_not: [
-              ...searchExclude,
-              {
-                //in ukbb data, there is chrX with all other types, and will exclude them
-                bool: {
-                  filter: [
-                    {
-                      match: {
-                        chromosome: "chrX",
-                      },
-                    },
-                    {
-                      terms: {
-                        "type.keyword": ["Gain", "Loss", "CN-LOH", "Undetermined"],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
+            must_not: [...searchExclude],
             must: searchdataset,
             filter: filterString,
           },
@@ -328,23 +300,7 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
   const xMax = search.xMax;
   const xMin = search.xMin;
   const chr = search.chr;
-  //console.log(search, xMax,chr)
-  /*const client = new Client({
-    node: host,
-    auth: {
-      username: OPENSEARCH_USERNAME,
-      password: OPENSEARCH_PASSWORD,
-    },
-    ssl: {
-      rejectUnauthorized: false,
-    },
 
-    //  node: host,
-    //   ssl: {
-    //     rejectUnauthorized: false
-    //   }
-  });*/
-  //console.log(client)
   try {
     const result = await client.search({
       index: "combinedgene", //new_geneindex is convert position as number
