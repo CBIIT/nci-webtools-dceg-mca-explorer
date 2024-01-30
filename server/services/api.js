@@ -259,7 +259,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
-    console.log(sexarr, ancestryarr, smokearr);
+    console.log(sexarr, ancestryarr, smokearr, platformarr);
     try {
       const resultdemo = await client.search({
         index: "denominator",
@@ -292,7 +292,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                 },
                 {
                   terms: {
-                    array: platformarr,
+                    "array.keyword": platformarr,
                   },
                 },
               ],

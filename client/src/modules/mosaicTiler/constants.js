@@ -61,3 +61,10 @@ export const smokeNFC = [
   { value: "1", label: "Former" },
   { value: "2", label: "Current" },
 ];
+
+export const platformArray = [
+  { value: "gsa", label: "Illumina Global Screening" },
+  { value: "oncoArray", label: "Illumina OncoArray" },
+  { value: "Axiom", label: "Axiom" },
+  { value: "BiLEVE", label: "BiLEVE" },
+];

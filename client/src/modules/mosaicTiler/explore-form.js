@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions, smokeNFC } from "./constants";
+import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions, smokeNFC, platformArray } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 const compareArray = CompareArray;
@@ -291,12 +291,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 isMulti={true}
                 value={form.approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={[
-                  { value: "gsa", label: "Illumina Global Screening" },
-                  { value: "oncoArray", label: "Illumina OncoArray" },
-                  { value: "axiom", label: "Axiom" },
-                  { value: "bileve", label: "BiLEVE" },
-                ].filter((obj, index) =>
+                options={platformArray.filter((obj, index) =>
                   form.study.length < 2 && form.study.length > 0
                     ? form.study[0].value === "plco"
                       ? index < 2
