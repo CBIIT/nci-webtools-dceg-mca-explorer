@@ -9,7 +9,7 @@ import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
 import { Columns, exportTable } from "./tableColumns";
-import { initialX, initialY } from "./constants";
+import { initialX, initialY, AncestryOptions, smokeNFC, SexOptions } from "./constants";
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -145,6 +145,18 @@ export default function RangeView(props) {
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
+        if (d.PopID !== undefined) {
+          const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
+          d.PopID = dancestry !== undefined ? dancestry[0].label : "";
+        }
+        if (d.smokeNFC !== undefined) {
+          const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
+          d.smokeNFC = dsmoking !== undefined ? dsmoking[0].label : "";
+        }
+        if (d.sex !== undefined) {
+          const dsex = SexOptions.filter((a) => a.value === d.sex);
+          d.sex = dsex !== undefined ? dsex[0].label : "";
+        }
 
         //d.sex = d.sex === 0?"F":"M"
 

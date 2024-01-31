@@ -137,14 +137,15 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         sexarr.push("1");
         sexarr.push("0");
       } else {
-        e.value === "male" ? sexarr.push("1") : "";
-        e.value === "female" ? sexarr.push("0") : "";
+        sexarr.push(e.value);
+        //e.value === "male" ? sexarr.push("1") : "";
+        //e.value === "female" ? sexarr.push("0") : "";
       }
     });
     console.log(sexarr);
     // searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
   }
-  if (qsex.length === 0) sexarr = ["0", "1"];
+  if (sexarr.length === 0) sexarr = ["0", "1"];
   //query cf within the range, add query range in filter
   if (qmincf !== undefined || qmaxcf !== undefined) {
     if (qmincf === undefined) qmincf = "0";
@@ -349,7 +350,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   if (group != undefined) {
     console.log("query group:", group);
     const study = group.study;
-    const array = group.array;
+    const platfomrarray = group.array;
     const chromesome = group.chr;
     const sex = group.sex;
     const ancestry = group.ancestry;
@@ -360,7 +361,9 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const types = group.types;
     const start = group.start ? Number(group.start) : 0;
     const end = group.end ? Number(group.end) : 9999999999;
-    //console.log("query string:", study, array, chromesome);
+    const smokeNFC = group.smokeNFC;
+
+    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -373,22 +376,61 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       queryString.push({ match: { chromosome: "chrX" } });
       queryString.push({ terms: { "type.keyword": ["mLOX"] } });
     } else queryString.push({ match: { chromosome: "chr" + chromesome } });
-    console.log(queryString);
 
     if (study !== undefined && study.length > 0)
       queryString.push({ terms: { dataset: parseQueryStr("study", study) } });
-    //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
-    if (sex !== undefined && sex.length > 0)
-      queryString.push({ terms: { "computedGender.keyword": parseQueryStr("sex", sex) } });
-    //add query for ancestry
-    let atemp = [];
-    if (ancestry !== undefined) {
-      ancestry.forEach((a) => {
-        if (a.value !== "all") atemp.push(a.value);
+
+    let sexarr = [];
+    if (sex !== undefined && sex !== null) {
+      sex.forEach((e) => {
+        if (e.value === "all") {
+          sexarr.push("1");
+          sexarr.push("0");
+        } else {
+          sexarr.push(e.value);
+        }
       });
-      if (atemp.length > 0) queryString.push({ terms: { "ancestry.keyword": atemp } });
     }
-    atemp = [];
+    if (sexarr.length === 0) sexarr = ["0", "1"];
+    console.log(sexarr);
+    //add query for ancestry
+    let ancestryarry = [];
+    if (ancestry !== undefined && ancestry !== null) {
+      ancestry.forEach((a) => {
+        if (a.value !== "all") {
+          ancestryarry.push(a.value);
+        }
+      });
+    }
+    if (ancestryarry.length === 0)
+      AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarry.push(a.value) : ""));
+    console.log(ancestryarry);
+    let smokearr = [];
+    if (smokeNFC !== undefined && smokeNFC !== null) {
+      smokeNFC.forEach((a) => {
+        if (a.value !== "all") {
+          smokearr.push(a.value);
+        }
+      });
+    }
+    if (smokearr.length === 0) {
+      smokearr = ["0", "1", "2"];
+    }
+    console.log(smokearr);
+    let platformarr = [];
+    if (platfomrarray !== undefined && platfomrarray !== null) {
+      platfomrarray.forEach((a) => {
+        if (a.value !== "all") {
+          platformarr.push(a.value);
+        }
+      });
+    }
+    if (platformarr.length === 0) {
+      platformarr = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
+    }
+    console.log(platformarr);
+
+    let atemp = [];
     //add query for types
     if (types !== undefined) {
       types.forEach((t) => {
@@ -405,26 +447,6 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       if (maxcf === undefined) maxcf = "1";
       queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
-
-    //console.log(chromesome, queryString);
-    // const searchExclude = [];
-    // if (chromesome === "Y") {
-    //   //searchExclude.push({ match: { "type.keyword": "mLOX" } });
-    // }
-    // if (chromesome === "X") {
-    //   searchExclude.push({ match: { "type.keyword": "mLOY" } });
-    // }
-    // console.log(chromesome, queryString, searchExclude);
-    /*  const client = new Client({
-      node: host,
-      auth: {
-        username: OPENSEARCH_USERNAME,
-        password: OPENSEARCH_PASSWORD,
-      },
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    });*/
 
     try {
       const result = await client.search({
@@ -466,7 +488,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       try {
         const resultdemo = await client.search({
           index: "denominator",
-          _source: ["sampleId", "age", "sex", "smokeNFC"],
+          _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"],
           body: {
             track_total_hits: true,
             size: 200000,
@@ -476,6 +498,26 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
                   {
                     terms: {
                       sampleId: resultsIds,
+                    },
+                  },
+                  {
+                    terms: {
+                      sex: sexarr,
+                    },
+                  },
+                  {
+                    terms: {
+                      PopID: ancestryarry,
+                    },
+                  },
+                  {
+                    terms: {
+                      smokeNFC: smokearr,
+                    },
+                  },
+                  {
+                    terms: {
+                      "array.keyword": platformarr,
                     },
                   },
                 ],

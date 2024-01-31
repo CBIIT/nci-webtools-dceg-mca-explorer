@@ -38,8 +38,8 @@ export const StudyOptions = [
 
 export const SexOptions = [
   { value: "all", label: "All Sexes" },
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
+  { value: "0", label: "Male" },
+  { value: "1", label: "Female" },
 ];
 
 export const initialX = [

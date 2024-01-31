@@ -14,7 +14,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { initialX, initialY } from "../../../mosaicTiler/constants";
+import { AncestryOptions, initialX, initialY } from "../../../mosaicTiler/constants";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -419,6 +419,12 @@ export default function CirclePlotTest(props) {
           end: form.end,
           mincf: group.minFraction,
           maxcf: group.maxFraction,
+          ancestry: group.ancestry,
+          smoking: group.smoking,
+          array: group.approach,
+          sex: group.sex,
+          minAge: group.minAge,
+          maxAge: group.maxAge,
         };
         console.log(query);
         response = await axios.post("api/opensearch/chromosome", query);
@@ -445,12 +451,12 @@ export default function CirclePlotTest(props) {
 
       let results = null;
       let responseDenominator = null;
-      console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
+      // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
       if (
-        group.smoking.length === 0 &&
-        group.approach.length === 0 &&
-        group.ancestry.length === 0 &&
-        group.sex.length === 0
+        (group.smoking === undefined || group.smoking.length === 0) &&
+        (group.approach === undefined || group.approach.length === 0) &&
+        (group.ancestry === undefined || group.ancestry.length === 0) &&
+        (group.sex === undefined || group.sex.length === 0)
       ) {
         results = response.data.denominator;
         responseDenominator = response.data.nominator;
@@ -458,7 +464,7 @@ export default function CirclePlotTest(props) {
         results = response.data.nominator;
         responseDenominator = response.data.denominator;
       }
-
+      //console.log(results, responseDenominator);
       const mergedResult = responseDenominator.map((itemA) => {
         let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
         // const { age, sex, ancestry, ...restItems } = nominatorItem;
@@ -483,6 +489,10 @@ export default function CirclePlotTest(props) {
           d.start = Number(d.beginGrch38);
           d.end = Number(d.endGrch38);
           d.length = Number(d.length);
+          if (d.PopID !== undefined) {
+            const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
+            d.PopID = dancestry !== undefined ? dancestry[0].label : "";
+          }
 
           //
           if (d.chromosome != "chrX") {
