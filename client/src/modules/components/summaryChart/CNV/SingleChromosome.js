@@ -233,11 +233,13 @@ function SingleChromosome(props) {
             "<br>Cellular Fraction:" +
             e.value +
             "<br>Ancestry: " +
-            e.ancestry +
+            e.PopID +
             "<br>Sex: " +
             e.sex +
             "<br>Age: " +
-            e.age;
+            e.age +
+            "<br> Smoke: " +
+            e.smokeNFC;
           return text;
         }),
         hovertemplate: "<br>%{hovertext} <extra></extra>",
@@ -351,6 +353,7 @@ function SingleChromosome(props) {
             // }}
           />
         </div>
+        <div>{props.msg}</div>
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />
         {loading && xMax - xMin < zoomWindow && zoomHistory.length > 0 ? (

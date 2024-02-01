@@ -18,9 +18,9 @@ export default function CircosPlot(props) {
   const classCircle = props.circleClass;
   const layoutxy = props.layoutxy;
   return (
-    <div style={{ justifyContent: "center" }}>
+    <div style={{ justifyContent: "center", position: "absolute" }}>
       <div style={{ fontSize: "14px" }}>{props.title}</div>
-      <div style={{ position: "absolute" }}>
+      <div style={{ justifyContent: "center", position: "absolute" }}>
         <Circos
           layout={layoutxy}
           config={{
@@ -80,7 +80,7 @@ export default function CircosPlot(props) {
       </div>
       <div
         id={props.details}
-        style={{ position: "absolute" }}
+        style={{ justifyContent: "center" }}
         ref={circleRef}
         onMouseEnter={handleEnter}
         onClick={handleEnter}>
@@ -263,6 +263,7 @@ export default function CircosPlot(props) {
         />
         {/* <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.details}</div> */}
       </div>
+      <div style={{ fontSize: "14px" }}>{props.msg}</div>
     </div>
   );
   //return

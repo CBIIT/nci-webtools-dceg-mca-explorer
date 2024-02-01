@@ -14,7 +14,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { AncestryOptions, initialX, initialY } from "../../../mosaicTiler/constants";
+import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -40,6 +40,8 @@ const hovertip = (d) => {
     d.sex +
     "<br> Age: " +
     d.age +
+    "<br> Smoke: " +
+    d.smokeNFC +
     " " +
     "</p>"
   );
@@ -68,6 +70,9 @@ export default function CirclePlotTest(props) {
   const [groupB, setGroupB] = useState([]);
   const [titleA, setTitleA] = useState("A");
   const [titleB, setTitleB] = useState("B");
+  const [msgA, setMsgA] = useState("");
+  const [msgB, setMsgB] = useState("");
+  const [msg, setMsg] = useState("");
   const [commonTitle, setCommonTitle] = useState("Test");
   const [circleA, setCircleA] = useState(null);
   const [circleB, setCircleB] = useState(null);
@@ -493,6 +498,14 @@ export default function CirclePlotTest(props) {
             const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
             d.PopID = dancestry !== undefined ? dancestry[0].label : "";
           }
+          if (d.smokeNFC !== undefined) {
+            const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
+            d.smokeNFC = dsmoking !== undefined ? dsmoking[0].label : "";
+          }
+          if (d.sex !== undefined) {
+            const dsex = SexOptions.filter((a) => a.value === d.sex);
+            d.sex = dsex !== undefined ? dsex[0].label : "";
+          }
 
           //
           if (d.chromosome != "chrX") {
@@ -583,9 +596,14 @@ export default function CirclePlotTest(props) {
       tempB += agecfB === "" ? "; CF: 0-1" : agecfB;
     }
     //console.log(agecfA, agecfB);
-
+    const [titleA, errorMessageA] = checkTitleStudyPlatForm(form.groupA, tempA);
+    const [titleB, errorMessageB] = checkTitleStudyPlatForm(form.groupB, tempB);
+    tempA = titleA;
+    tempB = titleB;
     setTitleA(tempA.slice(1));
     setTitleB(tempB.slice(1));
+    setMsgA(errorMessageA);
+    setMsgB(errorMessageB);
     return titleGroup.slice(1);
   };
 
@@ -608,9 +626,35 @@ export default function CirclePlotTest(props) {
     }
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
+
     return title;
   };
 
+  const singleTitle = (group) => {
+    let title = "";
+    //console.log(group);
+    for (let key in group) {
+      const values = group[key];
+      if (values !== undefined) {
+        if (typeof values === "object" && Array.isArray(values) && values.length > 0) {
+          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
+          values.forEach((s) => {
+            title += s.label + ",";
+          });
+          title = title.slice(0, -1);
+        } else if (typeof values === "object" && Array.isArray(values) && values.length === 0) {
+          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": All";
+        }
+      }
+    }
+    title += groupAgeTitle(group);
+    title += groupCfTitle(group);
+
+    const [tempTitle, errormsg] = checkTitleStudyPlatForm(group, title);
+    setMsg(errormsg);
+    //  console.log(tempTitle, errormsg);
+    return tempTitle;
+  };
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
@@ -633,9 +677,38 @@ export default function CirclePlotTest(props) {
     return title;
   };
 
+  const checkTitleStudyPlatForm = (group, title) => {
+    //if none of the array value belongs to one study, then in the title, the study name should be removed
+    //and give a notes for this study
+    let errorMessage = "";
+    console.log(group.approach);
+    group.study !== undefined &&
+      group.approach !== undefined &&
+      group.study.forEach((s) => {
+        console.log(s.value, group.approach.length);
+        if (s.value === "plco" && group.approach.length > 0) {
+          const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
+          console.log(plcoArray);
+          if (plcoArray.length === 0) {
+            title = title.replace("PLCO", "");
+            errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
+          }
+        }
+        if (s.value === "ukbb" && group.approach.length > 0) {
+          const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
+          if (ukArray.length === 0) {
+            title = title.replace("UK Biobank", "");
+            errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
+          }
+        }
+      });
+    console.log(group.approach, errorMessage, title);
+    return [title, errorMessage];
+  };
+
   useEffect(() => {
     setCircosTitle(
-      groupTitle({
+      singleTitle({
         types: form.types,
         sex: form.sex,
         study: form.study,
@@ -1182,6 +1255,7 @@ export default function CirclePlotTest(props) {
                       zoomRange={zoomRangeA}
                       data={groupA}
                       title={titleA}
+                      msg={msgA}
                       details="A"
                       chromesomeId={chromesomeId}
                       width={singleFigWidth}
@@ -1199,6 +1273,7 @@ export default function CirclePlotTest(props) {
                       zoomRange={zoomRangeB}
                       data={groupB}
                       title={titleB}
+                      msg={msgB}
                       details="B"
                       chromesomeId={chromesomeId}
                       width={singleFigWidth}
@@ -1248,6 +1323,7 @@ export default function CirclePlotTest(props) {
                     data={data}
                     details={"One"}
                     title={""}
+                    msg={msg}
                     chromesomeId={chromesomeId}
                     size={singleChromeSize}
                     zoomHistory={handleZoomHistory}
@@ -1289,7 +1365,7 @@ export default function CirclePlotTest(props) {
           </Row>
           <div>
             <Row className="justify-content-center g-0">
-              <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
+              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
                 {circleA ? (
                   <CircosPlotCompare
                     layoutAll={layoutAll}
@@ -1297,6 +1373,7 @@ export default function CirclePlotTest(props) {
                     title={titleA}
                     dataXY={[]}
                     details="A"
+                    msg={msgA}
                     size={compareCircleSize}
                     thicknessloss={thicknessloss}
                     thicknessgain={thicknessgain}
@@ -1311,7 +1388,7 @@ export default function CirclePlotTest(props) {
                   ""
                 )}
               </Col>
-              <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
+              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
                 {circleB ? (
                   <CircosPlotCompare
                     layoutAll={layoutAll}
@@ -1327,6 +1404,7 @@ export default function CirclePlotTest(props) {
                     circle={circleB}
                     circleRef={circleRef}
                     handleEnter={handleEnter}
+                    msg={msgB}
                     //circleClass="overlayX"
                     hovertip={hovertip}></CircosPlotCompare>
                 ) : (
@@ -1370,6 +1448,7 @@ export default function CirclePlotTest(props) {
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
+                msg={msg}
                 size={size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}

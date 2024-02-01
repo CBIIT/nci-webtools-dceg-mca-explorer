@@ -259,6 +259,7 @@ export default function CircosPlot(props) {
           size={size}
         />
         <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.details}</div>
+        <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.msg}</div>
       </div>
     </div>
   );
