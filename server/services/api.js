@@ -392,7 +392,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       });
     }
     if (sexarr.length === 0) sexarr = ["0", "1"];
-    console.log(sexarr);
+    //  console.log(sexarr);
     //add query for ancestry
     let ancestryarry = [];
     if (ancestry !== undefined && ancestry !== null) {
@@ -404,7 +404,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     }
     if (ancestryarry.length === 0)
       AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarry.push(a.value) : ""));
-    console.log(ancestryarry);
+    //console.log(ancestryarry);
     let smokearr = [];
     if (smokeNFC !== undefined && smokeNFC !== null) {
       smokeNFC.forEach((a) => {
@@ -416,7 +416,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     if (smokearr.length === 0) {
       smokearr = ["0", "1", "2"];
     }
-    console.log(smokearr);
+    //console.log(smokearr);
     let platformarr = [];
     if (platfomrarray !== undefined && platfomrarray !== null) {
       platfomrarray.forEach((a) => {
@@ -628,20 +628,56 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
 });
 
 apiRouter.post("/opensearch/denominator", async (request, response) => {
-  const query = request.body.query;
-  //console.log("denominator", query);
+  const query = request.body;
+  console.log("denominator", query);
+  const sex = query.sex;
+  const ancestry = query.ancestry;
+  const smoking = query.smoking;
+  const approach = query.approach;
+  const minAge = query.minAge;
+  const maxAge = query.maxAge;
+  const study = query.study;
+
+  let sexarr = getAttributesArray(sex, "sex"),
+    ancestryarry = getAttributesArray(ancestry, "ancestry"),
+    smokearr = getAttributesArray(smoking, "smoking"),
+    platformarr = getAttributesArray(approach, "array"),
+    dataset = getStudy(study);
+  //console.log(sexarr, ancestryarry);
   try {
     const result = await client.search({
       index: "denominator",
-      _source: ["sampleId", "age", "sex", "smokeNFC"],
+      _source: ["sampleId"],
       body: {
         track_total_hits: true,
-        size: 200000,
+        size: 500000,
         query: {
           bool: {
             must: [
               {
-                terms: query,
+                terms: {
+                  dataset: dataset,
+                },
+              },
+              {
+                terms: {
+                  sex: sexarr,
+                },
+              },
+              {
+                terms: {
+                  PopID: ancestryarry,
+                },
+              },
+              {
+                terms: {
+                  smokeNFC: smokearr,
+                },
+              },
+              {
+                terms: {
+                  "array.keyword": platformarr,
+                },
               },
             ],
           },
@@ -649,8 +685,108 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
       },
     });
     console.log(result.body.hits.hits.length);
-    response.json(result.body.hits.hits);
+    response.json(result.body.hits.hits.length);
   } catch (error) {
     console.error(error);
   }
 });
+
+const getAttributesArray = (atti, name) => {
+  let attiarray = [];
+  if (atti !== undefined && atti !== null) {
+    atti.forEach((e) => {
+      if (e.value !== "all") {
+        attiarray.push(e.value);
+      }
+    });
+  }
+  if (attiarray.length === 0) {
+    switch (name) {
+      case "sex":
+        attiarray = ["0", "1"];
+        break;
+      case "ancestry":
+        AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));
+        break;
+      case "array":
+        attiarray = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
+        break;
+      case "smoking":
+        attiarray = ["0", "1", "2"];
+        break;
+    }
+  }
+  return attiarray;
+};
+/*
+const getSex = (sex) => {
+  let sexarr = [];
+  if (sex !== undefined && sex !== null) {
+    sex.forEach((e) => {
+      if (e.value !== "all") {
+        sexarr.push(e.value);
+      }
+    });
+  }
+  if (sexarr.length === 0) sexarr = ["0", "1"];
+  return sexarr;
+};
+
+const getAncestry = (ancestry) => {
+  let ancestryarry = [];
+  if (ancestry !== undefined && ancestry !== null) {
+    ancestry.forEach((a) => {
+      if (a.value !== "all") {
+        ancestryarry.push(a.value);
+      }
+    });
+  }
+  if (ancestryarry.length === 0) AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarry.push(a.value) : ""));
+  return ancestryarry;
+};
+
+const getPlatform = (platfomrarray) => {
+  let platformarr = [];
+  if (platfomrarray !== undefined && platfomrarray !== null) {
+    platfomrarray.forEach((a) => {
+      if (a.value !== "all") {
+        platformarr.push(a.value);
+      }
+    });
+  }
+  if (platformarr.length === 0) {
+    platformarr = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
+  }
+  return platformarr;
+};
+
+const getSmoking = (smokeNFC) => {
+  let smokearr = [];
+  if (smokeNFC !== undefined && smokeNFC !== null) {
+    smokeNFC.forEach((a) => {
+      if (a.value !== "all") {
+        smokearr.push(a.value);
+      }
+    });
+  }
+  if (smokearr.length === 0) {
+    smokearr = ["0", "1", "2"];
+  }
+  return smokearr;
+};*/
+
+const getStudy = (qdataset) => {
+  const datasets = [];
+  //if there is more studies, queryString is an array, if there is only one, study is json object
+  if (qdataset !== undefined) {
+    qdataset.length
+      ? qdataset.forEach((element) => {
+          element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
+          element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
+          element.label ? datasets.push(element.value) : "";
+          //element.label?searchdataset.push({match:{dataset:element.value}}):''
+        })
+      : datasets.push(qdataset.value);
+  }
+  return datasets;
+};
