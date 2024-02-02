@@ -8,13 +8,13 @@ import { Row, Col, Button, Container } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
 import Legend from "../../../components/legend";
-
 import axios from "axios";
 import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+import { fisherTest } from "../../utils";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -96,8 +96,10 @@ export default function CirclePlotTest(props) {
   const [isinit, setIsinit] = useState(false);
   const [circleTableData, setCircleTableData] = useState([]);
   const [circosTitle, setCircosTitle] = useState("");
-
+  const [fisherA, setFisherA] = useState(0);
+  const [fisherB, setFisherB] = useState(0);
   const compareRef = useRef(isCompare);
+
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
   const tableRef = useRef(tableData);
@@ -353,8 +355,12 @@ export default function CirclePlotTest(props) {
       setCircleTableData([]);
       console.log(form);
       if (form.counterCompare > 0) {
-        handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
-        handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
+        handleGroupQuery(form.groupA).then((data) =>
+          showChart ? (setGroupA(data[0]), setFisherA(data[1])) : setCircleA({ ...data })
+        );
+        handleGroupQuery(form.groupB).then((data) =>
+          showChart ? (setGroupB(data[0]), setFisherB(data[1])) : setCircleB({ ...data })
+        );
       }
     } else {
       //console.log("clear form");
@@ -386,6 +392,7 @@ export default function CirclePlotTest(props) {
   async function handleGroupQuery(group) {
     //setLoading(true)
     const result = [];
+    let responseDeno = [];
     let query = {};
     let response = "";
     let circleTemp = {};
@@ -432,6 +439,9 @@ export default function CirclePlotTest(props) {
           maxAge: group.maxAge,
         };
         console.log(query);
+        responseDeno = await axios.post("api/opensearch/denominator", query);
+        console.log(responseDeno.data);
+
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
         console.log("do query...", form.counterCompare, group);
@@ -536,7 +546,8 @@ export default function CirclePlotTest(props) {
     };
     //setTableData([...result, ...tableData]);
     //console.log(circleTemp);
-    if (showChart) return result;
+
+    if (showChart) return [result, result.length / responseDeno.data];
     else return circleTemp;
   }
   useEffect(() => {
@@ -568,6 +579,7 @@ export default function CirclePlotTest(props) {
                 break;
               } else {
                 itemTitle += itemA[i].label;
+                if (i < itemA.length - 1) itemTitle += ",";
               }
             }
           } else {
@@ -690,14 +702,14 @@ export default function CirclePlotTest(props) {
           const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
           console.log(plcoArray);
           if (plcoArray.length === 0) {
-            title = title.replace("PLCO", "");
+            title = title.replace("PLCO,", "").replace("PLCO", "");
             errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
           }
         }
         if (s.value === "ukbb" && group.approach.length > 0) {
           const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
           if (ukArray.length === 0) {
-            title = title.replace("UK Biobank", "");
+            title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
             errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
           }
         }
@@ -1177,6 +1189,7 @@ export default function CirclePlotTest(props) {
   useEffect(() => {
     if (groupA !== null || groupB !== null) {
       setTableData([...groupA, ...groupB]);
+      //setFisherB(fisherTest(groupB.length, 5, 3, 12));
     }
     props.getData(tableData);
   }, [groupA, groupB]);
@@ -1256,6 +1269,7 @@ export default function CirclePlotTest(props) {
                       data={groupA}
                       title={titleA}
                       msg={msgA}
+                      fisherP={fisherA}
                       details="A"
                       chromesomeId={chromesomeId}
                       width={singleFigWidth}
@@ -1274,6 +1288,7 @@ export default function CirclePlotTest(props) {
                       data={groupB}
                       title={titleB}
                       msg={msgB}
+                      fisherP={fisherB}
                       details="B"
                       chromesomeId={chromesomeId}
                       width={singleFigWidth}
