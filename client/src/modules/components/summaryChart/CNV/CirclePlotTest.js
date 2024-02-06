@@ -4,7 +4,7 @@ import layout from "./layout2.json";
 import layoutxy from "./layoutxy.json";
 import "./css/circos.css";
 import SingleChromosome from "./SingleChromosome";
-import { Row, Col, Button, Container } from "react-bootstrap";
+import { Row, Col, Button, Container, Table } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
 import Legend from "../../../components/legend";
@@ -547,7 +547,7 @@ export default function CirclePlotTest(props) {
     //setTableData([...result, ...tableData]);
     //console.log(circleTemp);
 
-    if (showChart) return [result, result.length / responseDeno.data];
+    if (showChart) return [result, responseDeno.data];
     else return circleTemp;
   }
   useEffect(() => {
@@ -1299,6 +1299,29 @@ export default function CirclePlotTest(props) {
                     ></SingleChromosome>
                   </div>
                 </Col>
+              </Row>
+              <Row>
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th></th>
+                      <th>Yes </th>
+                      <th>No </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{titleA}</td>
+                      <td>{groupA.length}</td>
+                      <td>{fisherA}</td>
+                    </tr>
+                    <tr>
+                      <td>{titleB}</td>
+                      <td>{groupB.length}</td>
+                      <td>{fisherB}</td>
+                    </tr>
+                  </tbody>
+                </Table>
               </Row>
             </>
           )}

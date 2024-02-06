@@ -104,17 +104,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const filterString = [];
   const searchdataset = [];
   const searchExclude = []; //{match:{"chromosome":"chrX"}},{terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined']}}
-  const datasets = [];
   //if there is more studies, queryString is an array, if there is only one, study is json object
   if (qdataset !== undefined) {
-    qdataset.length
-      ? qdataset.forEach((element) => {
-          element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
-          element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
-          element.label ? datasets.push(element.value) : "";
-          //element.label?searchdataset.push({match:{dataset:element.value}}):''
-        })
-      : datasets.push(qdataset.value);
+    const datasets = getStudy(qdataset);
     searchdataset.push({ terms: { dataset: datasets } });
   }
 
@@ -130,22 +122,8 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     }
   }
   //query sex
-  let sexarr = [];
-  if (qsex !== undefined && qsex.length > 0) {
-    qsex.forEach((e) => {
-      if (e.value === "all") {
-        sexarr.push("1");
-        sexarr.push("0");
-      } else {
-        sexarr.push(e.value);
-        //e.value === "male" ? sexarr.push("1") : "";
-        //e.value === "female" ? sexarr.push("0") : "";
-      }
-    });
-    console.log(sexarr);
-    // searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
-  }
-  if (sexarr.length === 0) sexarr = ["0", "1"];
+  let sexarr = getAttributesArray(qsex, "sex");
+
   //query cf within the range, add query range in filter
   if (qmincf !== undefined || qmaxcf !== undefined) {
     if (qmincf === undefined) qmincf = "0";
@@ -154,42 +132,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   }
 
   //query ancestry
-  let ancestryarr = [];
-  if (qancestry !== undefined && qancestry.length > 0) {
-    console.log(qancestry);
-    qancestry.forEach((a) => {
-      if (a.value !== "all") {
-        ancestryarr.push(a.value);
-      }
-    });
-  }
-  if (ancestryarr.length === 0) {
-    AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
-  }
-
-  let smokearr = [];
-  if (qsmokeNFC !== undefined && qsmokeNFC.length > 0) {
-    qsmokeNFC.forEach((a) => {
-      if (a.value !== "all") {
-        smokearr.push(a.value);
-      }
-    });
-  }
-  if (smokearr.length === 0) {
-    smokearr = ["0", "1", "2"];
-  }
-
-  let platformarr = [];
-  if (qplatform !== undefined && qplatform.length > 0) {
-    qplatform.forEach((a) => {
-      if (a.value !== "all") {
-        platformarr.push(a.value);
-      }
-    });
-  }
-  if (platformarr.length === 0) {
-    platformarr = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
-  }
+  let ancestryarr = getAttributesArray(qancestry, "ancestry");
+  let smokearr = getAttributesArray(qsmokeNFC, "smoking");
+  let platformarr = getAttributesArray(qplatform, "array");
 
   if (qstart !== undefined) {
     filterString.push({
@@ -380,30 +325,10 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     if (study !== undefined && study.length > 0)
       queryString.push({ terms: { dataset: parseQueryStr("study", study) } });
 
-    let sexarr = [];
-    if (sex !== undefined && sex !== null) {
-      sex.forEach((e) => {
-        if (e.value === "all") {
-          sexarr.push("1");
-          sexarr.push("0");
-        } else {
-          sexarr.push(e.value);
-        }
-      });
-    }
-    if (sexarr.length === 0) sexarr = ["0", "1"];
+    let sexarr = getAttributesArray(sex, "sex");
     //  console.log(sexarr);
     //add query for ancestry
-    let ancestryarry = [];
-    if (ancestry !== undefined && ancestry !== null) {
-      ancestry.forEach((a) => {
-        if (a.value !== "all") {
-          ancestryarry.push(a.value);
-        }
-      });
-    }
-    if (ancestryarry.length === 0)
-      AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarry.push(a.value) : ""));
+    let ancestryarry = getAttributesArray(ancestry, "ancestry");
     //console.log(ancestryarry);
     let smokearr = [];
     if (smokeNFC !== undefined && smokeNFC !== null) {

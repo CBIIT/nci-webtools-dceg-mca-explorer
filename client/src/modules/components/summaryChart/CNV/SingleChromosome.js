@@ -353,7 +353,7 @@ function SingleChromosome(props) {
             // }}
           />
         </div>
-        <div>{props.fisherP}</div>
+        <div>{props.data.length / props.fisherP}</div>
         <div>{props.msg}</div>
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />
