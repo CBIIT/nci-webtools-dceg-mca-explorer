@@ -637,7 +637,7 @@ const getAttributesArray = (atti, name) => {
         attiarray = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
         break;
       case "smoking":
-        attiarray = ["0", "1", "2"];
+        attiarray = ["0", "1", "2", "9"];
         break;
     }
   }
