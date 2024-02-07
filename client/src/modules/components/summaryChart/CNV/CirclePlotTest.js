@@ -510,11 +510,11 @@ export default function CirclePlotTest(props) {
           }
           if (d.smokeNFC !== undefined) {
             const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
-            d.smokeNFC = dsmoking !== undefined ? dsmoking[0].label : "";
+            d.smokeNFC = dsmoking !== undefined && dsmoking.length > 0 ? dsmoking[0].label : "NA";
           }
           if (d.sex !== undefined) {
             const dsex = SexOptions.filter((a) => a.value === d.sex);
-            d.sex = dsex !== undefined ? dsex[0].label : "";
+            d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
           }
 
           //

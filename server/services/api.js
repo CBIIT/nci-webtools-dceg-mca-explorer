@@ -306,7 +306,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const types = group.types;
     const start = group.start ? Number(group.start) : 0;
     const end = group.end ? Number(group.end) : 9999999999;
-    const smokeNFC = group.smokeNFC;
+    const smokeNFC = group.smoking;
 
     console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome);
     const dataset = [];
@@ -326,34 +326,12 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       queryString.push({ terms: { dataset: parseQueryStr("study", study) } });
 
     let sexarr = getAttributesArray(sex, "sex");
-    //  console.log(sexarr);
+    console.log(sexarr);
     //add query for ancestry
     let ancestryarry = getAttributesArray(ancestry, "ancestry");
     //console.log(ancestryarry);
-    let smokearr = [];
-    if (smokeNFC !== undefined && smokeNFC !== null) {
-      smokeNFC.forEach((a) => {
-        if (a.value !== "all") {
-          smokearr.push(a.value);
-        }
-      });
-    }
-    if (smokearr.length === 0) {
-      smokearr = ["0", "1", "2"];
-    }
-    //console.log(smokearr);
-    let platformarr = [];
-    if (platfomrarray !== undefined && platfomrarray !== null) {
-      platfomrarray.forEach((a) => {
-        if (a.value !== "all") {
-          platformarr.push(a.value);
-        }
-      });
-    }
-    if (platformarr.length === 0) {
-      platformarr = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
-    }
-    console.log(platformarr);
+    let smokearr = getAttributesArray(smokeNFC, "smoking");
+    let platformarr = getAttributesArray(platfomrarray, "array");
 
     let atemp = [];
     //add query for types
@@ -427,7 +405,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
                   },
                   {
                     terms: {
-                      sex: sexarr,
+                      "sex.keyword": sexarr,
                     },
                   },
                   {
@@ -568,7 +546,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
     smokearr = getAttributesArray(smoking, "smoking"),
     platformarr = getAttributesArray(approach, "array"),
     dataset = getStudy(study);
-  //console.log(sexarr, ancestryarry);
+  console.log(sexarr, ancestryarry, smokearr, platformarr);
   try {
     const result = await client.search({
       index: "denominator",
@@ -586,7 +564,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
               },
               {
                 terms: {
-                  sex: sexarr,
+                  "sex.keyword": sexarr,
                 },
               },
               {
@@ -628,7 +606,7 @@ const getAttributesArray = (atti, name) => {
   if (attiarray.length === 0) {
     switch (name) {
       case "sex":
-        attiarray = ["0", "1"];
+        attiarray = ["0", "1", "NA"];
         break;
       case "ancestry":
         AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));

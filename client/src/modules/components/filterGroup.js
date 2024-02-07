@@ -42,7 +42,7 @@ function FilterGroup() {
         />
       </Form.Group>
       <Form.Group className="mb-3" controlId="approach">
-        <Form.Label className="required">Approach</Form.Label>
+        <Form.Label className="required">Array</Form.Label>
         <Select
           placeholder="No approach selected"
           name="approach"
