@@ -1301,27 +1301,34 @@ export default function CirclePlotTest(props) {
                 </Col>
               </Row>
               <Row>
-                <Table striped bordered hover>
-                  <thead>
-                    <tr>
-                      <th></th>
-                      <th>Yes </th>
-                      <th>No </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{titleA}</td>
-                      <td>{groupA.length}</td>
-                      <td>{fisherA}</td>
-                    </tr>
-                    <tr>
-                      <td>{titleB}</td>
-                      <td>{groupB.length}</td>
-                      <td>{fisherB}</td>
-                    </tr>
-                  </tbody>
-                </Table>
+                <Col xs={12} md={3} lg={3}></Col>
+                <Col xs={12} md={6} lg={6}>
+                  <Table striped bordered hover>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th colspan="2">mca in region </th>
+                      </tr>
+                      <tr>
+                        <th></th>
+                        <th>Yes </th>
+                        <th>No </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{titleA}</td>
+                        <td>{groupA.length}</td>
+                        <td>{fisherA}</td>
+                      </tr>
+                      <tr>
+                        <td>{titleB}</td>
+                        <td>{groupB.length}</td>
+                        <td>{fisherB}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </Col>
               </Row>
             </>
           )}
