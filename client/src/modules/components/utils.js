@@ -1,4 +1,5 @@
 import * as math from "mathjs";
+
 /**
  * Packs an array of potentially overlapping ranges into rows, where each row
  * contains non-overlapping ranges, separated by a single space
@@ -35,17 +36,22 @@ export function packRanges(ranges) {
 }
 
 export function fisherTest(a, b, c, d) {
-  const total = a + b + c + d;
-  const row1Total = a + b;
-  const row2Total = c + d;
-  const col1Total = a + c;
-  const col2Total = b + d;
+  let biga = a;
+  let bigb = b;
+  let bigc = c;
+  let bigd = d;
+  const total = biga + bigb + bigc + bigd;
+  const row1Total = biga + bigb;
+  const row2Total = bigc + bigd;
+  const col1Total = biga + bigc;
+  const col2Total = bigb + bigd;
+  console.log(a, b, c, d, total, row2Total);
 
   let observedP = math.divide(
     math.multiply(math.combinations(row1Total, a), math.combinations(row2Total, c)),
     math.combinations(total, col1Total)
   );
-
+  console.log(observedP);
   let p = 0;
   const lowerBound = Math.max(0, col1Total - row2Total);
   const upperBound = Math.min(row1Total, col1Total);
@@ -60,5 +66,6 @@ export function fisherTest(a, b, c, d) {
       p = math.add(p, prob);
     }
   }
+
   return p;
 }

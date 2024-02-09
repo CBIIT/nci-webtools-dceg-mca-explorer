@@ -4,6 +4,8 @@ import { getStatus, getSamples, AncestryOptions } from "./query.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
 import { createRequire } from "module";
+import { exec } from "child_process";
+import { stderr } from "process";
 const require = createRequire(import.meta.url);
 const spec = require("./spec.json");
 const { APPLICATION_NAME, BASE_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_ENDPOINT } = process.env;
@@ -693,3 +695,17 @@ const getStudy = (qdataset) => {
   }
   return datasets;
 };
+
+apiRouter.post("/fishertest", async (request, response) => {
+  const matrix = request.body;
+
+  const matrixString = matrix.join(" ");
+
+  exec(`Rscript ./services/fisher_test.R ${matrixString}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return response.status(500).send(stderr);
+    }
+    response.send({ pValue: stdout.trim() });
+  });
+});

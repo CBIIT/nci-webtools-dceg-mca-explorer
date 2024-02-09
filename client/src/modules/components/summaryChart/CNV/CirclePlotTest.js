@@ -98,6 +98,7 @@ export default function CirclePlotTest(props) {
   const [circosTitle, setCircosTitle] = useState("");
   const [fisherA, setFisherA] = useState(0);
   const [fisherB, setFisherB] = useState(0);
+  const [Pfisher, setPfisher] = useState(0);
   const compareRef = useRef(isCompare);
 
   const showChartRef = useRef(showChart);
@@ -339,6 +340,13 @@ export default function CirclePlotTest(props) {
       //setZoomRangeB(null);
     }
   };
+
+  async function handleFisherTest(a, b, c, d) {
+    const matrix = [a, b - a, c, d - c];
+    const pvalue = await axios.post("api/fishertest", matrix);
+    console.log(pvalue.data);
+    setPfisher(pvalue.data.pValue);
+  }
 
   let data = [];
   useEffect(() => {
@@ -693,7 +701,7 @@ export default function CirclePlotTest(props) {
     //if none of the array value belongs to one study, then in the title, the study name should be removed
     //and give a notes for this study
     let errorMessage = "";
-    console.log(group.approach);
+    // console.log(group.approach);
     group.study !== undefined &&
       group.approach !== undefined &&
       group.study.forEach((s) => {
@@ -1202,6 +1210,12 @@ export default function CirclePlotTest(props) {
   }, [tableData, form.plotType, circleTableData]);
   //props.getData(tableData);
 
+  useEffect(() => {
+    if (form.plotType.value === "static" && form.counterCompare > 0) {
+      handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
+    }
+  }, [fisherA, fisherB]);
+
   return (
     <Container className="compareContainer align-middle text-center">
       {showChartRef.current ? (
@@ -1300,30 +1314,35 @@ export default function CirclePlotTest(props) {
                   </div>
                 </Col>
               </Row>
+
               <Row>
                 <Col xs={12} md={3} lg={3}></Col>
                 <Col xs={12} md={6} lg={6}>
+                  P_Fisher: {Pfisher}
                   <Table striped bordered hover>
                     <thead>
                       <tr>
                         <th></th>
-                        <th colspan="2">mca in region </th>
+                        <th colspan="3">mca in region </th>
                       </tr>
                       <tr>
                         <th></th>
                         <th>Yes </th>
                         <th>No </th>
+                        <th>Total </th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td>{titleA}</td>
                         <td>{groupA.length}</td>
+                        <td>{fisherA - groupA.length}</td>
                         <td>{fisherA}</td>
                       </tr>
                       <tr>
                         <td>{titleB}</td>
                         <td>{groupB.length}</td>
+                        <td>{fisherB - groupB.length}</td>
                         <td>{fisherB}</td>
                       </tr>
                     </tbody>
