@@ -98,6 +98,8 @@ export default function CirclePlotTest(props) {
   const [circosTitle, setCircosTitle] = useState("");
   const [fisherA, setFisherA] = useState(0);
   const [fisherB, setFisherB] = useState(0);
+  const [rangeA, setRangeA] = useState(0);
+  const [rangeB, setRangeB] = useState(0);
   const [Pfisher, setPfisher] = useState(0);
   const compareRef = useRef(isCompare);
 
@@ -343,9 +345,12 @@ export default function CirclePlotTest(props) {
 
   async function handleFisherTest(a, b, c, d) {
     const matrix = [a, b - a, c, d - c];
-    const pvalue = await axios.post("api/fishertest", matrix);
-    console.log(pvalue.data);
-    setPfisher(pvalue.data.pValue);
+    console.log(matrix);
+    if (b >= a && d >= c) {
+      const pvalue = await axios.post("api/fishertest", matrix);
+      console.log(pvalue.data);
+      setPfisher(pvalue.data.pValue);
+    }
   }
 
   let data = [];
@@ -1082,6 +1087,8 @@ export default function CirclePlotTest(props) {
     if (zoomHistory.length == 2) {
       setZoomRange(zoomHistory[0]);
       setRangeLabel(zoomHistory[1]);
+      //update tableData based on zoom range
+      //console.log(tableData);
     }
   };
   useEffect(() => {
@@ -1199,6 +1206,7 @@ export default function CirclePlotTest(props) {
       setTableData([...groupA, ...groupB]);
       //setFisherB(fisherTest(groupB.length, 5, 3, 12));
     }
+    //set tableData within range
     props.getData(tableData);
   }, [groupA, groupB]);
 
@@ -1212,9 +1220,25 @@ export default function CirclePlotTest(props) {
 
   useEffect(() => {
     if (form.plotType.value === "static" && form.counterCompare > 0) {
-      handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
+      console.log(rangeLabel);
+      if (rangeLabel.length > 0) {
+        let rangeMin = rangeLabel.split("-")[0].split(":")[1].replace(/,/g, "");
+        let rangeMax = rangeLabel.split("-")[1].replace(/,/g, "");
+
+        rangeMax = Number(rangeMax);
+        rangeMin = Number(rangeMin);
+        //reset tableData and fisher number
+        const rangeGroupA = groupA.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+        const rangeGroupB = groupB.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+
+        setTableData([...rangeGroupA, ...rangeGroupB]);
+        setRangeA(rangeGroupA.length);
+        setRangeB(rangeGroupB.length);
+        // console.log(rangeA.length, rangeB.length);
+        handleFisherTest(rangeA, fisherA, rangeB, fisherB);
+      } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
     }
-  }, [fisherA, fisherB]);
+  }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
 
   return (
     <Container className="compareContainer align-middle text-center">
@@ -1318,7 +1342,7 @@ export default function CirclePlotTest(props) {
               <Row>
                 <Col xs={12} md={3} lg={3}></Col>
                 <Col xs={12} md={6} lg={6}>
-                  P_Fisher: {Pfisher}
+                  P_Fisher= {Pfisher}
                   <Table striped bordered hover>
                     <thead>
                       <tr>
@@ -1335,14 +1359,14 @@ export default function CirclePlotTest(props) {
                     <tbody>
                       <tr>
                         <td>{titleA}</td>
-                        <td>{groupA.length}</td>
-                        <td>{fisherA - groupA.length}</td>
+                        <td>{rangeLabel === "" ? groupA.length : rangeA}</td>
+                        <td>{fisherA > rangeA ? fisherA - rangeA : fisherA}</td>
                         <td>{fisherA}</td>
                       </tr>
                       <tr>
                         <td>{titleB}</td>
-                        <td>{groupB.length}</td>
-                        <td>{fisherB - groupB.length}</td>
+                        <td>{rangeLabel === "" ? groupB.length : rangeB}</td>
+                        <td>{fisherB > rangeB ? fisherB - rangeB : fisherB}</td>
                         <td>{fisherB}</td>
                       </tr>
                     </tbody>

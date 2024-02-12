@@ -698,9 +698,9 @@ const getStudy = (qdataset) => {
 
 apiRouter.post("/fishertest", async (request, response) => {
   const matrix = request.body;
-
+  //console.log(matrix);
   const matrixString = matrix.join(" ");
-
+  //console.log(matrixString);
   exec(`Rscript ./services/fisher_test.R ${matrixString}`, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
