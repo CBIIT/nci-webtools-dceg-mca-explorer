@@ -1359,7 +1359,7 @@ export default function CirclePlotTest(props) {
                     <thead>
                       <tr>
                         <th></th>
-                        <th colspan="3">mca in region </th>
+                        <th colSpan="3">mca in region </th>
                       </tr>
                       <tr>
                         <th></th>

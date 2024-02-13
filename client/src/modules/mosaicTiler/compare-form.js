@@ -36,6 +36,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [compare, setCompare] = useState(false);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [submitClicked, setSubmitClicked] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -57,6 +58,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
 
   function handleSubmit(event) {
     event.preventDefault();
+    setSubmitClicked(true);
     if (onSubmit) onSubmit(form);
     //handleDisplayCompare();
   }
@@ -66,6 +68,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     setForm(defaultFormState);
     setIsX(false);
     setIsY(false);
+    setSubmitClicked(false);
+
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
 
@@ -130,18 +134,22 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   //console.log(form)
   function handleFilter(event) {
     event.preventDefault();
+    setSubmitClicked(true);
     //setCounter(counter + 1);
     //mergeForm({ compare: true });
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
-    // console.log(form);
-    setForm({ ...form, compare: true, counterCompare: counter + 1 });
-    onFilter({ ...form });
+
+    if (form.plotType.value === "static" && form.chrCompare !== "") {
+      setForm({ ...form, compare: true, counterCompare: counter + 1 });
+      onFilter({ ...form });
+    }
     //onSubmit(form);
   }
 
   const handleFilterClear = (event) => {
     console.log("filterclear", form);
+    setSubmitClicked(false);
     setCompareChecks(CompareArray);
     updateGroup();
     onClear({
@@ -192,9 +200,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleDisplayCompare = () => {
     setCompare(true);
   };
-  useEffect(() => {
-    console.log("display compare", form);
-  });
+
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
@@ -225,6 +231,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           <>
             <Form.Group className="mb-3">
               <Form.Label className="required">Chromosome</Form.Label>
+              <Form.Label style={{ color: "red" }}>
+                {submitClicked && form.chrCompare === "" ? "Plese select chromosome" : ""}
+              </Form.Label>
               <Select
                 aria-label="chromosome"
                 placeholder="- Select -"

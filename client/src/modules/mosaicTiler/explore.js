@@ -32,23 +32,29 @@ export default function Explore() {
 
   function handleSubmit(event, name) {
     // setIsOpenCompare(true);
-    setForm({
-      ...event,
-      submitted: true,
-      compare: false,
-      counterSubmitted: name === undefined ? counter + 1 : 0,
-    });
+    console.log(event, name);
+    if (event.plotType.value === "static" && event.chrSingle === "") {
+    } else {
+      setForm({
+        ...event,
+        submitted: true,
+        compare: false,
+        counterSubmitted: name === undefined ? counter + 1 : 0,
+      });
+    }
   }
   function handleFilter(event) {
-    console.log("filter:", event, form);
-    setForm({
-      ...form,
-      compare: true,
-      counterCompare: form.counterCompare + 1,
-      groupA: { ...event.groupA },
-      groupB: { ...event.groupB },
-      //submitted: true,
-    });
+    console.log("filter:", form);
+    if (form.plotType.value === "static" && form.chrSingle !== "") {
+      setForm({
+        ...form,
+        compare: true,
+        counterCompare: form.counterCompare + 1,
+        groupA: { ...event.groupA },
+        groupB: { ...event.groupB },
+        //submitted: true,
+      });
+    }
   }
   function handleFilterClear(event) {
     setForm({ ...event });

@@ -31,6 +31,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [compare, setCompare] = useState(false);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [submitClicked, setSubmitClicked] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -50,6 +51,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSubmit(event) {
     event.preventDefault();
+    setSubmitClicked(true);
     if (onSubmit) onSubmit(form);
     //handleDisplayCompare();
   }
@@ -59,6 +61,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setForm(defaultFormState);
     setIsX(false);
     setIsY(false);
+    setSubmitClicked(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
     // onSubmit(resetFormState, "reset"); //clean the plot
@@ -182,6 +185,9 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <>
           <Form.Group className="mb-3">
             <Form.Label className="required">Chromosome</Form.Label>
+            <Form.Label style={{ color: "red" }}>
+              {submitClicked && form.chrSingle === "" ? "Plese select chromosome" : ""}
+            </Form.Label>
             <Select
               aria-label="chromosome"
               placeholder="- Select -"
