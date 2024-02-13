@@ -47,6 +47,7 @@ function SingleChromosome(props) {
   const [newRange, setNewRange] = useState([]);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [pvalue, setPvalue] = useState(0);
 
   //update sizeRef when width changes
   useEffect(() => {
@@ -191,7 +192,8 @@ function SingleChromosome(props) {
       types.push(element.type);
       ydata.push(index);
     });
-    //console.log(zoomeddata.length, data1.length, xMin, xMax);
+    console.log(zoomeddata.length, props.fisherP);
+    setPvalue(zoomeddata.length);
     const datatemp = [
       {
         x: data1,
@@ -353,7 +355,12 @@ function SingleChromosome(props) {
             // }}
           />
         </div>
-        <div>{props.fisherP > 0 ? ((100 * data.length) / props.fisherP).toFixed(4) : 0}%</div>
+
+        <div>
+          {props.fisherP > 0
+            ? ((100 * (pvalue > 0 ? pvalue : props.data.length)) / props.fisherP).toFixed(6) + "%"
+            : ""}
+        </div>
         <div>{props.msg}</div>
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
         <br />

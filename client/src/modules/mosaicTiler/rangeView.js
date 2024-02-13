@@ -68,8 +68,6 @@ export default function RangeView(props) {
     // form.ancestry,form.algorithm
   ]);
 
-  useEffect(() => {}, []);
-
   async function handleSubmit(qdataset, qform) {
     setGain([]);
     setLoh([]);
@@ -358,6 +356,7 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
+    // console.log(data.length);
     setTableData(data);
   };
   const handleCheckboxChange = () => {
@@ -372,7 +371,8 @@ export default function RangeView(props) {
   let resultData = tableData;
   if (!form.compare) {
     if (chromoId > 0) {
-      resultData = allValue;
+      resultData = tableData.length > 0 ? tableData : allValue;
+      //filter data if zoomin for single chromo
     } else resultData = allValues;
 
     if (form.plotType.value === "circos") {

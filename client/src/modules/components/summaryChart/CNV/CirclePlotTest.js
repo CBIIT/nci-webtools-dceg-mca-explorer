@@ -366,6 +366,9 @@ export default function CirclePlotTest(props) {
       }
       setTableData([]);
       setCircleTableData([]);
+
+      setGroupA([]);
+      setGroupB([]);
       console.log(form);
       if (form.counterCompare > 0) {
         handleGroupQuery(form.groupA).then((data) =>
@@ -383,14 +386,12 @@ export default function CirclePlotTest(props) {
       setCircleB(null);
       setTableData([]);
       setCircleTableData([]);
+
       //console.log("clear circle data");
     }
+    setCommonTitle(checkGroupTitleForDup());
   }, [form.counterCompare]);
 
-  // const handleCompareHeightChange = (height) => {
-  //   setFigureHeight(height);
-  // };
-  // console.log(props.chrx);
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId + ""),
@@ -563,9 +564,6 @@ export default function CirclePlotTest(props) {
     if (showChart) return [result, responseDeno.data];
     else return circleTemp;
   }
-  useEffect(() => {
-    setCommonTitle(checkGroupTitleForDup());
-  }, [form.counterCompare]);
 
   // useEffect(() => {
   //   setCommonTitle(checkGroupTitleForDup());
@@ -1214,8 +1212,22 @@ export default function CirclePlotTest(props) {
     if (form.plotType.value === "circos") {
       //console.log("whole chromosome", circleTableData);
       props.getData(circleTableData);
-    } else props.getData(tableRef.current);
-  }, [tableData, form.plotType, circleTableData]);
+    } else {
+      if (rangeLabel.length > 0) {
+        let rangeMin = rangeLabel.split("-")[0].split(":")[1].replace(/,/g, "");
+        let rangeMax = rangeLabel.split("-")[1].replace(/,/g, "");
+
+        rangeMax = Number(rangeMax);
+        rangeMin = Number(rangeMin);
+        const zoomedTabledata = data.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+        console.log(zoomedTabledata.length);
+        if (!form.compare) props.getData(zoomedTabledata);
+      } else {
+        props.getData([]);
+      }
+      if (form.compare) props.getData(tableRef.current);
+    }
+  }, [tableData, form.plotType, circleTableData, rangeLabel]);
   //props.getData(tableData);
 
   useEffect(() => {
