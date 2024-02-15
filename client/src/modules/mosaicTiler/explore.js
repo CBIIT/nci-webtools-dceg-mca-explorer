@@ -45,7 +45,10 @@ export default function Explore() {
   }
   function handleFilter(event) {
     console.log("filter:", form);
-    if (form.plotType.value === "static" && (form.chrSingle !== "" || form.chrCompare !== "")) {
+    if (
+      form.plotType.value !== "static" ||
+      (form.plotType.value === "static" && (form.chrSingle !== "" || form.chrCompare !== ""))
+    ) {
       setForm({
         ...form,
         compare: true,
