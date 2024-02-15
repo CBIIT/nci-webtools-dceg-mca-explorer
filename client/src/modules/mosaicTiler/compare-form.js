@@ -140,7 +140,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
 
-    if (form.plotType.value === "static" && form.chrCompare !== "") {
+    if (form.plotType.value !== "static" || (form.plotType.value === "static" && form.chrCompare !== "")) {
+      console.log("comparing...");
       setForm({ ...form, compare: true, counterCompare: counter + 1 });
       onFilter({ ...form });
     }
