@@ -35,7 +35,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleChange(event) {
     const { name, value } = event.target;
-    // console.log(event, name, value);
+    console.log(event, name, value);
 
     if (name === "chrX") {
       setIsX(event.target.checked);
@@ -44,8 +44,17 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
     } else if (name === "maxAge") {
-      if (value >= 150) mergeForm({ [name]: 150 });
-      else mergeForm({ [name]: value });
+      if (value <= 150) mergeForm({ [name]: Number(value) });
+      else mergeForm({ [name]: 150 });
+    } else if (name === "minAge") {
+      if (value <= 150) mergeForm({ [name]: Number(value) });
+      else mergeForm({ [name]: 0 });
+    } else if (name === "minFraction") {
+      if (value <= 100) mergeForm({ [name]: value });
+      else mergeForm({ [name]: 0 });
+    } else if (name === "maxFraction") {
+      if (value <= 100) mergeForm({ [name]: value });
+      else mergeForm({ [name]: 100 });
     } else mergeForm({ [name]: value });
   }
 

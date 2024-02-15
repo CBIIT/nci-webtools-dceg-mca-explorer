@@ -33,18 +33,21 @@ export default function ComparePanel(props) {
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
-      setMinAge(value);
+      if (value <= 150) setMinAge(Number(value));
+      else setMinAge(0);
     }
     if (name === "maxAge") {
-      if (value < 150) setMaxAge(value);
+      if (value < 150) setMaxAge(Number(value));
       else setMaxAge(150);
     }
     //  setCompareForm({ ...compareform, [name]: value });
     if (name === "minFraction") {
-      setMinFraction(value);
+      if (value <= 100) setMinFraction(value);
+      else setMinFraction(0);
     }
     if (name === "maxFraction") {
-      setMaxFraction(value);
+      if (value <= 100) setMaxFraction(value);
+      else setMaxFraction(100);
     }
     if (name === "start") {
       setStart(value);
