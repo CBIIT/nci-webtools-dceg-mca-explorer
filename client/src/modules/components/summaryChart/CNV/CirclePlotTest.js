@@ -1372,13 +1372,13 @@ export default function CirclePlotTest(props) {
                       <tr>
                         <td>{titleA}</td>
                         <td>{rangeLabel === "" ? groupA.length : rangeA}</td>
-                        <td>{fisherA > rangeA ? fisherA - rangeA : fisherA}</td>
+                        <td>{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
                         <td>{fisherA}</td>
                       </tr>
                       <tr>
                         <td>{titleB}</td>
                         <td>{rangeLabel === "" ? groupB.length : rangeB}</td>
-                        <td>{fisherB > rangeB ? fisherB - rangeB : fisherB}</td>
+                        <td>{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
                         <td>{fisherB}</td>
                       </tr>
                     </tbody>

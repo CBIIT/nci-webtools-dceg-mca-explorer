@@ -358,7 +358,7 @@ function SingleChromosome(props) {
 
         <div>
           {props.fisherP > 0
-            ? ((100 * (pvalue > 0 ? pvalue : props.data.length)) / props.fisherP).toFixed(6) + "%"
+            ? ((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(6) + "%"
             : ""}
         </div>
         <div>{props.msg}</div>
