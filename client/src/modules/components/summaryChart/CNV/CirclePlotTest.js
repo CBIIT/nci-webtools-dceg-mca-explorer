@@ -1206,7 +1206,7 @@ export default function CirclePlotTest(props) {
     }
     //set tableData within range
     props.getData(tableData);
-  }, [groupA, groupB]);
+  }, [groupA, groupB, rangeLabel]);
 
   useEffect(() => {
     if (form.plotType.value === "circos") {
@@ -1225,7 +1225,9 @@ export default function CirclePlotTest(props) {
       } else {
         props.getData([]);
       }
-      if (form.compare) props.getData(tableRef.current);
+      if (form.compare) {
+        props.getData(tableRef.current);
+      }
     }
   }, [tableData, form.plotType, circleTableData, rangeLabel]);
   //props.getData(tableData);
