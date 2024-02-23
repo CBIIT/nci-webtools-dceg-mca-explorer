@@ -87,6 +87,8 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
   const qsmokeNFC = request.body.smoking;
   const qplatform = request.body.array;
+  const minAge = Number(request.body.minAge);
+  const maxAge = Number(request.body.maxAge);
   console.log(qsex);
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
 
@@ -216,6 +218,11 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                   },
                 },
               ],
+              filter: [
+                {
+                  range: { "age.keyword": { gte: minAge, lte: maxAge } },
+                },
+              ],
             },
           },
         },
@@ -301,8 +308,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const chromesome = group.chr;
     const sex = group.sex;
     const ancestry = group.ancestry;
-    const maxAge = group.maxAge;
-    const minAge = group.minAge;
+    const maxAge = Number(group.maxAge);
+    const minAge = Number(group.minAge);
     const maxcf = Number(group.maxcf) / 100.0;
     const mincf = Number(group.mincf) / 100.0;
     const types = group.types;
@@ -310,7 +317,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const end = group.end ? Number(group.end) : 9999999999;
     const smokeNFC = group.smoking;
 
-    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome);
+    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -426,11 +433,16 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
                     },
                   },
                 ],
+                filter: [
+                  {
+                    range: { "age.keyword": { gte: minAge, lte: maxAge } },
+                  },
+                ],
               },
             },
           },
         });
-        console.log(resultdemo.body.hits.hits.length);
+        console.log("denominator", resultdemo.body.hits.hits.length, "nominator:", result.body.hits.hits.length);
 
         const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
 
@@ -539,8 +551,8 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
   const ancestry = query.ancestry;
   const smoking = query.smoking;
   const approach = query.approach;
-  const minAge = query.minAge;
-  const maxAge = query.maxAge;
+  const minAge = Number(query.minAge);
+  const maxAge = Number(query.maxAge);
   const study = query.study;
 
   let sexarr = getAttributesArray(sex, "sex"),
@@ -583,6 +595,11 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
                 terms: {
                   "array.keyword": platformarr,
                 },
+              },
+            ],
+            filter: [
+              {
+                range: { age: { gte: minAge, lte: maxAge } },
               },
             ],
           },

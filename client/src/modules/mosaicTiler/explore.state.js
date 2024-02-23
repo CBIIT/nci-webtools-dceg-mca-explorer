@@ -65,6 +65,8 @@ export async function getData(params) {
     maxcf: params.maxFraction,
     ancestry: params.ancestry,
     types: params.types,
+    maxAge: params.maxAge,
+    minAge: params.minAge,
   });
 
   const results = response.data.nominator;

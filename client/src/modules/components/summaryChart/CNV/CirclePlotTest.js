@@ -1249,7 +1249,7 @@ export default function CirclePlotTest(props) {
         setRangeA(rangeGroupA.length);
         setRangeB(rangeGroupB.length);
         // console.log(rangeA.length, rangeB.length);
-        handleFisherTest(rangeA, fisherA, rangeB, fisherB);
+        handleFisherTest(rangeGroupA.length, fisherA, rangeGroupB.length, fisherB);
       } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
     }
   }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
