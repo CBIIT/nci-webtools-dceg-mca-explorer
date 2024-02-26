@@ -76,6 +76,7 @@ export default function RangeView(props) {
     setChrX([]);
     setChrY([]);
     //setLoading(true)
+    console.log(qform);
     const response = await axios.post("api/opensearch/mca", {
       dataset: qdataset,
       sex: qform.sex,
@@ -106,10 +107,13 @@ export default function RangeView(props) {
     let results = null;
     let responseDenominator = null;
     if (
+      //if any attribute filer is selected, then use the value as the filter, that means filter out no value
       qform.smoking.length === 0 &&
       qform.approach.length === 0 &&
       qform.ancestry[0].value === "all" &&
-      qform.sex[0].value === "all"
+      qform.sex[0].value === "all" &&
+      qform.minAge === "" &&
+      qform.maxAge === ""
     ) {
       results = response.data.denominator;
       responseDenominator = response.data.nominator;
@@ -174,11 +178,11 @@ export default function RangeView(props) {
           d.block_id = "Y";
         }
 
-        if (form.chrSingle && form.chrSingle.value === "chrX" && d.type === "mLOX") {
+        if (form.chrSingle && form.chrSingle === "chrX" && d.type === "mLOX") {
           chrXTemp.push(d);
           d.block_id = "X";
         }
-        if (form.chrSingle && form.chrSingle.value === "chrY" && d.type === "mLOY") {
+        if (form.chrSingle && form.chrSingle === "chrY" && d.type === "mLOY") {
           chrYTemp.push(d);
           d.block_id = "Y";
         }

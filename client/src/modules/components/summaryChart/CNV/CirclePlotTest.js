@@ -530,6 +530,7 @@ export default function CirclePlotTest(props) {
             const dsex = SexOptions.filter((a) => a.value === d.sex);
             d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
           }
+          //if(minAge!==undefined)
 
           //
           if (d.chromosome != "chrX") {
