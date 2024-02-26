@@ -1357,7 +1357,7 @@ export default function CirclePlotTest(props) {
               <Row>
                 <Col xs={12} md={3} lg={3}></Col>
                 <Col xs={12} md={6} lg={6}>
-                  P_Fisher= {Pfisher}
+                {groupA.length ===0 || groupB.length === 0 ?"Fisher test is not available": "P_Fisher=" +Pfisher}
                   <Table striped bordered hover>
                     <thead>
                       <tr>

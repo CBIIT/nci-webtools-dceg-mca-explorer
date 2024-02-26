@@ -144,7 +144,7 @@ export default function ComparePanel(props) {
             setSex([]);
           } else if (element.label === " Age") {
             setMinAge("0");
-            setMaxAge("0");
+            setMaxAge("100");
           } else if (element.label === " Ancestry") {
             setAncestry([]);
           } else if (element.label === " Smoking Status") {
@@ -152,7 +152,7 @@ export default function ComparePanel(props) {
           } else if (element.label === " Copy Number State") {
             setTypes(null);
           } else if (element.label === " Cellular Fraction") {
-            setMaxFraction("0");
+            setMaxFraction("100");
             setMinFraction("0");
           }
         }
