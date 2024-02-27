@@ -1358,28 +1358,27 @@ export default function CirclePlotTest(props) {
                 <Col xs={12} md={3} lg={3}></Col>
                 <Col xs={12} md={6} lg={6}>
                 {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0?"Fisher test is not available": "P_Fisher=" +Pfisher}
-                  <Table striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th colSpan="3">mca in region </th>
+                  <Table responsive bordered hover className="fisherTable">
+                    <thead >
+                      <tr >
+                        <th rowSpan="2" className="bold-title-3">Attributes</th>
+                        <th colSpan="3" className="bold-title-main" >mCA in region </th>
                       </tr>
                       <tr>
-                        <th></th>
-                        <th>Yes </th>
-                        <th>No </th>
-                        <th>Total </th>
+                        <th className="bold-title">Yes </th>
+                        <th className="bold-title">No </th>
+                        <th className="bold-title">Total </th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody >
                       <tr>
-                        <td>{titleA}</td>
+                        <td className="bold-title-2">{titleA}</td>
                         <td>{rangeLabel === "" ? groupA.length : rangeA}</td>
                         <td>{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
                         <td>{fisherA}</td>
                       </tr>
                       <tr>
-                        <td>{titleB}</td>
+                        <td className="bold-title-2">{titleB}</td>
                         <td>{rangeLabel === "" ? groupB.length : rangeB}</td>
                         <td>{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
                         <td>{fisherB}</td>

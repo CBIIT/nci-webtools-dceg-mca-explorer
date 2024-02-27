@@ -185,3 +185,46 @@
     flex-grow: 1;
 }
 
+.fisherTable{
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f4f8f9;
+ 
+}
+
+.fisherTable th,
+.fisherTable td{
+    padding: 1px 3px;
+    text-align: center;
+    font-size: smaller;
+}
+.fisherTable .bold-title{
+    font-weight: bold !important;
+}
+
+.fisherTable tr:hover{
+    background-color: #a8e6fb;
+}
+/*.fisherTable tr:nth-child(odd),
+.fisherTable tr:nth-child(even){
+    background-color: #f0f5f7;
+}*/
+
+.fisherTable .bold-title-main{
+    font-weight: bold !important;
+}
+.fisherTable .bold-title-2{
+    font-weight: bold !important;
+    text-align: center;
+    padding-right: 1px;
+    padding-left: 2px;
+    font-size: smaller;
+}
+.fisherTable .bold-title-3{
+    font-weight: bold !important;
+    text-align: center;
+    font-size: smaller;
+    vertical-align: middle;
+}
+
+
