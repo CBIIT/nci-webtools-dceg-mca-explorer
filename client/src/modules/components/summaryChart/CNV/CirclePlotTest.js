@@ -682,24 +682,30 @@ export default function CirclePlotTest(props) {
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
-     // if (group.maxAge !== undefined && group.maxAge !== "") {
-       // if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge ===undefined?100:group.maxAge;
-       // else title += "; Age: 0-" + group.maxAge;
-      //}
+      if (group.maxAge !== undefined && group.maxAge !== "") {
+        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge ===undefined?100:group.maxAge;
+        else title += "; Age: 0-" + group.maxAge;
+      }
+      else{
+        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100" ;
+      }
 
-      title += "; Age: " + (group.minAge === undefined? 0: group.minAge) + "-" + (group.maxAge ===undefined?100:group.maxAge);
+    
     }
     return title;
   };
   const groupCfTitle = (group) => {
     let title = "";
     if (group != undefined) {
-     /* if (group.maxFraction !== undefined && group.maxFraction !== "") {
+      if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
           title += "; CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0;
         else title += "; CF: 0-" + group.maxFraction / 100.0;
-      }*/
-      title += "; CF: " + (group.minFraction===undefined?0: group.minFraction / 100.0 )+ "-" + (group.maxFraction===undefined?1:group.maxFraction / 100.0);
+      }
+      else{
+        if (group.minFraction !== undefined && group.minFraction !== "")
+          title += "; CF: " + group.minFraction / 100.0 + "-1" ;
+      }
 
     }
     return title;
