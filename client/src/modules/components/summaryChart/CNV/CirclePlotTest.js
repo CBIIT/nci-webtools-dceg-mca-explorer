@@ -609,8 +609,8 @@ export default function CirclePlotTest(props) {
     let agecfB = groupAgeTitle(form.groupB);
     if (agecfA === agecfB) titleGroup += agecfA;
     else {
-      tempA += agecfA === "" ? "; Age: All" : agecfA;
-      tempB += agecfB === "" ? "; Age: All" : agecfB;
+      tempA += agecfA === "" ? "; Age: " : agecfA;
+      tempB += agecfB === "" ? "; Age: " : agecfB;
     }
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
@@ -682,21 +682,25 @@ export default function CirclePlotTest(props) {
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
-      if (group.maxAge !== undefined && group.maxAge !== "") {
-        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge;
-        else title += "; Age: 0-" + group.maxAge;
-      }
+     // if (group.maxAge !== undefined && group.maxAge !== "") {
+       // if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge ===undefined?100:group.maxAge;
+       // else title += "; Age: 0-" + group.maxAge;
+      //}
+
+      title += "; Age: " + (group.minAge === undefined? 0: group.minAge) + "-" + (group.maxAge ===undefined?100:group.maxAge);
     }
     return title;
   };
   const groupCfTitle = (group) => {
     let title = "";
     if (group != undefined) {
-      if (group.maxFraction !== undefined && group.maxFraction !== "") {
+     /* if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
           title += "; CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0;
         else title += "; CF: 0-" + group.maxFraction / 100.0;
-      }
+      }*/
+      title += "; CF: " + (group.minFraction===undefined?0: group.minFraction / 100.0 )+ "-" + (group.maxFraction===undefined?1:group.maxFraction / 100.0);
+
     }
     return title;
   };
@@ -1374,13 +1378,13 @@ export default function CirclePlotTest(props) {
                     </thead>
                     <tbody >
                       <tr>
-                        <td className="bold-title-2">{titleA}</td>
+                        <td className="bold-title-2">{commonTitle+"; "+titleA}</td>
                         <td>{rangeLabel === "" ? groupA.length : rangeA}</td>
                         <td>{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
                         <td>{fisherA}</td>
                       </tr>
                       <tr>
-                        <td className="bold-title-2">{titleB}</td>
+                        <td className="bold-title-2">{commonTitle+"; "+titleB}</td>
                         <td>{rangeLabel === "" ? groupB.length : rangeB}</td>
                         <td>{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
                         <td>{fisherB}</td>
