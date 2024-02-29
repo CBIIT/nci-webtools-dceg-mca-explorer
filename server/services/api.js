@@ -90,7 +90,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const minAge = request.body.minAge ? Number(request.body.minAge) : 0;
   const maxAge = request.body.maxAge ? Number(request.body.maxAge) : 100;
   // console.log(qsex);
-  console.log(minAge,maxAge)
+  //console.log(minAge,maxAge)
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
 
   let qfilter = [];
@@ -127,6 +127,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
   }
+  console.log(qfilter)
   //query sex
   let sexarr = getAttributesArray(qsex, "sex");
 
@@ -162,7 +163,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   }
   // ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
   filterString.push({ terms: { "type.keyword": qfilter } });
-  // console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qstart, qend);
+  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter,qstart, qend);
 
   try {
     const result = await client.search({
@@ -180,10 +181,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
 
-    //console.log(result.body.hits.hits.length);
+    console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
-    //console.log(sexarr, ancestryarr, smokearr, platformarr);
+    console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge);
     try {
       const resultdemo = await client.search({
         index: "denominator_age",
@@ -319,7 +320,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const end = group.end ? Number(group.end) : 9999999999;
     const smokeNFC = group.smoking;
 
-    //console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];

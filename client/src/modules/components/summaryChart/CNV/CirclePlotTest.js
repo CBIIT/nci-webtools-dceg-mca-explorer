@@ -726,7 +726,7 @@ export default function CirclePlotTest(props) {
           }
         }
       });
-    console.log(group.approach, errorMessage, title);
+  //  console.log(group.approach, errorMessage, title);
     return [title, errorMessage];
   };
 
@@ -1328,6 +1328,7 @@ export default function CirclePlotTest(props) {
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
+                      type={form.groupA.types}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1347,6 +1348,7 @@ export default function CirclePlotTest(props) {
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
+                      type={form.groupB.types}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1355,9 +1357,9 @@ export default function CirclePlotTest(props) {
               </Row>
 
               <Row>
-                <Col xs={12} md={3} lg={3}></Col>
-                <Col xs={12} md={6} lg={6}>
-                {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0?"Fisher test is not available": "P_Fisher=" +Pfisher}
+               
+                <div style={{ paddingBottom: "2px", fontSize: "smaller"}}>
+                  {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0?"Fisher test is not available": "P_Fisher=" +Pfisher}</div>
                   <Table responsive bordered hover className="fisherTable">
                     <thead >
                       <tr >
@@ -1385,7 +1387,7 @@ export default function CirclePlotTest(props) {
                       </tr>
                     </tbody>
                   </Table>
-                </Col>
+                
               </Row>
             </>
           )}

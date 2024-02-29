@@ -101,7 +101,7 @@ export default function RangeView(props) {
     // if (form.chrY) {
     // }
 
-    // console.log(response);
+    console.log(response.data.denominator.length);
     const chrXTemp = [];
     const chrYTemp = [];
     let results = null;
@@ -135,9 +135,9 @@ export default function RangeView(props) {
           ...itemA._source,
         };
     });
-    // console.log(mergedResult);
+    //console.log(mergedResult.length);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
-
+ console.log(form)
     mergedResult.forEach((r) => {
       //if (r._source !== null) {
       const d = r;
@@ -161,7 +161,7 @@ export default function RangeView(props) {
         }
 
         //d.sex = d.sex === 0?"F":"M"
-
+        //console.log(d)
         if (d.chromosome != "chrX") {
           if (d.type === "Gain") gainTemp.push(d);
           else if (d.type === "CN-LOH") lohTemp.push(d);
@@ -169,23 +169,18 @@ export default function RangeView(props) {
           else if (d.type === "Undetermined") undeterTemp.push(d);
         }
         //for whole, and select X or Y
-        if (form.chrX && d.type === "mLOX") {
-          chrXTemp.push(d);
-          d.block_id = "X";
-        }
-        if (form.chrY && d.type === "mLOY") {
-          chrYTemp.push(d);
-          d.block_id = "Y";
-        }
+        else{
+          if (d.type === "mLOX") {
+            chrXTemp.push(d);
+            d.block_id = "X";
+          }
+          if (d.type === "mLOY") {
+            chrYTemp.push(d);
+            d.block_id = "Y";
+          }
 
-        if (form.chrSingle && form.chrSingle === "chrX" && d.type === "mLOX") {
-          chrXTemp.push(d);
-          d.block_id = "X";
         }
-        if (form.chrSingle && form.chrSingle === "chrY" && d.type === "mLOY") {
-          chrYTemp.push(d);
-          d.block_id = "Y";
-        }
+       
       }
       //}
     });
@@ -201,6 +196,7 @@ export default function RangeView(props) {
       if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
       if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
     }
+    console.log(chrXTemp.length)
     setChrX(chrXTemp);
     setChrY(chrYTemp);
   }

@@ -186,15 +186,16 @@
 }
 
 .fisherTable{
-    width: 100%;
+    width: auto;
     border-collapse: collapse;
     background-color: #f4f8f9;
- 
+    margin: auto;
+    
 }
 
 .fisherTable th,
 .fisherTable td{
-    padding: 1px 3px;
+    padding: 2px 5px 3px;
     text-align: center;
     font-size: smaller;
 }

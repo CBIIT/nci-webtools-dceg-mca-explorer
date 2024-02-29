@@ -7,11 +7,12 @@ import "./css/circos.css";
 
 const zoomWindow = 5000000;
 function SingleChromosome(props) {
-  //console.log(props.data);
+ // console.log(props);
   const ref = useRef(null);
   const [width, setWidth] = useState(props.width === undefined ? props.size : props.width);
   const [height, setHeight] = useState(props.width === undefined ? props.size : props.width);
   const sizeRef = useRef(width);
+
   const [layout, setLayout] = useState({
     //title:"Chromosome "+ props.chromesomeId,
     barmode: "stack",
@@ -356,14 +357,9 @@ function SingleChromosome(props) {
           />
         </div>
 
-        <div>
-          {props.fisherP > 0
-            ? ((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(6) + "%"
-            : ""}
-        </div>
-        <div>{props.msg}</div>
+     
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
-        <br />
+      
         {loading && xMax - xMin < zoomWindow && zoomHistory.length > 0 ? (
           <>
             <div id="snpplots">
@@ -396,8 +392,13 @@ function SingleChromosome(props) {
             </p>
           )
         )}
-        {xMin ? rangeLable : ""}
-        {/* <ResolutionPlot></ResolutionPlot> */}
+        <div style={{ paddingTop: "1px"}}>{xMin ? rangeLable : ""}</div>
+        <div style={{ paddingTop: "2px"}}>
+          {props.fisherP > 0
+            ? props.type.map(t => t.label).join(' ')+" percentage: "+((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(6) + "%"
+            : ""}
+        </div>
+        <div>{props.msg}</div>
       </div>
     </>
   );
