@@ -7,10 +7,10 @@ import "./css/circos.css";
 
 const zoomWindow = 5000000;
 function SingleChromosome(props) {
- // console.log(props);
+  console.log(props);
   const ref = useRef(null);
-  const [width, setWidth] = useState(props.width === undefined ? props.size : props.width);
-  const [height, setHeight] = useState(props.width === undefined ? props.size : props.width);
+  const [width, setWidth] = useState(props.width === undefined ? 400 : props.width);
+  const [height, setHeight] = useState(props.height === undefined ? 400: props.height);
   const sizeRef = useRef(width);
 
   const [layout, setLayout] = useState({
@@ -345,7 +345,7 @@ function SingleChromosome(props) {
               },
             }}
             useResizeHandler={true}
-            style={{ width: "100%", height: "100%", position: "relative" }}
+            style={{ width: "100%", height: 400, position: "relative" }}
             ref={ref}
             onRelayout={handleRelayout}
             // onInitialized={() => {
