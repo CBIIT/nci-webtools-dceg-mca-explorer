@@ -607,14 +607,16 @@ export default function CirclePlotTest(props) {
 
     let agecfA = groupAgeTitle(form.groupA);
     let agecfB = groupAgeTitle(form.groupB);
-    if (agecfA === agecfB) titleGroup += agecfA;
+    console.log(form.groupA,form.groupA.minAge)
+    if (agecfA === agecfB) titleGroup += form.groupA.hasOwnProperty('minAge')&&agecfA.length===0? '; Age: 0-100': agecfA;
     else {
-      tempA += agecfA === "" ? "; Age: " : agecfA;
-      tempB += agecfB === "" ? "; Age: " : agecfB;
+      tempA += agecfA === "" ? "; Age: 0-100" : agecfA;
+      tempB += agecfB === "" ? "; Age: 0-100" : agecfB;
     }
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
-    if (agecfA === agecfB) titleGroup += agecfA;
+  
+    if (agecfA === agecfB) titleGroup += form.groupB.hasOwnProperty('minFraction')&&agecfA.length===0?'; CF: 0-1': agecfA;
     else {
       tempA += agecfA === "" ? "; CF: 0-1" : agecfA;
       tempB += agecfB === "" ? "; CF: 0-1" : agecfB;
@@ -633,7 +635,7 @@ export default function CirclePlotTest(props) {
 
   const groupTitle = (group) => {
     let title = "";
-    //console.log(group);
+    console.log(group);
     for (let key in group) {
       const values = group[key];
       if (values !== undefined) {
@@ -688,6 +690,8 @@ export default function CirclePlotTest(props) {
       }
       else{
         if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100" ;
+        //else title += "; Age:0-100"
+        //else if(group.minAge === undefined) title += "; Age: 0-100"  ;
       }
 
     
@@ -699,12 +703,12 @@ export default function CirclePlotTest(props) {
     if (group != undefined) {
       if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "; CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0;
-        else title += "; CF: 0-" + group.maxFraction / 100.0;
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(3) + "-" + group.maxFraction===undefined?1:(group.maxFraction / 100.0).toFixed(3);
+        else title += "; CF: 0-" + (group.maxFraction / 100.0).toFixed(3);
       }
       else{
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "; CF: " + group.minFraction / 100.0 + "-1" ;
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(3) + "-1" ;
       }
 
     }
@@ -1154,6 +1158,7 @@ export default function CirclePlotTest(props) {
 
   singleFigWidth = form.compare ? size * 0.45 : size;
   singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
+  singleFigWidth = singleFigWidth>450? 450: singleFigWidth
   //set tableData based on status
   //if compare, and no chromoid => add circleA and circleB
   //if compare with chromoid => add groupA and groupB
@@ -1365,15 +1370,17 @@ export default function CirclePlotTest(props) {
                   </div>
                 </Col>
               </Row>
-
+              <Row >
+                <Col  style={{ paddingBottom: "5px", fontSize: "smaller"}}>
+                  {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0? "Fisher test is not available": "P_Fisher=" +Pfisher}
+                </Col>
+                 </Row>            
               <Row>
-               
-                <div style={{ paddingBottom: "2px", fontSize: "smaller"}}>
-                  {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0?"Fisher test is not available": "P_Fisher=" +Pfisher}</div>
+                <Col>
                   <Table responsive bordered hover className="fisherTable">
                     <thead >
                       <tr >
-                        <th rowSpan="2" className="bold-title-3">Attributes</th>
+                        <th rowSpan="2" className="bold-title-3" style={{width:"250px"}}>Attributes</th>
                         <th colSpan="3" className="bold-title-main" >mCA in region </th>
                       </tr>
                       <tr>
@@ -1384,20 +1391,20 @@ export default function CirclePlotTest(props) {
                     </thead>
                     <tbody >
                       <tr>
-                        <td className="bold-title-2">{commonTitle+"; "+titleA}</td>
+                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleA}</td>
                         <td>{rangeLabel === "" ? groupA.length : rangeA}</td>
                         <td>{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
                         <td>{fisherA}</td>
                       </tr>
                       <tr>
-                        <td className="bold-title-2">{commonTitle+"; "+titleB}</td>
+                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleB}</td>
                         <td>{rangeLabel === "" ? groupB.length : rangeB}</td>
                         <td>{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
                         <td>{fisherB}</td>
                       </tr>
                     </tbody>
                   </Table>
-                
+                  </Col>
               </Row>
             </>
           )}
