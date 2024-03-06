@@ -32,17 +32,22 @@ export default function Explore() {
 
   function handleSubmit(event, name) {
     // setIsOpenCompare(true);
-    console.log(event, name);
+    //console.log(event.plotType, name);
+    
     if (event.plotType.value === "static" && event.chrSingle === "") {
     } else {
       setForm({
         ...event,
+        
         submitted: true,
         compare: false,
         counterSubmitted: name === undefined ? counter + 1 : 0,
       });
     }
+
   }
+
+
   function handleFilter(event) {
     console.log("filter:", form);
     if (

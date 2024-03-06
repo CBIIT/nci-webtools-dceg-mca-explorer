@@ -193,7 +193,7 @@ function SingleChromosome(props) {
       types.push(element.type);
       ydata.push(index);
     });
-    console.log(zoomeddata.length, props.fisherP);
+   // console.log(zoomeddata.length, props.fisherP);
     setPvalue(zoomeddata.length);
     const datatemp = [
       {

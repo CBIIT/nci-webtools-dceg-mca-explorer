@@ -228,4 +228,10 @@
     vertical-align: middle;
 }
 
+.fisherTable .numberCol{
+    text-align: center;
+    font-size: smaller;
+    vertical-align: middle;
+}
+
 

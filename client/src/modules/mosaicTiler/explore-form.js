@@ -104,14 +104,21 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     if (name === "plotType") {
-      // if (selection.value === "circos") {
-      //   setEnd("");
-      //   setStart("");
-      // }
-      // if (selection.value === "static") {
-      //   if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
-      //   setStart(0);
-      // }
+      console.log(selection,form)
+       if (selection.value === "circos") {
+        if(form.chrSingle!==""){
+          console.log("reseting")
+        }
+       // mergeForm({ chrSingle: '' });
+       // setForm(defaultFormState);
+       // const summarybtn2 = document.getElementById("summaryReset");
+       // summarybtn2.click();
+
+       }
+       if (selection.value === "static") {
+       //  if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
+        // setStart(0);
+       }
     }
 
     mergeForm({ [name]: selection });
@@ -435,7 +442,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         </Accordion.Item>
       </Accordion>
       <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Button variant="outline-secondary" className="me-3" type="reset">
+        <Button variant="outline-secondary" className="me-3" type="reset" id="summaryReset">
           Reset
         </Button>
         {/* <OverlayTrigger overlay={!isValid() ? <Tooltip id="config_val">Missing Required Parameters</Tooltip> : <></>}> */}

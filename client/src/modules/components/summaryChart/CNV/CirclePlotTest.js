@@ -1392,15 +1392,15 @@ export default function CirclePlotTest(props) {
                     <tbody >
                       <tr>
                         <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleA}</td>
-                        <td>{rangeLabel === "" ? groupA.length : rangeA}</td>
-                        <td>{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
-                        <td>{fisherA}</td>
+                        <td className="numberCol">{rangeLabel === "" ? groupA.length : rangeA}</td>
+                        <td className="numberCol">{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
+                        <td className="numberCol">{fisherA}</td>
                       </tr>
                       <tr>
                         <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleB}</td>
-                        <td>{rangeLabel === "" ? groupB.length : rangeB}</td>
-                        <td>{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
-                        <td>{fisherB}</td>
+                        <td className="numberCol">{rangeLabel === "" ? groupB.length : rangeB}</td>
+                        <td className="numberCol">{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
+                        <td className="numberCol">{fisherB}</td>
                       </tr>
                     </tbody>
                   </Table>
@@ -1563,14 +1563,14 @@ export default function CirclePlotTest(props) {
             </Col>
           </Row>
           <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={12} style={{ width: size, height: size + 15 }}>
+            <Col xs={12} md={12} lg={12} style={{ width: size>1000?1000:size, height: size>1000?1000:size + 15 }}>
               <CircosPlot
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
-                size={size}
+                size={size>1000?1000:size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}
                 thicknessundermined={thicknessundermined}
