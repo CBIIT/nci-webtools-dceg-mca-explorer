@@ -452,9 +452,9 @@ export default function CirclePlotTest(props) {
           minAge: group.minAge,
           maxAge: group.maxAge,
         };
-        console.log(query);
+       // console.log(query);
         responseDeno = await axios.post("api/opensearch/denominator", query);
-        console.log(responseDeno.data);
+       // console.log(responseDeno.data);
 
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
@@ -485,7 +485,8 @@ export default function CirclePlotTest(props) {
         (group.smoking === undefined || group.smoking.length === 0) &&
         (group.approach === undefined || group.approach.length === 0) &&
         (group.ancestry === undefined || group.ancestry.length === 0) &&
-        (group.sex === undefined || group.sex.length === 0)
+        (group.sex === undefined || group.sex.length === 0)&&
+        (!group.hasOwnProperty("minAge")  )
       ) {
         results = response.data.denominator;
         responseDenominator = response.data.nominator;
