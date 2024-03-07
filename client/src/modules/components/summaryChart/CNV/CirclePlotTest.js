@@ -389,7 +389,7 @@ export default function CirclePlotTest(props) {
 
       //console.log("clear circle data");
     }
-    setCommonTitle(checkGroupTitleForDup());
+    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array"));
   }, [form.counterCompare]);
 
   data = [
@@ -607,12 +607,13 @@ export default function CirclePlotTest(props) {
 
     let agecfA = groupAgeTitle(form.groupA);
     let agecfB = groupAgeTitle(form.groupB);
-    console.log(form.groupA,form.groupA.minAge)
+    console.log(form.groupA,form.groupA.minAge, agecfA,agecfB)
     if (agecfA === agecfB) titleGroup += form.groupA.hasOwnProperty('minAge')&&agecfA.length===0? '; Age: 0-100': agecfA;
     else {
       tempA += agecfA === "" ? "; Age: 0-100" : agecfA;
       tempB += agecfB === "" ? "; Age: 0-100" : agecfB;
     }
+    console.log(tempA, tempB)
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
   
@@ -626,8 +627,8 @@ export default function CirclePlotTest(props) {
     const [titleB, errorMessageB] = checkTitleStudyPlatForm(form.groupB, tempB);
     tempA = titleA;
     tempB = titleB;
-    setTitleA(tempA.slice(1));
-    setTitleB(tempB.slice(1));
+    setTitleA(tempA.slice(1).replace("Approach","Array"));
+    setTitleB(tempB.slice(1).replace("Approach","Array"));
     setMsgA(errorMessageA);
     setMsgB(errorMessageB);
     return titleGroup.slice(1);
@@ -684,18 +685,18 @@ export default function CirclePlotTest(props) {
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
+
       if (group.maxAge !== undefined && group.maxAge !== "") {
-        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge ===undefined?100:group.maxAge;
+        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge;
         else title += "; Age: 0-" + group.maxAge;
       }
       else{
         if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100" ;
         //else title += "; Age:0-100"
         //else if(group.minAge === undefined) title += "; Age: 0-100"  ;
-      }
-
-    
+      }    
     }
+  
     return title;
   };
   const groupCfTitle = (group) => {
@@ -703,12 +704,12 @@ export default function CirclePlotTest(props) {
     if (group != undefined) {
       if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "; CF: " + (group.minFraction / 100.0).toFixed(3) + "-" + group.maxFraction===undefined?1:(group.maxFraction / 100.0).toFixed(3);
-        else title += "; CF: 0-" + (group.maxFraction / 100.0).toFixed(3);
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-" + (group.maxFraction / 100.0).toFixed(2);
+        else title += "; CF: 0-" + (group.maxFraction / 100.0).toFixed(2);
       }
       else{
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "; CF: " + (group.minFraction / 100.0).toFixed(3) + "-1" ;
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-1" ;
       }
 
     }
@@ -1371,7 +1372,7 @@ export default function CirclePlotTest(props) {
                 </Col>
               </Row>
               <Row >
-                <Col  style={{ paddingBottom: "5px", fontSize: "smaller"}}>
+                <Col  style={{ paddingBottom: "5px"}}>
                   {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0? "Fisher test is not available": "P_Fisher=" +Pfisher}
                 </Col>
                  </Row>            

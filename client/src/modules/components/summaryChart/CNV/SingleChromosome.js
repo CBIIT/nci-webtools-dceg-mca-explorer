@@ -395,7 +395,7 @@ function SingleChromosome(props) {
         <div style={{ paddingTop: "1px"}}>{xMin ? rangeLable : ""}</div>
         <div style={{ paddingTop: "2px"}}>
           {props.fisherP > 0
-            ? props.type.map(t => t.label).join(' ')+" percentage: "+((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(6) + "%"
+            ? props.type.map(t => t.label).join(' ')+" percentage: "+((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(4) + "%"
             : ""}
         </div>
         <div>{props.msg}</div>
