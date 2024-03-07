@@ -1382,7 +1382,7 @@ export default function CirclePlotTest(props) {
                   <Table responsive bordered hover className="fisherTable">
                     <thead >
                       <tr >
-                        <th rowSpan="2" className="bold-title-3" style={{width:"250px"}}>Attributes</th>
+                        <th rowSpan="2" className="bold-title-3" style={{width:"300px"}}>Attributes</th>
                         <th colSpan="3" className="bold-title-main" >mCA in region </th>
                       </tr>
                       <tr>
