@@ -7,11 +7,12 @@ import "./css/circos.css";
 
 const zoomWindow = 5000000;
 function SingleChromosome(props) {
-  //console.log(props.data);
+  //console.log(props);
   const ref = useRef(null);
-  const [width, setWidth] = useState(props.width === undefined ? props.size : props.width);
-  const [height, setHeight] = useState(props.width === undefined ? props.size : props.width);
+  const [width, setWidth] = useState(props.width === undefined ? 450 : props.width);
+  const [height, setHeight] = useState(props.height === undefined ? 450: props.height);
   const sizeRef = useRef(width);
+
   const [layout, setLayout] = useState({
     //title:"Chromosome "+ props.chromesomeId,
     barmode: "stack",
@@ -47,6 +48,7 @@ function SingleChromosome(props) {
   const [newRange, setNewRange] = useState([]);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [pvalue, setPvalue] = useState(0);
 
   //update sizeRef when width changes
   useEffect(() => {
@@ -144,8 +146,8 @@ function SingleChromosome(props) {
     if (props.size !== undefined && container) {
       //console.log(props.size, sizeRef.current, window.innerWidth);
       if (window.innerWidth > 980 && sizeRef.current < 700) {
-        setWidth(800);
-        setHeight(800);
+        setWidth(450);
+        setHeight(450);
       }
       if (window.innerWidth < 980 && sizeRef.current > 700) {
         setWidth(450);
@@ -191,7 +193,8 @@ function SingleChromosome(props) {
       types.push(element.type);
       ydata.push(index);
     });
-    //console.log(zoomeddata.length, data1.length, xMin, xMax);
+   // console.log(zoomeddata.length, props.fisherP);
+    setPvalue(zoomeddata.length);
     const datatemp = [
       {
         x: data1,
@@ -233,11 +236,13 @@ function SingleChromosome(props) {
             "<br>Cellular Fraction:" +
             e.value +
             "<br>Ancestry: " +
-            e.ancestry +
+            e.PopID +
             "<br>Sex: " +
-            e.computedGender +
+            e.sex +
             "<br>Age: " +
-            e.age;
+            e.age +
+            "<br> Smoke: " +
+            e.smokeNFC;
           return text;
         }),
         hovertemplate: "<br>%{hovertext} <extra></extra>",
@@ -340,7 +345,7 @@ function SingleChromosome(props) {
               },
             }}
             useResizeHandler={true}
-            style={{ width: "100%", height: "100%", position: "relative" }}
+            style={{ width: "100%", height: height>450?450:height, position: "relative" }}
             ref={ref}
             onRelayout={handleRelayout}
             // onInitialized={() => {
@@ -351,8 +356,10 @@ function SingleChromosome(props) {
             // }}
           />
         </div>
+
+     
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
-        <br />
+      
         {loading && xMax - xMin < zoomWindow && zoomHistory.length > 0 ? (
           <>
             <div id="snpplots">
@@ -385,8 +392,13 @@ function SingleChromosome(props) {
             </p>
           )
         )}
-        {xMin ? rangeLable : ""}
-        {/* <ResolutionPlot></ResolutionPlot> */}
+        <div style={{ paddingTop: "1px"}}>{xMin ? rangeLable : ""}</div>
+        <div style={{ paddingTop: "2px"}}>
+          {props.fisherP > 0
+            ? props.type.map(t => t.label).join(' ')+" percentage: "+((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(4) + "%"
+            : ""}
+        </div>
+        <div>{props.msg}</div>
       </div>
     </>
   );

@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions } from "./constants";
+import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions, platformArray, smokeNFC } from "./constants";
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -21,7 +21,7 @@ export default function ComparePanel(props) {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
-
+  // console.log(study);
   //reset
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
@@ -33,18 +33,21 @@ export default function ComparePanel(props) {
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
-      setMinAge(value);
+      if (value <= 150) setMinAge(Number(value));
+      else setMinAge(0);
     }
     if (name === "maxAge") {
-      if (value < 150) setMaxAge(value);
+      if (value < 150) setMaxAge(Number(value));
       else setMaxAge(150);
     }
     //  setCompareForm({ ...compareform, [name]: value });
     if (name === "minFraction") {
-      setMinFraction(value);
+      if (value <= 100) setMinFraction(value);
+      else setMinFraction(0);
     }
     if (name === "maxFraction") {
-      setMaxFraction(value);
+      if (value <= 100) setMaxFraction(value);
+      else setMaxFraction(100);
     }
     if (name === "start") {
       setStart(value);
@@ -135,13 +138,13 @@ export default function ComparePanel(props) {
         if (!element.isChecked) {
           if (element.label === " Study") {
             setStudy([]);
-          } else if (element.label === " Detection Approach") {
+          } else if (element.label === " Array Platform") {
             setApproach([]);
           } else if (element.label === " Genotype Sex") {
             setSex([]);
           } else if (element.label === " Age") {
             setMinAge("0");
-            setMaxAge("0");
+            setMaxAge("100");
           } else if (element.label === " Ancestry") {
             setAncestry([]);
           } else if (element.label === " Smoking Status") {
@@ -149,7 +152,7 @@ export default function ComparePanel(props) {
           } else if (element.label === " Copy Number State") {
             setTypes(null);
           } else if (element.label === " Cellular Fraction") {
-            setMaxFraction("0");
+            setMaxFraction("100");
             setMinFraction("0");
           }
         }
@@ -230,7 +233,7 @@ export default function ComparePanel(props) {
           )}
           {props.compareItem[0].isChecked ? (
             <Form.Group className="mb-3">
-              <Form.Label>Detection Approach</Form.Label>
+              <Form.Label>Array Platform</Form.Label>
               <Select
                 id={props.name + "approach"}
                 aria-label={props.name + "approach"}
@@ -239,10 +242,9 @@ export default function ComparePanel(props) {
                 isMulti={true}
                 value={approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={[
-                  { value: "gsa", label: "Illumina Global Screening Array" },
-                  { value: "oncoArray", label: "Illumina OncoArray Array" },
-                ]}
+                options={platformArray.filter((obj, index) =>
+                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 2 : index >= 2) : true
+                )}
                 classNamePrefix="select"
               />
             </Form.Group>
@@ -367,10 +369,7 @@ export default function ComparePanel(props) {
                 isMulti={true}
                 value={smoking}
                 onChange={(ev) => handleSelectChange("smoking", ev)}
-                options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "no", label: "No" },
-                ]}
+                options={smokeNFC}
                 classNamePrefix="select"
               />
             </Form.Group>

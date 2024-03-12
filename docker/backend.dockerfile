@@ -6,6 +6,7 @@ RUN dnf -y update \
     make \
     nodejs \
     npm \
+    R \
     && dnf clean all
 
 RUN mkdir -p /deploy/server /deploy/logs

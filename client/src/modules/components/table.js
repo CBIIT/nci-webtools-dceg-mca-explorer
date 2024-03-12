@@ -136,7 +136,7 @@ export default function Table({ columns, data, options, defaultSort }) {
           {Math.min(rows.length, (pageIndex + 1) * pageSize).toLocaleString()} of {rows.length.toLocaleString()}
         </div>
 
-        <div className="d-flex">
+        <div className="d-flex" style={{paddingTop:10}}>
           <Form.Control
             as="select"
             className="mr-2"

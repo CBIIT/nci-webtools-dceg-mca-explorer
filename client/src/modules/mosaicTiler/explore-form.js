@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions } from "./constants";
+import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions, smokeNFC, platformArray } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 const compareArray = CompareArray;
@@ -31,10 +31,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [compare, setCompare] = useState(false);
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
+  const [submitClicked, setSubmitClicked] = useState(false);
 
   function handleChange(event) {
     const { name, value } = event.target;
-    // console.log(event, name, value);
+    console.log(event, name, value);
 
     if (name === "chrX") {
       setIsX(event.target.checked);
@@ -43,13 +44,23 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
     } else if (name === "maxAge") {
-      if (value >= 150) mergeForm({ [name]: 150 });
-      else mergeForm({ [name]: value });
+      if (value <= 150) mergeForm({ [name]: Number(value) });
+      else mergeForm({ [name]: 150 });
+    } else if (name === "minAge") {
+      if (value <= 150) mergeForm({ [name]: Number(value) });
+      else mergeForm({ [name]: 0 });
+    } else if (name === "minFraction") {
+      if (value <= 100) mergeForm({ [name]: value });
+      else mergeForm({ [name]: 0 });
+    } else if (name === "maxFraction") {
+      if (value <= 100) mergeForm({ [name]: value });
+      else mergeForm({ [name]: 100 });
     } else mergeForm({ [name]: value });
   }
 
   function handleSubmit(event) {
     event.preventDefault();
+    setSubmitClicked(true);
     if (onSubmit) onSubmit(form);
     //handleDisplayCompare();
   }
@@ -59,6 +70,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setForm(defaultFormState);
     setIsX(false);
     setIsY(false);
+    setSubmitClicked(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
     // onSubmit(resetFormState, "reset"); //clean the plot
@@ -66,7 +78,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
-    if (name === "types" || name === "ancestry" || name === "sex") {
+    if (name === "types" || name === "ancestry" || name === "sex" || name === "smoking") {
       const all = selection.find((option) => option.value === "all");
       const allindex = selection.indexOf(all);
       //if all selected, then another option select, remove all
@@ -92,14 +104,21 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     if (name === "plotType") {
-      // if (selection.value === "circos") {
-      //   setEnd("");
-      //   setStart("");
-      // }
-      // if (selection.value === "static") {
-      //   if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
-      //   setStart(0);
-      // }
+      console.log(selection,form)
+       if (selection.value === "circos") {
+        if(form.chrSingle!==""){
+          console.log("reseting")
+        }
+       // mergeForm({ chrSingle: '' });
+       // setForm(defaultFormState);
+       // const summarybtn2 = document.getElementById("summaryReset");
+       // summarybtn2.click();
+
+       }
+       if (selection.value === "static") {
+       //  if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
+        // setStart(0);
+       }
     }
 
     mergeForm({ [name]: selection });
@@ -182,6 +201,9 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <>
           <Form.Group className="mb-3">
             <Form.Label className="required">Chromosome</Form.Label>
+            <Form.Label style={{ color: "red" }}>
+              {submitClicked && form.chrSingle === "" ? "Plese select chromosome" : ""}
+            </Form.Label>
             <Select
               aria-label="chromosome"
               placeholder="- Select -"
@@ -284,22 +306,25 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               padding: "10px",
             }}>
             <Form.Group className="mb-3" controlId="approach">
-              <Form.Label>Detection Approach</Form.Label>
+              <Form.Label>Array Platform</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="approach"
                 isMulti={true}
                 value={form.approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={[
-                  { value: "gsa", label: "Illumina Global Screening" },
-                  { value: "oncoArray", label: "Illumina OncoArray" },
-                ]}
+                options={platformArray.filter((obj, index) =>
+                  form.study.length < 2 && form.study.length > 0
+                    ? form.study[0].value === "plco"
+                      ? index < 2
+                      : index >= 2
+                    : true
+                )}
                 classNamePrefix="select"
               />
             </Form.Group>
 
-            <Form.Group className="mb-3" controlId="algorithm">
+            {/* <Form.Group className="mb-3" controlId="algorithm">
               <Form.Label>Detection Algorithm</Form.Label>
               <Select
                 placeholder="- Select -"
@@ -310,7 +335,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 options={[{ value: "test", label: "Algorithm" }]}
                 classNamePrefix="select"
               />
-            </Form.Group>
+              </Form.Group>*/}
             <Form.Group className="mb-3" controlId="sex">
               <Form.Label>Genotype Sex</Form.Label>
               <Select
@@ -410,17 +435,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 isMulti={true}
                 value={form.smoking}
                 onChange={(ev) => handleSelectChange("smoking", ev)}
-                options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "no", label: "No" },
-                ]}
+                options={smokeNFC}
               />
             </Form.Group>
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
       <div className="m-3" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <Button variant="outline-secondary" className="me-3" type="reset">
+        <Button variant="outline-secondary" className="me-3" type="reset" id="summaryReset">
           Reset
         </Button>
         {/* <OverlayTrigger overlay={!isValid() ? <Tooltip id="config_val">Missing Required Parameters</Tooltip> : <></>}> */}

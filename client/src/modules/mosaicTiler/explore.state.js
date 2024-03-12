@@ -25,7 +25,6 @@ export const eventResults = selector({
 });
 //do db retrieve based on inputs
 export async function getData(params) {
-  var results;
   var summary;
   let gainTemp = [];
   let lossTemp = [];
@@ -58,14 +57,24 @@ export async function getData(params) {
   Array.isArray(study_value)
     ? (query_value = [...study_value, params.chrX ? { value: "X" } : "", params.chrY ? { value: "Y" } : ""])
     : (query_value = [study_value, params.chrX ? { value: "X" } : "", params.chrY ? { value: "Y" } : ""]);
-  results = await post("api/opensearch/mca", {
+
+  var response = await post("api/opensearch/mca", {
     dataset: query_value,
     sex: params.sex,
     mincf: params.minFraction,
     maxcf: params.maxFraction,
     ancestry: params.ancestry,
     types: params.types,
+    maxAge: params.maxAge,
+    minAge: params.minAge,
   });
+
+  const results = response.data.nominator;
+
+  const responseDenominator = response.data.denominator;
+
+  const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
+
   results.forEach((r) => {
     if (r._source !== null) {
       const d = r._source;
@@ -75,6 +84,8 @@ export async function getData(params) {
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
+        d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
+
         if (d.chromosome !== "chrX") {
           if (d.type === "Gain") gainTemp.push(d);
           else if (d.type === "CN-LOH") lohTemp.push(d);

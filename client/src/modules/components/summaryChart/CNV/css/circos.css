@@ -185,3 +185,53 @@
     flex-grow: 1;
 }
 
+.fisherTable{
+    width: auto;
+    border-collapse: collapse;
+    background-color: #f4f8f9;
+    margin: auto;
+    
+}
+
+.fisherTable th,
+.fisherTable td{
+    padding: 2px 5px 3px;
+    text-align: center;
+   
+}
+.fisherTable .bold-title{
+    font-weight: bold !important;
+}
+
+.fisherTable tr:hover{
+    background-color: #a8e6fb;
+}
+/*.fisherTable tr:nth-child(odd),
+.fisherTable tr:nth-child(even){
+    background-color: #f0f5f7;
+}*/
+
+.fisherTable .bold-title-main{
+    font-weight: bold !important;
+}
+.fisherTable .bold-title-2{
+    font-weight: bold !important;
+    text-align: center;
+    padding-right: 1px;
+    padding-left: 5px;
+   
+}
+.fisherTable .bold-title-3{
+    font-weight: bold !important;
+    text-align: center;
+  
+    vertical-align: middle;
+}
+
+.fisherTable .numberCol{
+    text-align: center;
+    
+    vertical-align: middle;
+}
+
+

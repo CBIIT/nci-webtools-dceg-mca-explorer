@@ -1,15 +1,18 @@
 export const AncestryOptions = [
   { value: "all", label: "All Ancestries" },
-  { value: "ADMIXED_EUR", label: "ADMIXED_EUR" },
-  { value: "AFR", label: "African" },
-  { value: "AFR_EUR", label: "AFR_EUR" },
-  { value: "ASN", label: "Asian" },
-  { value: "ASN_EUR", label: "ASN_EUR" },
-  { value: "EUR", label: "European" },
+  { value: "1", label: "European" },
+  { value: "2", label: "African" },
+  { value: "3", label: "East Asian" },
+  { value: "4", label: "African American" },
+  { value: "5", label: "Latin American 1" },
+  { value: "6", label: "Latin American 2" },
+  { value: "7", label: "Asian-Pacific Islander" },
+  { value: "8", label: "South Asian" },
+  { value: "9", label: "Other" },
 ];
 
 export const CompareArray = [
-  { id: 1, value: "approach", label: " Detection Approach", isChecked: false, order: 3 },
+  { id: 1, value: "approach", label: " Array Platform", isChecked: false, order: 3 },
   { id: 2, value: "sex", label: " Genotype Sex", isChecked: false, order: 4 },
   { id: 3, value: "age", label: " Age", isChecked: false, order: 5 },
   { id: 4, value: "ancestry", label: " Ancestry", isChecked: false, order: 6 },
@@ -35,8 +38,8 @@ export const StudyOptions = [
 
 export const SexOptions = [
   { value: "all", label: "All Sexes" },
-  { value: "male", label: "Male" },
-  { value: "female", label: "Female" },
+  { value: "1", label: "Male" },
+  { value: "0", label: "Female" },
 ];
 
 export const initialX = [
@@ -50,4 +53,18 @@ export const initialY = [
   { block_id: "Y", start: "0", end: "0", type: "Loss" },
   { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
   { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
+];
+
+export const smokeNFC = [
+  { value: "all", label: "All status" },
+  { value: "0", label: "Never" },
+  { value: "1", label: "Former" },
+  { value: "2", label: "Current" },
+];
+
+export const platformArray = [
+  { value: "gsa", label: "Illumina Global Screening" },
+  { value: "oncoArray", label: "Illumina OncoArray" },
+  { value: "Axiom", label: "Axiom" },
+  { value: "BiLEVE", label: "BiLEVE" },
 ];

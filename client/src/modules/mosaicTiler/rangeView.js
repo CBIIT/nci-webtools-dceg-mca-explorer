@@ -9,7 +9,7 @@ import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
 import { Columns, exportTable } from "./tableColumns";
-import { initialX, initialY } from "./constants";
+import { initialX, initialY, AncestryOptions, smokeNFC, SexOptions } from "./constants";
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -68,8 +68,6 @@ export default function RangeView(props) {
     // form.ancestry,form.algorithm
   ]);
 
-  useEffect(() => {}, []);
-
   async function handleSubmit(qdataset, qform) {
     setGain([]);
     setLoh([]);
@@ -78,6 +76,7 @@ export default function RangeView(props) {
     setChrX([]);
     setChrY([]);
     //setLoading(true)
+    console.log(qform);
     const response = await axios.post("api/opensearch/mca", {
       dataset: qdataset,
       sex: qform.sex,
@@ -88,6 +87,10 @@ export default function RangeView(props) {
       chromosomes: qform.plotType.value === "static" ? qform.chrSingle : null,
       start: qform.plotType.value === "circos" ? "" : qform.start,
       end: qform.plotType.value === "circos" ? "" : qform.end,
+      array: qform.approach,
+      minAge: qform.minAge,
+      maxAge: qform.maxAge,
+      smoking: qform.smoking,
     });
     let gainTemp = [];
     let lossTemp = [];
@@ -97,45 +100,89 @@ export default function RangeView(props) {
 
     // if (form.chrY) {
     // }
+
+    console.log(response.data.denominator.length);
     const chrXTemp = [];
     const chrYTemp = [];
-    const results = response.data;
+    let results = null;
+    let responseDenominator = null;
+    if (
+      //if any attribute filer is selected, then use the value as the filter, that means filter out no value
+      qform.smoking.length === 0 &&
+      qform.approach.length === 0 &&
+      qform.ancestry[0].value === "all" &&
+      qform.sex[0].value === "all" &&
+      qform.minAge === "" &&
+      qform.maxAge === ""
+    ) {
+      results = response.data.denominator;
+      responseDenominator = response.data.nominator;
+    } else {
+      results = response.data.nominator;
+      responseDenominator = response.data.denominator;
+    }
 
-    results.forEach((r) => {
-      if (r._source !== null) {
-        const d = r._source;
-        if (d.cf != "nan") {
-          d.block_id = d.chromosome.substring(3);
-          d.value = d.cf;
-          d.dataset = d.dataset.toUpperCase();
-          d.start = d.beginGrch38;
-          d.end = d.endGrch38;
-          if (d.chromosome != "chrX") {
-            if (d.type === "Gain") gainTemp.push(d);
-            else if (d.type === "CN-LOH") lohTemp.push(d);
-            else if (d.type === "Loss") lossTemp.push(d);
-            else if (d.type === "Undetermined") undeterTemp.push(d);
-          }
-          //for whole, and select X or Y
-          if (form.chrX && d.type === "mLOX") {
-            chrXTemp.push(d);
-            d.block_id = "X";
-          }
-          if (form.chrY && d.type === "mLOY") {
-            chrYTemp.push(d);
-            d.block_id = "Y";
-          }
-
-          if (form.chrSingle && form.chrSingle.value === "chrX" && d.type === "mLOX") {
-            chrXTemp.push(d);
-            d.block_id = "X";
-          }
-          if (form.chrSingle && form.chrSingle.value === "chrY" && d.type === "mLOY") {
-            chrYTemp.push(d);
-            d.block_id = "Y";
-          }
+    const mergedResult = responseDenominator.map((itemA) => {
+      let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
+      // const { age, sex, ancestry, ...restItems } = nominatorItem;
+      if (nominatorItem !== undefined)
+        return {
+          ...itemA._source,
+          ...nominatorItem._source,
+        };
+      else
+        return {
+          ...itemA._source,
+        };
+    });
+    //console.log(mergedResult.length);
+    // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
+ console.log(form)
+    mergedResult.forEach((r) => {
+      //if (r._source !== null) {
+      const d = r;
+      if (d.cf != "nan") {
+        d.block_id = d.chromosome.substring(3);
+        d.value = d.cf;
+        d.dataset = d.dataset.toUpperCase();
+        d.start = d.beginGrch38;
+        d.end = d.endGrch38;
+        if (d.PopID !== undefined) {
+          const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
+          d.PopID = dancestry !== undefined ? dancestry[0].label : "";
         }
+        if (d.smokeNFC !== undefined) {
+          const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
+          d.smokeNFC = dsmoking !== undefined && dsmoking.length > 0 ? dsmoking[0].label : "NA";
+        }
+        if (d.sex !== undefined) {
+          const dsex = SexOptions.filter((a) => a.value === d.sex);
+          d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
+        }
+
+        //d.sex = d.sex === 0?"F":"M"
+        //console.log(d)
+        if (d.chromosome != "chrX") {
+          if (d.type === "Gain") gainTemp.push(d);
+          else if (d.type === "CN-LOH") lohTemp.push(d);
+          else if (d.type === "Loss") lossTemp.push(d);
+          else if (d.type === "Undetermined") undeterTemp.push(d);
+        }
+        //for whole, and select X or Y
+        else{
+          if (d.type === "mLOX") {
+            chrXTemp.push(d);
+            d.block_id = "X";
+          }
+          if (d.type === "mLOY") {
+            chrYTemp.push(d);
+            d.block_id = "Y";
+          }
+
+        }
+       
       }
+      //}
     });
     // setLoading(false)
     if (form.types.find((e) => e.value === "all")) {
@@ -149,6 +196,7 @@ export default function RangeView(props) {
       if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
       if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
     }
+    console.log(chrXTemp.length)
     setChrX(chrXTemp);
     setChrY(chrYTemp);
   }
@@ -308,6 +356,7 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
+    // console.log(data.length);
     setTableData(data);
   };
   const handleCheckboxChange = () => {
@@ -322,7 +371,8 @@ export default function RangeView(props) {
   let resultData = tableData;
   if (!form.compare) {
     if (chromoId > 0) {
-      resultData = allValue;
+      resultData = tableData.length > 0 ? tableData : allValue;
+      //filter data if zoomin for single chromo
     } else resultData = allValues;
 
     if (form.plotType.value === "circos") {

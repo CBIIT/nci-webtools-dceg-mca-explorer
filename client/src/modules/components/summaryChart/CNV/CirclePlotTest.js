@@ -4,17 +4,17 @@ import layout from "./layout2.json";
 import layoutxy from "./layoutxy.json";
 import "./css/circos.css";
 import SingleChromosome from "./SingleChromosome";
-import { Row, Col, Button, Container } from "react-bootstrap";
+import { Row, Col, Button, Container, Table } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
 import Legend from "../../../components/legend";
-
 import axios from "axios";
 import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { initialX, initialY } from "../../../mosaicTiler/constants";
+import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+import { fisherTest } from "../../utils";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -35,11 +35,13 @@ const hovertip = (d) => {
     "<br> End: " +
     d.end +
     "<br> Ancestry: " +
-    d.ancestry +
+    d.PopID +
     "<br> Sex: " +
-    d.computedGender +
+    d.sex +
     "<br> Age: " +
     d.age +
+    "<br> Smoke: " +
+    d.smokeNFC +
     " " +
     "</p>"
   );
@@ -68,6 +70,9 @@ export default function CirclePlotTest(props) {
   const [groupB, setGroupB] = useState([]);
   const [titleA, setTitleA] = useState("A");
   const [titleB, setTitleB] = useState("B");
+  const [msgA, setMsgA] = useState("");
+  const [msgB, setMsgB] = useState("");
+  const [msg, setMsg] = useState("");
   const [commonTitle, setCommonTitle] = useState("Test");
   const [circleA, setCircleA] = useState(null);
   const [circleB, setCircleB] = useState(null);
@@ -91,8 +96,13 @@ export default function CirclePlotTest(props) {
   const [isinit, setIsinit] = useState(false);
   const [circleTableData, setCircleTableData] = useState([]);
   const [circosTitle, setCircosTitle] = useState("");
-
+  const [fisherA, setFisherA] = useState(0);
+  const [fisherB, setFisherB] = useState(0);
+  const [rangeA, setRangeA] = useState(0);
+  const [rangeB, setRangeB] = useState(0);
+  const [Pfisher, setPfisher] = useState(0);
   const compareRef = useRef(isCompare);
+
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
   const tableRef = useRef(tableData);
@@ -333,6 +343,16 @@ export default function CirclePlotTest(props) {
     }
   };
 
+  async function handleFisherTest(a, b, c, d) {
+    const matrix = [a, b - a, c, d - c];
+    console.log(matrix);
+    if (b >= a && d >= c) {
+      const pvalue = await axios.post("api/fishertest", matrix);
+      console.log(pvalue.data);
+      setPfisher(pvalue.data.pValue);
+    }
+  }
+
   let data = [];
   useEffect(() => {
     // console.log(form.counterCompare, form.groupA, form.groupB);
@@ -346,10 +366,17 @@ export default function CirclePlotTest(props) {
       }
       setTableData([]);
       setCircleTableData([]);
+
+      setGroupA([]);
+      setGroupB([]);
       console.log(form);
       if (form.counterCompare > 0) {
-        handleGroupQuery(form.groupA).then((data) => (showChart ? setGroupA(data) : setCircleA({ ...data })));
-        handleGroupQuery(form.groupB).then((data) => (showChart ? setGroupB(data) : setCircleB({ ...data })));
+        handleGroupQuery(form.groupA).then((data) =>
+          showChart ? (setGroupA(data[0]), setFisherA(data[1])) : setCircleA({ ...data })
+        );
+        handleGroupQuery(form.groupB).then((data) =>
+          showChart ? (setGroupB(data[0]), setFisherB(data[1])) : setCircleB({ ...data })
+        );
       }
     } else {
       //console.log("clear form");
@@ -359,14 +386,12 @@ export default function CirclePlotTest(props) {
       setCircleB(null);
       setTableData([]);
       setCircleTableData([]);
+
       //console.log("clear circle data");
     }
+    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array"));
   }, [form.counterCompare]);
 
-  // const handleCompareHeightChange = (height) => {
-  //   setFigureHeight(height);
-  // };
-  // console.log(props.chrx);
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId + ""),
@@ -381,6 +406,7 @@ export default function CirclePlotTest(props) {
   async function handleGroupQuery(group) {
     //setLoading(true)
     const result = [];
+    let responseDeno = [];
     let query = {};
     let response = "";
     let circleTemp = {};
@@ -419,11 +445,20 @@ export default function CirclePlotTest(props) {
           end: form.end,
           mincf: group.minFraction,
           maxcf: group.maxFraction,
+          ancestry: group.ancestry,
+          smoking: group.smoking,
+          array: group.approach,
+          sex: group.sex,
+          minAge: group.minAge,
+          maxAge: group.maxAge,
         };
-        console.log(query);
+       // console.log(query);
+        responseDeno = await axios.post("api/opensearch/denominator", query);
+       // console.log(responseDeno.data);
+
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
-        console.log("do query...", form.counterCompare, group.types);
+        console.log("do query...", form.counterCompare, group);
         //const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
@@ -436,39 +471,84 @@ export default function CirclePlotTest(props) {
           maxcf: group.maxFraction,
           ancestry: group.ancestry,
           types: group.types,
+          smoking: group.smoking,
+          array: group.approach,
+          minAge: group.minAge,
+          maxAge: group.maxAge,
         });
       }
 
-      const results = response.data;
+      let results = null;
+      let responseDenominator = null;
+      // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
+      if (
+        (group.smoking === undefined || group.smoking.length === 0) &&
+        (group.approach === undefined || group.approach.length === 0) &&
+        (group.ancestry === undefined || group.ancestry.length === 0) &&
+        (group.sex === undefined || group.sex.length === 0)&&
+        (!group.hasOwnProperty("minAge")  )
+      ) {
+        results = response.data.denominator;
+        responseDenominator = response.data.nominator;
+      } else {
+        results = response.data.nominator;
+        responseDenominator = response.data.denominator;
+      }
+      //console.log(results, responseDenominator);
+      const mergedResult = responseDenominator.map((itemA) => {
+        let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
+        // const { age, sex, ancestry, ...restItems } = nominatorItem;
+        if (nominatorItem !== undefined)
+          return {
+            ...itemA._source,
+            ...nominatorItem._source,
+          };
+        else
+          return {
+            ...itemA._source,
+          };
+      });
 
-      results.forEach((r) => {
-        if (r._source !== null) {
-          const d = r._source;
-          if (d.cf != "nan") {
-            d.block_id = d.chromosome.substring(3);
-            d.value = d.cf;
-            d.dataset = d.dataset.toUpperCase();
-            d.start = Number(d.beginGrch38);
-            d.end = Number(d.endGrch38);
-            d.length = Number(d.length);
-
-            //
-            if (d.chromosome != "chrX") {
-              if (d.type === "Gain") gainTemp.push(d);
-              else if (d.type === "CN-LOH") lohTemp.push(d);
-              else if (d.type === "Loss") lossTemp.push(d);
-              else if (d.type === "Undetermined") undeterTemp.push(d);
-            }
-            if (form.chrX && d.type == "mLOX") {
-              chrXTemp.push(d);
-              d.block_id = "X";
-            }
-            if (form.chrY && d.type == "mLOY") {
-              chrYTemp.push(d);
-              d.block_id = "Y";
-            }
-            result.push(d);
+      mergedResult.forEach((r) => {
+        //if (r._source !== null) {
+        const d = r;
+        if (d.cf != "nan") {
+          d.block_id = d.chromosome.substring(3);
+          d.value = d.cf;
+          d.dataset = d.dataset.toUpperCase();
+          d.start = Number(d.beginGrch38);
+          d.end = Number(d.endGrch38);
+          d.length = Number(d.length);
+          if (d.PopID !== undefined) {
+            const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
+            d.PopID = dancestry !== undefined ? dancestry[0].label : "";
           }
+          if (d.smokeNFC !== undefined) {
+            const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
+            d.smokeNFC = dsmoking !== undefined && dsmoking.length > 0 ? dsmoking[0].label : "NA";
+          }
+          if (d.sex !== undefined) {
+            const dsex = SexOptions.filter((a) => a.value === d.sex);
+            d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
+          }
+          //if(minAge!==undefined)
+
+          //
+          if (d.chromosome != "chrX") {
+            if (d.type === "Gain") gainTemp.push(d);
+            else if (d.type === "CN-LOH") lohTemp.push(d);
+            else if (d.type === "Loss") lossTemp.push(d);
+            else if (d.type === "Undetermined") undeterTemp.push(d);
+          }
+          if (form.chrX && d.type == "mLOX") {
+            chrXTemp.push(d);
+            d.block_id = "X";
+          }
+          if (form.chrY && d.type == "mLOY") {
+            chrYTemp.push(d);
+            d.block_id = "Y";
+          }
+          result.push(d);
         }
       });
     }
@@ -482,12 +562,10 @@ export default function CirclePlotTest(props) {
     };
     //setTableData([...result, ...tableData]);
     //console.log(circleTemp);
-    if (showChart) return result;
+
+    if (showChart) return [result, responseDeno.data];
     else return circleTemp;
   }
-  useEffect(() => {
-    setCommonTitle(checkGroupTitleForDup());
-  }, [form.counterCompare]);
 
   // useEffect(() => {
   //   setCommonTitle(checkGroupTitleForDup());
@@ -514,6 +592,7 @@ export default function CirclePlotTest(props) {
                 break;
               } else {
                 itemTitle += itemA[i].label;
+                if (i < itemA.length - 1) itemTitle += ",";
               }
             }
           } else {
@@ -529,26 +608,57 @@ export default function CirclePlotTest(props) {
 
     let agecfA = groupAgeTitle(form.groupA);
     let agecfB = groupAgeTitle(form.groupB);
-    if (agecfA === agecfB) titleGroup += agecfA;
+    console.log(form.groupA,form.groupA.minAge, agecfA,agecfB)
+    if (agecfA === agecfB) titleGroup += form.groupA.hasOwnProperty('minAge')&&agecfA.length===0? '; Age: 0-100': agecfA;
     else {
-      tempA += agecfA === "" ? "; Age: All" : agecfA;
-      tempB += agecfB === "" ? "; Age: All" : agecfB;
+      tempA += agecfA === "" ? "; Age: 0-100" : agecfA;
+      tempB += agecfB === "" ? "; Age: 0-100" : agecfB;
     }
+    console.log(tempA, tempB)
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
-    if (agecfA === agecfB) titleGroup += agecfA;
+  
+    if (agecfA === agecfB) titleGroup += form.groupB.hasOwnProperty('minFraction')&&agecfA.length===0?'; CF: 0-1': agecfA;
     else {
       tempA += agecfA === "" ? "; CF: 0-1" : agecfA;
       tempB += agecfB === "" ? "; CF: 0-1" : agecfB;
     }
-    console.log(agecfA, agecfB);
-
-    setTitleA(tempA.slice(1));
-    setTitleB(tempB.slice(1));
+    //console.log(agecfA, agecfB);
+    const [titleA, errorMessageA] = checkTitleStudyPlatForm(form.groupA, tempA);
+    const [titleB, errorMessageB] = checkTitleStudyPlatForm(form.groupB, tempB);
+    tempA = titleA;
+    tempB = titleB;
+    setTitleA(tempA.slice(1).replace("Approach","Array"));
+    setTitleB(tempB.slice(1).replace("Approach","Array"));
+    setMsgA(errorMessageA);
+    setMsgB(errorMessageB);
     return titleGroup.slice(1);
   };
 
   const groupTitle = (group) => {
+    let title = "";
+    console.log(group);
+    for (let key in group) {
+      const values = group[key];
+      if (values !== undefined) {
+        if (typeof values === "object" && Array.isArray(values) && values.length > 0) {
+          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
+          values.forEach((s) => {
+            title += s.label + ",";
+          });
+          title = title.slice(0, -1);
+        } else if (typeof values === "object" && Array.isArray(values) && values.length === 0) {
+          title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": All";
+        }
+      }
+    }
+    title += groupAgeTitle(group);
+    title += groupCfTitle(group);
+
+    return title;
+  };
+
+  const singleTitle = (group) => {
     let title = "";
     //console.log(group);
     for (let key in group) {
@@ -567,17 +677,27 @@ export default function CirclePlotTest(props) {
     }
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
-    return title;
-  };
 
+    const [tempTitle, errormsg] = checkTitleStudyPlatForm(group, title);
+    setMsg(errormsg);
+    //  console.log(tempTitle, errormsg);
+    return tempTitle;
+  };
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
+
       if (group.maxAge !== undefined && group.maxAge !== "") {
         if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge;
         else title += "; Age: 0-" + group.maxAge;
       }
+      else{
+        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100" ;
+        //else title += "; Age:0-100"
+        //else if(group.minAge === undefined) title += "; Age: 0-100"  ;
+      }    
     }
+  
     return title;
   };
   const groupCfTitle = (group) => {
@@ -585,16 +705,50 @@ export default function CirclePlotTest(props) {
     if (group != undefined) {
       if (group.maxFraction !== undefined && group.maxFraction !== "") {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "; CF: " + group.minFraction / 100.0 + "-" + group.maxFraction / 100.0;
-        else title += "; CF: 0-" + group.maxFraction / 100.0;
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-" + (group.maxFraction / 100.0).toFixed(2);
+        else title += "; CF: 0-" + (group.maxFraction / 100.0).toFixed(2);
       }
+      else{
+        if (group.minFraction !== undefined && group.minFraction !== "")
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-1" ;
+      }
+
     }
     return title;
   };
 
+  const checkTitleStudyPlatForm = (group, title) => {
+    //if none of the array value belongs to one study, then in the title, the study name should be removed
+    //and give a notes for this study
+    let errorMessage = "";
+    // console.log(group.approach);
+    group.study !== undefined &&
+      group.approach !== undefined &&
+      group.study.forEach((s) => {
+        console.log(s.value, group.approach.length);
+        if (s.value === "plco" && group.approach.length > 0) {
+          const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
+          console.log(plcoArray);
+          if (plcoArray.length === 0) {
+            title = title.replace("PLCO,", "").replace("PLCO", "");
+            errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
+          }
+        }
+        if (s.value === "ukbb" && group.approach.length > 0) {
+          const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
+          if (ukArray.length === 0) {
+            title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+            errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
+          }
+        }
+      });
+  //  console.log(group.approach, errorMessage, title);
+    return [title, errorMessage];
+  };
+
   useEffect(() => {
     setCircosTitle(
-      groupTitle({
+      singleTitle({
         types: form.types,
         sex: form.sex,
         study: form.study,
@@ -948,6 +1102,8 @@ export default function CirclePlotTest(props) {
     if (zoomHistory.length == 2) {
       setZoomRange(zoomHistory[0]);
       setRangeLabel(zoomHistory[1]);
+      //update tableData based on zoom range
+      //console.log(tableData);
     }
   };
   useEffect(() => {
@@ -1004,6 +1160,7 @@ export default function CirclePlotTest(props) {
 
   singleFigWidth = form.compare ? size * 0.45 : size;
   singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
+  singleFigWidth = singleFigWidth>450? 450: singleFigWidth
   //set tableData based on status
   //if compare, and no chromoid => add circleA and circleB
   //if compare with chromoid => add groupA and groupB
@@ -1063,17 +1220,57 @@ export default function CirclePlotTest(props) {
   useEffect(() => {
     if (groupA !== null || groupB !== null) {
       setTableData([...groupA, ...groupB]);
+      //setFisherB(fisherTest(groupB.length, 5, 3, 12));
     }
+    //set tableData within range
     props.getData(tableData);
-  }, [groupA, groupB]);
+  }, [groupA, groupB, rangeLabel]);
 
   useEffect(() => {
     if (form.plotType.value === "circos") {
       //console.log("whole chromosome", circleTableData);
       props.getData(circleTableData);
-    } else props.getData(tableRef.current);
-  }, [tableData, form.plotType, circleTableData]);
+    } else {
+      if (rangeLabel.length > 0) {
+        let rangeMin = rangeLabel.split("-")[0].split(":")[1].replace(/,/g, "");
+        let rangeMax = rangeLabel.split("-")[1].replace(/,/g, "");
+
+        rangeMax = Number(rangeMax);
+        rangeMin = Number(rangeMin);
+        const zoomedTabledata = data.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+        console.log(zoomedTabledata.length);
+        if (!form.compare) props.getData(zoomedTabledata);
+      } else {
+        props.getData([]);
+      }
+      if (form.compare) {
+        props.getData(tableRef.current);
+      }
+    }
+  }, [tableData, form.plotType, circleTableData, rangeLabel]);
   //props.getData(tableData);
+
+  useEffect(() => {
+    if (form.plotType.value === "static" && form.counterCompare > 0) {
+      console.log(rangeLabel);
+      if (rangeLabel.length > 0) {
+        let rangeMin = rangeLabel.split("-")[0].split(":")[1].replace(/,/g, "");
+        let rangeMax = rangeLabel.split("-")[1].replace(/,/g, "");
+
+        rangeMax = Number(rangeMax);
+        rangeMin = Number(rangeMin);
+        //reset tableData and fisher number
+        const rangeGroupA = groupA.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+        const rangeGroupB = groupB.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+
+        setTableData([...rangeGroupA, ...rangeGroupB]);
+        setRangeA(rangeGroupA.length);
+        setRangeB(rangeGroupB.length);
+        // console.log(rangeA.length, rangeB.length);
+        handleFisherTest(rangeGroupA.length, fisherA, rangeGroupB.length, fisherB);
+      } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
+    }
+  }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
 
   return (
     <Container className="compareContainer align-middle text-center">
@@ -1141,11 +1338,14 @@ export default function CirclePlotTest(props) {
                       zoomRange={zoomRangeA}
                       data={groupA}
                       title={titleA}
+                      msg={msgA}
+                      fisherP={fisherA}
                       details="A"
                       chromesomeId={chromesomeId}
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
+                      type={form.groupA.types}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1158,16 +1358,55 @@ export default function CirclePlotTest(props) {
                       zoomRange={zoomRangeB}
                       data={groupB}
                       title={titleB}
+                      msg={msgB}
+                      fisherP={fisherB}
                       details="B"
                       chromesomeId={chromesomeId}
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
+                      type={form.groupB.types}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
                   </div>
                 </Col>
+              </Row>
+              <Row >
+                <Col  style={{ paddingBottom: "5px"}}>
+                  {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0? "Fisher test is not available": "P_Fisher=" +Pfisher}
+                </Col>
+                 </Row>            
+              <Row>
+                <Col>
+                  <Table responsive bordered hover className="fisherTable">
+                    <thead >
+                      <tr >
+                        <th rowSpan="2" className="bold-title-3" style={{width:"300px"}}>Attributes</th>
+                        <th colSpan="3" className="bold-title-main" >mCA in region </th>
+                      </tr>
+                      <tr>
+                        <th className="bold-title">Yes </th>
+                        <th className="bold-title">No </th>
+                        <th className="bold-title">Total </th>
+                      </tr>
+                    </thead>
+                    <tbody >
+                      <tr>
+                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleA}</td>
+                        <td className="numberCol">{rangeLabel === "" ? groupA.length : rangeA}</td>
+                        <td className="numberCol">{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
+                        <td className="numberCol">{fisherA}</td>
+                      </tr>
+                      <tr>
+                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleB}</td>
+                        <td className="numberCol">{rangeLabel === "" ? groupB.length : rangeB}</td>
+                        <td className="numberCol">{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
+                        <td className="numberCol">{fisherB}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                  </Col>
               </Row>
             </>
           )}
@@ -1207,6 +1446,7 @@ export default function CirclePlotTest(props) {
                     data={data}
                     details={"One"}
                     title={""}
+                    msg={msg}
                     chromesomeId={chromesomeId}
                     size={singleChromeSize}
                     zoomHistory={handleZoomHistory}
@@ -1248,7 +1488,7 @@ export default function CirclePlotTest(props) {
           </Row>
           <div>
             <Row className="justify-content-center g-0">
-              <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
+              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
                 {circleA ? (
                   <CircosPlotCompare
                     layoutAll={layoutAll}
@@ -1256,6 +1496,7 @@ export default function CirclePlotTest(props) {
                     title={titleA}
                     dataXY={[]}
                     details="A"
+                    msg={msgA}
                     size={compareCircleSize}
                     thicknessloss={thicknessloss}
                     thicknessgain={thicknessgain}
@@ -1270,7 +1511,7 @@ export default function CirclePlotTest(props) {
                   ""
                 )}
               </Col>
-              <Col xs={12} md={6} lg={6} style={{ width: compareCircleSize, height: compareCircleSize + 15 }}>
+              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
                 {circleB ? (
                   <CircosPlotCompare
                     layoutAll={layoutAll}
@@ -1286,6 +1527,7 @@ export default function CirclePlotTest(props) {
                     circle={circleB}
                     circleRef={circleRef}
                     handleEnter={handleEnter}
+                    msg={msgB}
                     //circleClass="overlayX"
                     hovertip={hovertip}></CircosPlotCompare>
                 ) : (
@@ -1323,13 +1565,14 @@ export default function CirclePlotTest(props) {
             </Col>
           </Row>
           <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={12} style={{ width: size, height: size + 15 }}>
+            <Col xs={12} md={12} lg={12} style={{ width: size>1000?1000:size, height: size>1000?1000:size + 15 }}>
               <CircosPlot
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
-                size={size}
+                msg={msg}
+                size={size>1000?1000:size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}
                 thicknessundermined={thicknessundermined}

@@ -4,6 +4,8 @@ import { getStatus, getSamples, AncestryOptions } from "./query.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
 import { createRequire } from "module";
+import { exec } from "child_process";
+import { stderr } from "process";
 const require = createRequire(import.meta.url);
 const spec = require("./spec.json");
 const { APPLICATION_NAME, BASE_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_ENDPOINT } = process.env;
@@ -41,6 +43,17 @@ apiRouter.use((request, response, next) => {
   next();
 });
 
+const client = new Client({
+  node: host,
+  auth: {
+    username: OPENSEARCH_USERNAME,
+    password: OPENSEARCH_PASSWORD,
+  },
+  ssl: {
+    rejectUnauthorized: false,
+  },
+});
+
 apiRouter.get("/", (request, response) => {
   spec.servers = [{ url: BASE_URL || "." }];
   //spec.servers = [{ url: "localhost" || "." }];
@@ -66,13 +79,18 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qsex = request.body.sex;
   const qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : 0;
   const qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : 1;
-  console.log(qmincf, qmaxcf);
+  // console.log(qmincf, qmaxcf);
   const qancestry = request.body.ancestry;
-  const qtype = request.body.types;
+  const qtype = request.body.types
   const qchromosomes = request.body.chromosomes;
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
-  console.log(request.body.types);
+  const qsmokeNFC = request.body.smoking;
+  const qplatform = request.body.array;
+  const minAge = request.body.minAge ? Number(request.body.minAge) : 0;
+  const maxAge = request.body.maxAge ? Number(request.body.maxAge) : 100;
+  // console.log(qsex);
+  //console.log(minAge,maxAge)
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
 
   let qfilter = [];
@@ -91,23 +109,16 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const filterString = [];
   const searchdataset = [];
   const searchExclude = []; //{match:{"chromosome":"chrX"}},{terms:{"type.keyword":['Gain','Loss','CN-LOH','Undetermined']}}
-  const datasets = [];
   //if there is more studies, queryString is an array, if there is only one, study is json object
   if (qdataset !== undefined) {
-    qdataset.length
-      ? qdataset.forEach((element) => {
-          element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
-          element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
-          element.label ? datasets.push(element.value) : "";
-          //element.label?searchdataset.push({match:{dataset:element.value}}):''
-        })
-      : datasets.push(qdataset.value);
+    const { datasets, filterlist } = getStudy(qdataset, qfilter);
     searchdataset.push({ terms: { dataset: datasets } });
+    qfilter = filterlist;
   }
 
   //if query for chromosome
   if (qchromosomes !== undefined && qchromosomes !== null) {
-    console.log(qchromosomes);
+    // console.log(qchromosomes);
     let chrarr = [];
     chrarr.push(qchromosomes.value);
     if (qchromosomes.value !== "chrX" && qchromosomes.value !== "chrY")
@@ -116,21 +127,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
   }
+  console.log(qfilter)
   //query sex
-  let sexarr = [];
-  if (qsex !== undefined && qsex.length > 0) {
-    qsex.forEach((e) => {
-      if (e.value === "all") {
-        sexarr.push("M");
-        sexarr.push("F");
-      } else {
-        e.value === "male" ? sexarr.push("M") : "";
-        e.value === "female" ? sexarr.push("F") : "";
-      }
-    });
-    console.log(sexarr);
-    searchdataset.push({ terms: { "computedGender.keyword": sexarr } });
-  }
+  let sexarr = getAttributesArray(qsex, "sex");
+
   //query cf within the range, add query range in filter
   if (qmincf !== undefined || qmaxcf !== undefined) {
     if (qmincf === undefined) qmincf = "0";
@@ -139,18 +139,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   }
 
   //query ancestry
-  let ancestryarr = [];
-  if (qancestry !== undefined && qancestry.length > 0) {
-    console.log(qancestry);
-    qancestry.forEach((a) => {
-      if (a.value !== "all") {
-        ancestryarr.push(a.value);
-      }
-    });
-    // if (datasets.includes("plco")) {  AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarr.push(a.value) : ""));
-    //   searchdataset.push({ terms: { "ancestry.keyword": ancestryarr } });
-    // }
-  }
+  let ancestryarr = getAttributesArray(qancestry, "ancestry");
+  let smokearr = getAttributesArray(qsmokeNFC, "smoking");
+  let platformarr = getAttributesArray(qplatform, "array");
 
   if (qstart !== undefined) {
     filterString.push({
@@ -170,19 +161,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
   }
-  ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
+  // ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
   filterString.push({ terms: { "type.keyword": qfilter } });
-  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qstart, qend);
-  const client = new Client({
-    node: host,
-    auth: {
-      username: OPENSEARCH_USERNAME,
-      password: OPENSEARCH_PASSWORD,
-    },
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  });
+  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter,qstart, qend);
 
   try {
     const result = await client.search({
@@ -192,34 +173,74 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         size: 200000,
         query: {
           bool: {
-            must_not: [
-              ...searchExclude,
-              /*{
-                //in ukbb data, there is chrX with all other types, and will exclude them
-              //  bool: {
-              /    filter: [
-                    {
-                      match: {
-                        "chromosome.keyword": "chrX",
-                      },
-                    },
-                    {
-                      terms: {
-                        "type.keyword": ["Gain", "Loss", "CN-LOH", "Undetermined"],
-                      },
-                    },
-                  ],
-                },
-              },*/
-            ],
+            must_not: [...searchExclude],
             must: searchdataset,
             filter: filterString,
           },
         },
       },
     });
-    console.log(result.body.hits.hits.length);
-    response.json(result.body.hits.hits);
+
+    //console.log(result.body.hits.hits.length);
+
+    const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
+    //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge);
+    try {
+      const resultdemo = await client.search({
+        index: "denominator_age",
+        _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"],
+        body: {
+          track_total_hits: true,
+          size: 200000,
+          query: {
+            bool: {
+              must: [
+                {
+                  terms: {
+                    sampleId: resultsIds,
+                  },
+                },
+                {
+                  terms: {
+                    sex: sexarr,
+                  },
+                },
+                {
+                  terms: {
+                    PopID: ancestryarr,
+                  },
+                },
+                {
+                  terms: {
+                    smokeNFC: smokearr,
+                  },
+                },
+                {
+                  terms: {
+                    "array.keyword": platformarr,
+                  },
+                },
+              ],
+              filter: [
+                {
+                  range: { "age": { gte: minAge, lte: maxAge } },
+                },
+              ],
+            },
+          },
+        },
+      });
+      //console.log(resultdemo.body.hits.hits.length);
+
+      //merge two results based on denominatore reulsts
+      const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
+
+      response.json(mergedResult);
+      //response.json(result.body.hits.hits);
+    } catch (error) {
+      console.error(error);
+    }
+    ////
   } catch (error) {
     console.error(error);
   }
@@ -237,23 +258,7 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
   const xMax = search.xMax;
   const xMin = search.xMin;
   const chr = search.chr;
-  //console.log(search, xMax,chr)
-  const client = new Client({
-    node: host,
-    auth: {
-      username: OPENSEARCH_USERNAME,
-      password: OPENSEARCH_PASSWORD,
-    },
-    ssl: {
-      rejectUnauthorized: false,
-    },
 
-    //  node: host,
-    //   ssl: {
-    //     rejectUnauthorized: false
-    //   }
-  });
-  //console.log(client)
   try {
     const result = await client.search({
       index: "combinedgene", //new_geneindex is convert position as number
@@ -289,7 +294,7 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
         },
       },
     });
-    console.log(result.body.hits.hits.length);
+    //(result.body.hits.hits.length);
     response.json(result.body.hits.hits);
   } catch (error) {
     console.error(error);
@@ -300,20 +305,22 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   const { logger } = request.app.locals;
   const group = request.body;
   if (group != undefined) {
-    console.log("query group:", group);
+    //console.log("query group:", group.maxAge);
     const study = group.study;
-    const array = group.array;
+    const platfomrarray = group.array;
     const chromesome = group.chr;
     const sex = group.sex;
     const ancestry = group.ancestry;
-    const maxAge = group.maxAge;
-    const minAge = group.minAge;
+    const maxAge = group.maxAge !== undefined ? Number(group.maxAge) : 100;
+    const minAge = group.minAge !== undefined ? Number(group.minAge) : 0;
     const maxcf = Number(group.maxcf) / 100.0;
     const mincf = Number(group.mincf) / 100.0;
     const types = group.types;
     const start = group.start ? Number(group.start) : 0;
     const end = group.end ? Number(group.end) : 9999999999;
-    //console.log("query string:", study, array, chromesome);
+    const smokeNFC = group.smoking;
+
+    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -325,23 +332,20 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     } else if (chromesome === "X") {
       queryString.push({ match: { "chromosome.keyword": "chrX" } });
       queryString.push({ terms: { "type.keyword": ["mLOX"] } });
-    } else queryString.push({ match: { "chromosome.keyword": "chr" + chromesome } });
-    console.log(queryString);
+    } else queryString.push({ match: { chromosome: "chr" + chromesome } });
 
     if (study !== undefined && study.length > 0)
       queryString.push({ terms: { dataset: parseQueryStr("study", study) } });
-    //if (array !== undefined) queryString.push({ terms: { array: parseQueryStr(array) } });
-    if (sex !== undefined && sex.length > 0)
-      queryString.push({ terms: { "computedGender.keyword": parseQueryStr("sex", sex) } });
+
+    let sexarr = getAttributesArray(sex, "sex");
+    // console.log(sexarr);
     //add query for ancestry
+    let ancestryarry = getAttributesArray(ancestry, "ancestry");
+    //console.log(ancestryarry);
+    let smokearr = getAttributesArray(smokeNFC, "smoking");
+    let platformarr = getAttributesArray(platfomrarray, "array");
+
     let atemp = [];
-    if (ancestry !== undefined) {
-      ancestry.forEach((a) => {
-        if (a.value !== "all") atemp.push(a.value);
-      });
-      if (atemp.length > 0) queryString.push({ terms: { "ancestry.keyword": atemp } });
-    }
-    atemp = [];
     //add query for types
     if (types !== undefined) {
       types.forEach((t) => {
@@ -358,26 +362,6 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       if (maxcf === undefined) maxcf = "1";
       queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
-
-    //console.log(chromesome, queryString);
-    // const searchExclude = [];
-    // if (chromesome === "Y") {
-    //   //searchExclude.push({ match: { "type.keyword": "mLOX" } });
-    // }
-    // if (chromesome === "X") {
-    //   searchExclude.push({ match: { "type.keyword": "mLOY" } });
-    // }
-    // console.log(chromesome, queryString, searchExclude);
-    const client = new Client({
-      node: host,
-      auth: {
-        username: OPENSEARCH_USERNAME,
-        password: OPENSEARCH_PASSWORD,
-      },
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    });
 
     try {
       const result = await client.search({
@@ -413,8 +397,66 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           },
         },
       });
-      console.log(result.body.hits.hits.length);
-      response.json(result.body.hits.hits);
+
+      const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
+
+      try {
+        const resultdemo = await client.search({
+          index: "denominator_age",
+          _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"],
+          body: {
+            track_total_hits: true,
+            size: 200000,
+            query: {
+              bool: {
+                must: [
+                  {
+                    terms: {
+                      sampleId: resultsIds,
+                    },
+                  },
+                  {
+                    terms: {
+                      "sex.keyword": sexarr,
+                    },
+                  },
+                  {
+                    terms: {
+                      PopID: ancestryarry,
+                    },
+                  },
+                  {
+                    terms: {
+                      smokeNFC: smokearr,
+                    },
+                  },
+                  {
+                    terms: {
+                      "array.keyword": platformarr,
+                    },
+                  },
+                ],
+                filter: [
+                  {
+                    range: { age: { gte: minAge, lte: maxAge } },
+                  },
+                ],
+              },
+            },
+          },
+        });
+        console.log("denominator", resultdemo.body.hits.hits.length, "nominator:", result.body.hits.hits.length);
+
+        const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
+
+        response.json(mergedResult);
+        //response.json(result.body.hits.hits);
+      } catch (error) {
+        console.error(error);
+      }
+
+      //console.log(result.body.hits.hits.length);
+      //response.json(result.body.hits.hits);
     } catch (error) {
       console.error(error);
     }
@@ -440,7 +482,7 @@ const parseQueryStr = (name, query) => {
       }
     }
   });
-  console.log(values);
+  //console.log(values);
   return values;
 };
 
@@ -459,7 +501,7 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
   }
   //console.log(ranges);
 
-  const client = new Client({
+  /*const client = new Client({
     node: host,
     auth: {
       username: OPENSEARCH_USERNAME,
@@ -468,7 +510,7 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
     ssl: {
       rejectUnauthorized: false,
     },
-  });
+  });*/
   //console.log(client)
   try {
     const result = await client.search({
@@ -498,9 +540,197 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
         },
       },
     });
-    console.log(result.body.aggregations.number_of_grch38_distribution.buckets.length);
+    //console.log(result.body.aggregations.number_of_grch38_distribution.buckets.length);
     response.json(result.body.aggregations.number_of_grch38_distribution.buckets);
   } catch (error) {
     console.error(error);
   }
+});
+
+apiRouter.post("/opensearch/denominator", async (request, response) => {
+  const query = request.body;
+  console.log("denominator", query);
+  const sex = query.sex;
+  const ancestry = query.ancestry;
+  const smoking = query.smoking;
+  const approach = query.approach;
+  const minAge = query.minAge !== undefined ? Number(query.minAge):0;
+  const maxAge = query.maxAge !== undefined ? Number(query.maxAge):100;
+  const study = query.study;
+  const numsize = 0; //only return the denominator total counts, that is used for fisher_test
+
+  let sexarr = getAttributesArray(sex, "sex"),
+    ancestryarry = getAttributesArray(ancestry, "ancestry"),
+    smokearr = getAttributesArray(smoking, "smoking"),
+    platformarr = getAttributesArray(approach, "array"),
+    { datasets } = getStudy(study,[]);
+ 
+   console.log(datasets,sexarr, ancestryarry, smokearr, platformarr, minAge,maxAge);
+  try {
+    const result = await client.search({
+      index: "denominator_age",
+      _source: ["sampleId"],
+      body: {
+        track_total_hits: true,
+        size: numsize,
+        query: {
+          bool: {
+            must: [
+              {
+                terms: {
+                  dataset: datasets,
+                },
+              },
+              {
+                terms: {
+                  "sex.keyword": sexarr,
+                },
+              },
+              {
+                terms: {
+                  PopID: ancestryarry,
+                },
+              },
+              {
+                terms: {
+                  smokeNFC: smokearr,
+                },
+              },
+              {
+                terms: {
+                  "array.keyword": platformarr,
+                },
+              },
+            ],
+            filter: [
+              {
+                range: { age: { gte: minAge, lte: maxAge } },
+              },
+            ],
+          },
+        },
+      },
+    });
+     console.log(result.body.hits.total.value);
+    response.json(result.body.hits.total.value);
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+const getAttributesArray = (atti, name) => {
+  let attiarray = [];
+  if (atti !== undefined && atti !== null) {
+    atti.forEach((e) => {
+      if (e.value !== "all") {
+        attiarray.push(e.value);
+      }
+    });
+  }
+  if (attiarray.length === 0) {
+    switch (name) {
+      case "sex":
+        attiarray = ["0", "1", "NA"];
+        break;
+      case "ancestry":
+        AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));
+        break;
+      case "array":
+        attiarray = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
+        break;
+      case "smoking":
+        attiarray = ["0", "1", "2", "9"];
+        break;
+    }
+  }
+  return attiarray;
+};
+/*
+const getSex = (sex) => {
+  let sexarr = [];
+  if (sex !== undefined && sex !== null) {
+    sex.forEach((e) => {
+      if (e.value !== "all") {
+        sexarr.push(e.value);
+      }
+    });
+  }
+  if (sexarr.length === 0) sexarr = ["0", "1"];
+  return sexarr;
+};
+
+const getAncestry = (ancestry) => {
+  let ancestryarry = [];
+  if (ancestry !== undefined && ancestry !== null) {
+    ancestry.forEach((a) => {
+      if (a.value !== "all") {
+        ancestryarry.push(a.value);
+      }
+    });
+  }
+  if (ancestryarry.length === 0) AncestryOptions.forEach((a) => (a.value !== "all" ? ancestryarry.push(a.value) : ""));
+  return ancestryarry;
+};
+
+const getPlatform = (platfomrarray) => {
+  let platformarr = [];
+  if (platfomrarray !== undefined && platfomrarray !== null) {
+    platfomrarray.forEach((a) => {
+      if (a.value !== "all") {
+        platformarr.push(a.value);
+      }
+    });
+  }
+  if (platformarr.length === 0) {
+    platformarr = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
+  }
+  return platformarr;
+};
+
+const getSmoking = (smokeNFC) => {
+  let smokearr = [];
+  if (smokeNFC !== undefined && smokeNFC !== null) {
+    smokeNFC.forEach((a) => {
+      if (a.value !== "all") {
+        smokearr.push(a.value);
+      }
+    });
+  }
+  if (smokearr.length === 0) {
+    smokearr = ["0", "1", "2"];
+  }
+  return smokearr;
+};*/
+
+const getStudy = (qdataset, qfilter) => {
+  const datasets = [];
+  //if there is more studies, queryString is an array, if there is only one, study is json object
+
+  if (qdataset !== undefined) {
+    qdataset.length
+      ? qdataset.forEach((element) => {
+          element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
+          element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
+          element.label ? datasets.push(element.value) : "";
+          //element.label?searchdataset.push({match:{dataset:element.value}}):''
+        })
+      : datasets.push(qdataset.value);
+  }
+  const filterlist = qfilter;
+  console.log(filterlist);
+  return { datasets, filterlist };
+};
+
+apiRouter.post("/fishertest", async (request, response) => {
+  const matrix = request.body;
+  //console.log(matrix);
+  const matrixString = matrix.join(" ");
+  //console.log(matrixString);
+  exec(`Rscript ./services/fisher_test.R ${matrixString}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return response.status(500).send(stderr);
+    }
+    response.send({ pValue: stdout.trim() });
+  });
 });
