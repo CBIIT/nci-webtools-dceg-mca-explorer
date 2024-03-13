@@ -312,7 +312,7 @@ line-height: 1.6;
 }
 .usa-footer__secondary-link {
     line-height: 1.2;
-    margin-left: 1rem;
+    /* margin-left: 1rem; */
     padding: 0;
 }
 .usa-footer--nci-big .usa-footer__primary-section .usa-footer__primary-content {
