@@ -36,7 +36,7 @@ export default function Home({ links }) {
         </div>
       </div>
 
-      <div className="bg-light py-4" style={{ marginLeft: "-9rem" }}>
+      <div className="container bg-light py-4" style={{ marginLeft: "4.5rem" }}>
         {/* <Container>
           <Row>
             <Col>
