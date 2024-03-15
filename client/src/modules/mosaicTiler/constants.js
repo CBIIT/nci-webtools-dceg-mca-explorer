@@ -21,6 +21,10 @@ export const CompareArray = [
   { id: 7, value: "smoking", label: " Smoking Status", isChecked: false, order: 8 },
   { id: 8, value: "types", label: " Copy Number State", isChecked: true, order: 2 },
   { id: 9, value: "range", label: " Range", isChecked: false, order: 9 },
+  { id: 10, value: "priorCancer", label: " Prior Cancer", isChecked: false, order: 10 },
+  { id: 11, value: "hemaCancer", label: " Incident Hematological Cancer", isChecked: false, order: 11 },
+  { id: 12, value: "lymCancer", label: " Incident Lymphoid Cancer ", isChecked: false, order: 12 },
+  { id: 13, value: "myeCancer", label: " Incident Myeloid Cancer", isChecked: false, order: 13 },
 ];
 
 export const TypeStateOptions = [
@@ -68,3 +72,9 @@ export const platformArray = [
   { value: "Axiom", label: "Axiom" },
   { value: "BiLEVE", label: "BiLEVE" },
 ];
+
+export const ifCancer = [
+  { value: "yes", label: "Yes" },
+  { value: "no", label: "No" },
+];
+

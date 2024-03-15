@@ -3,7 +3,7 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions, platformArray, smokeNFC } from "./constants";
+import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions, platformArray, smokeNFC,ifCancer } from "./constants";
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -21,6 +21,10 @@ export default function ComparePanel(props) {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
+  const [priorCancer, setPriorCancer] = useState("")
+  const [hemaCancer, setHamaCancer] = useState("")
+  const [lymCancer, setLymCancer] = useState("")
+  const [myeCancer, setMyeCancer] = useState("")
   // console.log(study);
   //reset
   useEffect(() => {
@@ -376,6 +380,80 @@ export default function ComparePanel(props) {
           ) : (
             ""
           )}
+
+{props.compareItem[9].isChecked ? (
+            <Form.Group className="mb-3" controlId="priorCancer">
+              <Form.Label>Prior Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="priorCancer"
+                aria-label={props.name + "priorCancer"}
+                id={props.name + "priorCancer"}
+                isMulti={true}
+                value={priorCancer}
+                onChange={(ev) => handleSelectChange("priorCancer", ev)}
+                options={ifCancer}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+           {props.compareItem[10].isChecked ? (
+            <Form.Group className="mb-3" controlId="hemaCancer">
+              <Form.Label>Incident Hematological Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="hemaCancer"
+                aria-label={props.name + "hemaCancer"}
+                id={props.name + "hemaCancer"}
+                isMulti={true}
+                value={hemaCancer}
+                onChange={(ev) => handleSelectChange("hemaCancer", ev)}
+                options={ifCancer}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+           {props.compareItem[11].isChecked ? (
+            <Form.Group className="mb-3" controlId="lymCancer">
+              <Form.Label>Incident Lymphoid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="lymCancer"
+                aria-label={props.name + "lymCancer"}
+                id={props.name + "lymCancer"}
+                isMulti={true}
+                value={lymCancer}
+                onChange={(ev) => handleSelectChange("lymCancer", ev)}
+                options={ifCancer}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+           {props.compareItem[12].isChecked ? (
+            <Form.Group className="mb-3" controlId="myeCancer">
+              <Form.Label>Incident Myeloid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="myeCancer"
+                aria-label={props.name + "myeCancer"}
+                id={props.name + "myeCancer"}
+                isMulti={true}
+                value={myeCancer}
+                onChange={(ev) => handleSelectChange("myeCancer", ev)}
+                options={ifCancer}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+
 
           {/* {props.compareItem[8].isChecked ? (
             <Form.Group className="mb-3">
