@@ -22,7 +22,7 @@ export default function ComparePanel(props) {
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
   const [priorCancer, setPriorCancer] = useState("")
-  const [hemaCancer, setHamaCancer] = useState("")
+  const [hemaCancer, setHemaCancer] = useState("")
   const [lymCancer, setLymCancer] = useState("")
   const [myeCancer, setMyeCancer] = useState("")
   // console.log(study);
@@ -109,10 +109,23 @@ export default function ComparePanel(props) {
       setTypes(selection);
     }
 
+    if(props.compareItem[9].isChecked && name === "priorCancer"){
+      setPriorCancer(selection)
+    }
+    if(props.compareItem[10].isChecked && name === "hemaCancer"){
+      setHemaCancer(selection)
+    }
+    if(props.compareItem[11].isChecked && name === "lymCancer"){
+      setLymCancer(selection)
+    }
+    if(props.compareItem[12].isChecked && name === "myeCancer"){
+      setMyeCancer(selection)
+    }
+
     setCompareForm({ ...compareform, [name]: selection });
   }
-
-  useEffect(() => {
+//any click on form's group attributes values, pass groups filter values to compareform
+ useEffect(() => {
     console.log("UpdateForm ", compareform);
 
     if (compareform !== undefined) {
@@ -120,6 +133,8 @@ export default function ComparePanel(props) {
     }
   }, [compareform]);
 
+  //any click on attributes select checkbox, update the updatedcompareform which keep updated filters
+  //based on if attributes checkbox, clean the selection
   useEffect(() => {
     //updateForm();
     console.log("this is compare filter", compareform);
@@ -158,7 +173,16 @@ export default function ComparePanel(props) {
           } else if (element.label === " Cellular Fraction") {
             setMaxFraction("100");
             setMinFraction("0");
+          } else if (element.label === " Prior Cancer"){
+            setPriorCancer("")
+          } else if (element.label === " Incident Hematological Cancer"){
+            setHemaCancer("")
+          } else if (element.label === " Incident Lymphoid Cancer"){
+            setLymCancer("")
+          } else if (element.label === " Incident Myeloid Cancer"){
+            setMyeCancer("")
           }
+
         }
       }
     }
@@ -381,7 +405,7 @@ export default function ComparePanel(props) {
             ""
           )}
 
-{props.compareItem[9].isChecked ? (
+        {props.compareItem[9].isChecked ? (
             <Form.Group className="mb-3" controlId="priorCancer">
               <Form.Label>Prior Cancer</Form.Label>
               <Select
