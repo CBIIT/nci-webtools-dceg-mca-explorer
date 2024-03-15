@@ -74,7 +74,7 @@ export const platformArray = [
 ];
 
 export const ifCancer = [
-  { value: "yes", label: "Yes" },
-  { value: "no", label: "No" },
+  { value: "1", label: "Yes" },
+  { value: "0", label: "No" },
 ];
 

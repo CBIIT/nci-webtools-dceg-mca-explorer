@@ -81,6 +81,30 @@ export const Columns = [
     label: "Smoke",
     Header: <b>Smoke</b>,
   },
+  {
+    accessor: "priorCancer",
+    id: "priorCancer",
+    label: "Prior Cancer",
+    Header: <b>Prior Cancer</b>,
+  },
+  {
+    accessor: "incidentCancerHem",
+    id: "incidentCancerHem",
+    label: "Incident Hematological Cancer",
+    Header: <b>Hematological Cancer</b>,
+  },
+  {
+    accessor: "incidentCancerLymphoid",
+    id: "incidentCancerLymphoid",
+    label: "Incident Lymphoid Cancer",
+    Header: <b>Lymphoid Cancer</b>,
+  },
+  {
+    accessor: "incidentCancerMyeloid",
+    id: "incidentCancerMyeloid",
+    label: "Incident Myeloid Cancer",
+    Header: <b>Myeloid Cancer</b>,
+  },
 ];
 
 export function exportTable(tableData) {

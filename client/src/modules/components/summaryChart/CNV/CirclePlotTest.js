@@ -451,6 +451,10 @@ export default function CirclePlotTest(props) {
           sex: group.sex,
           minAge: group.minAge,
           maxAge: group.maxAge,
+          priorCancer: group.priorCancer,
+          hemaCancer: group.hemaCancer,
+          lymCancer: group.lymCancer,
+          myeCancer: group.myeCancer
         };
        // console.log(query);
         responseDeno = await axios.post("api/opensearch/denominator", query);
@@ -475,18 +479,29 @@ export default function CirclePlotTest(props) {
           array: group.approach,
           minAge: group.minAge,
           maxAge: group.maxAge,
+          priorCancer: group.priorCancer,
+          hemaCancer: group.hemaCancer,
+          lymCancer: group.lymCancer,
+          myeCancer: group.myeCancer
+          
         });
       }
 
       let results = null;
       let responseDenominator = null;
       // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
+      //if choose any of these filter, should use denominator returns since only denominator has these attribute values
       if (
         (group.smoking === undefined || group.smoking.length === 0) &&
         (group.approach === undefined || group.approach.length === 0) &&
         (group.ancestry === undefined || group.ancestry.length === 0) &&
         (group.sex === undefined || group.sex.length === 0)&&
-        (!group.hasOwnProperty("minAge")  )
+        (!group.hasOwnProperty("minAge"))&&
+        (!group.hasOwnProperty("priorCancer"))&&
+        (!group.hasOwnProperty("hemaCancer"))&&
+        (!group.hasOwnProperty("lymCancer"))&&
+        (!group.hasOwnProperty("myeCancer"))
+
       ) {
         results = response.data.denominator;
         responseDenominator = response.data.nominator;
@@ -513,6 +528,7 @@ export default function CirclePlotTest(props) {
         //if (r._source !== null) {
         const d = r;
         if (d.cf != "nan") {
+          console.log(d)
           d.block_id = d.chromosome.substring(3);
           d.value = d.cf;
           d.dataset = d.dataset.toUpperCase();
@@ -531,6 +547,7 @@ export default function CirclePlotTest(props) {
             const dsex = SexOptions.filter((a) => a.value === d.sex);
             d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
           }
+
           //if(minAge!==undefined)
 
           //

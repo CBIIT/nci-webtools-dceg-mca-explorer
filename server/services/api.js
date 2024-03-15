@@ -89,6 +89,11 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qplatform = request.body.array;
   const minAge = request.body.minAge ? Number(request.body.minAge) : 0;
   const maxAge = request.body.maxAge ? Number(request.body.maxAge) : 100;
+
+  const qpriorCancer = request.body.priorCancer;
+  const qhemaCancer = request.body.hemaCancer;
+  const qlymCancer = request.body.lymCancer;
+  const qmyeCancer = request.body.myeCancer;
   // console.log(qsex);
   //console.log(minAge,maxAge)
   //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
@@ -142,6 +147,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let ancestryarr = getAttributesArray(qancestry, "ancestry");
   let smokearr = getAttributesArray(qsmokeNFC, "smoking");
   let platformarr = getAttributesArray(qplatform, "array");
+  let priorCancerarr = getAttributesArray(qpriorCancer, "priorcancer");
+  let hemaCancerarr =  getAttributesArray(qhemaCancer, "hemacancer");
+  let lymCancerarr =  getAttributesArray(qlymCancer, "lymcancer");
+  let myeCancerarr  = getAttributesArray(qmyeCancer, "myecancer");
 
   if (qstart !== undefined) {
     filterString.push({
@@ -188,7 +197,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     try {
       const resultdemo = await client.search({
         index: "denominator_age",
-        _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"],
+        _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array","priorCancer","incidentCancerHem","incidentCancerLymphoid","incidentCancerMyeloid"],
         body: {
           track_total_hits: true,
           size: 200000,
@@ -218,6 +227,26 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                 {
                   terms: {
                     "array.keyword": platformarr,
+                  },
+                },
+                {
+                  terms: {
+                    priorCancer: priorCancerarr,
+                  },
+                },
+                {
+                  terms: {
+                    incidentCancerHem: hemaCancerarr,
+                  },
+                },
+                {
+                  terms: {
+                    incidentCancerLymphoid: lymCancerarr,
+                  },
+                },
+                {
+                  terms: {
+                    incidentCancerMyeloid: myeCancerarr,
                   },
                 },
               ],
@@ -319,6 +348,10 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const start = group.start ? Number(group.start) : 0;
     const end = group.end ? Number(group.end) : 9999999999;
     const smokeNFC = group.smoking;
+    const priorCancer =group.priorCancer;
+    const hemaCancer = group.hemaCancer;
+    const lymCancer = group.lymCancer;
+    const myeCancer = group.myeCancer;
 
     console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
@@ -344,7 +377,12 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //console.log(ancestryarry);
     let smokearr = getAttributesArray(smokeNFC, "smoking");
     let platformarr = getAttributesArray(platfomrarray, "array");
-
+    let priorCancerarr = getAttributesArray(priorCancer, "priorcancer");
+    let hemaCancerarr =  getAttributesArray(hemaCancer, "hemacancer");
+    let lymCancerarr =  getAttributesArray(lymCancer, "lymcancer");
+    let myeCancerarr  = getAttributesArray(myeCancer, "myecancer");
+  
+    console.log(myeCancerarr,priorCancerarr)
     let atemp = [];
     //add query for types
     if (types !== undefined) {
@@ -403,7 +441,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       try {
         const resultdemo = await client.search({
           index: "denominator_age",
-          _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"],
+          _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array","priorCancer","incidentCancerHem","incidentCancerLymphoid","incidentCancerMyeloid"],
           body: {
             track_total_hits: true,
             size: 200000,
@@ -435,6 +473,26 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
                       "array.keyword": platformarr,
                     },
                   },
+                {
+                  terms: {
+                    priorCancer: priorCancerarr,
+                  },
+                },
+                {
+                  terms: {
+                    incidentCancerHem: hemaCancerarr,
+                  },
+                },
+                {
+                  terms: {
+                    incidentCancerLymphoid: lymCancerarr,
+                  },
+                },
+                {
+                  terms: {
+                    incidentCancerMyeloid: myeCancerarr,
+                  },
+                }
                 ],
                 filter: [
                   {
@@ -641,6 +699,8 @@ const getAttributesArray = (atti, name) => {
       case "smoking":
         attiarray = ["0", "1", "2", "9"];
         break;
+      default:
+        attiarray = ["0","1"];
     }
   }
   return attiarray;
