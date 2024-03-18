@@ -32,6 +32,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [resetCircos, setResetCircos] = useState(false)
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -108,10 +109,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
        if (selection.value === "circos") {
         if(form.chrSingle!==""){
           console.log("reseting")
-        /*   mergeForm({ chrSingle: '' });
-        setForm(defaultFormState);
-        const summarybtn2 = document.getElementById("summaryReset");
-        summarybtn2.click();*/
+          setResetCircos(true)
         }
      
 
@@ -119,6 +117,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
        if (selection.value === "static") {
        //  if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
         // setStart(0);
+        setResetCircos(false)
        }
     }
 
@@ -127,6 +126,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   useEffect(() => {
     setForm({ ...form, end: end, start: start });
   }, [end, start]);
+
+  useEffect(() => {
+    if( resetCircos){
+      const summarybtn2 = document.getElementById("summarySubmit");
+      summarybtn2.click();
+    }
+
+  }, [resetCircos]);
 
   // avoid loading all samples as Select options
   function filterSamples(value, limit = 100) {}

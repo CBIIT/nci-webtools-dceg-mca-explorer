@@ -207,6 +207,7 @@ export default function RangeView(props) {
     if (form.plotType.value === "static") {
       setAllValue([...allValues]);
     }
+
     handleDataChange(allValues);
   }, [gain, loss, loh, undetermined, chrX, chrY]);
 
