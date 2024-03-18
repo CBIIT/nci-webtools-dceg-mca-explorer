@@ -193,7 +193,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     //console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
-    //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge);
+    //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
     try {
       const resultdemo = await client.search({
         index: "denominator_age",
@@ -259,7 +259,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
           },
         },
       });
-      //console.log(resultdemo.body.hits.hits.length);
+      console.log(resultdemo.body.hits.hits.length);
 
       //merge two results based on denominatore reulsts
       const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };

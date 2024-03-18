@@ -108,11 +108,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
        if (selection.value === "circos") {
         if(form.chrSingle!==""){
           console.log("reseting")
+        /*   mergeForm({ chrSingle: '' });
+        setForm(defaultFormState);
+        const summarybtn2 = document.getElementById("summaryReset");
+        summarybtn2.click();*/
         }
-       // mergeForm({ chrSingle: '' });
-       // setForm(defaultFormState);
-       // const summarybtn2 = document.getElementById("summaryReset");
-       // summarybtn2.click();
+     
 
        }
        if (selection.value === "static") {

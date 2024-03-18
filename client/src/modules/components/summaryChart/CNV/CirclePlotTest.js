@@ -528,7 +528,7 @@ export default function CirclePlotTest(props) {
         //if (r._source !== null) {
         const d = r;
         if (d.cf != "nan") {
-          console.log(d)
+         // console.log(d)
           d.block_id = d.chromosome.substring(3);
           d.value = d.cf;
           d.dataset = d.dataset.toUpperCase();
@@ -631,7 +631,7 @@ export default function CirclePlotTest(props) {
       tempA += agecfA === "" ? "; Age: 0-100" : agecfA;
       tempB += agecfB === "" ? "; Age: 0-100" : agecfB;
     }
-    console.log(tempA, tempB)
+    //console.log(tempA, tempB)
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
   
@@ -742,7 +742,7 @@ export default function CirclePlotTest(props) {
     group.study !== undefined &&
       group.approach !== undefined &&
       group.study.forEach((s) => {
-        console.log(s.value, group.approach.length);
+        //console.log(s.value, group.approach.length);
         if (s.value === "plco" && group.approach.length > 0) {
           const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
           console.log(plcoArray);
@@ -1505,7 +1505,7 @@ export default function CirclePlotTest(props) {
           </Row>
           <div>
             <Row className="justify-content-center g-0">
-              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
+              <Col xs={12} md={8} lg={6} style={{ height: compareCircleSize + 15 }}>
                 {circleA ? (
                   <CircosPlotCompare
                     layoutAll={layoutAll}
@@ -1528,7 +1528,7 @@ export default function CirclePlotTest(props) {
                   ""
                 )}
               </Col>
-              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
+              <Col xs={12} md={8} lg={6} style={{ height: compareCircleSize + 15 }}>
                 {circleB ? (
                   <CircosPlotCompare
                     layoutAll={layoutAll}
