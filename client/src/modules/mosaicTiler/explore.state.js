@@ -67,6 +67,10 @@ export async function getData(params) {
     types: params.types,
     maxAge: params.maxAge,
     minAge: params.minAge,
+    priorCancer:params.priorCancer,
+    hemaCancer:params.hemaCancer,
+    lymCancer:params.lymCancer,
+    myeCancer:params.myeCancer
   });
 
   const results = response.data.nominator;
@@ -136,6 +140,10 @@ export const defaultFormState = {
   groupA: [],
   groupB: [],
   smoking: [],
+  priorCancer:[],
+  hemaCancer:[],
+  lymCancer:[],
+  myeCancer:[]
 };
 export const resetFormState = {
   openSidebar: true,
@@ -169,6 +177,10 @@ export const resetFormState = {
   groupA: [],
   groupB: [],
   smoking: [],
+  priorCancer:[],
+  hemaCancer:[],
+  lymCancer:[],
+  myeCancer:[]
 };
 export const formState = atom({
   key: "explore.formState",

@@ -47,6 +47,7 @@ export default function RangeView(props) {
   const [chrX, setChrX] = useState([]);
   const [chrY, setChrY] = useState([]);
   const [tableData, setTableData] = useState([]); //for compare data
+  const [loaded, setLoaded] = useState(false);
 
   const study_value = form.study;
   let query_value = [];
@@ -75,8 +76,10 @@ export default function RangeView(props) {
     setUndetermined([]);
     setChrX([]);
     setChrY([]);
+    setLoaded(false);
     //setLoading(true)
     console.log(qform);
+
     const response = await axios.post("api/opensearch/mca", {
       dataset: qdataset,
       sex: qform.sex,
@@ -91,6 +94,10 @@ export default function RangeView(props) {
       minAge: qform.minAge,
       maxAge: qform.maxAge,
       smoking: qform.smoking,
+      priorCancer:qform.priorCancer,
+      hemaCancer:qform.hemaCancer,
+      lymCancer:qform.lymCancer,
+      myeCancer:qform.myeCancer
     });
     let gainTemp = [];
     let lossTemp = [];
@@ -113,7 +120,12 @@ export default function RangeView(props) {
       qform.ancestry[0].value === "all" &&
       qform.sex[0].value === "all" &&
       qform.minAge === "" &&
-      qform.maxAge === ""
+      qform.maxAge === "" &&
+      qform.priorCancer.length ===0 &&
+      qform.hemaCancer.length === 0 &&
+      qform.lymCancer.length === 0 &&
+      qform.myeCancer.length === 0
+
     ) {
       results = response.data.denominator;
       responseDenominator = response.data.nominator;
@@ -199,6 +211,7 @@ export default function RangeView(props) {
     console.log(chrXTemp.length)
     setChrX(chrXTemp);
     setChrY(chrYTemp);
+    setLoaded(true);
   }
 
   useEffect(() => {
@@ -390,10 +403,14 @@ export default function RangeView(props) {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
-          {allValues.length == 0 && form.counterSubmitted > 0 && !form.compare ? (
+          {allValues.length === 0 && form.counterSubmitted > 0 && !form.compare ? (
+            !loaded ?
             <h6 className="d-flex mx-2" style={{ margin: "10px" }}>
               Loading and rendering...
             </h6>
+            : <h6 className="d-flex mx-2" style={{ margin: "10px" }}>  
+              No Data Found          
+              </h6>
           ) : (
             ""
           )}

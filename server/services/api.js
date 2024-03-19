@@ -259,7 +259,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
           },
         },
       });
-      console.log(resultdemo.body.hits.hits.length);
+      console.log(resultdemo.body.hits.hits.length,result.body.hits.hits.length);
 
       //merge two results based on denominatore reulsts
       const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };

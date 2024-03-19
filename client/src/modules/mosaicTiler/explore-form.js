@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions, smokeNFC, platformArray } from "./constants";
+import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions, smokeNFC, platformArray,ifCancer } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 const compareArray = CompareArray;
@@ -111,8 +111,6 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           console.log("reseting")
           setResetCircos(true)
         }
-     
-
        }
        if (selection.value === "static") {
        //  if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
@@ -446,6 +444,51 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 options={smokeNFC}
               />
             </Form.Group>
+            <Form.Group className="mb-3" controlId="priorCancer">
+              <Form.Label>Prior Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="priorCancer"
+                isMulti={true}
+                value={form.priorCancer}
+                onChange={(ev) => handleSelectChange("priorCancer", ev)}
+                options={ifCancer}         
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="hemaCancer">
+              <Form.Label>Incident Hematological Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="hemaCancer"
+                isMulti={true}
+                value={form.hemaCancer}
+                onChange={(ev) => handleSelectChange("hemaCancer", ev)}
+                options={ifCancer}         
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="lymCancer">
+              <Form.Label>Incident Lymphoid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="lymCancer"
+                isMulti={true}
+                value={form.lymCancer}
+                onChange={(ev) => handleSelectChange("lymCancer", ev)}
+                options={ifCancer}         
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="myeCancer">
+              <Form.Label>Incident Myeloid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="myeCancer"
+                isMulti={true}
+                value={form.myeCancer}
+                onChange={(ev) => handleSelectChange("myeCancer", ev)}
+                options={ifCancer}         
+              />
+            </Form.Group>
+
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
