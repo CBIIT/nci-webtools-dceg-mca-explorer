@@ -1411,15 +1411,15 @@ export default function CirclePlotTest(props) {
                     <tbody >
                       <tr>
                         <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleA}</td>
-                        <td className="numberCol">{rangeLabel === "" ? groupA.length : rangeA}</td>
-                        <td className="numberCol">{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
-                        <td className="numberCol">{fisherA}</td>
+                        <td className="numberCol">{rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}</td>
+                        <td className="numberCol">{fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}</td>
+                        <td className="numberCol">{fisherA.toLocaleString()}</td>
                       </tr>
                       <tr>
                         <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleB}</td>
-                        <td className="numberCol">{rangeLabel === "" ? groupB.length : rangeB}</td>
-                        <td className="numberCol">{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
-                        <td className="numberCol">{fisherB}</td>
+                        <td className="numberCol">{rangeLabel === "" ? groupB.length.toLocaleString() : rangeB.toLocaleString()}</td>
+                        <td className="numberCol">{fisherB > rangeB ? (fisherB - groupB.length).toLocaleString() : fisherB.toLocaleString()}</td>
+                        <td className="numberCol">{fisherB.toLocaleString()}</td>
                       </tr>
                     </tbody>
                   </Table>
