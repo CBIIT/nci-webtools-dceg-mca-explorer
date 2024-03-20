@@ -1390,6 +1390,7 @@ export default function CirclePlotTest(props) {
               <Row className="">
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>
+                  <div ref={circosCompareA} style={{ justifyContent: "center", fontSize: "14px" }}>{titleA}</div>
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeA}
@@ -1405,6 +1406,7 @@ export default function CirclePlotTest(props) {
                       type={form.groupA.types}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      maxtitleHeight={(maxTitleheight-heightA)}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1412,6 +1414,7 @@ export default function CirclePlotTest(props) {
                 </Col>
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>
+                  <div ref={circosCompareB} style={{ justifyContent: "center", fontSize: "14px" }}>{titleB}</div>
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeB}
@@ -1427,6 +1430,7 @@ export default function CirclePlotTest(props) {
                       type={form.groupB.types}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      maxtitleHeight={(maxTitleheight-heightB)}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1511,6 +1515,8 @@ export default function CirclePlotTest(props) {
                     chromesomeId={chromesomeId}
                     size={singleChromeSize}
                     zoomHistory={handleZoomHistory}
+                    isVisible={isVisible}
+                    toggleVisibility={toggleVisibility}
                     onHeightChange={props.onHeightChange}></SingleChromosome>
                 </Col>
               </Row>
