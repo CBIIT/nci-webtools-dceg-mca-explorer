@@ -56,7 +56,7 @@ function GenePlot(props) {
     if (props.width < 600) horizPadding = horizPadding * 2;
     // if (genes.length > 20) horizPadding = 40000 * namelength;
     //console.log(namelength, horizPadding);
-    return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
+    return [gene.transcriptionStart -horizPadding/2, gene.transcriptionEnd + horizPadding, gene];
   });
 
   let packedGeneRanges = packRanges(geneRanges);
