@@ -104,10 +104,16 @@ export default function CirclePlotTest(props) {
   const [isVisible, setIsVisible] = useState(true);
 
   const compareRef = useRef(isCompare);
-
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
   const tableRef = useRef(tableData);
+  const circosCompareA = useRef(null);
+  const circosCompareB = useRef(null);
+  const [maxTitleheight, setMaxTitleheight] = useState(0) 
+  const [heightA, setHeightA] = useState(0)
+  const [heightB, setHeightB] = useState(0)
+
+
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
@@ -1315,6 +1321,14 @@ export default function CirclePlotTest(props) {
     }
   }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
 
+  useEffect(()=>{
+    setHeightA(circosCompareA.current? circosCompareA.current.offsetHeight : 0);
+    setHeightB(circosCompareB.current? circosCompareB.current.offsetHeight : 0);
+    setMaxTitleheight(heightA>heightB?heightA:heightB)
+    console.log(maxTitleheight)
+
+  })
+
   return (
     <Container className="compareContainer align-middle text-center">
       {showChartRef.current ? (
@@ -1535,9 +1549,11 @@ export default function CirclePlotTest(props) {
           </Row>
           <div>
             <Row className="justify-content-center g-0">
-              <Col xs={12} md={8} lg={6} style={{ height: compareCircleSize + 15 }}>
+              <Col xs={12} md={8} lg={6} >
                 {circleA ? (
-                  <CircosPlotCompare
+                  <>
+                  <div ref={circosCompareA} style={{ marginBottom:"1rem",fontSize: "14px" }}>{titleA}</div>
+                  <CircosPlotCompare 
                     layoutAll={layoutAll}
                     layoutxy={layout_xy}
                     title={titleA}
@@ -1551,16 +1567,20 @@ export default function CirclePlotTest(props) {
                     thicknessloh={thicknessloh}
                     circle={circleA}
                     circleRef={circleRef}
+                    maxtitleHeight={(maxTitleheight-heightA)}
                     //circleClass="overlayX"
                     handleEnter={handleEnter}
                     hovertip={hovertip}></CircosPlotCompare>
+                    </>
                 ) : (
                   ""
                 )}
               </Col>
-              <Col xs={12} md={8} lg={6} style={{ height: compareCircleSize + 15 }}>
+              <Col xs={12} md={8} lg={6} >
                 {circleB ? (
-                  <CircosPlotCompare
+                  <>
+                  <div ref={circosCompareB} style={{ marginBottom:"1rem",fontSize: "14px" }}>{titleB}</div>
+                  <CircosPlotCompare 
                     layoutAll={layoutAll}
                     layoutxy={layout_xy}
                     dataXY={[]}
@@ -1575,8 +1595,10 @@ export default function CirclePlotTest(props) {
                     circleRef={circleRef}
                     handleEnter={handleEnter}
                     msg={msgB}
+                    maxtitleHeight={(maxTitleheight-heightB)}
                     //circleClass="overlayX"
                     hovertip={hovertip}></CircosPlotCompare>
+                  </>
                 ) : (
                   ""
                 )}
