@@ -190,17 +190,21 @@
     border-collapse: collapse;
     background-color: #fafafa;
     margin: auto;
-    
+   
 }
 
 .fisherTable th,
 .fisherTable td{
-    padding: 2px 5px 3px;
+    padding: 2px 2px 2px 2px;
     text-align: center;
-   
+  
 }
 .fisherTable .bold-title{
     font-weight: bold !important;
+    padding: 0px;
+    padding-right: 2px;
+    padding-left: 2px;
+    margin: 0px;
 }
 
 .fisherTable tr:hover{
@@ -213,12 +217,19 @@
 
 .fisherTable .bold-title-main{
     font-weight: bold !important;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 0px;
+    max-width: 75px;
 }
 .fisherTable .bold-title-2{
     font-weight: bold !important;
     text-align: center;
-    padding-right: 1px;
-    padding-left: 5px;
+    padding-right: 5px;
+    padding-left:5px;
+    margin: 0px;
+    max-width: 75px;
+
    
 }
 .fisherTable .bold-title-3{
@@ -226,12 +237,17 @@
     text-align: center;
   
     vertical-align: middle;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 0px;
 }
 
 .fisherTable .numberCol{
     text-align: center;
-    
     vertical-align: middle;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 0px;
 }
 
 
