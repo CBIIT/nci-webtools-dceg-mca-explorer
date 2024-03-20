@@ -24,7 +24,7 @@ export default function CircosPlot(props) {
 
   return (
     <>
-    <Container style={{ display:"flex",flexDirection:"column",alignItems:"center",position:"relative",fontSize: "14px",minHeight:`${titleHeight+size+50}px` }}>
+    <Container style={{ display:"flex",flexDirection:"column",alignItems:"center",position:"relative",fontSize: "14px",minHeight:`${titleHeight+size+20}px` }}>
 
     {/* <div ref={titleRef} style={{ marginBottom:"1rem",fontSize: "14px" }}>{props.title}</div> */}
     {/* <div style={{ fontSize: "14px" }}>{props.msg}</div> */}
@@ -276,6 +276,7 @@ export default function CircosPlot(props) {
       </div>
       </Container>
       {/* <div style={{ fontSize: "14px",justifyContent: "center",paddingTop:"430px" }}>{props.msg}</div>  */}
+      <div style={{paddingTop:`${titleHeight+size}px`, fontSize: "14px" }}>{props.msg}</div>
       </Container>
     </>
   );
