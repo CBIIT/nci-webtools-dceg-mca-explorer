@@ -378,6 +378,8 @@ function SingleChromosome(props) {
                 xMax={xMax}
                 xMin={xMin}
                 chr={props.chromesomeId}
+                isVisible={props.isVisible}
+                toggleVisibility={props.toggleVisibility}
                 //onHeightChange={props.onHeightChange}
                 //</div>onCompareHeightChange={props.onCompareHeightChange}
               ></GenePlot>

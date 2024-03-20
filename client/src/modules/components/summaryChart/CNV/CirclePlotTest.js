@@ -101,11 +101,16 @@ export default function CirclePlotTest(props) {
   const [rangeA, setRangeA] = useState(0);
   const [rangeB, setRangeB] = useState(0);
   const [Pfisher, setPfisher] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
   const compareRef = useRef(isCompare);
 
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
   const tableRef = useRef(tableData);
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
 
   useEffect(() => {
     setShowChart(form.plotType.value === "static");
@@ -389,7 +394,7 @@ export default function CirclePlotTest(props) {
 
       //console.log("clear circle data");
     }
-    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array"));
+    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array Platform").replace("Types:","Copy Number State:"));
   }, [form.counterCompare]);
 
   data = [
@@ -645,8 +650,8 @@ export default function CirclePlotTest(props) {
     const [titleB, errorMessageB] = checkTitleStudyPlatForm(form.groupB, tempB);
     tempA = titleA;
     tempB = titleB;
-    setTitleA(tempA.slice(1).replace("Approach","Array"));
-    setTitleB(tempB.slice(1).replace("Approach","Array"));
+    setTitleA(tempA.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:"));
+    setTitleB(tempB.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:"));
     setMsgA(errorMessageA);
     setMsgB(errorMessageB);
     return titleGroup.slice(1);
@@ -1363,6 +1368,8 @@ export default function CirclePlotTest(props) {
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
                       type={form.groupA.types}
+                      isVisible={isVisible}
+                      toggleVisibility={toggleVisibility}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1383,6 +1390,8 @@ export default function CirclePlotTest(props) {
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
                       type={form.groupB.types}
+                      isVisible={isVisible}
+                      toggleVisibility={toggleVisibility}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>

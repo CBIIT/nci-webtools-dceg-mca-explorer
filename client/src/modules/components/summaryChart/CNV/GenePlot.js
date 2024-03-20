@@ -3,12 +3,16 @@ import Plot from "react-plotly.js";
 import { packRanges } from "../../utils.js";
 import axios from "axios";
 import Spinner from "react-bootstrap/Spinner";
+import { Button } from "react-bootstrap";
 
 function GenePlot(props) {
   const [genes, setGenes] = useState([]);
   const [showGene, setShowGene] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const genearr = [];
+
+
+
   //console.log(props.xMax,props.xMin)
   useEffect(() => {
     if (true) {
@@ -48,7 +52,7 @@ function GenePlot(props) {
   //console.log(showGene,isLoading)
   let geneRanges = genes.map((gene) => {
     const namelength = gene.name.length;
-    let horizPadding = 20000 * namelength;
+    let horizPadding = 30000 * namelength;
     if (props.width < 600) horizPadding = horizPadding * 2;
     // if (genes.length > 20) horizPadding = 40000 * namelength;
     //console.log(namelength, horizPadding);
@@ -166,6 +170,11 @@ function GenePlot(props) {
       </Spinner>
     </>
   ) : !isLoading && showGene ? (
+    <>
+    <Button variant="outline-secondary sm" onClick={props.toggleVisibility}>
+    {props.isVisible?'Hide Gene plot':'Show Gene plot'}
+    </Button>
+    {props.isVisible &&
     <Plot
       data={data}
       layout={layout}
@@ -184,6 +193,8 @@ function GenePlot(props) {
       useResizeHandler={true}
       style={{ width: "100%", height: "100%", display: "block" }}
     />
+}
+    </>
   ) : (
     ""
   );
