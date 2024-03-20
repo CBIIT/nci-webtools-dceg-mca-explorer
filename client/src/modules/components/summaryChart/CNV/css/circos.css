@@ -188,7 +188,7 @@
 .fisherTable{
     width: auto;
     border-collapse: collapse;
-    background-color: #f4f8f9;
+    background-color: #fafafa;
     margin: auto;
     
 }
@@ -204,7 +204,7 @@
 }
 
 .fisherTable tr:hover{
-    background-color: #a8e6fb;
+    background-color: #ececec;
 }
 /*.fisherTable tr:nth-child(odd),
 .fisherTable tr:nth-child(even){
