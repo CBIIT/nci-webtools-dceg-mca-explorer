@@ -171,10 +171,11 @@ function GenePlot(props) {
     </>
   ) : !isLoading && showGene ? (
     <>
-    <Button variant="outline-secondary sm" onClick={props.toggleVisibility}>
+   
+    <Button variant="outline-secondary sm" onClick={props.toggleVisibility} style={{padding:"5px"}}>
     {props.isVisible?'Hide Gene plot':'Show Gene plot'}
     </Button>
-    {props.isVisible &&
+    {props.isVisible &&   
     <Plot
       data={data}
       layout={layout}
@@ -191,8 +192,9 @@ function GenePlot(props) {
         },
       }}
       useResizeHandler={true}
-      style={{ width: "100%", height: "100%", display: "block" }}
+      style={{ width: "100%", height: "100%", display: "block",paddingTop:"10px" }}
     />
+  
 }
     </>
   ) : (
