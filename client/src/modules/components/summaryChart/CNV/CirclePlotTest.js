@@ -394,7 +394,11 @@ export default function CirclePlotTest(props) {
 
       //console.log("clear circle data");
     }
-    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array Platform").replace("Types:","Copy Number State:"));
+    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array Platform").replace("Types:","Copy Number State:")
+                            .replace("Prior","Prior ")
+                            .replace("Hema","Incident Hematological ")
+                            .replace("Lym","Incident Lymphoid ")
+                            .replace("Mye","Incident Myeloid "));
   }, [form.counterCompare]);
 
   data = [
@@ -650,8 +654,16 @@ export default function CirclePlotTest(props) {
     const [titleB, errorMessageB] = checkTitleStudyPlatForm(form.groupB, tempB);
     tempA = titleA;
     tempB = titleB;
-    setTitleA(tempA.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:"));
-    setTitleB(tempB.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:"));
+    setTitleA(tempA.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:")
+                            .replace("Prior","Prior ")
+                            .replace("Hema","Incident Hematological ")
+                            .replace("Lym","Incident Lymphoid ")
+                            .replace("Mye","Incident Myeloid "));
+    setTitleB(tempB.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:")
+                            .replace("Prior","Prior ")
+                            .replace("Hema","Incident Hematological ")
+                            .replace("Lym","Incident Lymphoid ")
+                            .replace("Mye","Incident Myeloid "));
     setMsgA(errorMessageA);
     setMsgB(errorMessageB);
     return titleGroup.slice(1);
