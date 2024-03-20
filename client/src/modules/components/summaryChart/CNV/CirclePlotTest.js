@@ -711,10 +711,15 @@ export default function CirclePlotTest(props) {
     }
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
+    title = title.replace("Approach","Array Platform").replace("Types:","Copy Number State:")
+    .replace("Prior","Prior ")
+    .replace("Hema","Incident Hematological ")
+    .replace("Lym","Incident Lymphoid ")
+    .replace("Mye","Incident Myeloid ")
 
     const [tempTitle, errormsg] = checkTitleStudyPlatForm(group, title);
     setMsg(errormsg);
-    //  console.log(tempTitle, errormsg);
+    // console.log( title);
     return tempTitle;
   };
   const groupAgeTitle = (group) => {
@@ -764,14 +769,14 @@ export default function CirclePlotTest(props) {
           const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
           console.log(plcoArray);
           if (plcoArray.length === 0) {
-            title = title.replace("PLCO,", "").replace("PLCO", "");
+            //title = title.replace("PLCO,", "").replace("PLCO", "");
             errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
           }
         }
         if (s.value === "ukbb" && group.approach.length > 0) {
           const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
           if (ukArray.length === 0) {
-            title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+           // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
             errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
           }
         }
@@ -793,6 +798,10 @@ export default function CirclePlotTest(props) {
         minAge: form.minAge,
         maxFraction: form.maxFraction,
         minFraction: form.minFraction,
+        priorCancer: form.priorCancer,
+        hemaCancer: form.hemaCancer,
+        lymCancer: form.lymCancer,
+        myeCancer: form.myeCancer
       })
     );
   }, [form.counterSubmitted]);
@@ -1573,6 +1582,10 @@ export default function CirclePlotTest(props) {
                 )}
               </Col>
             </Row>
+            {/* <Row>
+              <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgA}</div></Col>
+              <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgB}</div></Col>
+            </Row> */}
           </div>
         </div>
       ) : (

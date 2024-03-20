@@ -18,9 +18,11 @@ export default function CircosPlot(props) {
   const classCircle = props.circleClass;
   const layoutxy = props.layoutxy;
   return (
+    <>
+    <div style={{ justifyContent: "center",fontSize: "14px" }}>{props.title}</div>
+    <div style={{ justifyContent: "center",fontSize: "14px" }}>{props.msg}</div>
     <div style={{ justifyContent: "center", position: "absolute" }}>
-      <div style={{ fontSize: "14px" }}>{props.title}</div>
-      <div style={{ justifyContent: "center", position: "absolute" }}>
+   
         <Circos
           layout={layoutxy}
           config={{
@@ -78,12 +80,14 @@ export default function CircosPlot(props) {
           size={size}
         />
       </div>
+      {/* <div style={{ justifyContent: "center",fontSize: "14px",color:"white" }}>{props.title===""?"":" . "}</div> */}
       <div
         id={props.details}
-        style={{ justifyContent: "center" }}
+        style={{ justifyContent: "center", position: "absolute" }}
         ref={circleRef}
         onMouseEnter={handleEnter}
         onClick={handleEnter}>
+          
         <Circos
           layout={layoutAll}
           config={{
@@ -263,8 +267,10 @@ export default function CircosPlot(props) {
         />
         {/* <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.details}</div> */}
       </div>
-      <div style={{ fontSize: "14px" }}>{props.msg}</div>
-    </div>
+      {/* <div style={{ fontSize: "14px",justifyContent: "center",paddingTop:"430px" }}>{props.msg}</div>  */}
+     
+    </>
   );
+
   //return
 }
