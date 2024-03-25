@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
@@ -48,6 +48,7 @@ export default function RangeView(props) {
   const [chrY, setChrY] = useState([]);
   const [tableData, setTableData] = useState([]); //for compare data
   const [loaded, setLoaded] = useState(false);
+  const circleRef = useRef(null);
 
   const study_value = form.study;
   let query_value = [];
@@ -377,6 +378,74 @@ export default function RangeView(props) {
     props.onPair();
   };
 
+  const   checkMaxLines = () => {
+    let totalLines = 0;
+    const linesSummary = {}
+   // console.log(circleRef.current,document.getElementById('circosTable').rows.length)
+    if (circleRef.current&&loaded&& document.getElementById('circosTable').getElementsByTagName('tr').length===0) {
+      [".track-0 .block", ".track-1 .block",".track-2 .block",".track-3 .block"].forEach((trackClass,index) => {
+        const track = document.querySelectorAll(`${trackClass}`);
+       let lineInTrack = []
+        if(track.length>0){
+          track.forEach((t)=>{
+            const paths = t.getElementsByTagName('path');
+            let counterL = {}
+            const radius = paths[0].getAttribute('d')
+            const rvalue = radius.match(/A\s*(-?\d+\.?\d*)/)
+            const maxR = rvalue[1]
+            for(const path of paths){
+              const dAttribute = path.getAttribute('d')
+            //  console.log(dAttribute)
+             const Avalue = dAttribute.match(/A\s*(-?\d+\.?\d*)/)[1]
+             if(Avalue === maxR) counterL[maxR] =(counterL[maxR]||0)+1
+              
+            }
+            const counterNotL = Object.values(counterL).filter(c=>c>1)
+            totalLines+=paths.length
+            //console.log(paths.length)
+            //console.log(t.__data__,counterNotL,paths.length)
+            lineInTrack.push({key:t.__data__.key, outBlock: counterNotL[0]?counterNotL[0]:0, all:paths.length})
+          })
+          linesSummary[index] = lineInTrack
+        }
+      })
+      const fourTracks = Object.keys(linesSummary).length
+     //create table:
+     const tableLines = document.createElement('table');
+     tableLines.border = '1';
+      
+     var header = tableLines.createTHead();
+     var hearderRow = header.insertRow(0);
+     for(var i =0; i<22; i++){
+      var hearderCell = document.createElement("th");
+      hearderCell.innerHTML = `${i +1}`;
+      hearderRow.appendChild(hearderCell)
+      hearderCell.style.border='1px solid black';
+     }
+
+     var tbody = tableLines.createTBody();
+
+      
+      for(let l = 0; l<fourTracks; l++){
+        const trackData = linesSummary[l]
+        console.log(trackData)
+        const row = tbody.insertRow(-1);
+        if(trackData!==undefined){
+          trackData.sort((a,b)=>parseInt(a.key,10)-parseInt(b.key,10))
+          trackData.forEach((item,index)=>{
+           const cell = row.insertCell(index);
+            cell.innerHTML= (item.outBlock>0?item.outBlock+"/":'')+item.all
+            cell.style.border='1px solid black';
+            cell.style.size='12px';
+            cell.style.color=item.outBlock>0?"red":''
+           })
+           document.getElementById('circosTable').appendChild(tableLines)
+        }
+      }
+    }
+   
+  }
+
   //set tableData based on status
   //if compare, and no chromoid => add circleA and circleB
   //if compare with chromoid => add groupA and groupB
@@ -428,6 +497,7 @@ export default function RangeView(props) {
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
                 <CirclePlotTest
+                  ref={circleRef}
                   clickedChromoId={handleClickedChromoId}
                   key={clickedCounter}
                   loss={[...loss, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
@@ -443,6 +513,9 @@ export default function RangeView(props) {
                   getData={handleDataChange}
                   onPair={handleCheckboxChange}></CirclePlotTest>
               </Col>
+            </Row>
+            <Row>
+            {loaded?checkMaxLines():'' }
             </Row>
             <Row>
               <div className="m-3">

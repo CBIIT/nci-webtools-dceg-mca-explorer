@@ -1,6 +1,7 @@
 //import { useEffect, useRef, useState } from "react";
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
+import { useEffect, useState } from "react";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -17,6 +18,10 @@ export default function CircosPlot(props) {
   const hovertip = props.hovertip;
   const classCircle = props.circleClass;
   const layoutxy = props.layoutxy;
+  //const checkMaxLines = props.checkMaxLines;
+  const [plotLoaded, setPlotLoaded] = useState(false);
+
+   
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
@@ -79,7 +84,7 @@ export default function CircosPlot(props) {
           size={size}
         />
       </div>
-      <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
+      <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter} onLoad={console.log("loaded")} >
         {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
         <Circos
           layout={layoutAll}
@@ -153,7 +158,7 @@ export default function CircosPlot(props) {
               config: {
                 innerRadius: 0.25,
                 outerRadius: 0.5,
-                thickness: thicknessloss,
+                thickness: circle.loss.length<3500?(circle.loss.length<500?2:1):0,
                 margin: 0,
                 strokeWidth: 1,
                 strokeColor: "red",

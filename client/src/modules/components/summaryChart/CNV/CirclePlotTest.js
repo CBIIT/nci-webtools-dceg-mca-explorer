@@ -60,7 +60,7 @@ function changeBackground(track, chromesomeId, opacity) {
   }
 }
 
-export default function CirclePlotTest(props) {
+const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   //to show singleChrome chart
   const [form, setForm] = useRecoilState(formState);
   const [chromesomeId, setChromesomeId] = useState(props.compare ? 0 : form.chrCompare.label);
@@ -183,7 +183,7 @@ export default function CirclePlotTest(props) {
     chry: form.chrY,
   });
 
-  const circleRef = useRef(null);
+  const circleRef = useRef(props.ref);
   useEffect(() => {
     setCircle({
       loss: props.loss,
@@ -274,6 +274,8 @@ export default function CirclePlotTest(props) {
       });
     }
   };
+
+
 
   const handleBack = () => {
     setShowChart(false);
@@ -1196,10 +1198,10 @@ export default function CirclePlotTest(props) {
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   const linethickness = 0;
-  const thicknessgain = props.gain.length < 1000 ? 0 : linethickness;
-  const thicknessloh = props.loh.length < 1000 ? 0 : linethickness;
-  const thicknessloss = props.loss.length < 1000 ? 0 : linethickness;
-  const thicknessundermined = props.undetermined.length < 1000 ? 0 : linethickness;
+  const thicknessgain = props.gain.length < 200 ? 1 : linethickness;
+  const thicknessloh = props.loh.length < 200 ? 1 : linethickness;
+  const thicknessloss = props.loss.length < 200 ? 1: linethickness;
+  const thicknessundermined = props.undetermined.length < 200 ? 1 : linethickness;
 
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
@@ -1325,7 +1327,7 @@ export default function CirclePlotTest(props) {
     setHeightA(circosCompareA.current? circosCompareA.current.offsetHeight : 0);
     setHeightB(circosCompareB.current? circosCompareB.current.offsetHeight : 0);
     setMaxTitleheight(heightA>heightB?heightA:heightB)
-    console.log(maxTitleheight)
+    //console.log(maxTitleheight)
 
   })
 
@@ -1657,14 +1659,18 @@ export default function CirclePlotTest(props) {
                 thicknessundermined={thicknessundermined}
                 thicknessloh={thicknessloh}
                 circle={circle}
-                circleRef={circleRef}
+                circleRef={refSingleCircos}
                 handleEnter={handleEnter}
+                
                 circleClass="overlayX"
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
+          <table id= "circosTable"></table>
         </div>
       )}
     </Container>
   );
-}
+})
+
+export default CirclePlotTest;

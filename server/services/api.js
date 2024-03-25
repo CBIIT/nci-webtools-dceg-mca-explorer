@@ -623,7 +623,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
     platformarr = getAttributesArray(approach, "array"),
     { datasets } = getStudy(study,[]);
  
-   console.log(datasets,sexarr, ancestryarry, smokearr, platformarr, minAge,maxAge);
+  // console.log(datasets,sexarr, ancestryarry, smokearr, platformarr, minAge,maxAge);
   try {
     const result = await client.search({
       index: "denominator_age",

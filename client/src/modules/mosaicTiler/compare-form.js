@@ -77,11 +77,23 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    // console.log(name, selection);
+     console.log(name, selection);
     if (name === "chrCompare") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
       setStart(0);
+      //handleFilterClear()
+ 
+    /*  onClear({
+        ...form,
+        plotType:{ value:"static",label:"Chromosome level", },
+        //groupA: [],
+        //groupB: [],
+        groupA: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
+        groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
+        //counterCompare: counter + 1,
+      });*/
+    
     }
 
     if (name === "types" || name === "ancestry" || name === "sex" || name === "approach") {
