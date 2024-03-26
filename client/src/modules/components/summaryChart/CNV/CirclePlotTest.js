@@ -15,6 +15,7 @@ import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
 import { fisherTest } from "../../utils";
+import BootstrapTable from "react-bootstrap/Table";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -183,7 +184,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
     chry: form.chrY,
   });
 
-  const circleRef = useRef(props.ref);
+  const circleRef = useRef(null);
   useEffect(() => {
     setCircle({
       loss: props.loss,
@@ -227,7 +228,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   });
 
   const handleEnter = () => {
-    console.log("handleEnter");
+    console.log("handleEnter",circleRef.current);
     if (circleRef.current) {
       var track0 = document.querySelectorAll(".track-0 .block");
       var track1 = document.querySelectorAll(".track-1 .block");
@@ -1666,7 +1667,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
-          <table id= "circosTable"></table>
+          <div id= "circosTable" className="table-responsive">Total events in the circos plot<br></br>(for red one, first number is events not disply in the plot)</div>
         </div>
       )}
     </Container>

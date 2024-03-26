@@ -3,13 +3,14 @@ import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
 import Plot from "react-plotly.js";
-import { Tabs, Tab, Row, Col } from "react-bootstrap";
+import { Tabs, Tab, Row, Col,Spinner } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
 import { Columns, exportTable } from "./tableColumns";
 import { initialX, initialY, AncestryOptions, smokeNFC, SexOptions } from "./constants";
+import {LoadingOverlay} from "../components/controls/loading-overlay/loading-overlay"
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -381,11 +382,17 @@ export default function RangeView(props) {
   const   checkMaxLines = () => {
     let totalLines = 0;
     const linesSummary = {}
+    const cellLabels = ["Undetermined","Loss","Gain","CN-LOH"]
    // console.log(circleRef.current,document.getElementById('circosTable').rows.length)
     if (circleRef.current&&loaded&& document.getElementById('circosTable').getElementsByTagName('tr').length===0) {
       [".track-0 .block", ".track-1 .block",".track-2 .block",".track-3 .block"].forEach((trackClass,index) => {
         const track = document.querySelectorAll(`${trackClass}`);
-       let lineInTrack = []
+        const chromosomes = []
+        .concat(
+          Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
+            return { key: i, outBlock: 0,all:'' };
+          })
+        )
         if(track.length>0){
           track.forEach((t)=>{
             const paths = t.getElementsByTagName('path');
@@ -398,29 +405,42 @@ export default function RangeView(props) {
             //  console.log(dAttribute)
              const Avalue = dAttribute.match(/A\s*(-?\d+\.?\d*)/)[1]
              if(Avalue === maxR) counterL[maxR] =(counterL[maxR]||0)+1
-              
             }
             const counterNotL = Object.values(counterL).filter(c=>c>1)
             totalLines+=paths.length
             //console.log(paths.length)
             //console.log(t.__data__,counterNotL,paths.length)
-            lineInTrack.push({key:t.__data__.key, outBlock: counterNotL[0]?counterNotL[0]:0, all:paths.length})
+            var oline = chromosomes.find(o=>o.key===Number(t.__data__.key))
+            if(oline){
+              oline.outBlock = counterNotL[0]?counterNotL[0]-1:0
+              oline.all = paths.length-1
+            }
           })
-          linesSummary[index] = lineInTrack
+          linesSummary[index] = chromosomes
         }
       })
       const fourTracks = Object.keys(linesSummary).length
      //create table:
+
      const tableLines = document.createElement('table');
-     tableLines.border = '1';
+     tableLines.style.border = '1';
+     //tableLines.style.tableLayout = "auto"
+     tableLines.className="table table-striped table-hover"
+
+
       
      var header = tableLines.createTHead();
      var hearderRow = header.insertRow(0);
+     var hearderCelllabel = document.createElement("th");
+     hearderCelllabel.innerHTML = "Chromosome";
+     hearderRow.appendChild(hearderCelllabel)
+     //hearderCelllabel.style.border='1px solid black';
+
      for(var i =0; i<22; i++){
       var hearderCell = document.createElement("th");
       hearderCell.innerHTML = `${i +1}`;
       hearderRow.appendChild(hearderCell)
-      hearderCell.style.border='1px solid black';
+      //hearderCell.style.border='1px solid black';
      }
 
      var tbody = tableLines.createTBody();
@@ -432,12 +452,17 @@ export default function RangeView(props) {
         const row = tbody.insertRow(-1);
         if(trackData!==undefined){
           trackData.sort((a,b)=>parseInt(a.key,10)-parseInt(b.key,10))
+          const cellLabel = row.insertCell(0);
+          cellLabel.innerHTML=cellLabels[l]
+         // cellLabel.style.border='1px solid black';
+         // cellLabel.style.size='12px';
           trackData.forEach((item,index)=>{
-           const cell = row.insertCell(index);
+           const cell = row.insertCell(index+1);
             cell.innerHTML= (item.outBlock>0?item.outBlock+"/":'')+item.all
-            cell.style.border='1px solid black';
-            cell.style.size='12px';
+            //cell.style.border='1px solid black';
+            //cell.style.fontSize='12px';
             cell.style.color=item.outBlock>0?"red":''
+            //cell.style.width="20px"
            })
            document.getElementById('circosTable').appendChild(tableLines)
         }
@@ -474,9 +499,12 @@ export default function RangeView(props) {
         <div className="row justify-content-center">
           {allValues.length === 0 && form.counterSubmitted > 0 && !form.compare ? (
             !loaded ?
-            <h6 className="d-flex mx-2" style={{ margin: "10px" }}>
-              Loading and rendering...
-            </h6>
+           
+             <>
+               <LoadingOverlay active={!loaded} /> 
+               {/* <Spinner animation="border" variant="primary" role="status"></Spinner>
+               <div className=" justify-content-center"> Loading and rendering...</div> */}
+             </>
             : <h6 className="d-flex mx-2" style={{ margin: "10px" }}>  
               No Data Found          
               </h6>
@@ -489,11 +517,7 @@ export default function RangeView(props) {
             ""
           )}
           <div className="">
-            {/* <Row>
-              <Col className="col col-xl-12 d-flex justify-content-end ">
-                <Legend></Legend>
-              </Col>
-            </Row> */}
+         
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
                 <CirclePlotTest
