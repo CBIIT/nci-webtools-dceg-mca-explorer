@@ -84,8 +84,9 @@ export default function CircosPlot(props) {
           size={size}
         />
       </div>
-      <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter} onLoad={console.log("loaded")} >
+      <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}  >
         {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
+        <div ref={props.circleRefTable}>
         <Circos
           layout={layoutAll}
           config={{
@@ -265,6 +266,7 @@ export default function CircosPlot(props) {
         />
         <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.details}</div>
         <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.msg}</div>
+      </div>
       </div>
     </div>
   );

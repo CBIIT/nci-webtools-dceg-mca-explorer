@@ -222,7 +222,6 @@ export default function RangeView(props) {
     if (form.plotType.value === "static") {
       setAllValue([...allValues]);
     }
-
     handleDataChange(allValues);
   }, [gain, loss, loh, undetermined, chrX, chrY]);
 
@@ -372,13 +371,16 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    // console.log(data.length);
+   // console.log(data.length);
     setTableData(data);
   };
   const handleCheckboxChange = () => {
     props.onPair();
   };
 
+  const handleSetLoading = (val) =>{
+    setLoaded(val);
+  }
   const   checkMaxLines = () => {
     let totalLines = 0;
     const linesSummary = {}
@@ -497,7 +499,7 @@ export default function RangeView(props) {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
-          {allValues.length === 0 && form.counterSubmitted > 0 && !form.compare ? (
+          {allValues.length === 0 ? (// && form.counterSubmitted > 0 
             !loaded ?
            
              <>
@@ -535,7 +537,9 @@ export default function RangeView(props) {
                   onResetHeight={resetHeight}
                   onClickedChr={handleClickChr}
                   getData={handleDataChange}
-                  onPair={handleCheckboxChange}></CirclePlotTest>
+                  onPair={handleCheckboxChange}
+                  onLoading={handleSetLoading}>                  
+                  </CirclePlotTest>
               </Col>
             </Row>
             <Row>

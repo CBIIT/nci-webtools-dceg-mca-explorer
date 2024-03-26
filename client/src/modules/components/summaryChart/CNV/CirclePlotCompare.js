@@ -29,7 +29,7 @@ export default function CircosPlot(props) {
     {/* <div ref={titleRef} style={{ marginBottom:"1rem",fontSize: "14px" }}>{props.title}</div> */}
     {/* <div style={{ fontSize: "14px" }}>{props.msg}</div> */}
     <Container style={{ position:"relative", width:"100%", textAlign:"center"}}>
-    <div id="A" style={{ textAlign:"center", position: "absolute", zIndex:"1000", top:`${titleHeight}px`,left:"50%",transform:"translateX(-50%)"}}>
+    <div id="A" style={{ textAlign:"center", position: "absolute", zIndex:"10", top:`${titleHeight}px`,left:"50%",transform:"translateX(-50%)"}}>
         <Circos
           layout={layoutxy}
           config={{
@@ -90,7 +90,7 @@ export default function CircosPlot(props) {
       {/* <div style={{ justifyContent: "center",fontSize: "14px",color:"white" }}>{props.title===""?"":" . "}</div> */}
       <div
         id={props.details}
-        style={{ textAlign:"center", position: "absolute", zIndex:"0",top:`${titleHeight}px`, left:"50%",transform:"translateX(-50%)"}}
+        style={{ textAlign:"center", position: "absolute", zIndex:"100",top:`${titleHeight}px`, left:"50%",transform:"translateX(-50%)"}}
         ref={circleRef}
         onMouseEnter={handleEnter}
         onClick={handleEnter}>

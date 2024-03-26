@@ -15,7 +15,8 @@ import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
 import { fisherTest } from "../../utils";
-import BootstrapTable from "react-bootstrap/Table";
+
+import {LoadingOverlay} from "../../../components/controls/loading-overlay/loading-overlay"
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -113,7 +114,8 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   const [maxTitleheight, setMaxTitleheight] = useState(0) 
   const [heightA, setHeightA] = useState(0)
   const [heightB, setHeightB] = useState(0)
-
+  const [isLoadedA, setIsLoadedA] = useState(false)
+  const [isLoadedB, setIsLoadedB] = useState(false)
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -370,6 +372,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   let data = [];
   useEffect(() => {
     // console.log(form.counterCompare, form.groupA, form.groupB);
+
     if (form.compare) {
       //console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
@@ -384,13 +387,27 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
       setGroupA([]);
       setGroupB([]);
       console.log(form);
+      setIsLoadedA(false)
+      setIsLoadedB(false)
       if (form.counterCompare > 0) {
-        handleGroupQuery(form.groupA).then((data) =>
-          showChart ? (setGroupA(data[0]), setFisherA(data[1])) : setCircleA({ ...data })
-        );
-        handleGroupQuery(form.groupB).then((data) =>
-          showChart ? (setGroupB(data[0]), setFisherB(data[1])) : setCircleB({ ...data })
-        );
+        handleGroupQuery(form.groupA).then((data) =>{
+          if(showChart){
+            setGroupA(data[0]);
+            setFisherA(data[1]);
+          }  
+          else setCircleA({ ...data })
+          setIsLoadedA(true)
+        }
+        )
+        handleGroupQuery(form.groupB).then((data) =>{
+          if(showChart){
+            setGroupB(data[0]);
+            setFisherB(data[1]); 
+          }
+          else setCircleB({ ...data })
+          setIsLoadedB(true)
+        }
+        )
       }
     } else {
       //console.log("clear form");
@@ -410,6 +427,12 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                             .replace("Mye","Incident Myeloid "));
   }, [form.counterCompare]);
 
+  useEffect(()=>{
+   //if(isLoadedA && isLoadedB){
+      props.onLoading(isLoadedA && isLoadedB);
+    //}
+  },[isLoadedA,isLoadedB])
+
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
     ...props.loh.filter((chr) => chr.block_id === chromesomeId + ""),
@@ -423,6 +446,8 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   //do query for group compare:
   async function handleGroupQuery(group) {
     //setLoading(true)
+    setIsLoadedA(false)
+    setIsLoadedB(false)
     const result = [];
     let responseDeno = [];
     let query = {};
@@ -1322,6 +1347,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         handleFisherTest(rangeGroupA.length, fisherA, rangeGroupB.length, fisherB);
       } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
     }
+   
   }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
 
   useEffect(()=>{
@@ -1570,10 +1596,10 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                     details="A"
                     msg={msgA}
                     size={compareCircleSize}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
+                    thicknessloss={0}
+                    thicknessgain={0}
+                    thicknessundermined={0}
+                    thicknessloh={0}
                     circle={circleA}
                     circleRef={circleRef}
                     maxtitleHeight={(maxTitleheight-heightA)}
@@ -1596,10 +1622,10 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                     title={titleB}
                     details="B"
                     size={compareCircleSize}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
+                    thicknessloss={0}
+                    thicknessgain={0}
+                    thicknessundermined={0}
+                    thicknessloh={0}
                     circle={circleB}
                     circleRef={circleRef}
                     handleEnter={handleEnter}
@@ -1660,9 +1686,9 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                 thicknessundermined={thicknessundermined}
                 thicknessloh={thicknessloh}
                 circle={circle}
-                circleRef={refSingleCircos}
+                circleRef={circleRef}
                 handleEnter={handleEnter}
-                
+                circleRefTable = {refSingleCircos}
                 circleClass="overlayX"
                 hovertip={hovertip}></CircosPlot>
             </Col>
