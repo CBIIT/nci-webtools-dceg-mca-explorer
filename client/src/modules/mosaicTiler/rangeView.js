@@ -384,7 +384,7 @@ export default function RangeView(props) {
   const   checkMaxLines = () => {
     let totalLines = 0;
     const linesSummary = {}
-    const cellLabels = ["Undetermined","Loss","Gain","CN-LOH"]
+    const cellLabels = ["Undetermined","Loss","CN-LOH","Gain"]
    // console.log(circleRef.current,document.getElementById('circosTable').rows.length)
     if (circleRef.current&&loaded&& document.getElementById('circosTable').getElementsByTagName('tr').length===0) {
       [".track-0 .block", ".track-1 .block",".track-2 .block",".track-3 .block"].forEach((trackClass,index) => {
@@ -499,19 +499,11 @@ export default function RangeView(props) {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
-          {allValues.length === 0 ? (// && form.counterSubmitted > 0 
-            !loaded ?
-           
-             <>
-               <LoadingOverlay active={!loaded} /> 
-               {/* <Spinner animation="border" variant="primary" role="status"></Spinner>
-               <div className=" justify-content-center"> Loading and rendering...</div> */}
-             </>
-            : <h6 className="d-flex mx-2" style={{ margin: "10px" }}>  
-              No Data Found          
-              </h6>
-          ) : (
-            ""
+          {!loaded?<LoadingOverlay active={!loaded} /> :(
+            resultData.length === 0 ?
+            <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent:"center" }}>  
+             No Data Found          
+            </h6>:''
           )}
           {chrX.length > 0 || chrY.length > 0 ? (
             <p>X, Y are representative subjects and all samples couldn’t be visualized</p>

@@ -230,7 +230,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   });
 
   const handleEnter = () => {
-    console.log("handleEnter",circleRef.current);
+    //console.log("handleEnter",circleRef.current);
     if (circleRef.current) {
       var track0 = document.querySelectorAll(".track-0 .block");
       var track1 = document.querySelectorAll(".track-1 .block");
