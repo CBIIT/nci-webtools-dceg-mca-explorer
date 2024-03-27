@@ -14,7 +14,7 @@ export default function ComparePanel(props) {
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
-  const [types, setTypes] = useState([TypeStateOptions[0]]);
+  const [types, setTypes] = useState([]);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
   const [compareform, setCompareForm] = useState({ study: study, types: types });
@@ -25,14 +25,18 @@ export default function ComparePanel(props) {
   const [hemaCancer, setHemaCancer] = useState("")
   const [lymCancer, setLymCancer] = useState("")
   const [myeCancer, setMyeCancer] = useState("")
+  const [disabledType, setDisabledType] = useState([])
   // console.log(study);
   //reset
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
-    handleSelectChange("types", [TypeStateOptions[0]]);
+    handleSelectChange("types", [TypeStateOptions[props.isX||props.isY? 2:0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
     //console.log("&&&&", StudyOptions[0], compareform);
-  }, [props.onReset]);
+    if (props.isY || props.isX) setDisabledType(["all","loh","gain","undetermined"])
+    else setDisabledType([])
+
+  }, [props.onReset, props.isX, props.isY]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -107,6 +111,9 @@ export default function ComparePanel(props) {
         selection = [all];
       }
       setTypes(selection);
+      const notForXY = selection.find((option) => option.value === "loss"||option.value === "all");
+      props.setShowXY(notForXY!==undefined&&selection.length===1)
+      console.log(selection)
     }
 
     if(props.compareItem[9].isChecked && name === "priorCancer"){
@@ -253,6 +260,7 @@ export default function ComparePanel(props) {
                 value={types}
                 onChange={(ev) => handleSelectChange("types", ev)}
                 options={TypeStateOptions}
+                isOptionDisabled={(option)=>disabledType.includes(option.value)}
                 classNamePrefix="select"
               />
             </Form.Group>

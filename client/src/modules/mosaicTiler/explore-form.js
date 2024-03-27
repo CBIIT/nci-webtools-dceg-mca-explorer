@@ -34,6 +34,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [submitClicked, setSubmitClicked] = useState(false);
   const [resetCircos, setResetCircos] = useState(false)
   const [disabledType, setDisabledType] = useState([])
+  const [showXY, setShowXY] = useState(true)
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -76,6 +77,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setForm(defaultFormState);
     setIsX(false);
     setIsY(false);
+    setDisabledType([])
     setSubmitClicked(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
@@ -95,6 +97,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         selection = [all];
       }
     }
+    if (name === "types"){
+      const notForXY = selection.find((option) => option.value === "loss"||option.value === "all");
+      setShowXY(notForXY!==undefined&&selection.length===1)
+    }
+
 
     if (name === "study" && selection.find((option) => option.value === "all")) {
       selection = [
@@ -261,6 +268,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             id={`inline-X-1`}
             onChange={handleChange}
             checked={isX}
+            disabled={!showXY}
           />
           <Form.Check
             type="checkbox"
@@ -270,6 +278,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             id={`inline-Y-2`}
             onChange={handleChange}
             checked={isY}
+            disabled={!showXY}
           />
         </Form.Group>
       )}

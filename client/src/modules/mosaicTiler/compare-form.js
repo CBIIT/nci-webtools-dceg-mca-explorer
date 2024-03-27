@@ -38,15 +38,18 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [end, setEnd] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
 
+  const [showXY, setShowXY] = useState(true)
+
   function handleChange(event) {
     const { name, value } = event.target;
-    //console.log(name, value)
+    console.log(form,name, value)
     if (name === "chrX") {
       setIsX(event.target.checked);
-      mergeForm({ [name]: event.target.checked });
+      mergeForm({ [name]: event.target.checked});
     } else if (name === "chrY") {
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
+     
     }
     // else if(name==="compare" ){
     //   setCompare(event.target.checked)
@@ -165,6 +168,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     setSubmitClicked(false);
     setCompareChecks(CompareArray);
     updateGroup();
+    setIsX(false);
+    setIsY(false);
     onClear({
       ...form,
       //groupA: [],
@@ -194,6 +199,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       if (gname === "A") setForm((prevForm) => ({ ...prevForm, groupA: value }));
       else if (gname === "B") setForm((prevForm) => ({ ...prevForm, groupB: value }));
     }
+    console.log(form)
   };
   const handleCompareCheckboxChange = (id) => {
     const updatedComparecheck = compareChecks.map((ck) => {
@@ -213,7 +219,10 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleDisplayCompare = () => {
     setCompare(true);
   };
-
+ 
+  const handleShowXY = (val) =>{
+    setShowXY(val)
+  }
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
@@ -292,6 +301,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               id={`inline-X-1`}
               onChange={handleChange}
               checked={isX}
+              disabled={!showXY}
             />
             <Form.Check
               type="checkbox"
@@ -301,6 +311,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               id={`inline-Y-2`}
               onChange={handleChange}
               checked={isY}
+              disabled={!showXY}
             />
           </Form.Group>
         )}
@@ -353,6 +364,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           compareItem={compareChecks}
           name="A"
           onCompareChange={handlegroupChange}
+          isX = {isX}
+          isY= {isY}
+          setShowXY = {handleShowXY}
           onReset={resetCounter}></ComparePanel>
         <br></br>
         <ComparePanel
@@ -360,6 +374,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           compareItem={compareChecks}
           name="B"
           onCompareChange={handlegroupChange}
+          isX = {isX}
+          isY= {isY}
+          setShowXY = {handleShowXY}
           onReset={resetCounter}></ComparePanel>
 
         <br></br>

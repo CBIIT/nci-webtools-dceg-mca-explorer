@@ -30,7 +30,7 @@ export default function CircosPlot(props) {
     {/* <div style={{ fontSize: "14px" }}>{props.msg}</div> */}
     <Container style={{ position:"relative", width:"100%", textAlign:"center"}}>
     <div id="A" style={{ textAlign:"center", position: "absolute", zIndex:"10", top:`${titleHeight}px`,left:"50%",transform:"translateX(-50%)"}}>
-        <Circos
+        {/* <Circos
           layout={layoutxy}
           config={{
             innerRadius: size / 2 - 50,
@@ -85,7 +85,7 @@ export default function CircosPlot(props) {
             },
           ]}
           size={size}
-        />
+        /> */}
       </div>
       {/* <div style={{ justifyContent: "center",fontSize: "14px",color:"white" }}>{props.title===""?"":" . "}</div> */}
       <div
@@ -163,7 +163,7 @@ export default function CircosPlot(props) {
             },
             {
               type: STACK,
-              data: circle.loss,
+              data: circle.loss.concat(dataXY),
               config: {
                 innerRadius: 0.25,
                 outerRadius: 0.5,

@@ -21,13 +21,13 @@ export default function CircosPlot(props) {
   //const checkMaxLines = props.checkMaxLines;
   const [plotLoaded, setPlotLoaded] = useState(false);
 
-   console.log(props.circle.gain.length)
+   
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
-      <div className={classCircle}>
+      {/* <div className={classCircle}>
         {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
-        <Circos
+        {/* <Circos
           layout={layoutxy}
           config={{
             innerRadius: size / 2 - 50,
@@ -50,8 +50,8 @@ export default function CircosPlot(props) {
               type: STACK,
               data: dataXY,
               config: {
-                innerRadius: 0.05,
-                outerRadius: 1,
+                innerRadius: 0.25,
+                outerRadius: 0.5,
                 thickness: 0.5,
                 margin: 0,
                 strokeWidth: 1,
@@ -82,8 +82,8 @@ export default function CircosPlot(props) {
             },
           ]}
           size={size}
-        />
-      </div>
+        /> 
+      </div> */}
       <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}  >
         {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
         <div ref={props.circleRefTable}>
@@ -155,7 +155,7 @@ export default function CircosPlot(props) {
             },
             {
               type: STACK,
-              data: circle.loss,
+              data: circle.loss.concat(dataXY),
               config: {
                 innerRadius: 0.25,
                 outerRadius: 0.5,
