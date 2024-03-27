@@ -33,6 +33,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [end, setEnd] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
   const [resetCircos, setResetCircos] = useState(false)
+  const [disabledType, setDisabledType] = useState([])
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -40,10 +41,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
     if (name === "chrX") {
       setIsX(event.target.checked);
-      mergeForm({ [name]: event.target.checked });
+      mergeForm({ [name]: event.target.checked, types: [{ value: "loss", label: "Loss" }] });
+      if (event.target.checked || isY) setDisabledType(["all","loh","gain","undetermined"])
+      else setDisabledType([])
     } else if (name === "chrY") {
       setIsY(event.target.checked);
-      mergeForm({ [name]: event.target.checked });
+      mergeForm({ [name]: event.target.checked, types: [{ value: "loss", label: "Loss" }] });
+      if (event.target.checked || isX) setDisabledType(["all","loh","gain","undetermined"])
+      else setDisabledType([])
     } else if (name === "maxAge") {
       if (value <= 150) mergeForm({ [name]: Number(value) });
       else mergeForm({ [name]: 150 });
@@ -105,7 +110,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     if (name === "plotType") {
-      console.log(selection,form)
+       console.log(selection,form)
        if (selection.value === "circos") {
         if(form.chrSingle!==""){
           console.log("reseting")
@@ -294,6 +299,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           value={form.types}
           onChange={(ev) => handleSelectChange("types", ev)}
           options={TypeStateOptions}
+          isOptionDisabled={(option)=>disabledType.includes(option.value)}
         />
       </Form.Group>
 

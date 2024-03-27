@@ -47,16 +47,16 @@ export const SexOptions = [
 ];
 
 export const initialX = [
-  { block_id: "X", start: "0", end: "0", type: "Gain" },
-  { block_id: "X", start: "0", end: "0", type: "Loss" },
-  { block_id: "X", start: "0", end: "0", type: "CN-LOH" },
-  { block_id: "X", start: "0", end: "0", type: "Undetermined" },
+ // { block_id: "X", start: "0", end: "0", type: "Gain" },
+//  { block_id: "X", start: "0", end: "0", type: "Loss" },
+///  { block_id: "X", start: "0", end: "0", type: "CN-LOH" },
+ // { block_id: "X", start: "0", end: "0", type: "Undetermined" },
 ];
 export const initialY = [
-  { block_id: "Y", start: "0", end: "0", type: "Gain" },
-  { block_id: "Y", start: "0", end: "0", type: "Loss" },
-  { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
-  { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
+ //// { block_id: "Y", start: "0", end: "0", type: "Gain" },
+ // { block_id: "Y", start: "0", end: "0", type: "Loss" },
+ // { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
+ // { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
 ];
 
 export const smokeNFC = [

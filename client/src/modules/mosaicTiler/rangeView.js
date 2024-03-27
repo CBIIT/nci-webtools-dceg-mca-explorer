@@ -387,8 +387,10 @@ export default function RangeView(props) {
     const cellLabels = ["Undetermined","Loss","CN-LOH","Gain"]
    // console.log(circleRef.current,document.getElementById('circosTable').rows.length)
     if (circleRef.current&&loaded&& document.getElementById('circosTable').getElementsByTagName('tr').length===0) {
-      [".track-0 .block", ".track-1 .block",".track-2 .block",".track-3 .block"].forEach((trackClass,index) => {
-        const track = document.querySelectorAll(`${trackClass}`);
+      [".track-0", ".track-1",".track-2",".track-3"].forEach((trackClass,index) => {
+
+        const track = document.querySelectorAll(`${trackClass}`+" .block");
+       console.log(track.length)
         const chromosomes = []
         .concat(
           Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
@@ -401,13 +403,17 @@ export default function RangeView(props) {
             let counterL = {}
             const radius = paths[0].getAttribute('d')
             const rvalue = radius.match(/A\s*(-?\d+\.?\d*)/)
-            const maxR = rvalue[1]
+            const maxR = rvalue!==null?rvalue[1]:0
             for(const path of paths){
               const dAttribute = path.getAttribute('d')
             //  console.log(dAttribute)
-             const Avalue = dAttribute.match(/A\s*(-?\d+\.?\d*)/)[1]
-             if(Avalue === maxR) counterL[maxR] =(counterL[maxR]||0)+1
+            const dtemp = dAttribute.match(/A\s*(-?\d+\.?\d*)/);
+            if (dtemp!==null && dtemp.length>0){
+              const Avalue = dtemp[1]
+              if(Avalue === maxR) counterL[maxR] =(counterL[maxR]||0)+1
+             }
             }
+           
             const counterNotL = Object.values(counterL).filter(c=>c>1)
             totalLines+=paths.length
             //console.log(paths.length)
@@ -420,8 +426,9 @@ export default function RangeView(props) {
           })
           linesSummary[index] = chromosomes
         }
+        else linesSummary[index] = []
       })
-      const fourTracks = Object.keys(linesSummary).length
+      const fourTracks =4
      //create table:
 
      const tableLines = document.createElement('table');
@@ -452,7 +459,7 @@ export default function RangeView(props) {
         const trackData = linesSummary[l]
         console.log(trackData)
         const row = tbody.insertRow(-1);
-        if(trackData!==undefined){
+        if(trackData!==undefined && trackData.length>0){
           trackData.sort((a,b)=>parseInt(a.key,10)-parseInt(b.key,10))
           const cellLabel = row.insertCell(0);
           cellLabel.innerHTML=cellLabels[l]
