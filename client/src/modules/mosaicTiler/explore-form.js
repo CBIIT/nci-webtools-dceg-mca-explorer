@@ -67,6 +67,28 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSubmit(event) {
     event.preventDefault();
+
+    let isValid = true;
+    const warnings = [];
+
+    // Check for age limitation
+    if (form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)) {
+      isValid = false;
+      warnings.push("Upper age limit must be greater than lower age limit!");
+    }
+
+    // Check for cellular fraction limitation
+    if (form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)) {
+      isValid = false;
+      warnings.push("Maximum cellular fraction must be greater than minimum cellular fraction!");
+    }
+
+    if (!isValid) {
+      // Display warning messages
+      alert(warnings.join("\n"));
+      return; // Stop form submission
+    }
+
     setSubmitClicked(true);
     if (onSubmit) onSubmit(form);
     //handleDisplayCompare();
