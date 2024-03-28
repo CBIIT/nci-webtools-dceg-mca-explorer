@@ -486,7 +486,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="priorCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.priorCancer}
                 onChange={(ev) => handleSelectChange("priorCancer", ev)}
                 options={ifCancer}         
@@ -497,7 +497,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="hemaCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.hemaCancer}
                 onChange={(ev) => handleSelectChange("hemaCancer", ev)}
                 options={ifCancer}         
@@ -508,7 +508,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="lymCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.lymCancer}
                 onChange={(ev) => handleSelectChange("lymCancer", ev)}
                 options={ifCancer}         
@@ -519,7 +519,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="myeCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.myeCancer}
                 onChange={(ev) => handleSelectChange("myeCancer", ev)}
                 options={ifCancer}         
