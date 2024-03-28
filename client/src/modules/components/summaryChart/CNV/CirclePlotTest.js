@@ -460,24 +460,24 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
     let chrXTemp = [];
     let chrYTemp = [];
 
-    if (form.chrX && form.chrY) {
-      gainTemp = [...initialX, ...initialY];
-      lossTemp = [...initialX, ...initialY];
-      lohTemp = [...initialX, ...initialY];
-      undeterTemp = [...initialX, ...initialY];
-    }
-    if (form.chrX && !form.chrY) {
-      gainTemp = [...initialX];
-      lossTemp = [...initialX];
-      lohTemp = [...initialX];
-      undeterTemp = [...initialX];
-    }
-    if (!form.chrX && form.chrY) {
-      gainTemp = [...initialY];
-      lossTemp = [...initialY];
-      lohTemp = [...initialY];
-      undeterTemp = [...initialY];
-    }
+    // if (form.chrX && form.chrY) {
+    //   gainTemp = [...initialX, ...initialY];
+    //   lossTemp = [...initialX, ...initialY];
+    //   lohTemp = [...initialX, ...initialY];
+    //   undeterTemp = [...initialX, ...initialY];
+    // }
+    // if (form.chrX && !form.chrY) {
+    //   gainTemp = [...initialX];
+    //   lossTemp = [...initialX];
+    //   lohTemp = [...initialX];
+    //   undeterTemp = [...initialX];
+    // }
+    // if (!form.chrX && form.chrY) {
+    //   gainTemp = [...initialY];
+    //   lossTemp = [...initialY];
+    //   lohTemp = [...initialY];
+    //   undeterTemp = [...initialY];
+    // }
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {

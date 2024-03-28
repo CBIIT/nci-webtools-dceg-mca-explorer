@@ -361,9 +361,9 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //queryString.push({ terms: { "type.keyword": qfilter } });
     if (chromesome === "Y") {
       queryString.push({ terms: { "type.keyword": ["mLOY"] } });
-      queryString.push({ match: { chromosome: "chrX" } });
+      queryString.push({ match: { "chromosome.keyword": "chrX" } });
     } else if (chromesome === "X") {
-      queryString.push({ match: { chromosome: "chrX" } });
+      queryString.push({ match: { "chromosome.keyword": "chrX" } });
       queryString.push({ terms: { "type.keyword": ["mLOX"] } });
     } else queryString.push({ match: { chromosome: "chr" + chromesome } });
 
@@ -382,7 +382,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     let lymCancerarr =  getAttributesArray(lymCancer, "lymcancer");
     let myeCancerarr  = getAttributesArray(myeCancer, "myecancer");
   
-    console.log(myeCancerarr,priorCancerarr)
+   // console.log(myeCancerarr,priorCancerarr)
     let atemp = [];
     //add query for types
     if (types !== undefined) {
@@ -391,8 +391,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
       });
     }
-    if (atemp.length === 0) atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
-    queryString.push({ terms: { "type.keyword": atemp } });
+    if (atemp.length === 0 && chromesome!== "X" && chromesome!== "Y") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+    if(atemp.length>0)queryString.push({ terms: { "type.keyword": atemp } });
     //add query for cf
     //query cf within the range, add query range in filter
     if (mincf !== undefined || maxcf !== undefined) {
@@ -435,7 +435,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           },
         },
       });
-
+      console.log(queryString)
       const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
 
       try {

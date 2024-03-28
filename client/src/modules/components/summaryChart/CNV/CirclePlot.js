@@ -121,7 +121,7 @@ export default function CircosPlot(props) {
               config: {
                 innerRadius: 0.05,
                 outerRadius: 0.25,
-                thickness:  circle.undetermined.length<2000?(circle.undetermined.length<500?2:0):-1,
+                thickness:  circle.undetermined.length<2000?(circle.undetermined.length<500?2:1):-1,
                 margin: 0,
                 strokeWidth: circle.undetermined.length<1500?0.5:0.2,
                 strokeColor: "grey",

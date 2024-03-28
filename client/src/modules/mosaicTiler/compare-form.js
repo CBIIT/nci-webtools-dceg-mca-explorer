@@ -85,6 +85,16 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
       setStart(0);
+      if(selection.label==="X"||selection.label==="Y"){
+        setIsX(true)
+        setIsY(true)
+      }
+      else{
+        setIsX(false)
+        setIsY(false)
+      }
+     
+
       //handleFilterClear()
  
     /*  onClear({
@@ -374,7 +384,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           compareItem={compareChecks}
           name="B"
           onCompareChange={handlegroupChange}
-          isX = {isX}
+          isX ={isX}
           isY= {isY}
           setShowXY = {handleShowXY}
           onReset={resetCounter}></ComparePanel>

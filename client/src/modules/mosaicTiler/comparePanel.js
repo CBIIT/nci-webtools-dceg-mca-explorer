@@ -35,7 +35,7 @@ export default function ComparePanel(props) {
     //console.log("&&&&", StudyOptions[0], compareform);
     if (props.isY || props.isX) setDisabledType(["all","loh","gain","undetermined"])
     else setDisabledType([])
-
+    console.log(form)
   }, [props.onReset, props.isX, props.isY]);
 
   function handleChange(event) {
@@ -112,7 +112,7 @@ export default function ComparePanel(props) {
       }
       setTypes(selection);
       const notForXY = selection.find((option) => option.value === "loss"||option.value === "all");
-      props.setShowXY(notForXY!==undefined&&selection.length===1)
+      props.setShowXY(notForXY!==undefined&&selection.length)
       console.log(selection)
     }
 
