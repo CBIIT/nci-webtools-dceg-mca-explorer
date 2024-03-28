@@ -119,8 +119,8 @@ export default function RangeView(props) {
       //if any attribute filer is selected, then use the value as the filter, that means filter out no value
       qform.smoking.length === 0 &&
       qform.approach.length === 0 &&
-      qform.ancestry[0]!==undefined&& qform.ancestry[0].value === "all" &&
-      qform.sex[0]!==undefined&&qform.sex[0].value === "all" &&
+      (qform.ancestry[0]===undefined||(qform.ancestry[0]!==undefined&& qform.ancestry[0].value === "all")) &&
+      (qform.sex[0]===undefined||(qform.sex[0]!==undefined&&qform.sex[0].value === "all")) &&
       qform.minAge === "" &&
       qform.maxAge === "" &&
       qform.priorCancer.length ===0 &&
