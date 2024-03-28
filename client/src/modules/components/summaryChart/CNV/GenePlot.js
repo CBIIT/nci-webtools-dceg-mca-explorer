@@ -171,10 +171,16 @@ function GenePlot(props) {
     </>
   ) : !isLoading && showGene ? (
     <>
-   
-    <Button variant="outline-secondary sm" onClick={props.toggleVisibility} style={{padding:"5px"}}>
-    {props.isVisible?'Hide Gene plot':'Show Gene plot'}
-    </Button>
+    {props.showToggle?
+     <div className="d-flex justify-content-end">
+     <Button variant="outline-secondary sm" id="showGenePlot" onClick={props.toggleVisibility} style={{padding:"5px"}}>
+      {props.isVisible?'Hide Gene plot':'Show Gene plot'}
+      </Button>
+      </div>
+    :  <Button  variant="outline-secondary sm" onClick={props.toggleVisibility} style={{padding:"5px", opacity:0, paddingLeft:"0px", paddingRight:"0px"}}>
+     l
+    </Button>}
+  
     {props.isVisible &&   
     <Plot
       data={data}

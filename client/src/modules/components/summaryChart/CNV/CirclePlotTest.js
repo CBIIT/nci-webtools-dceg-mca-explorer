@@ -1435,6 +1435,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                       type={form.groupA.types}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      showToggle={true}
                       maxtitleHeight={(maxTitleheight-heightA)}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
@@ -1459,6 +1460,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                       type={form.groupB.types}
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
+                      showToggle={false}
                       maxtitleHeight={(maxTitleheight-heightB)}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
