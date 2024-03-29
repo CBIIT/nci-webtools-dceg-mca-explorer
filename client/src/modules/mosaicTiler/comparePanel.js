@@ -49,12 +49,12 @@ export default function ComparePanel(props) {
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
-      if (value <= 150) setMinAge(Number(value));
+      if (value <= 100) setMinAge(Number(value));
       else setMinAge(0);
     }
     if (name === "maxAge") {
-      if (value < 150) setMaxAge(Number(value));
-      else setMaxAge(150);
+      if (value < 100) setMaxAge(Number(value));
+      else setMaxAge(100);
     }
     //  setCompareForm({ ...compareform, [name]: value });
     if (name === "minFraction") {
@@ -315,6 +315,11 @@ export default function ComparePanel(props) {
           {props.compareItem[2].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
+              <Form.Label style={{ color: "red" }}>
+                {maxAge && minAge && parseInt(maxAge) <= parseInt(minAge)
+                  ? "Upper age limit must be greater than lower age limit!"
+                  : ""}
+              </Form.Label>
               <Row>
                 <Col xl={5}>
                   <InputGroup>
@@ -370,6 +375,11 @@ export default function ComparePanel(props) {
           {props.compareItem[5].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
+              <Form.Label style={{ color: "red" }}>
+                {maxFraction && minFraction && parseFloat(maxFraction) <= parseFloat(minFraction)
+                  ? "Maximum cellular fraction must be greater than minimum cellular fraction!"
+                  : ""}
+              </Form.Label>
               <Row>
                 <Col xl={5}>
                   <InputGroup>
