@@ -522,7 +522,7 @@ export default function RangeView(props) {
                   loh={[...loh, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
                   gain={[...gain, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
                   undetermined={[...undetermined, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
-                  //allDenominator={allDenominator}
+                  allDenominator={allDenominator}
                   chrx={chrX}
                   chry={chrY}
                   figureHeight={figureHeight}

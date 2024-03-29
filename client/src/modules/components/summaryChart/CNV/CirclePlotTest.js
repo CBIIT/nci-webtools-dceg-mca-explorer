@@ -116,6 +116,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [heightB, setHeightB] = useState(0);
   const [isLoadedA, setIsLoadedA] = useState(false);
   const [isLoadedB, setIsLoadedB] = useState(false);
+  const [singleZoomLength, setSingleZoomLength] = useState(0);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -426,9 +427,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   }, [form.counterCompare]);
 
   useEffect(() => {
-    //if(isLoadedA && isLoadedB){
-    props.onLoading(isLoadedA && isLoadedB);
-    //}
+    if (form.compare) {
+      props.onLoading(isLoadedA && isLoadedB);
+    }
+    //console.log(form, isLoadedA, isLoadedB);
   }, [isLoadedA, isLoadedB]);
 
   data = [
@@ -1322,6 +1324,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         rangeMin = Number(rangeMin);
         const zoomedTabledata = data.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
         console.log(zoomedTabledata.length);
+        setSingleZoomLength(zoomedTabledata.length);
         if (!form.compare) props.getData(zoomedTabledata);
       } else {
         props.getData([]);
@@ -1591,12 +1594,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       <tr>
                         <td className="bold-title-2">{circosTitle.slice(1)}</td>
                         <td className="numberCol">
-                          {rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}
+                          {rangeLabel === "" ? data.length.toLocaleString() : singleZoomLength.toLocaleString()}
                         </td>
                         <td className="numberCol">
-                          {fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}
+                          {props.allDenominator > singleZoomLength
+                            ? (props.allDenominator - data.length).toLocaleString()
+                            : props.allDenominator.toLocaleString()}
                         </td>
-                        <td className="numberCol">{fisherA.toLocaleString()}</td>
+                        <td className="numberCol">{props.allDenominator.toLocaleString()}</td>
                       </tr>
                     </tbody>
                   </Table>
