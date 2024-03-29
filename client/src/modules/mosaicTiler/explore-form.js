@@ -67,6 +67,28 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSubmit(event) {
     event.preventDefault();
+
+    let isValid = true;
+    const warnings = [];
+
+    // Check for age limitation
+    if (form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)) {
+      isValid = false;
+      warnings.push("Upper age limit must be greater than lower age limit!");
+    }
+
+    // Check for cellular fraction limitation
+    if (form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)) {
+      isValid = false;
+      warnings.push("Maximum cellular fraction must be greater than minimum cellular fraction!");
+    }
+
+    if (!isValid) {
+      // Display warning messages
+      alert(warnings.join("\n"));
+      return; // Stop form submission
+    }
+
     setSubmitClicked(true);
     if (onSubmit) onSubmit(form);
     //handleDisplayCompare();
@@ -464,7 +486,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="priorCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.priorCancer}
                 onChange={(ev) => handleSelectChange("priorCancer", ev)}
                 options={ifCancer}         
@@ -475,7 +497,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="hemaCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.hemaCancer}
                 onChange={(ev) => handleSelectChange("hemaCancer", ev)}
                 options={ifCancer}         
@@ -486,7 +508,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="lymCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.lymCancer}
                 onChange={(ev) => handleSelectChange("lymCancer", ev)}
                 options={ifCancer}         
@@ -497,7 +519,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="myeCancer"
-                isMulti={true}
+                isMulti={false}
                 value={form.myeCancer}
                 onChange={(ev) => handleSelectChange("myeCancer", ev)}
                 options={ifCancer}         
