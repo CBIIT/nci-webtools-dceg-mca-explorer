@@ -16,7 +16,7 @@ import jsPDF from "jspdf";
 import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
 import { fisherTest } from "../../utils";
 
-import {LoadingOverlay} from "../../../components/controls/loading-overlay/loading-overlay"
+import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -62,7 +62,7 @@ function changeBackground(track, chromesomeId, opacity) {
   }
 }
 
-const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
+const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   //to show singleChrome chart
   const [form, setForm] = useRecoilState(formState);
   const [chromesomeId, setChromesomeId] = useState(props.compare ? 0 : form.chrCompare.label);
@@ -111,11 +111,11 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   const tableRef = useRef(tableData);
   const circosCompareA = useRef(null);
   const circosCompareB = useRef(null);
-  const [maxTitleheight, setMaxTitleheight] = useState(0) 
-  const [heightA, setHeightA] = useState(0)
-  const [heightB, setHeightB] = useState(0)
-  const [isLoadedA, setIsLoadedA] = useState(false)
-  const [isLoadedB, setIsLoadedB] = useState(false)
+  const [maxTitleheight, setMaxTitleheight] = useState(0);
+  const [heightA, setHeightA] = useState(0);
+  const [heightB, setHeightB] = useState(0);
+  const [isLoadedA, setIsLoadedA] = useState(false);
+  const [isLoadedB, setIsLoadedB] = useState(false);
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -278,8 +278,6 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
     }
   };
 
-
-
   const handleBack = () => {
     setShowChart(false);
     sendClickedId(-1);
@@ -387,27 +385,23 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
       setGroupA([]);
       setGroupB([]);
       console.log(form);
-      setIsLoadedA(false)
-      setIsLoadedB(false)
+      setIsLoadedA(false);
+      setIsLoadedB(false);
       if (form.counterCompare > 0) {
-        handleGroupQuery(form.groupA).then((data) =>{
-          if(showChart){
+        handleGroupQuery(form.groupA).then((data) => {
+          if (showChart) {
             setGroupA(data[0]);
             setFisherA(data[1]);
-          }  
-          else setCircleA({ ...data })
-          setIsLoadedA(true)
-        }
-        )
-        handleGroupQuery(form.groupB).then((data) =>{
-          if(showChart){
+          } else setCircleA({ ...data });
+          setIsLoadedA(true);
+        });
+        handleGroupQuery(form.groupB).then((data) => {
+          if (showChart) {
             setGroupB(data[0]);
-            setFisherB(data[1]); 
-          }
-          else setCircleB({ ...data })
-          setIsLoadedB(true)
-        }
-        )
+            setFisherB(data[1]);
+          } else setCircleB({ ...data });
+          setIsLoadedB(true);
+        });
       }
     } else {
       //console.log("clear form");
@@ -420,18 +414,22 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
 
       //console.log("clear circle data");
     }
-    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array Platform").replace("Types:","Copy Number State:")
-                            .replace("Prior","Prior ")
-                            .replace("Hema","Incident Hematological ")
-                            .replace("Lym","Incident Lymphoid ")
-                            .replace("Mye","Incident Myeloid "));
+    setCommonTitle(
+      checkGroupTitleForDup()
+        .replace("Approach", "Array Platform")
+        .replace("Types:", "Copy Number State:")
+        .replace("Prior", "Prior ")
+        .replace("Hema", "Incident Hematological ")
+        .replace("Lym", "Incident Lymphoid ")
+        .replace("Mye", "Incident Myeloid ")
+    );
   }, [form.counterCompare]);
 
-  useEffect(()=>{
-   //if(isLoadedA && isLoadedB){
-      props.onLoading(isLoadedA && isLoadedB);
+  useEffect(() => {
+    //if(isLoadedA && isLoadedB){
+    props.onLoading(isLoadedA && isLoadedB);
     //}
-  },[isLoadedA,isLoadedB])
+  }, [isLoadedA, isLoadedB]);
 
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
@@ -446,8 +444,8 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   //do query for group compare:
   async function handleGroupQuery(group) {
     //setLoading(true)
-    setIsLoadedA(false)
-    setIsLoadedB(false)
+    setIsLoadedA(false);
+    setIsLoadedB(false);
     const result = [];
     let responseDeno = [];
     let query = {};
@@ -497,11 +495,11 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
           priorCancer: group.priorCancer,
           hemaCancer: group.hemaCancer,
           lymCancer: group.lymCancer,
-          myeCancer: group.myeCancer
+          myeCancer: group.myeCancer,
         };
-       // console.log(query);
+        // console.log(query);
         responseDeno = await axios.post("api/opensearch/denominator", query);
-       // console.log(responseDeno.data);
+        // console.log(responseDeno.data);
 
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
@@ -512,7 +510,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         // console.log(group);
         const dataset = [...group.study, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""];
         response = await axios.post("api/opensearch/mca", {
-          dataset: dataset,
+          study: dataset,
           sex: sex,
           mincf: group.minFraction,
           maxcf: group.maxFraction,
@@ -525,8 +523,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
           priorCancer: group.priorCancer,
           hemaCancer: group.hemaCancer,
           lymCancer: group.lymCancer,
-          myeCancer: group.myeCancer
-          
+          myeCancer: group.myeCancer,
         });
       }
 
@@ -538,13 +535,12 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         (group.smoking === undefined || group.smoking.length === 0) &&
         (group.approach === undefined || group.approach.length === 0) &&
         (group.ancestry === undefined || group.ancestry.length === 0) &&
-        (group.sex === undefined || group.sex.length === 0)&&
-        (!group.hasOwnProperty("minAge"))&&
-        (!group.hasOwnProperty("priorCancer"))&&
-        (!group.hasOwnProperty("hemaCancer"))&&
-        (!group.hasOwnProperty("lymCancer"))&&
-        (!group.hasOwnProperty("myeCancer"))
-
+        (group.sex === undefined || group.sex.length === 0) &&
+        !group.hasOwnProperty("minAge") &&
+        !group.hasOwnProperty("priorCancer") &&
+        !group.hasOwnProperty("hemaCancer") &&
+        !group.hasOwnProperty("lymCancer") &&
+        !group.hasOwnProperty("myeCancer")
       ) {
         results = response.data.denominator;
         responseDenominator = response.data.nominator;
@@ -571,7 +567,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         //if (r._source !== null) {
         const d = r;
         if (d.cf != "nan") {
-         // console.log(d)
+          // console.log(d)
           d.block_id = d.chromosome.substring(3);
           d.value = d.cf;
           d.dataset = d.dataset.toUpperCase();
@@ -668,8 +664,9 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
 
     let agecfA = groupAgeTitle(form.groupA);
     let agecfB = groupAgeTitle(form.groupB);
-    console.log(form.groupA,form.groupA.minAge, agecfA,agecfB)
-    if (agecfA === agecfB) titleGroup += form.groupA.hasOwnProperty('minAge')&&agecfA.length===0? '; Age: 0-100': agecfA;
+    console.log(form.groupA, form.groupA.minAge, agecfA, agecfB);
+    if (agecfA === agecfB)
+      titleGroup += form.groupA.hasOwnProperty("minAge") && agecfA.length === 0 ? "; Age: 0-100" : agecfA;
     else {
       tempA += agecfA === "" ? "; Age: 0-100" : agecfA;
       tempB += agecfB === "" ? "; Age: 0-100" : agecfB;
@@ -677,8 +674,9 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
     //console.log(tempA, tempB)
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
-  
-    if (agecfA === agecfB) titleGroup += form.groupB.hasOwnProperty('minFraction')&&agecfA.length===0?'; CF: 0-1': agecfA;
+
+    if (agecfA === agecfB)
+      titleGroup += form.groupB.hasOwnProperty("minFraction") && agecfA.length === 0 ? "; CF: 0-1" : agecfA;
     else {
       tempA += agecfA === "" ? "; CF: 0-1" : agecfA;
       tempB += agecfB === "" ? "; CF: 0-1" : agecfB;
@@ -688,16 +686,26 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
     const [titleB, errorMessageB] = checkTitleStudyPlatForm(form.groupB, tempB);
     tempA = titleA;
     tempB = titleB;
-    setTitleA(tempA.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:")
-                            .replace("Prior","Prior ")
-                            .replace("Hema","Incident Hematological ")
-                            .replace("Lym","Incident Lymphoid ")
-                            .replace("Mye","Incident Myeloid "));
-    setTitleB(tempB.slice(1).replace("Approach","Array Platform").replace("Types:","Copy Number State:")
-                            .replace("Prior","Prior ")
-                            .replace("Hema","Incident Hematological ")
-                            .replace("Lym","Incident Lymphoid ")
-                            .replace("Mye","Incident Myeloid "));
+    setTitleA(
+      tempA
+        .slice(1)
+        .replace("Approach", "Array Platform")
+        .replace("Types:", "Copy Number State:")
+        .replace("Prior", "Prior ")
+        .replace("Hema", "Incident Hematological ")
+        .replace("Lym", "Incident Lymphoid ")
+        .replace("Mye", "Incident Myeloid ")
+    );
+    setTitleB(
+      tempB
+        .slice(1)
+        .replace("Approach", "Array Platform")
+        .replace("Types:", "Copy Number State:")
+        .replace("Prior", "Prior ")
+        .replace("Hema", "Incident Hematological ")
+        .replace("Lym", "Incident Lymphoid ")
+        .replace("Mye", "Incident Myeloid ")
+    );
     setMsgA(errorMessageA);
     setMsgB(errorMessageB);
     return titleGroup.slice(1);
@@ -745,11 +753,13 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
     }
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
-    title = title.replace("Approach","Array Platform").replace("Types:","Copy Number State:")
-    .replace("Prior","Prior ")
-    .replace("Hema","Incident Hematological ")
-    .replace("Lym","Incident Lymphoid ")
-    .replace("Mye","Incident Myeloid ")
+    title = title
+      .replace("Approach", "Array Platform")
+      .replace("Types:", "Copy Number State:")
+      .replace("Prior", "Prior ")
+      .replace("Hema", "Incident Hematological ")
+      .replace("Lym", "Incident Lymphoid ")
+      .replace("Mye", "Incident Myeloid ");
 
     const [tempTitle, errormsg] = checkTitleStudyPlatForm(group, title);
     setMsg(errormsg);
@@ -759,18 +769,16 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
-
       if (group.maxAge !== undefined && group.maxAge !== "") {
         if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge;
         else title += "; Age: 0-" + group.maxAge;
-      }
-      else{
-        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100" ;
+      } else {
+        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100";
         //else title += "; Age:0-100"
         //else if(group.minAge === undefined) title += "; Age: 0-100"  ;
-      }    
+      }
     }
-  
+
     return title;
   };
   const groupCfTitle = (group) => {
@@ -780,12 +788,10 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         if (group.minFraction !== undefined && group.minFraction !== "")
           title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-" + (group.maxFraction / 100.0).toFixed(2);
         else title += "; CF: 0-" + (group.maxFraction / 100.0).toFixed(2);
-      }
-      else{
+      } else {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-1" ;
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-1";
       }
-
     }
     return title;
   };
@@ -810,12 +816,12 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         if (s.value === "ukbb" && group.approach.length > 0) {
           const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
           if (ukArray.length === 0) {
-           // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
             errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
           }
         }
       });
-  //  console.log(group.approach, errorMessage, title);
+    //  console.log(group.approach, errorMessage, title);
     return [title, errorMessage];
   };
 
@@ -835,7 +841,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         priorCancer: form.priorCancer,
         hemaCancer: form.hemaCancer,
         lymCancer: form.lymCancer,
-        myeCancer: form.myeCancer
+        myeCancer: form.myeCancer,
       })
     );
   }, [form.counterSubmitted]);
@@ -1226,7 +1232,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
   const linethickness = 0;
   const thicknessgain = props.gain.length < 200 ? 1 : linethickness;
   const thicknessloh = props.loh.length < 200 ? 1 : linethickness;
-  const thicknessloss = props.loss.length < 200 ? 1: linethickness;
+  const thicknessloss = props.loss.length < 200 ? 1 : linethickness;
   const thicknessundermined = props.undetermined.length < 200 ? 1 : linethickness;
 
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
@@ -1237,7 +1243,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
 
   singleFigWidth = form.compare ? size * 0.45 : size;
   singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
-  singleFigWidth = singleFigWidth>450? 450: singleFigWidth
+  singleFigWidth = singleFigWidth > 450 ? 450 : singleFigWidth;
   //set tableData based on status
   //if compare, and no chromoid => add circleA and circleB
   //if compare with chromoid => add groupA and groupB
@@ -1347,16 +1353,14 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
         handleFisherTest(rangeGroupA.length, fisherA, rangeGroupB.length, fisherB);
       } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
     }
-   
   }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
 
-  useEffect(()=>{
-    setHeightA(circosCompareA.current? circosCompareA.current.offsetHeight : 0);
-    setHeightB(circosCompareB.current? circosCompareB.current.offsetHeight : 0);
-    setMaxTitleheight(heightA>heightB?heightA:heightB)
+  useEffect(() => {
+    setHeightA(circosCompareA.current ? circosCompareA.current.offsetHeight : 0);
+    setHeightB(circosCompareB.current ? circosCompareB.current.offsetHeight : 0);
+    setMaxTitleheight(heightA > heightB ? heightA : heightB);
     //console.log(maxTitleheight)
-
-  })
+  });
 
   return (
     <Container className="compareContainer align-middle text-center">
@@ -1419,7 +1423,9 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
               <Row className="">
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>
-                  <div ref={circosCompareA} style={{ justifyContent: "center", fontSize: "14px" }}>{titleA}</div>
+                    <div ref={circosCompareA} style={{ justifyContent: "center", fontSize: "14px" }}>
+                      {titleA}
+                    </div>
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeA}
@@ -1436,7 +1442,7 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
                       showToggle={true}
-                      maxtitleHeight={(maxTitleheight-heightA)}
+                      maxtitleHeight={maxTitleheight - heightA}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1444,7 +1450,9 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                 </Col>
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>
-                  <div ref={circosCompareB} style={{ justifyContent: "center", fontSize: "14px" }}>{titleB}</div>
+                    <div ref={circosCompareB} style={{ justifyContent: "center", fontSize: "14px" }}>
+                      {titleB}
+                    </div>
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeB}
@@ -1461,25 +1469,31 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                       isVisible={isVisible}
                       toggleVisibility={toggleVisibility}
                       showToggle={false}
-                      maxtitleHeight={(maxTitleheight-heightB)}
+                      maxtitleHeight={maxTitleheight - heightB}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
                   </div>
                 </Col>
               </Row>
-              <Row >
-                <Col  style={{ paddingBottom: "5px"}}>
-                  {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0? "Fisher test is not available": "P_Fisher=" +Pfisher}
+              <Row>
+                <Col style={{ paddingBottom: "5px" }}>
+                  {groupA.length === 0 || groupB.length === 0 || fisherA === 0 || fisherB === 0
+                    ? "Fisher test is not available"
+                    : "P_Fisher=" + Pfisher}
                 </Col>
-                 </Row>            
+              </Row>
               <Row>
                 <Col>
                   <Table responsive bordered hover className="fisherTable">
-                    <thead >
-                      <tr >
-                        <th rowSpan="2" className="bold-title-3" style={{width:"300px"}}>Attributes</th>
-                        <th colSpan="3" className="bold-title-main" >mCA in region </th>
+                    <thead>
+                      <tr>
+                        <th rowSpan="2" className="bold-title-3" style={{ width: "300px" }}>
+                          Attributes
+                        </th>
+                        <th colSpan="3" className="bold-title-main">
+                          mCA in region{" "}
+                        </th>
                       </tr>
                       <tr>
                         <th className="bold-title">Yes </th>
@@ -1487,22 +1501,30 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                         <th className="bold-title">Total </th>
                       </tr>
                     </thead>
-                    <tbody >
+                    <tbody>
                       <tr>
-                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleA}</td>
-                        <td className="numberCol">{rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}</td>
-                        <td className="numberCol">{fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}</td>
+                        <td className="bold-title-2">{commonTitle + (commonTitle.length > 0 ? "; " : "") + titleA}</td>
+                        <td className="numberCol">
+                          {rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}
+                        </td>
+                        <td className="numberCol">
+                          {fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}
+                        </td>
                         <td className="numberCol">{fisherA.toLocaleString()}</td>
                       </tr>
                       <tr>
-                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleB}</td>
-                        <td className="numberCol">{rangeLabel === "" ? groupB.length.toLocaleString() : rangeB.toLocaleString()}</td>
-                        <td className="numberCol">{fisherB > rangeB ? (fisherB - groupB.length).toLocaleString() : fisherB.toLocaleString()}</td>
+                        <td className="bold-title-2">{commonTitle + (commonTitle.length > 0 ? "; " : "") + titleB}</td>
+                        <td className="numberCol">
+                          {rangeLabel === "" ? groupB.length.toLocaleString() : rangeB.toLocaleString()}
+                        </td>
+                        <td className="numberCol">
+                          {fisherB > rangeB ? (fisherB - groupB.length).toLocaleString() : fisherB.toLocaleString()}
+                        </td>
                         <td className="numberCol">{fisherB.toLocaleString()}</td>
                       </tr>
                     </tbody>
                   </Table>
-                  </Col>
+                </Col>
               </Row>
             </>
           )}
@@ -1550,6 +1572,35 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                     toggleVisibility={toggleVisibility}
                     onHeightChange={props.onHeightChange}></SingleChromosome>
                 </Col>
+                <Col>
+                  <Table responsive bordered hover className="table fisherTable">
+                    <thead>
+                      <tr>
+                        <th rowSpan="2" className="bold-title-3" style={{ width: "400px" }}></th>
+                        <th colSpan="3" className="bold-title-main">
+                          mCA in region{" "}
+                        </th>
+                      </tr>
+                      <tr>
+                        <th className="bold-title">Yes </th>
+                        <th className="bold-title">No </th>
+                        <th className="bold-title">Total </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="bold-title-2">{circosTitle.slice(1)}</td>
+                        <td className="numberCol">
+                          {rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}
+                        </td>
+                        <td className="numberCol">
+                          {fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}
+                        </td>
+                        <td className="numberCol">{fisherA.toLocaleString()}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </Col>
               </Row>
             </>
           )}
@@ -1586,55 +1637,59 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
           </Row>
           <div>
             <Row className="justify-content-center g-0">
-              <Col xs={12} md={8} lg={6} >
+              <Col xs={12} md={8} lg={6}>
                 {circleA ? (
                   <>
-                  <div ref={circosCompareA} style={{ marginBottom:"1rem",fontSize: "14px" }}>{titleA}</div>
-                  <CircosPlotCompare 
-                    layoutAll={layoutAll}
-                    layoutxy={layout_xy}
-                    title={titleA}
-                    dataXY={[]}
-                    details="A"
-                    msg={msgA}
-                    size={compareCircleSize}
-                    thicknessloss={0}
-                    thicknessgain={0}
-                    thicknessundermined={0}
-                    thicknessloh={0}
-                    circle={circleA}
-                    circleRef={circleRef}
-                    maxtitleHeight={(maxTitleheight-heightA)}
-                    //circleClass="overlayX"
-                    handleEnter={handleEnter}
-                    hovertip={hovertip}></CircosPlotCompare>
-                    </>
+                    <div ref={circosCompareA} style={{ marginBottom: "1rem", fontSize: "14px" }}>
+                      {titleA}
+                    </div>
+                    <CircosPlotCompare
+                      layoutAll={layoutAll}
+                      layoutxy={layout_xy}
+                      title={titleA}
+                      dataXY={[]}
+                      details="A"
+                      msg={msgA}
+                      size={compareCircleSize}
+                      thicknessloss={0}
+                      thicknessgain={0}
+                      thicknessundermined={0}
+                      thicknessloh={0}
+                      circle={circleA}
+                      circleRef={circleRef}
+                      maxtitleHeight={maxTitleheight - heightA}
+                      //circleClass="overlayX"
+                      handleEnter={handleEnter}
+                      hovertip={hovertip}></CircosPlotCompare>
+                  </>
                 ) : (
                   ""
                 )}
               </Col>
-              <Col xs={12} md={8} lg={6} >
+              <Col xs={12} md={8} lg={6}>
                 {circleB ? (
                   <>
-                  <div ref={circosCompareB} style={{ marginBottom:"1rem",fontSize: "14px" }}>{titleB}</div>
-                  <CircosPlotCompare 
-                    layoutAll={layoutAll}
-                    layoutxy={layout_xy}
-                    dataXY={[]}
-                    title={titleB}
-                    details="B"
-                    size={compareCircleSize}
-                    thicknessloss={0}
-                    thicknessgain={0}
-                    thicknessundermined={0}
-                    thicknessloh={0}
-                    circle={circleB}
-                    circleRef={circleRef}
-                    handleEnter={handleEnter}
-                    msg={msgB}
-                    maxtitleHeight={(maxTitleheight-heightB)}
-                    //circleClass="overlayX"
-                    hovertip={hovertip}></CircosPlotCompare>
+                    <div ref={circosCompareB} style={{ marginBottom: "1rem", fontSize: "14px" }}>
+                      {titleB}
+                    </div>
+                    <CircosPlotCompare
+                      layoutAll={layoutAll}
+                      layoutxy={layout_xy}
+                      dataXY={[]}
+                      title={titleB}
+                      details="B"
+                      size={compareCircleSize}
+                      thicknessloss={0}
+                      thicknessgain={0}
+                      thicknessundermined={0}
+                      thicknessloh={0}
+                      circle={circleB}
+                      circleRef={circleRef}
+                      handleEnter={handleEnter}
+                      msg={msgB}
+                      maxtitleHeight={maxTitleheight - heightB}
+                      //circleClass="overlayX"
+                      hovertip={hovertip}></CircosPlotCompare>
                   </>
                 ) : (
                   ""
@@ -1675,14 +1730,18 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
             </Col>
           </Row>
           <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={12} style={{ width: size>1000?1000:size, height: size>1000?1000:size + 15 }}>
+            <Col
+              xs={12}
+              md={12}
+              lg={12}
+              style={{ width: size > 1000 ? 1000 : size, height: size > 1000 ? 1000 : size + 15 }}>
               <CircosPlot
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
-                size={size>1000?1000:size}
+                size={size > 1000 ? 1000 : size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}
                 thicknessundermined={thicknessundermined}
@@ -1690,16 +1749,18 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}
-                circleRefTable = {refSingleCircos}
+                circleRefTable={refSingleCircos}
                 circleClass="overlayX"
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
-          <div id= "circosTable" className="table-responsive">Total events in the circos plot<br></br>(for red one, first number is events not disply in the plot)</div>
+          <div id="circosTable" className="table-responsive">
+            Total events in the circos plot<br></br>(for red one, first number is events not disply in the plot)
+          </div>
         </div>
       )}
     </Container>
   );
-})
+});
 
 export default CirclePlotTest;
