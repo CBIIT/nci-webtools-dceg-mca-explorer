@@ -79,7 +79,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
     let isValid = true;
     const warnings = [];
-
+    setSubmitClicked(true);
     // Check for age limitation
     if (form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)) {
       isValid = false;
@@ -97,7 +97,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       alert("Please fix the inputs in red!");
       return; // Stop form submission
     }
-    setSubmitClicked(true);
+
     if (onSubmit) onSubmit(form);
     //handleDisplayCompare();
   }
@@ -452,9 +452,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
               <Form.Label style={{ color: "red" }}>
-                {form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)
-                  ? "Maximum cellular fraction must be greater than minimum cellular fraction!"
-                  : ""}
+                {
+                  //submitClicked &&
+                  form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)
+                    ? "Maximum cellular fraction must be greater than minimum cellular fraction!"
+                    : ""
+                }
               </Form.Label>
               <Row>
                 <Col xl={5}>

@@ -1483,7 +1483,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 <Col style={{ paddingBottom: "5px" }}>
                   {groupA.length === 0 || groupB.length === 0 || fisherA === 0 || fisherB === 0
                     ? "Fisher test is not available"
-                    : "P_Fisher=" + Pfisher}
+                    : "P_Fisher=" + (Pfisher.includes("e-") ? Pfisher : parseFloat(Pfisher).toFixed(4))}
                 </Col>
               </Row>
               <Row>
