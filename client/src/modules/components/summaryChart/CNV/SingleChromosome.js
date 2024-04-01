@@ -10,7 +10,7 @@ function SingleChromosome(props) {
   //console.log(props);
   const ref = useRef(null);
   const [width, setWidth] = useState(props.width === undefined ? 450 : props.width);
-  const [height, setHeight] = useState(props.height === undefined ? 450: props.height);
+  const [height, setHeight] = useState(props.height === undefined ? 450 : props.height);
   const sizeRef = useRef(width);
 
   const [layout, setLayout] = useState({
@@ -193,7 +193,7 @@ function SingleChromosome(props) {
       types.push(element.type);
       ydata.push(index);
     });
-   // console.log(zoomeddata.length, props.fisherP);
+    // console.log(zoomeddata.length, props.fisherP);
     setPvalue(zoomeddata.length);
     const datatemp = [
       {
@@ -325,7 +325,12 @@ function SingleChromosome(props) {
 
   return (
     <>
-      <div xs={12} md={6} lg={6} className="" style={{ justifyContent: "center", fontSize: "14px",position: "relative", top:`${props.maxtitleHeight}px`  }}>
+      <div
+        xs={12}
+        md={6}
+        lg={6}
+        className=""
+        style={{ justifyContent: "center", fontSize: "14px", position: "relative", top: `${props.maxtitleHeight}px` }}>
         <Button id={btnid} variant="link" onClick={handleZoomHistory} aria-label="zoomBack">
           {/* {zoomHistory.length > 0 ? backtoprev : ""} */}
         </Button>
@@ -343,7 +348,7 @@ function SingleChromosome(props) {
               },
             }}
             useResizeHandler={true}
-            style={{ width: "100%", height: height>450?450:height, position: "relative" }}
+            style={{ width: "100%", height: height > 450 ? 450 : height, position: "relative" }}
             ref={ref}
             onRelayout={handleRelayout}
             // onInitialized={() => {
@@ -355,9 +360,8 @@ function SingleChromosome(props) {
           />
         </div>
 
-     
         {/* <div style={{ whiteSpace: "pre-line" }}>{props.details}</div> */}
-      
+
         {loading && xMax - xMin < zoomWindow && zoomHistory.length > 0 ? (
           <>
             <div id="snpplots">
@@ -393,10 +397,13 @@ function SingleChromosome(props) {
             </p>
           )
         )}
-        <div style={{ paddingTop: "1px"}}>{xMin ? rangeLable : ""}</div>
-        <div style={{ paddingTop: "2px"}}>
+        <div style={{ paddingTop: "1px" }}>{xMin ? rangeLable : ""}</div>
+        <div style={{ paddingTop: "2px" }}>
           {props.fisherP > 0
-            ? props.type.map(t => t.label).join(' ')+" percentage: "+((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(4) + "%"
+            ? props.type.map((t) => t.label).join(" ") +
+              " percentage: " +
+              ((100 * (pvalue > 0 ? pvalue : props.data.length)) / (props.fisherP - props.data.length)).toFixed(4) +
+              "%"
             : ""}
         </div>
         <div>{props.msg}</div>

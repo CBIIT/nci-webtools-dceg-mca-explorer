@@ -77,8 +77,8 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const { logger } = request.app.locals;
   const qdataset = request.body.study;
   const qsex = request.body.sex;
-  const qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : 0;
-  const qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : 1;
+  const qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : NaN;
+  const qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : NaN;
   // console.log(qmincf, qmaxcf);
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
@@ -190,7 +190,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
 
-    //console.log(result.body.hits.hits.length);
+    console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
     //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
@@ -222,7 +222,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                 },
                 {
                   terms: {
-                    sex: sexarr,
+                    "sex.keyword": sexarr,
                   },
                 },
                 {

@@ -1573,7 +1573,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     zoomHistory={handleZoomHistory}
                     isVisible={isVisible}
                     toggleVisibility={toggleVisibility}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
+                    onHeightChange={props.onHeightChange}
+                    fisherP={props.allDenominator}
+                    type={form.types}></SingleChromosome>
                 </Col>
                 <Col>
                   <Table responsive bordered hover className="table fisherTable">
