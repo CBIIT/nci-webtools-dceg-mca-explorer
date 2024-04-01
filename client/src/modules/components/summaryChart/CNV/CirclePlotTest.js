@@ -568,10 +568,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       mergedResult.forEach((r) => {
         //if (r._source !== null) {
         const d = r;
-        if (d.cf != "nan") {
+        if (!(group.hasOwnProperty("minFraction") && (d.cf === "" || d.cf === "NA"))) {
           // console.log(d)
           d.block_id = d.chromosome.substring(3);
-          d.value = d.cf;
+          d.value = d.cf === "NA" ? "" : d.cf;
           d.dataset = d.dataset.toUpperCase();
           d.start = Number(d.beginGrch38);
           d.end = Number(d.endGrch38);

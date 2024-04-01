@@ -77,8 +77,8 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const { logger } = request.app.locals;
   const qdataset = request.body.study;
   const qsex = request.body.sex;
-  const qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : NaN;
-  const qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : NaN;
+  let qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : NaN;
+  let qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : NaN;
   // console.log(qmincf, qmaxcf);
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
@@ -96,7 +96,20 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qmyeCancer = request.body.myeCancer;
   // console.log(qsex);
   //console.log(minAge,maxAge)
-  //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
+  console.log(
+    qdataset,
+    qsex,
+    qmincf,
+    qmaxcf,
+    qmaxcf === "NaN",
+    qancestry,
+    qtype,
+    qstart,
+    qend,
+    qchromosomes,
+    minAge,
+    maxAge
+  );
 
   let qfilter = [];
   if (qtype !== undefined) {
@@ -137,9 +150,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let sexarr = getAttributesArray(qsex, "sex");
 
   //query cf within the range, add query range in filter
-  if (qmincf !== undefined || qmaxcf !== undefined) {
-    if (qmincf === undefined) qmincf = "0";
-    if (qmaxcf === undefined) qmaxcf = "1";
+  if (!Number.isNaN(qmincf) || !Number.isNaN(qmaxcf)) {
+    if (Number.isNaN(qmincf)) qmincf = "0";
+    if (Number.isNaN(qmaxcf)) qmaxcf = "1";
     filterString.push({ range: { cf: { gte: qmincf, lte: qmaxcf } } });
   }
 
@@ -353,8 +366,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const ancestry = group.ancestry;
     const maxAge = group.maxAge !== undefined ? Number(group.maxAge) : 100;
     const minAge = group.minAge !== undefined ? Number(group.minAge) : 0;
-    const maxcf = Number(group.maxcf) / 100.0;
-    const mincf = Number(group.mincf) / 100.0;
+    let maxcf = Number(group.maxcf) / 100.0;
+    let mincf = Number(group.mincf) / 100.0;
     const types = group.types;
     const start = group.start ? Number(group.start) : 0;
     const end = group.end ? Number(group.end) : 9999999999;
@@ -364,7 +377,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const lymCancer = group.lymCancer;
     const myeCancer = group.myeCancer;
 
-    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+    // console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -407,9 +420,9 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     if (atemp.length > 0) queryString.push({ terms: { "type.keyword": atemp } });
     //add query for cf
     //query cf within the range, add query range in filter
-    if (mincf !== undefined || maxcf !== undefined) {
-      if (mincf === undefined) mincf = "0";
-      if (maxcf === undefined) maxcf = "1";
+    if (!Number.isNaN(mincf) || !Number.isNaN(maxcf)) {
+      if (Number.isNaN(mincf)) mincf = "0";
+      if (Number.isNaN(maxcf)) maxcf = "1";
       queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
 
@@ -447,7 +460,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           },
         },
       });
-      console.log(queryString);
+      //  console.log(queryString);
       const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
 
       try {

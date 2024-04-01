@@ -157,7 +157,7 @@ export default function RangeView(props) {
       const d = r;
       if (d.cf != "nan") {
         d.block_id = d.chromosome.substring(3);
-        d.value = d.cf;
+        d.value = d.cf === "NA" ? "" : d.cf;
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
