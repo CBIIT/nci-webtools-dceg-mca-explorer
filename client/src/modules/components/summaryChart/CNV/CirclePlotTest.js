@@ -1148,7 +1148,6 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 const imageHeight = (width * 0.5) - 2 * imageSpacing; // Adjust spacing between images
 
                 const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20); // Adjust the width as needed
-                console.log("circosTitleLines ", circosTitleLines);
                 pdf.text(circosTitleLines, width * 0.5, initalY + 5, { align: "center" });  
 
                 // pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
