@@ -75,13 +75,13 @@ apiRouter.post("/query/samples", async (request, response) => {
 
 apiRouter.post("/opensearch/mca", async (request, response) => {
   const { logger } = request.app.locals;
-  const qdataset = request.body.dataset;
+  const qdataset = request.body.study;
   const qsex = request.body.sex;
-  const qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : 0;
-  const qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : 1;
+  let qmincf = request.body.mincf ? Number(request.body.mincf) / 100.0 : NaN;
+  let qmaxcf = request.body.maxcf ? Number(request.body.maxcf) / 100.0 : NaN;
   // console.log(qmincf, qmaxcf);
   const qancestry = request.body.ancestry;
-  const qtype = request.body.types
+  const qtype = request.body.types;
   const qchromosomes = request.body.chromosomes;
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
@@ -96,7 +96,20 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qmyeCancer = request.body.myeCancer;
   // console.log(qsex);
   //console.log(minAge,maxAge)
-  //console.log(qdataset, qsex, qmincf, qmaxcf, qancestry, qmaxcf, qmincf, qtype, qstart, qend, qchromosomes);
+  console.log(
+    qdataset,
+    qsex,
+    qmincf,
+    qmaxcf,
+    qmaxcf === "NaN",
+    qancestry,
+    qtype,
+    qstart,
+    qend,
+    qchromosomes,
+    minAge,
+    maxAge
+  );
 
   let qfilter = [];
   if (qtype !== undefined) {
@@ -132,14 +145,14 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
   }
-  console.log(qfilter)
+  console.log(qfilter);
   //query sex
   let sexarr = getAttributesArray(qsex, "sex");
 
   //query cf within the range, add query range in filter
-  if (qmincf !== undefined || qmaxcf !== undefined) {
-    if (qmincf === undefined) qmincf = "0";
-    if (qmaxcf === undefined) qmaxcf = "1";
+  if (!Number.isNaN(qmincf) || !Number.isNaN(qmaxcf)) {
+    if (Number.isNaN(qmincf)) qmincf = "0";
+    if (Number.isNaN(qmaxcf)) qmaxcf = "1";
     filterString.push({ range: { cf: { gte: qmincf, lte: qmaxcf } } });
   }
 
@@ -148,9 +161,9 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let smokearr = getAttributesArray(qsmokeNFC, "smoking");
   let platformarr = getAttributesArray(qplatform, "array");
   let priorCancerarr = getAttributesArray(qpriorCancer, "priorcancer");
-  let hemaCancerarr =  getAttributesArray(qhemaCancer, "hemacancer");
-  let lymCancerarr =  getAttributesArray(qlymCancer, "lymcancer");
-  let myeCancerarr  = getAttributesArray(qmyeCancer, "myecancer");
+  let hemaCancerarr = getAttributesArray(qhemaCancer, "hemacancer");
+  let lymCancerarr = getAttributesArray(qlymCancer, "lymcancer");
+  let myeCancerarr = getAttributesArray(qmyeCancer, "myecancer");
 
   if (qstart !== undefined) {
     filterString.push({
@@ -172,7 +185,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   }
   // ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
   filterString.push({ terms: { "type.keyword": qfilter } });
-  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter,qstart, qend);
+  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
 
   try {
     const result = await client.search({
@@ -190,14 +203,25 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       },
     });
 
-    //console.log(result.body.hits.hits.length);
+    console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
     //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
     try {
       const resultdemo = await client.search({
         index: "denominator_age",
-        _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array","priorCancer","incidentCancerHem","incidentCancerLymphoid","incidentCancerMyeloid"],
+        _source: [
+          "sampleId",
+          "age",
+          "sex",
+          "smokeNFC",
+          "PopID",
+          "array",
+          "priorCancer",
+          "incidentCancerHem",
+          "incidentCancerLymphoid",
+          "incidentCancerMyeloid",
+        ],
         body: {
           track_total_hits: true,
           size: 200000,
@@ -211,7 +235,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
                 },
                 {
                   terms: {
-                    sex: sexarr,
+                    "sex.keyword": sexarr,
                   },
                 },
                 {
@@ -252,14 +276,14 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
               ],
               filter: [
                 {
-                  range: { "age": { gte: minAge, lte: maxAge } },
+                  range: { age: { gte: minAge, lte: maxAge } },
                 },
               ],
             },
           },
         },
       });
-      console.log(resultdemo.body.hits.hits.length,result.body.hits.hits.length);
+      console.log(resultdemo.body.hits.hits.length, result.body.hits.hits.length);
 
       //merge two results based on denominatore reulsts
       const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
@@ -342,18 +366,18 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const ancestry = group.ancestry;
     const maxAge = group.maxAge !== undefined ? Number(group.maxAge) : 100;
     const minAge = group.minAge !== undefined ? Number(group.minAge) : 0;
-    const maxcf = Number(group.maxcf) / 100.0;
-    const mincf = Number(group.mincf) / 100.0;
+    let maxcf = Number(group.maxcf) / 100.0;
+    let mincf = Number(group.mincf) / 100.0;
     const types = group.types;
     const start = group.start ? Number(group.start) : 0;
     const end = group.end ? Number(group.end) : 9999999999;
     const smokeNFC = group.smoking;
-    const priorCancer =group.priorCancer;
+    const priorCancer = group.priorCancer;
     const hemaCancer = group.hemaCancer;
     const lymCancer = group.lymCancer;
     const myeCancer = group.myeCancer;
 
-    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+    // console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -378,11 +402,11 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     let smokearr = getAttributesArray(smokeNFC, "smoking");
     let platformarr = getAttributesArray(platfomrarray, "array");
     let priorCancerarr = getAttributesArray(priorCancer, "priorcancer");
-    let hemaCancerarr =  getAttributesArray(hemaCancer, "hemacancer");
-    let lymCancerarr =  getAttributesArray(lymCancer, "lymcancer");
-    let myeCancerarr  = getAttributesArray(myeCancer, "myecancer");
-  
-   // console.log(myeCancerarr,priorCancerarr)
+    let hemaCancerarr = getAttributesArray(hemaCancer, "hemacancer");
+    let lymCancerarr = getAttributesArray(lymCancer, "lymcancer");
+    let myeCancerarr = getAttributesArray(myeCancer, "myecancer");
+
+    // console.log(myeCancerarr,priorCancerarr)
     let atemp = [];
     //add query for types
     if (types !== undefined) {
@@ -391,13 +415,14 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
       });
     }
-    if (atemp.length === 0 && chromesome!== "X" && chromesome!== "Y") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
-    if(atemp.length>0)queryString.push({ terms: { "type.keyword": atemp } });
+    if (atemp.length === 0 && chromesome !== "X" && chromesome !== "Y")
+      atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+    if (atemp.length > 0) queryString.push({ terms: { "type.keyword": atemp } });
     //add query for cf
     //query cf within the range, add query range in filter
-    if (mincf !== undefined || maxcf !== undefined) {
-      if (mincf === undefined) mincf = "0";
-      if (maxcf === undefined) maxcf = "1";
+    if (!Number.isNaN(mincf) || !Number.isNaN(maxcf)) {
+      if (Number.isNaN(mincf)) mincf = "0";
+      if (Number.isNaN(maxcf)) maxcf = "1";
       queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
 
@@ -435,13 +460,24 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           },
         },
       });
-      console.log(queryString)
+      //  console.log(queryString);
       const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
 
       try {
         const resultdemo = await client.search({
           index: "denominator_age",
-          _source: ["sampleId", "age", "sex", "smokeNFC", "PopID", "array","priorCancer","incidentCancerHem","incidentCancerLymphoid","incidentCancerMyeloid"],
+          _source: [
+            "sampleId",
+            "age",
+            "sex",
+            "smokeNFC",
+            "PopID",
+            "array",
+            "priorCancer",
+            "incidentCancerHem",
+            "incidentCancerLymphoid",
+            "incidentCancerMyeloid",
+          ],
           body: {
             track_total_hits: true,
             size: 200000,
@@ -473,26 +509,26 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
                       "array.keyword": platformarr,
                     },
                   },
-                {
-                  terms: {
-                    priorCancer: priorCancerarr,
+                  {
+                    terms: {
+                      priorCancer: priorCancerarr,
+                    },
                   },
-                },
-                {
-                  terms: {
-                    incidentCancerHem: hemaCancerarr,
+                  {
+                    terms: {
+                      incidentCancerHem: hemaCancerarr,
+                    },
                   },
-                },
-                {
-                  terms: {
-                    incidentCancerLymphoid: lymCancerarr,
+                  {
+                    terms: {
+                      incidentCancerLymphoid: lymCancerarr,
+                    },
                   },
-                },
-                {
-                  terms: {
-                    incidentCancerMyeloid: myeCancerarr,
+                  {
+                    terms: {
+                      incidentCancerMyeloid: myeCancerarr,
+                    },
                   },
-                }
                 ],
                 filter: [
                   {
@@ -612,8 +648,8 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
   const ancestry = query.ancestry;
   const smoking = query.smoking;
   const approach = query.approach;
-  const minAge = query.minAge !== undefined ? Number(query.minAge):0;
-  const maxAge = query.maxAge !== undefined ? Number(query.maxAge):100;
+  const minAge = query.minAge !== undefined ? Number(query.minAge) : 0;
+  const maxAge = query.maxAge !== undefined && query.maxAge !== "" ? Number(query.maxAge) : 100;
   const study = query.study;
   const numsize = 0; //only return the denominator total counts, that is used for fisher_test
 
@@ -621,9 +657,9 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
     ancestryarry = getAttributesArray(ancestry, "ancestry"),
     smokearr = getAttributesArray(smoking, "smoking"),
     platformarr = getAttributesArray(approach, "array"),
-    { datasets } = getStudy(study,[]);
- 
-  // console.log(datasets,sexarr, ancestryarry, smokearr, platformarr, minAge,maxAge);
+    { datasets } = getStudy(study, []);
+
+  console.log(datasets, sexarr, ancestryarry, smokearr, platformarr, minAge, maxAge);
   try {
     const result = await client.search({
       index: "denominator_age",
@@ -669,7 +705,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
         },
       },
     });
-     console.log(result.body.hits.total.value);
+    console.log(result.body.hits.total.value);
     response.json(result.body.hits.total.value);
   } catch (error) {
     console.error(error);
@@ -700,7 +736,7 @@ const getAttributesArray = (atti, name) => {
         attiarray = ["0", "1", "2", "9"];
         break;
       default:
-        attiarray = ["0","1"];
+        attiarray = ["0", "1"];
     }
   }
   return attiarray;
