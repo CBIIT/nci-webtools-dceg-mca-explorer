@@ -1132,11 +1132,19 @@ const CirclePlotTest = React.forwardRef((props,refSingleCircos)=> {
                 pdf.setTextColor(0, 0, 0);
                 pdf.setFontSize(8);
                 if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width * 0.5, initalY, { align: "center" });
-                pdf.text(circosTitle.slice(1), width * 0.5, initalY + 5, { align: "center" });
+                //pdf.text(circosTitle.slice(1), width * 0.5, initalY + 5, { align: "center" });
+                const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 10); // Adjust the width as needed
+                console.log("circosTitleLines ", circosTitleLines);
+                pdf.text(circosTitleLines, width * 0.5, initalY + 5, { align: "center" });  
 
-                pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
-                pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
-                pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20, width / 2, 0);
+                // pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
+                // pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
+                // pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20, width / 2, 0);
+                const imageSpacing = 10; // Adjust as needed
+                pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10 + imageSpacing, width / 2, 0);
+                pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10 + imageSpacing, width / 2, 0);
+                pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20 + imageSpacing, width / 2, 0);
+
                 pdf.setFontSize(5);
                 if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
                 //}
