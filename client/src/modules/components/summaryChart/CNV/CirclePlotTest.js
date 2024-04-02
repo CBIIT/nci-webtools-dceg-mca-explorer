@@ -1116,6 +1116,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               .then((dataUrl4) => {
                 const pdf = new jsPDF();
                 const width = pdf.internal.pageSize.getWidth();
+                console.log("width ", width)
                 pdf.setFillColor(0, 128, 0);
                 pdf.rect(legendX, legendY, legendSize, legendSize, "F");
                 pdf.setFontSize(8);
@@ -1141,17 +1142,22 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 pdf.setFontSize(8);
                 if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width * 0.5, initalY, { align: "center" });
                 //pdf.text(circosTitle.slice(1), width * 0.5, initalY + 5, { align: "center" });
-                const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 10); // Adjust the width as needed
+
+                const imageSpacing = 10; // Adjust as needed
+                const imageWidth = width - 2 * imageSpacing + 10; // Stretch the image to fit the entire page width
+                const imageHeight = (width * 0.5) - 2 * imageSpacing; // Adjust spacing between images
+
+                const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20); // Adjust the width as needed
                 console.log("circosTitleLines ", circosTitleLines);
                 pdf.text(circosTitleLines, width * 0.5, initalY + 5, { align: "center" });  
 
                 // pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
                 // pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
                 // pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20, width / 2, 0);
-                const imageSpacing = 10; // Adjust as needed
-                pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10 + imageSpacing, width / 2, 0);
-                pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10 + imageSpacing, width / 2, 0);
-                pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20 + imageSpacing, width / 2, 0);
+                
+                pdf.addImage(dataUrl1, "PNG", imageSpacing, initalY + 10 + imageSpacing, imageWidth, imageHeight);
+                pdf.addImage(dataUrl3, "PNG", imageSpacing, width * 0.5 + 10 + imageSpacing, imageWidth, imageHeight);
+                pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
 
                 pdf.setFontSize(5);
                 if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
