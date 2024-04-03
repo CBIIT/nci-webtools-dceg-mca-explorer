@@ -96,7 +96,7 @@
                         class="usa-footer__primary-link usa-footer__nci-collapse-header">About</button><span
                         class="usa-footer__primary-link usa-footer__nci-list-header">About</span></div>
                     <ul aria-label="Header 1 Site" class="usa-list usa-list--unstyled hidden " id="accordion1">
-                      <li class="usa-footer__secondary-link"><a href="/#/about/">About mCA Explorer</a></li>                      
+                      <li class="usa-footer__secondary-link"><a href="/#/about/" id="aboutLink">About mCA Explorer</a></li>                      
                       <li class="usa-footer__secondary-link"><a  href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov">Contact Us</a></li>
                     </ul>
                   </section>
@@ -107,8 +107,8 @@
                         class="usa-footer__primary-link usa-footer__nci-collapse-header">Resources</button><span
                         class="usa-footer__primary-link usa-footer__nci-list-header">Resources</span></div>
                     <ul aria-label="Header 2 Site" class="usa-list usa-list--unstyled hidden " id="accordion2">
-                      <li class="usa-footer__secondary-link"><a href="/#/mosaic">mCA Explorer</a></li>
-                      <li class="usa-footer__secondary-link"><a href="/#/api">API Access</a></li>
+                      <li class="usa-footer__secondary-link"><a href="/#/mosaic" id="mcaExplorerLink">mCA Explorer</a></li>
+                      <li class="usa-footer__secondary-link"><a href="/#/api" id="APIAccessLink">API Access</a></li>
                     </ul>
                   </section>
                 </div>
@@ -231,6 +231,39 @@
       </div>
     </div>
   </footer>
+
+  <script>
+    // Get the links
+    const aboutLink = document.getElementById('aboutLink');
+    const mcaExplorerLink = document.getElementById('mcaExplorerLink');
+    const APIAccessLink = document.getElementById('APIAccessLink');
+  
+    // Function to handle link clicks
+    function handleClick(event, href) {
+      // Prevent default link behavior
+      event.preventDefault();
+  
+      // Navigate to the specified page
+      window.location.href = href;
+  
+      // Scroll the page to the top after navigation
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  
+    // Add click event listeners to all links
+    aboutLink.addEventListener('click', function(event) {
+      handleClick(event, this.getAttribute('href'));
+    });
+  
+    mcaExplorerLink.addEventListener('click', function(event) {
+      handleClick(event, this.getAttribute('href'));
+    });
+  
+    APIAccessLink.addEventListener('click', function(event) {
+      handleClick(event, this.getAttribute('href'));
+    });
+  </script>
+  
  
 </body>
 
