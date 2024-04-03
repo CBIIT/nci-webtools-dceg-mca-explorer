@@ -89,11 +89,24 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     // Check for cellular fraction limitation
     if (form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)) {
       isValid = false;
-      // warnings.push("Maximum cellular fraction must be greater than minimum cellular fraction!");
+      //warnings.push("Maximum cellular fraction must be greater than minimum cellular fraction!");
     }
+
+    // Check if "Study" is selected
+  if (!form.study || form.study.length === 0) {
+    isValid = false;
+    //warnings.push("Study field is required!");
+  }
+
+  // Check if "Copy Number State" is selected
+  if (!form.types || form.types.length === 0) {
+    isValid = false;
+    //warnings.push("Copy Number State field is required!");
+  }
 
     if (!isValid) {
       // Display warning messages
+      //alert(warnings.join("\n"));
       alert("Please fix the inputs in red!");
       return; // Stop form submission
     }
@@ -310,6 +323,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       )}
       <Form.Group className="mb-3">
         <Form.Label className="required">Study</Form.Label>
+        <Form.Label style={{ color: "red" }}>
+                {form.study.length === 0
+                  ? "Study field is required!"
+                  : ""}
+        </Form.Label>
         <Select
           aria-label="study"
           placeholder="No study selected"
@@ -326,6 +344,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       </Form.Group>
       <Form.Group className="mb-3">
         <Form.Label className="required">Copy Number State</Form.Label>
+        <Form.Label style={{ color: "red" }}>
+                {form.types.length === 0
+                  ? "Copy Number State field is required!"
+                  : ""}
+              </Form.Label>
         <Select
           aria-label="state"
           placeholder="- Select -"
