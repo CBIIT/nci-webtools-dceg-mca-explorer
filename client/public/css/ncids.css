@@ -541,3 +541,31 @@ font-weight:600;
     font-size: .89rem;
     line-height: 1.6;
 }
+
+.usa-footer__return-to-top {
+    line-height: 1;
+    padding-bottom: 1.25rem;
+    padding-top:1.25rem
+}
+
+.usa-footer__return-to-top a {
+    color: #01679d;
+    text-decoration:underline
+}
+
+.usa-footer__return-to-top a:visited {
+    color:#54278f
+}
+
+.usa-footer__return-to-top a:hover {
+    color:#004971
+}
+
+.usa-footer__return-to-top a:active {
+    color:#00314b
+}
+
+.usa-footer__return-to-top a:focus {
+    outline: .25rem solid #2491ff;
+    outline-offset:0
+}

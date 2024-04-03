@@ -8,11 +8,21 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet' crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids.css">
-    
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-minimal.css">
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-home-landing.css">
+    <!-- <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/css2.css">
+   -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>mCA Explorer</title>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TZKNKFR0J4"></script>
+    <script src="%PUBLIC_URL%/js/ncids-minimal.js?samhc4"></script>
+    <script src="%PUBLIC_URL%/js/ncids-home-landing.js?samhc4"></script>
+    <!-- <script src="%PUBLIC_URL%/js/nr-rum-1.253.0.min.js"></script>
+    <script type="text/javascript" id="_fed_an_ua_tag" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=HHS&amp;subagency=NCI"></script>
+    <script src="https://assets.adobedtm.com/6a4249cd0a2c/949e98979342/71e155600bf8/RCcdc0a9518ff54d37b1c040be774e0cd0-source.min.js" async=""></script>
+    <script src="https://assets.adobedtm.com/6a4249cd0a2c/949e98979342/71e155600bf8/RC9956e3e85e694dfeafb5d0e9bc882f46-source.min.js" async=""></script> -->
+
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -82,8 +92,9 @@
   <main id="root" class="d-flex flex-column flex-grow-1 align-items-stretch bg-light"></main>
  
   <footer class="usa-footer usa-footer--nci-big">
-    <!-- <div class="grid-container usa-footer__return-to-top"><a href="#top" aria-label="Back To Top"><span>Back To
-          Top</span></a></div> -->
+    <div class="grid-container usa-footer__return-to-top">
+      <a href="#" aria-label="Back To Top"><span>Back To Top</span></a>
+    </div>
     <div class="usa-footer__primary-section">
       <div class="grid-container">
         <div class="grid-row grid-gap">
@@ -230,6 +241,7 @@
         </div>
       </div>
     </div>
+    <input class="usa-input width-full" id="email" name="email" type="email" value="" aria-describedby="email-error-message">
   </footer>
 
   <script>
