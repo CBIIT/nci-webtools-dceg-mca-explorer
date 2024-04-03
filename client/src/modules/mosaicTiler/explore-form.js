@@ -3,8 +3,17 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions, SexOptions, smokeNFC, platformArray } from "./constants";
+import { Toast } from "react-bootstrap";
+
+import {
+  AncestryOptions,
+  CompareArray,
+  TypeStateOptions,
+  SexOptions,
+  smokeNFC,
+  platformArray,
+  ifCancer,
+} from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 
 const compareArray = CompareArray;
@@ -32,6 +41,9 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
+  const [resetCircos, setResetCircos] = useState(false);
+  const [disabledType, setDisabledType] = useState([]);
+  const [showXY, setShowXY] = useState(true);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -39,10 +51,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
     if (name === "chrX") {
       setIsX(event.target.checked);
-      mergeForm({ [name]: event.target.checked });
+      mergeForm({ [name]: event.target.checked, types: [{ value: "loss", label: "Loss" }] });
+      if (event.target.checked || isY) setDisabledType(["all", "loh", "gain", "undetermined"]);
+      else setDisabledType([]);
     } else if (name === "chrY") {
       setIsY(event.target.checked);
-      mergeForm({ [name]: event.target.checked });
+      mergeForm({ [name]: event.target.checked, types: [{ value: "loss", label: "Loss" }] });
+      if (event.target.checked || isX) setDisabledType(["all", "loh", "gain", "undetermined"]);
+      else setDisabledType([]);
     } else if (name === "maxAge") {
       if (value <= 150) mergeForm({ [name]: Number(value) });
       else mergeForm({ [name]: 150 });
@@ -60,7 +76,28 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSubmit(event) {
     event.preventDefault();
+
+    let isValid = true;
+    const warnings = [];
     setSubmitClicked(true);
+    // Check for age limitation
+    if (form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)) {
+      isValid = false;
+      //warnings.push("Upper age limit must be greater than lower age limit!");
+    }
+
+    // Check for cellular fraction limitation
+    if (form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)) {
+      isValid = false;
+      // warnings.push("Maximum cellular fraction must be greater than minimum cellular fraction!");
+    }
+
+    if (!isValid) {
+      // Display warning messages
+      alert("Please fix the inputs in red!");
+      return; // Stop form submission
+    }
+
     if (onSubmit) onSubmit(form);
     //handleDisplayCompare();
   }
@@ -70,6 +107,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setForm(defaultFormState);
     setIsX(false);
     setIsY(false);
+    setDisabledType([]);
     setSubmitClicked(false);
     //setCompare(false);
     if (onReset) onReset(defaultFormState);
@@ -89,6 +127,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         selection = [all];
       }
     }
+    if (name === "types") {
+      const notForXY = selection.find((option) => option.value === "loss" || option.value === "all");
+      setShowXY(notForXY !== undefined && selection.length === 1);
+    }
 
     if (name === "study" && selection.find((option) => option.value === "all")) {
       selection = [
@@ -104,21 +146,18 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     if (name === "plotType") {
-      console.log(selection,form)
-       if (selection.value === "circos") {
-        if(form.chrSingle!==""){
-          console.log("reseting")
+      console.log(selection, form);
+      if (selection.value === "circos") {
+        if (form.chrSingle !== "") {
+          console.log("reseting");
+          setResetCircos(true);
         }
-       // mergeForm({ chrSingle: '' });
-       // setForm(defaultFormState);
-       // const summarybtn2 = document.getElementById("summaryReset");
-       // summarybtn2.click();
-
-       }
-       if (selection.value === "static") {
-       //  if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
+      }
+      if (selection.value === "static") {
+        //  if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
         // setStart(0);
-       }
+        setResetCircos(false);
+      }
     }
 
     mergeForm({ [name]: selection });
@@ -126,6 +165,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   useEffect(() => {
     setForm({ ...form, end: end, start: start });
   }, [end, start]);
+
+  useEffect(() => {
+    if (resetCircos) {
+      const summarybtn2 = document.getElementById("summarySubmit");
+      summarybtn2.click();
+    }
+  }, [resetCircos]);
 
   // avoid loading all samples as Select options
   function filterSamples(value, limit = 100) {}
@@ -201,9 +247,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <>
           <Form.Group className="mb-3">
             <Form.Label className="required">Chromosome</Form.Label>
-            <Form.Label style={{ color: "red" }}>
-              {submitClicked && form.chrSingle === "" ? "Plese select chromosome" : ""}
-            </Form.Label>
+            <Form.Label style={{ color: "red" }}>{form.chrSingle === "" ? "Plese select chromosome" : ""}</Form.Label>
             <Select
               aria-label="chromosome"
               placeholder="- Select -"
@@ -250,6 +294,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             id={`inline-X-1`}
             onChange={handleChange}
             checked={isX}
+            disabled={!showXY}
           />
           <Form.Check
             type="checkbox"
@@ -259,6 +304,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             id={`inline-Y-2`}
             onChange={handleChange}
             checked={isY}
+            disabled={!showXY}
           />
         </Form.Group>
       )}
@@ -288,6 +334,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           value={form.types}
           onChange={(ev) => handleSelectChange("types", ev)}
           options={TypeStateOptions}
+          isOptionDisabled={(option) => disabledType.includes(option.value)}
         />
       </Form.Group>
 
@@ -350,6 +397,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
+              <Form.Label style={{ color: "red" }}>
+                {form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)
+                  ? "Upper age limit must be greater than lower age limit!"
+                  : ""}
+              </Form.Label>
               {/* <Form.Control
                 placeholder="No age selected"
                 name="age"
@@ -399,6 +451,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
+              <Form.Label style={{ color: "red" }}>
+                {
+                  //submitClicked &&
+                  form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)
+                    ? "Maximum cellular fraction must be greater than minimum cellular fraction!"
+                    : ""
+                }
+              </Form.Label>
               <Row>
                 <Col xl={5}>
                   <InputGroup>
@@ -436,6 +496,50 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 value={form.smoking}
                 onChange={(ev) => handleSelectChange("smoking", ev)}
                 options={smokeNFC}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="priorCancer">
+              <Form.Label>Prior Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="priorCancer"
+                isMulti={false}
+                value={form.priorCancer}
+                onChange={(ev) => handleSelectChange("priorCancer", ev)}
+                options={ifCancer}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="hemaCancer">
+              <Form.Label>Incident Hematological Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="hemaCancer"
+                isMulti={false}
+                value={form.hemaCancer}
+                onChange={(ev) => handleSelectChange("hemaCancer", ev)}
+                options={ifCancer}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="lymCancer">
+              <Form.Label>Incident Lymphoid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="lymCancer"
+                isMulti={false}
+                value={form.lymCancer}
+                onChange={(ev) => handleSelectChange("lymCancer", ev)}
+                options={ifCancer}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="myeCancer">
+              <Form.Label>Incident Myeloid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="myeCancer"
+                isMulti={false}
+                value={form.myeCancer}
+                onChange={(ev) => handleSelectChange("myeCancer", ev)}
+                options={ifCancer}
               />
             </Form.Group>
           </Accordion.Body>

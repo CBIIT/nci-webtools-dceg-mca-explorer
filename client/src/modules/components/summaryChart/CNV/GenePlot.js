@@ -3,12 +3,14 @@ import Plot from "react-plotly.js";
 import { packRanges } from "../../utils.js";
 import axios from "axios";
 import Spinner from "react-bootstrap/Spinner";
+import { Button } from "react-bootstrap";
 
 function GenePlot(props) {
   const [genes, setGenes] = useState([]);
   const [showGene, setShowGene] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const genearr = [];
+
   //console.log(props.xMax,props.xMin)
   useEffect(() => {
     if (true) {
@@ -48,11 +50,11 @@ function GenePlot(props) {
   //console.log(showGene,isLoading)
   let geneRanges = genes.map((gene) => {
     const namelength = gene.name.length;
-    let horizPadding = 20000 * namelength;
+    let horizPadding = 30000 * namelength;
     if (props.width < 600) horizPadding = horizPadding * 2;
     // if (genes.length > 20) horizPadding = 40000 * namelength;
     //console.log(namelength, horizPadding);
-    return [gene.transcriptionStart - horizPadding, gene.transcriptionEnd + horizPadding, gene];
+    return [gene.transcriptionStart - horizPadding / 2, gene.transcriptionEnd + horizPadding, gene];
   });
 
   let packedGeneRanges = packRanges(geneRanges);
@@ -166,24 +168,47 @@ function GenePlot(props) {
       </Spinner>
     </>
   ) : !isLoading && showGene ? (
-    <Plot
-      data={data}
-      layout={layout}
-      config={{
-        //...defaultConfig,
-        toImageButtonOptions: {
-          filename:
-            "Gene" +
-            Math.trunc(props.xMin).toLocaleString("en-US", { style: "decimal" }) +
-            "-" +
-            Math.trunc(props.xMax).toLocaleString("en-US", { style: "decimal" }) +
-            "_chr" +
-            props.chr,
-        },
-      }}
-      useResizeHandler={true}
-      style={{ width: "100%", height: "100%", display: "block" }}
-    />
+    <>
+      {props.showToggle ? (
+        <div className="d-flex justify-content-end">
+          <Button
+            variant="outline-secondary sm"
+            id="showGenePlot"
+            onClick={props.toggleVisibility}
+            style={{ padding: "5px" }}>
+            {props.isVisible ? "Hide Gene plot" : "Show Gene plot"}
+          </Button>
+        </div>
+      ) : (
+        <Button
+          variant="outline-secondary sm"
+          onClick={props.toggleVisibility}
+          style={{ padding: "5px", opacity: 0, paddingLeft: "0px", paddingRight: "0px" }}>
+          l
+        </Button>
+      )}
+
+      {props.isVisible && (
+        <Plot
+          data={data}
+          layout={layout}
+          config={{
+            //...defaultConfig,
+            toImageButtonOptions: {
+              filename:
+                "Gene" +
+                Math.trunc(props.xMin).toLocaleString("en-US", { style: "decimal" }) +
+                "-" +
+                Math.trunc(props.xMax).toLocaleString("en-US", { style: "decimal" }) +
+                "_chr" +
+                props.chr,
+            },
+          }}
+          useResizeHandler={true}
+          style={{ width: "100%", height: "100%", display: "block", paddingTop: "10px" }}
+        />
+      )}
+    </>
   ) : (
     ""
   );

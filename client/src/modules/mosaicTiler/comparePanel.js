@@ -3,7 +3,15 @@ import Select from "react-select";
 import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { AncestryOptions, TypeStateOptions, StudyOptions, SexOptions, platformArray, smokeNFC } from "./constants";
+import {
+  AncestryOptions,
+  TypeStateOptions,
+  StudyOptions,
+  SexOptions,
+  platformArray,
+  smokeNFC,
+  ifCancer,
+} from "./constants";
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -14,31 +22,39 @@ export default function ComparePanel(props) {
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
-  const [types, setTypes] = useState([TypeStateOptions[0]]);
+  const [types, setTypes] = useState([]);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
   const [compareform, setCompareForm] = useState({ study: study, types: types });
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
+  const [priorCancer, setPriorCancer] = useState("");
+  const [hemaCancer, setHemaCancer] = useState("");
+  const [lymCancer, setLymCancer] = useState("");
+  const [myeCancer, setMyeCancer] = useState("");
+  const [disabledType, setDisabledType] = useState([]);
   // console.log(study);
   //reset
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
-    handleSelectChange("types", [TypeStateOptions[0]]);
+    handleSelectChange("types", [TypeStateOptions[props.isX || props.isY ? 2 : 0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
     //console.log("&&&&", StudyOptions[0], compareform);
-  }, [props.onReset]);
+    if (props.isY || props.isX) setDisabledType(["all", "loh", "gain", "undetermined"]);
+    else setDisabledType([]);
+    console.log(form);
+  }, [props.onReset, props.isX, props.isY]);
 
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "minAge") {
-      if (value <= 150) setMinAge(Number(value));
+      if (value <= 100) setMinAge(Number(value));
       else setMinAge(0);
     }
     if (name === "maxAge") {
-      if (value < 150) setMaxAge(Number(value));
-      else setMaxAge(150);
+      if (value < 100) setMaxAge(Number(value));
+      else setMaxAge(100);
     }
     //  setCompareForm({ ...compareform, [name]: value });
     if (name === "minFraction") {
@@ -103,11 +119,27 @@ export default function ComparePanel(props) {
         selection = [all];
       }
       setTypes(selection);
+      const notForXY = selection.find((option) => option.value === "loss" || option.value === "all");
+      props.setShowXY(notForXY !== undefined && selection.length);
+      console.log(selection);
+    }
+
+    if (props.compareItem[9].isChecked && name === "priorCancer") {
+      setPriorCancer(selection);
+    }
+    if (props.compareItem[10].isChecked && name === "hemaCancer") {
+      setHemaCancer(selection);
+    }
+    if (props.compareItem[11].isChecked && name === "lymCancer") {
+      setLymCancer(selection);
+    }
+    if (props.compareItem[12].isChecked && name === "myeCancer") {
+      setMyeCancer(selection);
     }
 
     setCompareForm({ ...compareform, [name]: selection });
   }
-
+  //any click on form's group attributes values, pass groups filter values to compareform
   useEffect(() => {
     console.log("UpdateForm ", compareform);
 
@@ -116,6 +148,8 @@ export default function ComparePanel(props) {
     }
   }, [compareform]);
 
+  //any click on attributes select checkbox, update the updatedcompareform which keep updated filters
+  //based on if attributes checkbox, clean the selection
   useEffect(() => {
     //updateForm();
     console.log("this is compare filter", compareform);
@@ -154,6 +188,14 @@ export default function ComparePanel(props) {
           } else if (element.label === " Cellular Fraction") {
             setMaxFraction("100");
             setMinFraction("0");
+          } else if (element.label === " Prior Cancer") {
+            setPriorCancer("");
+          } else if (element.label === " Incident Hematological Cancer") {
+            setHemaCancer("");
+          } else if (element.label === " Incident Lymphoid Cancer") {
+            setLymCancer("");
+          } else if (element.label === " Incident Myeloid Cancer") {
+            setMyeCancer("");
           }
         }
       }
@@ -225,6 +267,7 @@ export default function ComparePanel(props) {
                 value={types}
                 onChange={(ev) => handleSelectChange("types", ev)}
                 options={TypeStateOptions}
+                isOptionDisabled={(option) => disabledType.includes(option.value)}
                 classNamePrefix="select"
               />
             </Form.Group>
@@ -272,6 +315,11 @@ export default function ComparePanel(props) {
           {props.compareItem[2].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
+              <Form.Label style={{ color: "red" }}>
+                {maxAge && minAge && parseInt(maxAge) <= parseInt(minAge)
+                  ? "Upper age limit must be greater than lower age limit!"
+                  : ""}
+              </Form.Label>
               <Row>
                 <Col xl={5}>
                   <InputGroup>
@@ -327,6 +375,11 @@ export default function ComparePanel(props) {
           {props.compareItem[5].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label>Cellular Fraction</Form.Label>
+              <Form.Label style={{ color: "red" }}>
+                {maxFraction && minFraction && parseFloat(maxFraction) <= parseFloat(minFraction)
+                  ? "Maximum cellular fraction must be greater than minimum cellular fraction!"
+                  : ""}
+              </Form.Label>
               <Row>
                 <Col xl={5}>
                   <InputGroup>
@@ -370,6 +423,79 @@ export default function ComparePanel(props) {
                 value={smoking}
                 onChange={(ev) => handleSelectChange("smoking", ev)}
                 options={smokeNFC}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+
+          {props.compareItem[9].isChecked ? (
+            <Form.Group className="mb-3" controlId="priorCancer">
+              <Form.Label>Prior Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="priorCancer"
+                aria-label={props.name + "priorCancer"}
+                id={props.name + "priorCancer"}
+                isMulti={true}
+                value={priorCancer}
+                onChange={(ev) => handleSelectChange("priorCancer", ev)}
+                options={ifCancer}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+          {props.compareItem[10].isChecked ? (
+            <Form.Group className="mb-3" controlId="hemaCancer">
+              <Form.Label>Incident Hematological Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="hemaCancer"
+                aria-label={props.name + "hemaCancer"}
+                id={props.name + "hemaCancer"}
+                isMulti={true}
+                value={hemaCancer}
+                onChange={(ev) => handleSelectChange("hemaCancer", ev)}
+                options={ifCancer}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+          {props.compareItem[11].isChecked ? (
+            <Form.Group className="mb-3" controlId="lymCancer">
+              <Form.Label>Incident Lymphoid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="lymCancer"
+                aria-label={props.name + "lymCancer"}
+                id={props.name + "lymCancer"}
+                isMulti={true}
+                value={lymCancer}
+                onChange={(ev) => handleSelectChange("lymCancer", ev)}
+                options={ifCancer}
+                classNamePrefix="select"
+              />
+            </Form.Group>
+          ) : (
+            ""
+          )}
+          {props.compareItem[12].isChecked ? (
+            <Form.Group className="mb-3" controlId="myeCancer">
+              <Form.Label>Incident Myeloid Cancer</Form.Label>
+              <Select
+                placeholder="- Select -"
+                name="myeCancer"
+                aria-label={props.name + "myeCancer"}
+                id={props.name + "myeCancer"}
+                isMulti={true}
+                value={myeCancer}
+                onChange={(ev) => handleSelectChange("myeCancer", ev)}
+                options={ifCancer}
                 classNamePrefix="select"
               />
             </Form.Group>

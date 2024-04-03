@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
+import { Container } from "react-bootstrap";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -17,11 +18,19 @@ export default function CircosPlot(props) {
   const hovertip = props.hovertip;
   const classCircle = props.circleClass;
   const layoutxy = props.layoutxy;
+  const titleHeight = props.maxtitleHeight
+ 
+ 
+
   return (
-    <div style={{ justifyContent: "center", position: "absolute" }}>
-      <div style={{ fontSize: "14px" }}>{props.title}</div>
-      <div style={{ justifyContent: "center", position: "absolute" }}>
-        <Circos
+    <>
+    <Container style={{ display:"flex",flexDirection:"column",alignItems:"center",position:"relative",fontSize: "14px",minHeight:`${titleHeight+size+20}px` }}>
+
+    {/* <div ref={titleRef} style={{ marginBottom:"1rem",fontSize: "14px" }}>{props.title}</div> */}
+    {/* <div style={{ fontSize: "14px" }}>{props.msg}</div> */}
+    <Container style={{ position:"relative", width:"100%", textAlign:"center"}}>
+    <div id="A" style={{ textAlign:"center", position: "absolute", zIndex:"10", top:`${titleHeight}px`,left:"50%",transform:"translateX(-50%)"}}>
+        {/* <Circos
           layout={layoutxy}
           config={{
             innerRadius: size / 2 - 50,
@@ -37,7 +46,7 @@ export default function CircosPlot(props) {
               size: 14,
               color: "#000",
               radialOffset: 28,
-            },
+            }
           }}
           tracks={[
             {
@@ -76,14 +85,16 @@ export default function CircosPlot(props) {
             },
           ]}
           size={size}
-        />
+        /> */}
       </div>
+      {/* <div style={{ justifyContent: "center",fontSize: "14px",color:"white" }}>{props.title===""?"":" . "}</div> */}
       <div
         id={props.details}
-        style={{ justifyContent: "center" }}
+        style={{ textAlign:"center", position: "absolute", zIndex:"100",top:`${titleHeight}px`, left:"50%",transform:"translateX(-50%)"}}
         ref={circleRef}
         onMouseEnter={handleEnter}
         onClick={handleEnter}>
+          
         <Circos
           layout={layoutAll}
           config={{
@@ -152,7 +163,7 @@ export default function CircosPlot(props) {
             },
             {
               type: STACK,
-              data: circle.loss,
+              data: circle.loss.concat(dataXY),
               config: {
                 innerRadius: 0.25,
                 outerRadius: 0.5,
@@ -263,8 +274,12 @@ export default function CircosPlot(props) {
         />
         {/* <div style={{ whiteSpace: "pre-line", justifyContent: "center" }}>{props.details}</div> */}
       </div>
-      <div style={{ fontSize: "14px" }}>{props.msg}</div>
-    </div>
+      </Container>
+      {/* <div style={{ fontSize: "14px",justifyContent: "center",paddingTop:"430px" }}>{props.msg}</div>  */}
+      <div style={{paddingTop:`${titleHeight+size}px`, fontSize: "14px" }}>{props.msg}</div>
+      </Container>
+    </>
   );
+
   //return
 }

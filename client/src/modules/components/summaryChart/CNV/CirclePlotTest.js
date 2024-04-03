@@ -16,6 +16,8 @@ import jsPDF from "jspdf";
 import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
 import { fisherTest } from "../../utils";
 
+import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
+
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
 //import { groupSort } from "d3";
@@ -60,7 +62,7 @@ function changeBackground(track, chromesomeId, opacity) {
   }
 }
 
-export default function CirclePlotTest(props) {
+const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   //to show singleChrome chart
   const [form, setForm] = useRecoilState(formState);
   const [chromesomeId, setChromesomeId] = useState(props.compare ? 0 : form.chrCompare.label);
@@ -101,11 +103,24 @@ export default function CirclePlotTest(props) {
   const [rangeA, setRangeA] = useState(0);
   const [rangeB, setRangeB] = useState(0);
   const [Pfisher, setPfisher] = useState(0);
-  const compareRef = useRef(isCompare);
+  const [isVisible, setIsVisible] = useState(true);
 
+  const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
   const zoomRangeRef = useRef(zoomRange);
   const tableRef = useRef(tableData);
+  const circosCompareA = useRef(null);
+  const circosCompareB = useRef(null);
+  const [maxTitleheight, setMaxTitleheight] = useState(0);
+  const [heightA, setHeightA] = useState(0);
+  const [heightB, setHeightB] = useState(0);
+  const [isLoadedA, setIsLoadedA] = useState(false);
+  const [isLoadedB, setIsLoadedB] = useState(false);
+  const [singleZoomLength, setSingleZoomLength] = useState(0);
+
+  const toggleVisibility = () => {
+    setIsVisible(!isVisible);
+  };
 
   useEffect(() => {
     setShowChart(form.plotType.value === "static");
@@ -216,7 +231,7 @@ export default function CirclePlotTest(props) {
   });
 
   const handleEnter = () => {
-    console.log("handleEnter");
+    //console.log("handleEnter",circleRef.current);
     if (circleRef.current) {
       var track0 = document.querySelectorAll(".track-0 .block");
       var track1 = document.querySelectorAll(".track-1 .block");
@@ -356,6 +371,7 @@ export default function CirclePlotTest(props) {
   let data = [];
   useEffect(() => {
     // console.log(form.counterCompare, form.groupA, form.groupB);
+
     if (form.compare) {
       //console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
@@ -370,13 +386,23 @@ export default function CirclePlotTest(props) {
       setGroupA([]);
       setGroupB([]);
       console.log(form);
+      setIsLoadedA(false);
+      setIsLoadedB(false);
       if (form.counterCompare > 0) {
-        handleGroupQuery(form.groupA).then((data) =>
-          showChart ? (setGroupA(data[0]), setFisherA(data[1])) : setCircleA({ ...data })
-        );
-        handleGroupQuery(form.groupB).then((data) =>
-          showChart ? (setGroupB(data[0]), setFisherB(data[1])) : setCircleB({ ...data })
-        );
+        handleGroupQuery(form.groupA).then((data) => {
+          if (showChart) {
+            setGroupA(data[0]);
+            setFisherA(data[1]);
+          } else setCircleA({ ...data });
+          setIsLoadedA(true);
+        });
+        handleGroupQuery(form.groupB).then((data) => {
+          if (showChart) {
+            setGroupB(data[0]);
+            setFisherB(data[1]);
+          } else setCircleB({ ...data });
+          setIsLoadedB(true);
+        });
       }
     } else {
       //console.log("clear form");
@@ -389,8 +415,23 @@ export default function CirclePlotTest(props) {
 
       //console.log("clear circle data");
     }
-    setCommonTitle(checkGroupTitleForDup().replace("Approach","Array"));
+    setCommonTitle(
+      checkGroupTitleForDup()
+        .replace("Approach", "Array Platform")
+        .replace("Types:", "Copy Number State:")
+        .replace("Prior", "Prior ")
+        .replace("Hema", "Incident Hematological ")
+        .replace("Lym", "Incident Lymphoid ")
+        .replace("Mye", "Incident Myeloid ")
+    );
   }, [form.counterCompare]);
+
+  useEffect(() => {
+    if (form.compare) {
+      props.onLoading(isLoadedA && isLoadedB);
+    }
+    //console.log(form, isLoadedA, isLoadedB);
+  }, [isLoadedA, isLoadedB]);
 
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
@@ -405,6 +446,8 @@ export default function CirclePlotTest(props) {
   //do query for group compare:
   async function handleGroupQuery(group) {
     //setLoading(true)
+    setIsLoadedA(false);
+    setIsLoadedB(false);
     const result = [];
     let responseDeno = [];
     let query = {};
@@ -417,24 +460,24 @@ export default function CirclePlotTest(props) {
     let chrXTemp = [];
     let chrYTemp = [];
 
-    if (form.chrX && form.chrY) {
-      gainTemp = [...initialX, ...initialY];
-      lossTemp = [...initialX, ...initialY];
-      lohTemp = [...initialX, ...initialY];
-      undeterTemp = [...initialX, ...initialY];
-    }
-    if (form.chrX && !form.chrY) {
-      gainTemp = [...initialX];
-      lossTemp = [...initialX];
-      lohTemp = [...initialX];
-      undeterTemp = [...initialX];
-    }
-    if (!form.chrX && form.chrY) {
-      gainTemp = [...initialY];
-      lossTemp = [...initialY];
-      lohTemp = [...initialY];
-      undeterTemp = [...initialY];
-    }
+    // if (form.chrX && form.chrY) {
+    //   gainTemp = [...initialX, ...initialY];
+    //   lossTemp = [...initialX, ...initialY];
+    //   lohTemp = [...initialX, ...initialY];
+    //   undeterTemp = [...initialX, ...initialY];
+    // }
+    // if (form.chrX && !form.chrY) {
+    //   gainTemp = [...initialX];
+    //   lossTemp = [...initialX];
+    //   lohTemp = [...initialX];
+    //   undeterTemp = [...initialX];
+    // }
+    // if (!form.chrX && form.chrY) {
+    //   gainTemp = [...initialY];
+    //   lossTemp = [...initialY];
+    //   lohTemp = [...initialY];
+    //   undeterTemp = [...initialY];
+    // }
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
@@ -451,10 +494,14 @@ export default function CirclePlotTest(props) {
           sex: group.sex,
           minAge: group.minAge,
           maxAge: group.maxAge,
+          priorCancer: group.priorCancer,
+          hemaCancer: group.hemaCancer,
+          lymCancer: group.lymCancer,
+          myeCancer: group.myeCancer,
         };
-       // console.log(query);
+        // console.log(query);
         responseDeno = await axios.post("api/opensearch/denominator", query);
-       // console.log(responseDeno.data);
+        // console.log(responseDeno.data);
 
         response = await axios.post("api/opensearch/chromosome", query);
       } else {
@@ -465,7 +512,7 @@ export default function CirclePlotTest(props) {
         // console.log(group);
         const dataset = [...group.study, form.chrX ? { value: "X" } : "", form.chrY ? { value: "Y" } : ""];
         response = await axios.post("api/opensearch/mca", {
-          dataset: dataset,
+          study: dataset,
           sex: sex,
           mincf: group.minFraction,
           maxcf: group.maxFraction,
@@ -475,18 +522,27 @@ export default function CirclePlotTest(props) {
           array: group.approach,
           minAge: group.minAge,
           maxAge: group.maxAge,
+          priorCancer: group.priorCancer,
+          hemaCancer: group.hemaCancer,
+          lymCancer: group.lymCancer,
+          myeCancer: group.myeCancer,
         });
       }
 
       let results = null;
       let responseDenominator = null;
       // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
+      //if choose any of these filter, should use denominator returns since only denominator has these attribute values
       if (
         (group.smoking === undefined || group.smoking.length === 0) &&
         (group.approach === undefined || group.approach.length === 0) &&
         (group.ancestry === undefined || group.ancestry.length === 0) &&
-        (group.sex === undefined || group.sex.length === 0)&&
-        (!group.hasOwnProperty("minAge")  )
+        (group.sex === undefined || group.sex.length === 0) &&
+        !group.hasOwnProperty("minAge") &&
+        !group.hasOwnProperty("priorCancer") &&
+        !group.hasOwnProperty("hemaCancer") &&
+        !group.hasOwnProperty("lymCancer") &&
+        !group.hasOwnProperty("myeCancer")
       ) {
         results = response.data.denominator;
         responseDenominator = response.data.nominator;
@@ -512,9 +568,10 @@ export default function CirclePlotTest(props) {
       mergedResult.forEach((r) => {
         //if (r._source !== null) {
         const d = r;
-        if (d.cf != "nan") {
+        if (!(group.hasOwnProperty("minFraction") && (d.cf === "" || d.cf === "NA"))) {
+          // console.log(d)
           d.block_id = d.chromosome.substring(3);
-          d.value = d.cf;
+          d.value = d.cf === "NA" ? "" : d.cf;
           d.dataset = d.dataset.toUpperCase();
           d.start = Number(d.beginGrch38);
           d.end = Number(d.endGrch38);
@@ -531,6 +588,7 @@ export default function CirclePlotTest(props) {
             const dsex = SexOptions.filter((a) => a.value === d.sex);
             d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
           }
+
           //if(minAge!==undefined)
 
           //
@@ -608,17 +666,19 @@ export default function CirclePlotTest(props) {
 
     let agecfA = groupAgeTitle(form.groupA);
     let agecfB = groupAgeTitle(form.groupB);
-    console.log(form.groupA,form.groupA.minAge, agecfA,agecfB)
-    if (agecfA === agecfB) titleGroup += form.groupA.hasOwnProperty('minAge')&&agecfA.length===0? '; Age: 0-100': agecfA;
+    console.log(form.groupA, form.groupA.minAge, agecfA, agecfB);
+    if (agecfA === agecfB)
+      titleGroup += form.groupA.hasOwnProperty("minAge") && agecfA.length === 0 ? "; Age: 0-100" : agecfA;
     else {
       tempA += agecfA === "" ? "; Age: 0-100" : agecfA;
       tempB += agecfB === "" ? "; Age: 0-100" : agecfB;
     }
-    console.log(tempA, tempB)
+    //console.log(tempA, tempB)
     agecfA = groupCfTitle(form.groupA);
     agecfB = groupCfTitle(form.groupB);
-  
-    if (agecfA === agecfB) titleGroup += form.groupB.hasOwnProperty('minFraction')&&agecfA.length===0?'; CF: 0-1': agecfA;
+
+    if (agecfA === agecfB)
+      titleGroup += form.groupB.hasOwnProperty("minFraction") && agecfA.length === 0 ? "; CF: 0-1" : agecfA;
     else {
       tempA += agecfA === "" ? "; CF: 0-1" : agecfA;
       tempB += agecfB === "" ? "; CF: 0-1" : agecfB;
@@ -628,8 +688,26 @@ export default function CirclePlotTest(props) {
     const [titleB, errorMessageB] = checkTitleStudyPlatForm(form.groupB, tempB);
     tempA = titleA;
     tempB = titleB;
-    setTitleA(tempA.slice(1).replace("Approach","Array"));
-    setTitleB(tempB.slice(1).replace("Approach","Array"));
+    setTitleA(
+      tempA
+        .slice(1)
+        .replace("Approach", "Array Platform")
+        .replace("Types:", "Copy Number State:")
+        .replace("Prior", "Prior ")
+        .replace("Hema", "Incident Hematological ")
+        .replace("Lym", "Incident Lymphoid ")
+        .replace("Mye", "Incident Myeloid ")
+    );
+    setTitleB(
+      tempB
+        .slice(1)
+        .replace("Approach", "Array Platform")
+        .replace("Types:", "Copy Number State:")
+        .replace("Prior", "Prior ")
+        .replace("Hema", "Incident Hematological ")
+        .replace("Lym", "Incident Lymphoid ")
+        .replace("Mye", "Incident Myeloid ")
+    );
     setMsgA(errorMessageA);
     setMsgB(errorMessageB);
     return titleGroup.slice(1);
@@ -677,27 +755,32 @@ export default function CirclePlotTest(props) {
     }
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
+    title = title
+      .replace("Approach", "Array Platform")
+      .replace("Types:", "Copy Number State:")
+      .replace("Prior", "Prior ")
+      .replace("Hema", "Incident Hematological ")
+      .replace("Lym", "Incident Lymphoid ")
+      .replace("Mye", "Incident Myeloid ");
 
     const [tempTitle, errormsg] = checkTitleStudyPlatForm(group, title);
     setMsg(errormsg);
-    //  console.log(tempTitle, errormsg);
+    // console.log( title);
     return tempTitle;
   };
   const groupAgeTitle = (group) => {
     let title = "";
     if (group != undefined) {
-
       if (group.maxAge !== undefined && group.maxAge !== "") {
         if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-" + group.maxAge;
         else title += "; Age: 0-" + group.maxAge;
-      }
-      else{
-        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100" ;
+      } else {
+        if (group.minAge !== undefined && group.minAge !== "") title += "; Age: " + group.minAge + "-100";
         //else title += "; Age:0-100"
         //else if(group.minAge === undefined) title += "; Age: 0-100"  ;
-      }    
+      }
     }
-  
+
     return title;
   };
   const groupCfTitle = (group) => {
@@ -707,12 +790,10 @@ export default function CirclePlotTest(props) {
         if (group.minFraction !== undefined && group.minFraction !== "")
           title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-" + (group.maxFraction / 100.0).toFixed(2);
         else title += "; CF: 0-" + (group.maxFraction / 100.0).toFixed(2);
-      }
-      else{
+      } else {
         if (group.minFraction !== undefined && group.minFraction !== "")
-          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-1" ;
+          title += "; CF: " + (group.minFraction / 100.0).toFixed(2) + "-1";
       }
-
     }
     return title;
   };
@@ -725,24 +806,24 @@ export default function CirclePlotTest(props) {
     group.study !== undefined &&
       group.approach !== undefined &&
       group.study.forEach((s) => {
-        console.log(s.value, group.approach.length);
+        //console.log(s.value, group.approach.length);
         if (s.value === "plco" && group.approach.length > 0) {
           const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
           console.log(plcoArray);
           if (plcoArray.length === 0) {
-            title = title.replace("PLCO,", "").replace("PLCO", "");
+            //title = title.replace("PLCO,", "").replace("PLCO", "");
             errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
           }
         }
         if (s.value === "ukbb" && group.approach.length > 0) {
           const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
           if (ukArray.length === 0) {
-            title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
             errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
           }
         }
       });
-  //  console.log(group.approach, errorMessage, title);
+    //  console.log(group.approach, errorMessage, title);
     return [title, errorMessage];
   };
 
@@ -759,6 +840,10 @@ export default function CirclePlotTest(props) {
         minAge: form.minAge,
         maxFraction: form.maxFraction,
         minFraction: form.minFraction,
+        priorCancer: form.priorCancer,
+        hemaCancer: form.hemaCancer,
+        lymCancer: form.lymCancer,
+        myeCancer: form.myeCancer,
       })
     );
   }, [form.counterSubmitted]);
@@ -1147,10 +1232,10 @@ export default function CirclePlotTest(props) {
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   const linethickness = 0;
-  const thicknessgain = props.gain.length < 1000 ? 0 : linethickness;
-  const thicknessloh = props.loh.length < 1000 ? 0 : linethickness;
-  const thicknessloss = props.loss.length < 1000 ? 0 : linethickness;
-  const thicknessundermined = props.undetermined.length < 1000 ? 0 : linethickness;
+  const thicknessgain = props.gain.length < 200 ? 1 : linethickness;
+  const thicknessloh = props.loh.length < 200 ? 1 : linethickness;
+  const thicknessloss = props.loss.length < 200 ? 1 : linethickness;
+  const thicknessundermined = props.undetermined.length < 200 ? 1 : linethickness;
 
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
@@ -1160,7 +1245,7 @@ export default function CirclePlotTest(props) {
 
   singleFigWidth = form.compare ? size * 0.45 : size;
   singleFigWidth = singleFigWidth < minFigSize ? minFigSize - 100 : singleFigWidth;
-  singleFigWidth = singleFigWidth>450? 450: singleFigWidth
+  singleFigWidth = singleFigWidth > 450 ? 450 : singleFigWidth;
   //set tableData based on status
   //if compare, and no chromoid => add circleA and circleB
   //if compare with chromoid => add groupA and groupB
@@ -1239,6 +1324,7 @@ export default function CirclePlotTest(props) {
         rangeMin = Number(rangeMin);
         const zoomedTabledata = data.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
         console.log(zoomedTabledata.length);
+        setSingleZoomLength(zoomedTabledata.length);
         if (!form.compare) props.getData(zoomedTabledata);
       } else {
         props.getData([]);
@@ -1271,6 +1357,13 @@ export default function CirclePlotTest(props) {
       } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
     }
   }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
+
+  useEffect(() => {
+    setHeightA(circosCompareA.current ? circosCompareA.current.offsetHeight : 0);
+    setHeightB(circosCompareB.current ? circosCompareB.current.offsetHeight : 0);
+    setMaxTitleheight(heightA > heightB ? heightA : heightB);
+    //console.log(maxTitleheight)
+  });
 
   return (
     <Container className="compareContainer align-middle text-center">
@@ -1333,6 +1426,9 @@ export default function CirclePlotTest(props) {
               <Row className="">
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>
+                    <div ref={circosCompareA} style={{ justifyContent: "center", fontSize: "14px" }}>
+                      {titleA}
+                    </div>
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeA}
@@ -1346,6 +1442,10 @@ export default function CirclePlotTest(props) {
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
                       type={form.groupA.types}
+                      isVisible={isVisible}
+                      toggleVisibility={toggleVisibility}
+                      showToggle={true}
+                      maxtitleHeight={maxTitleheight - heightA}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
@@ -1353,6 +1453,9 @@ export default function CirclePlotTest(props) {
                 </Col>
                 <Col xs={12} md={6} lg={6}>
                   <div style={{ position: "sticky", top: 0 }}>
+                    <div ref={circosCompareB} style={{ justifyContent: "center", fontSize: "14px" }}>
+                      {titleB}
+                    </div>
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeB}
@@ -1366,24 +1469,34 @@ export default function CirclePlotTest(props) {
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
                       type={form.groupB.types}
+                      isVisible={isVisible}
+                      toggleVisibility={toggleVisibility}
+                      showToggle={false}
+                      maxtitleHeight={maxTitleheight - heightB}
                       //onHeightChange={props.onHeightChange}
                       //onCompareHeightChange={handleCompareHeightChange}
                     ></SingleChromosome>
                   </div>
                 </Col>
               </Row>
-              <Row >
-                <Col  style={{ paddingBottom: "5px"}}>
-                  {groupA.length ===0 || groupB.length === 0 ||fisherA === 0|| fisherB===0? "Fisher test is not available": "P_Fisher=" +Pfisher}
+              <Row>
+                <Col style={{ paddingBottom: "5px" }}>
+                  {groupA.length === 0 || groupB.length === 0 || fisherA === 0 || fisherB === 0
+                    ? "Fisher test is not available"
+                    : "P_Fisher=" + (Pfisher.includes("e-") ? Pfisher : parseFloat(Pfisher).toFixed(4))}
                 </Col>
-                 </Row>            
+              </Row>
               <Row>
                 <Col>
                   <Table responsive bordered hover className="fisherTable">
-                    <thead >
-                      <tr >
-                        <th rowSpan="2" className="bold-title-3" style={{width:"300px"}}>Attributes</th>
-                        <th colSpan="3" className="bold-title-main" >mCA in region </th>
+                    <thead>
+                      <tr>
+                        <th rowSpan="2" className="bold-title-3" style={{ width: "300px" }}>
+                          Attributes
+                        </th>
+                        <th colSpan="3" className="bold-title-main">
+                          mCA in region{" "}
+                        </th>
                       </tr>
                       <tr>
                         <th className="bold-title">Yes </th>
@@ -1391,22 +1504,30 @@ export default function CirclePlotTest(props) {
                         <th className="bold-title">Total </th>
                       </tr>
                     </thead>
-                    <tbody >
+                    <tbody>
                       <tr>
-                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleA}</td>
-                        <td className="numberCol">{rangeLabel === "" ? groupA.length : rangeA}</td>
-                        <td className="numberCol">{fisherA > rangeA ? fisherA - groupA.length : fisherA}</td>
-                        <td className="numberCol">{fisherA}</td>
+                        <td className="bold-title-2">{commonTitle + (commonTitle.length > 0 ? "; " : "") + titleA}</td>
+                        <td className="numberCol">
+                          {rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}
+                        </td>
+                        <td className="numberCol">
+                          {fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}
+                        </td>
+                        <td className="numberCol">{fisherA.toLocaleString()}</td>
                       </tr>
                       <tr>
-                        <td className="bold-title-2">{commonTitle+(commonTitle.length>0?"; ":'')+titleB}</td>
-                        <td className="numberCol">{rangeLabel === "" ? groupB.length : rangeB}</td>
-                        <td className="numberCol">{fisherB > rangeB ? fisherB - groupB.length : fisherB}</td>
-                        <td className="numberCol">{fisherB}</td>
+                        <td className="bold-title-2">{commonTitle + (commonTitle.length > 0 ? "; " : "") + titleB}</td>
+                        <td className="numberCol">
+                          {rangeLabel === "" ? groupB.length.toLocaleString() : rangeB.toLocaleString()}
+                        </td>
+                        <td className="numberCol">
+                          {fisherB > rangeB ? (fisherB - groupB.length).toLocaleString() : fisherB.toLocaleString()}
+                        </td>
+                        <td className="numberCol">{fisherB.toLocaleString()}</td>
                       </tr>
                     </tbody>
                   </Table>
-                  </Col>
+                </Col>
               </Row>
             </>
           )}
@@ -1450,7 +1571,42 @@ export default function CirclePlotTest(props) {
                     chromesomeId={chromesomeId}
                     size={singleChromeSize}
                     zoomHistory={handleZoomHistory}
-                    onHeightChange={props.onHeightChange}></SingleChromosome>
+                    isVisible={isVisible}
+                    toggleVisibility={toggleVisibility}
+                    onHeightChange={props.onHeightChange}
+                    fisherP={props.allDenominator}
+                    type={form.types}></SingleChromosome>
+                </Col>
+                <Col>
+                  <Table responsive bordered hover className="table fisherTable">
+                    <thead>
+                      <tr>
+                        <th rowSpan="2" className="bold-title-3" style={{ width: "400px" }}></th>
+                        <th colSpan="3" className="bold-title-main">
+                          mCA in region{" "}
+                        </th>
+                      </tr>
+                      <tr>
+                        <th className="bold-title">Yes </th>
+                        <th className="bold-title">No </th>
+                        <th className="bold-title">Total </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="bold-title-2">{circosTitle.slice(1)}</td>
+                        <td className="numberCol">
+                          {rangeLabel === "" ? data.length.toLocaleString() : singleZoomLength.toLocaleString()}
+                        </td>
+                        <td className="numberCol">
+                          {props.allDenominator > singleZoomLength
+                            ? (props.allDenominator - data.length).toLocaleString()
+                            : props.allDenominator.toLocaleString()}
+                        </td>
+                        <td className="numberCol">{props.allDenominator.toLocaleString()}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
                 </Col>
               </Row>
             </>
@@ -1488,53 +1644,69 @@ export default function CirclePlotTest(props) {
           </Row>
           <div>
             <Row className="justify-content-center g-0">
-              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
+              <Col xs={12} md={8} lg={6}>
                 {circleA ? (
-                  <CircosPlotCompare
-                    layoutAll={layoutAll}
-                    layoutxy={layout_xy}
-                    title={titleA}
-                    dataXY={[]}
-                    details="A"
-                    msg={msgA}
-                    size={compareCircleSize}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
-                    circle={circleA}
-                    circleRef={circleRef}
-                    //circleClass="overlayX"
-                    handleEnter={handleEnter}
-                    hovertip={hovertip}></CircosPlotCompare>
+                  <>
+                    <div ref={circosCompareA} style={{ marginBottom: "1rem", fontSize: "14px" }}>
+                      {titleA}
+                    </div>
+                    <CircosPlotCompare
+                      layoutAll={layoutAll}
+                      layoutxy={layout_xy}
+                      title={titleA}
+                      dataXY={[]}
+                      details="A"
+                      msg={msgA}
+                      size={compareCircleSize}
+                      thicknessloss={0}
+                      thicknessgain={0}
+                      thicknessundermined={0}
+                      thicknessloh={0}
+                      circle={circleA}
+                      circleRef={circleRef}
+                      maxtitleHeight={maxTitleheight - heightA}
+                      //circleClass="overlayX"
+                      handleEnter={handleEnter}
+                      hovertip={hovertip}></CircosPlotCompare>
+                  </>
                 ) : (
                   ""
                 )}
               </Col>
-              <Col xs={12} md={6} lg={6} style={{ height: compareCircleSize + 15 }}>
+              <Col xs={12} md={8} lg={6}>
                 {circleB ? (
-                  <CircosPlotCompare
-                    layoutAll={layoutAll}
-                    layoutxy={layout_xy}
-                    dataXY={[]}
-                    title={titleB}
-                    details="B"
-                    size={compareCircleSize}
-                    thicknessloss={thicknessloss}
-                    thicknessgain={thicknessgain}
-                    thicknessundermined={thicknessundermined}
-                    thicknessloh={thicknessloh}
-                    circle={circleB}
-                    circleRef={circleRef}
-                    handleEnter={handleEnter}
-                    msg={msgB}
-                    //circleClass="overlayX"
-                    hovertip={hovertip}></CircosPlotCompare>
+                  <>
+                    <div ref={circosCompareB} style={{ marginBottom: "1rem", fontSize: "14px" }}>
+                      {titleB}
+                    </div>
+                    <CircosPlotCompare
+                      layoutAll={layoutAll}
+                      layoutxy={layout_xy}
+                      dataXY={[]}
+                      title={titleB}
+                      details="B"
+                      size={compareCircleSize}
+                      thicknessloss={0}
+                      thicknessgain={0}
+                      thicknessundermined={0}
+                      thicknessloh={0}
+                      circle={circleB}
+                      circleRef={circleRef}
+                      handleEnter={handleEnter}
+                      msg={msgB}
+                      maxtitleHeight={maxTitleheight - heightB}
+                      //circleClass="overlayX"
+                      hovertip={hovertip}></CircosPlotCompare>
+                  </>
                 ) : (
                   ""
                 )}
               </Col>
             </Row>
+            {/* <Row>
+              <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgA}</div></Col>
+              <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgB}</div></Col>
+            </Row> */}
           </div>
         </div>
       ) : (
@@ -1565,14 +1737,18 @@ export default function CirclePlotTest(props) {
             </Col>
           </Row>
           <Row className="justify-content-center">
-            <Col xs={12} md={12} lg={12} style={{ width: size>1000?1000:size, height: size>1000?1000:size + 15 }}>
+            <Col
+              xs={12}
+              md={12}
+              lg={12}
+              style={{ width: size > 1000 ? 1000 : size, height: size > 1000 ? 1000 : size + 15 }}>
               <CircosPlot
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
-                size={size>1000?1000:size}
+                size={size > 1000 ? 1000 : size}
                 thicknessloss={thicknessloss}
                 thicknessgain={thicknessgain}
                 thicknessundermined={thicknessundermined}
@@ -1580,12 +1756,18 @@ export default function CirclePlotTest(props) {
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}
+                circleRefTable={refSingleCircos}
                 circleClass="overlayX"
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
+          <div id="circosTable" className="table-responsive">
+            Total events in the circos plot<br></br>(for red one, first number is events not disply in the plot)
+          </div>
         </div>
       )}
     </Container>
   );
-}
+});
+
+export default CirclePlotTest;

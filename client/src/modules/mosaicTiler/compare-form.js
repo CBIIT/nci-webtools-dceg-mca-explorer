@@ -38,9 +38,11 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const [end, setEnd] = useState("");
   const [submitClicked, setSubmitClicked] = useState(false);
 
+  const [showXY, setShowXY] = useState(true);
+
   function handleChange(event) {
     const { name, value } = event.target;
-    //console.log(name, value)
+    console.log(form, name, value);
     if (name === "chrX") {
       setIsX(event.target.checked);
       mergeForm({ [name]: event.target.checked });
@@ -77,11 +79,30 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    // console.log(name, selection);
+    console.log(name, selection);
     if (name === "chrCompare") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
       setStart(0);
+      if (selection.label === "X" || selection.label === "Y") {
+        setIsX(true);
+        setIsY(true);
+      } else {
+        setIsX(false);
+        setIsY(false);
+      }
+
+      //handleFilterClear()
+
+      /*  onClear({
+        ...form,
+        plotType:{ value:"static",label:"Chromosome level", },
+        //groupA: [],
+        //groupB: [],
+        groupA: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
+        groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
+        //counterCompare: counter + 1,
+      });*/
     }
 
     if (name === "types" || name === "ancestry" || name === "sex" || name === "approach") {
@@ -140,6 +161,38 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     //onCompare({ compare: true });
     //update the compare variable and run the filter function to do compare
 
+    let isValid = true;
+    console.log(form);
+    // Check for age limitation
+    if (form.groupA.maxAge && form.groupA.minAge && parseInt(form.groupA.maxAge) <= parseInt(form.groupA.minAge)) {
+      isValid = false;
+    }
+    if (form.groupB.maxAge && form.groupB.minAge && parseInt(form.groupB.maxAge) <= parseInt(form.groupB.minAge)) {
+      isValid = false;
+    }
+
+    // Check for cellular fraction limitation
+    if (
+      form.groupA.maxFraction &&
+      form.groupA.minFraction &&
+      parseFloat(form.groupA.maxFraction) <= parseFloat(form.groupA.minFraction)
+    ) {
+      isValid = false;
+    }
+    if (
+      form.groupB.maxFraction &&
+      form.groupB.minFraction &&
+      parseFloat(form.groupB.maxFraction) <= parseFloat(form.groupB.minFraction)
+    ) {
+      isValid = false;
+    }
+
+    if (!isValid) {
+      // Display warning messages
+      alert("Please fix the inputs in red!");
+      return; // Stop form submission
+    }
+
     if (form.plotType.value !== "static" || (form.plotType.value === "static" && form.chrCompare !== "")) {
       console.log("comparing...");
       setForm({ ...form, compare: true, counterCompare: counter + 1 });
@@ -153,6 +206,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     setSubmitClicked(false);
     setCompareChecks(CompareArray);
     updateGroup();
+    setIsX(false);
+    setIsY(false);
     onClear({
       ...form,
       //groupA: [],
@@ -182,6 +237,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       if (gname === "A") setForm((prevForm) => ({ ...prevForm, groupA: value }));
       else if (gname === "B") setForm((prevForm) => ({ ...prevForm, groupB: value }));
     }
+    console.log(form);
   };
   const handleCompareCheckboxChange = (id) => {
     const updatedComparecheck = compareChecks.map((ck) => {
@@ -202,6 +258,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     setCompare(true);
   };
 
+  const handleShowXY = (val) => {
+    setShowXY(val);
+  };
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
@@ -280,6 +339,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               id={`inline-X-1`}
               onChange={handleChange}
               checked={isX}
+              disabled={!showXY}
             />
             <Form.Check
               type="checkbox"
@@ -289,6 +349,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               id={`inline-Y-2`}
               onChange={handleChange}
               checked={isY}
+              disabled={!showXY}
             />
           </Form.Group>
         )}
@@ -341,6 +402,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           compareItem={compareChecks}
           name="A"
           onCompareChange={handlegroupChange}
+          isX={isX}
+          isY={isY}
+          setShowXY={handleShowXY}
           onReset={resetCounter}></ComparePanel>
         <br></br>
         <ComparePanel
@@ -348,6 +412,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
           compareItem={compareChecks}
           name="B"
           onCompareChange={handlegroupChange}
+          isX={isX}
+          isY={isY}
+          setShowXY={handleShowXY}
           onReset={resetCounter}></ComparePanel>
 
         <br></br>

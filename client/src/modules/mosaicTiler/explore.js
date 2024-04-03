@@ -84,6 +84,7 @@ export default function Explore() {
     console.log("clear...", form);
   }, [clear]);
 
+ 
   function handleReset(event) {
     //setForm(event);
     setForm(defaultFormState);

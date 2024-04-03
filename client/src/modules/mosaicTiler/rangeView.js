@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
 import Plot from "react-plotly.js";
-import { Tabs, Tab, Row, Col } from "react-bootstrap";
+import { Tabs, Tab, Row, Col, Spinner } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import Legend from "../components/legend";
 import { Columns, exportTable } from "./tableColumns";
 import { initialX, initialY, AncestryOptions, smokeNFC, SexOptions } from "./constants";
+import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -47,6 +48,9 @@ export default function RangeView(props) {
   const [chrX, setChrX] = useState([]);
   const [chrY, setChrY] = useState([]);
   const [tableData, setTableData] = useState([]); //for compare data
+  const [loaded, setLoaded] = useState(false);
+  const [allDenominator, setAllDenominator] = useState(0);
+  const circleRef = useRef(null);
 
   const study_value = form.study;
   let query_value = [];
@@ -75,10 +79,11 @@ export default function RangeView(props) {
     setUndetermined([]);
     setChrX([]);
     setChrY([]);
+    setLoaded(false);
     //setLoading(true)
     console.log(qform);
-    const response = await axios.post("api/opensearch/mca", {
-      dataset: qdataset,
+    const query = {
+      study: qdataset,
       sex: qform.sex,
       mincf: qform.minFraction,
       maxcf: qform.maxFraction,
@@ -91,17 +96,22 @@ export default function RangeView(props) {
       minAge: qform.minAge,
       maxAge: qform.maxAge,
       smoking: qform.smoking,
-    });
+      priorCancer: qform.priorCancer,
+      hemaCancer: qform.hemaCancer,
+      lymCancer: qform.lymCancer,
+      myeCancer: qform.myeCancer,
+    };
+
+    const response = await axios.post("api/opensearch/mca", query);
     let gainTemp = [];
     let lossTemp = [];
     let lohTemp = [];
     let undeterTemp = [];
-    //initial plot each type with value so that mouse move over can have value if X Y selected
+    //find the total number of denominator based on query
+    let allresponseDenominator = await axios.post("api/opensearch/denominator", query);
 
-    // if (form.chrY) {
-    // }
-
-    console.log(response.data.denominator.length);
+    //console.log(response.data.denominator.length, allresponseDenominator.data);
+    setAllDenominator(allresponseDenominator.data);
     const chrXTemp = [];
     const chrYTemp = [];
     let results = null;
@@ -110,10 +120,14 @@ export default function RangeView(props) {
       //if any attribute filer is selected, then use the value as the filter, that means filter out no value
       qform.smoking.length === 0 &&
       qform.approach.length === 0 &&
-      qform.ancestry[0].value === "all" &&
-      qform.sex[0].value === "all" &&
+      (qform.ancestry[0] === undefined || (qform.ancestry[0] !== undefined && qform.ancestry[0].value === "all")) &&
+      (qform.sex[0] === undefined || (qform.sex[0] !== undefined && qform.sex[0].value === "all")) &&
       qform.minAge === "" &&
-      qform.maxAge === ""
+      qform.maxAge === "" &&
+      qform.priorCancer.length === 0 &&
+      qform.hemaCancer.length === 0 &&
+      qform.lymCancer.length === 0 &&
+      qform.myeCancer.length === 0
     ) {
       results = response.data.denominator;
       responseDenominator = response.data.nominator;
@@ -137,13 +151,13 @@ export default function RangeView(props) {
     });
     //console.log(mergedResult.length);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
- console.log(form)
+    console.log(form);
     mergedResult.forEach((r) => {
       //if (r._source !== null) {
       const d = r;
       if (d.cf != "nan") {
         d.block_id = d.chromosome.substring(3);
-        d.value = d.cf;
+        d.value = d.cf === "NA" ? "" : d.cf;
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
@@ -169,7 +183,7 @@ export default function RangeView(props) {
           else if (d.type === "Undetermined") undeterTemp.push(d);
         }
         //for whole, and select X or Y
-        else{
+        else {
           if (d.type === "mLOX") {
             chrXTemp.push(d);
             d.block_id = "X";
@@ -178,9 +192,7 @@ export default function RangeView(props) {
             chrYTemp.push(d);
             d.block_id = "Y";
           }
-
         }
-       
       }
       //}
     });
@@ -196,9 +208,10 @@ export default function RangeView(props) {
       if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
       if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
     }
-    console.log(chrXTemp.length)
+    console.log(chrXTemp.length);
     setChrX(chrXTemp);
     setChrY(chrYTemp);
+    setLoaded(true);
   }
 
   useEffect(() => {
@@ -363,6 +376,101 @@ export default function RangeView(props) {
     props.onPair();
   };
 
+  const handleSetLoading = (val) => {
+    setLoaded(val);
+  };
+  const checkMaxLines = () => {
+    let totalLines = 0;
+    const linesSummary = {};
+    const cellLabels = ["Undetermined", "Loss", "CN-LOH", "Gain"];
+    // console.log(circleRef.current,document.getElementById('circosTable').rows.length)
+    if (circleRef.current && loaded && document.getElementById("circosTable").getElementsByTagName("tr").length === 0) {
+      [".track-0", ".track-1", ".track-2", ".track-3"].forEach((trackClass, index) => {
+        const track = document.querySelectorAll(`${trackClass}` + " .block");
+        console.log(track.length);
+        const chromosomes = [].concat(
+          Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
+            return { key: i, outBlock: 0, all: "" };
+          })
+        );
+        if (track.length > 0) {
+          track.forEach((t) => {
+            const paths = t.getElementsByTagName("path");
+            let counterL = {};
+            const radius = paths[0].getAttribute("d");
+            const rvalue = radius.match(/A\s*(-?\d+\.?\d*)/);
+            const maxR = rvalue !== null ? rvalue[1] : 0;
+            for (const path of paths) {
+              const dAttribute = path.getAttribute("d");
+              //  console.log(dAttribute)
+              const dtemp = dAttribute.match(/A\s*(-?\d+\.?\d*)/);
+              if (dtemp !== null && dtemp.length > 0) {
+                const Avalue = dtemp[1];
+                if (Avalue === maxR) counterL[maxR] = (counterL[maxR] || 0) + 1;
+              }
+            }
+
+            const counterNotL = Object.values(counterL).filter((c) => c > 1);
+            totalLines += paths.length;
+            //console.log(paths.length)
+            //console.log(t.__data__,counterNotL,paths.length)
+            var oline = chromosomes.find((o) => o.key === Number(t.__data__.key));
+            if (oline) {
+              oline.outBlock = counterNotL[0] ? counterNotL[0] - 1 : 0;
+              oline.all = paths.length - 1;
+            }
+          });
+          linesSummary[index] = chromosomes;
+        } else linesSummary[index] = [];
+      });
+      const fourTracks = 4;
+      //create table:
+
+      const tableLines = document.createElement("table");
+      tableLines.style.border = "1";
+      //tableLines.style.tableLayout = "auto"
+      tableLines.className = "table table-striped table-hover";
+
+      var header = tableLines.createTHead();
+      var hearderRow = header.insertRow(0);
+      var hearderCelllabel = document.createElement("th");
+      hearderCelllabel.innerHTML = "Chromosome";
+      hearderRow.appendChild(hearderCelllabel);
+      //hearderCelllabel.style.border='1px solid black';
+
+      for (var i = 0; i < 22; i++) {
+        var hearderCell = document.createElement("th");
+        hearderCell.innerHTML = `${i + 1}`;
+        hearderRow.appendChild(hearderCell);
+        //hearderCell.style.border='1px solid black';
+      }
+
+      var tbody = tableLines.createTBody();
+
+      for (let l = 0; l < fourTracks; l++) {
+        const trackData = linesSummary[l];
+        console.log(trackData);
+        const row = tbody.insertRow(-1);
+        if (trackData !== undefined && trackData.length > 0) {
+          trackData.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
+          const cellLabel = row.insertCell(0);
+          cellLabel.innerHTML = cellLabels[l];
+          // cellLabel.style.border='1px solid black';
+          // cellLabel.style.size='12px';
+          trackData.forEach((item, index) => {
+            const cell = row.insertCell(index + 1);
+            cell.innerHTML = (item.outBlock > 0 ? item.outBlock + "/" : "") + item.all;
+            //cell.style.border='1px solid black';
+            //cell.style.fontSize='12px';
+            cell.style.color = item.outBlock > 0 ? "red" : "";
+            //cell.style.width="20px"
+          });
+          document.getElementById("circosTable").appendChild(tableLines);
+        }
+      }
+    }
+  };
+
   //set tableData based on status
   //if compare, and no chromoid => add circleA and circleB
   //if compare with chromoid => add groupA and groupB
@@ -389,9 +497,11 @@ export default function RangeView(props) {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
         <div className="row justify-content-center">
-          {allValues.length == 0 && form.counterSubmitted > 0 && !form.compare ? (
-            <h6 className="d-flex mx-2" style={{ margin: "10px" }}>
-              Loading and rendering...
+          {!loaded ? (
+            <LoadingOverlay active={!loaded} />
+          ) : resultData.length === 0 ? (
+            <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
+              No Data Found
             </h6>
           ) : (
             ""
@@ -402,20 +512,17 @@ export default function RangeView(props) {
             ""
           )}
           <div className="">
-            {/* <Row>
-              <Col className="col col-xl-12 d-flex justify-content-end ">
-                <Legend></Legend>
-              </Col>
-            </Row> */}
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
                 <CirclePlotTest
+                  ref={circleRef}
                   clickedChromoId={handleClickedChromoId}
                   key={clickedCounter}
                   loss={[...loss, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
                   loh={[...loh, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
                   gain={[...gain, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
                   undetermined={[...undetermined, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
+                  allDenominator={allDenominator}
                   chrx={chrX}
                   chry={chrY}
                   figureHeight={figureHeight}
@@ -423,9 +530,11 @@ export default function RangeView(props) {
                   onResetHeight={resetHeight}
                   onClickedChr={handleClickChr}
                   getData={handleDataChange}
-                  onPair={handleCheckboxChange}></CirclePlotTest>
+                  onPair={handleCheckboxChange}
+                  onLoading={handleSetLoading}></CirclePlotTest>
               </Col>
             </Row>
+            <Row>{loaded ? checkMaxLines() : ""}</Row>
             <Row>
               <div className="m-3">
                 <div className="d-flex " style={{ justifyContent: "flex-end" }}>
