@@ -8,21 +8,38 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet' crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids.css">
-    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-minimal.css?samhc4">
-    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-home-landing.css?samhc4">
+    <!-- <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-minimal.css?samhc4"> -->
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-home-landing.css?samhc4"> 
     <!-- <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/css2.css">
    -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>mCA Explorer</title>
-    <!-- Google tag (gtag.js) -->
+    <script async="" src="https://www.google-analytics.com/analytics.js"></script>
+      <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TZKNKFR0J4"></script>
     <script src="%PUBLIC_URL%/js/ncids-minimal.js?samhc4"></script>
     <script src="%PUBLIC_URL%/js/ncids-home-landing.js?samhc4"></script>
-    <!-- <script src="%PUBLIC_URL%/js/nr-rum-1.253.0.min.js"></script>
-    <script type="text/javascript" id="_fed_an_ua_tag" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=HHS&amp;subagency=NCI"></script>
+    <script src="%PUBLIC_URL%/js/nr-rum-1.253.0.min.js"></script>
+     <!-- <script type="text/javascript" id="_fed_an_ua_tag" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=HHS&amp;subagency=NCI"></script>
     <script src="https://assets.adobedtm.com/6a4249cd0a2c/949e98979342/71e155600bf8/RCcdc0a9518ff54d37b1c040be774e0cd0-source.min.js" async=""></script>
-    <script src="https://assets.adobedtm.com/6a4249cd0a2c/949e98979342/71e155600bf8/RC9956e3e85e694dfeafb5d0e9bc882f46-source.min.js" async=""></script> -->
-
+    <script src="https://assets.adobedtm.com/6a4249cd0a2c/949e98979342/71e155600bf8/RC9956e3e85e694dfeafb5d0e9bc882f46-source.min.js" async=""></script>
+    <script>window.CDEConfig = {
+      "exitDisclaimerHref": {
+        "en": "https://www.cancer.gov/policies/linking",
+        "es": "https://www.cancer.gov/espanol/politicas/enlaces"
+      },
+      "showFloatingDelighters": false,
+      "general": {
+        "apiServer": "https://webapis.cancer.gov"
+      },
+      "glossaryConfig": {
+        "apiServer": "https://webapis.cancer.gov/glossary/v1/"
+      },
+      "sitewideSearchConfig": {
+        "searchApiServer": "https://webapis.cancer.gov/sitewidesearch/v1/"
+      }
+    };</script> -->
+    <!-- <script id="ncids-nav-info">window.ncidsNavInfo = { nav: { id: "301494", menu_type: "mobile-nav"}, item_id: 301494};</script> -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -32,11 +49,12 @@
     <style>
       body {
         font-family: 'Inter';
+     
       }
     </style>
 </head>
 
-<body class="d-flex flex-column vh-100" react-cloak >
+<body class="d-flex flex-column vh-100" react-cloak style="overflow-y: scroll;">
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <section class="usa-banner" aria-label="Official government website">
     <header class="usa-banner__header">
@@ -47,7 +65,8 @@
       </div>
     </header>
   </section>
-  <header class="nci-header nci-header--extended" aria-label="NIH National Cancer Institute">
+  
+  <header id= "nci-header" class="nci-header nci-header--extended" aria-label="NIH National Cancer Institute">
     <div class="nci-header__navbar">
       <div class="nci-logo" id="extended-mega-logo">
         <a href="https://ccr.cancer.gov/" target="_blank" class="h5 mb-1">
@@ -92,9 +111,7 @@
   <main id="root" class="d-flex flex-column flex-grow-1 align-items-stretch bg-light"></main>
  
   <footer class="usa-footer usa-footer--nci-big">
-    <div class="grid-container usa-footer__return-to-top">
-      <a href="#" aria-label="Back To Top"><span>Back To Top</span></a>
-    </div>
+
     <div class="usa-footer__primary-section">
       <div class="grid-container">
         <div class="grid-row grid-gap">
@@ -241,7 +258,10 @@
         </div>
       </div>
     </div>
-    <input class="usa-input width-full" id="email" name="email" type="email" value="" aria-describedby="email-error-message">
+    <input class="usa-input width-full" style="display: none;" id="email" name="email" type="email" value="" aria-describedby="email-error-message">
+    <div class=" usa-footer__return-to-top">
+      <a href="#" aria-label="Back To Top"><span>Back To Top</span></a>
+    </div>
   </footer>
 
   <script>

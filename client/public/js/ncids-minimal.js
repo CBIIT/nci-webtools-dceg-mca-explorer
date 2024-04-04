@@ -1836,7 +1836,8 @@
             : ((e) => "NavItemLink" === e.type)(e) && e.link.removeEventListener("click", e.linkListener);
         }
         initialize() {
-          const e = this.element.querySelectorAll(".nci-header-nav__primary-link");
+          console.log(this);
+          //  const e = this.element.querySelectorAll(".nci-header-nav__primary-link");
           (this.navItems = Array.from(e).map((e) => {
             const t = this.createNavButton(e);
             return null === t
@@ -2109,11 +2110,11 @@
               (this.menuCloseEventListener = () => this.handleCloseMenu("Overlay")),
               !0
             ),
-            this.mobileButton.addEventListener("click", this.menuOpenEventListener, !0),
-            this.mobileNav.append(this.mobileClose),
-            this.mobileNav.append(this.loader),
-            this.element.append(this.mobileNav),
-            this.element.append(this.mobileOverlay),
+            //   this.mobileButton.addEventListener("click", this.menuOpenEventListener, !0),
+            //  this.mobileNav.append(this.mobileClose),
+            // this.mobileNav.append(this.loader),
+            // this.element.append(this.mobileNav),
+            // this.element.append(this.mobileOverlay),
             document.addEventListener("keydown", this.escapeKeyPressListener, !1),
             this.resizeMediaQuery.addEventListener("change", this.windowResizeEventListener),
             this.createCustomEvents();
@@ -2632,7 +2633,7 @@
               return this.cache[e];
             }
           })(a);
-        if (!window.ncidsNavInfo) return void console.error("Mobile nav information missing on page");
+        // if (!window.ncidsNavInfo) return void console.error("Mobile nav information missing on page");
         const c = new (class {
           rootParentItem = null;
           parentNavConnectionId = null;
@@ -2753,7 +2754,7 @@
           null === (e = window.ncidsNavInfo) || void 0 === e || null === (n = e.item_id) || void 0 === n
             ? void 0
             : n.toString(),
-          window.ncidsNavInfo.nav,
+          //  window.ncidsNavInfo.nav,
           s,
           o
         );
