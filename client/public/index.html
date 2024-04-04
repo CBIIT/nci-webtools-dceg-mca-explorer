@@ -8,8 +8,9 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet' crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids.css">
-    <!-- <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-minimal.css?samhc4"> -->
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-minimal.css?samhc4">
     <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-home-landing.css?samhc4"> 
+
     <!-- <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/css2.css">
    -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -54,7 +55,7 @@
     </style>
 </head>
 
-<body class="d-flex flex-column vh-100" react-cloak style="overflow-y: scroll;">
+<body class="d-flex flex-column vh-100" react-cloak >
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <section class="usa-banner" aria-label="Official government website">
     <header class="usa-banner__header">
@@ -107,10 +108,12 @@
       </div>
     </nav> -->
   </header>
-
-  <main id="root" class="d-flex flex-column flex-grow-1 align-items-stretch bg-light"></main>
+<div id="page">
+ <main id="root" class="d-flex flex-column flex-grow-1 align-items-stretch bg-light"></main>
+</div>
  
-  <footer class="usa-footer usa-footer--nci-big">
+ <div id="block-ncifooterenglish">
+  <footer class="usa-footer usa-footer--nci-big" id="nci-footer" aria-label="Footer">
 
     <div class="usa-footer__primary-section">
       <div class="grid-container">
@@ -263,7 +266,7 @@
       <a href="#" aria-label="Back To Top"><span>Back To Top</span></a>
     </div>
   </footer>
-
+</div>
   <script>
     // Get the links
     const aboutLink = document.getElementById('aboutLink');
