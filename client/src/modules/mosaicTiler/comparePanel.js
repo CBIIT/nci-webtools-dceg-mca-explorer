@@ -75,7 +75,7 @@ export default function ComparePanel(props) {
   }
 
   function handleSelectChange(name, selection = []) {
-    console.log(name, selection);
+    // console.log(name, selection);
     if (props.compareItem[4].isChecked && name === "study") {
       setStudy(selection);
     }
@@ -85,59 +85,70 @@ export default function ComparePanel(props) {
       setApproach(selection);
     }
     if (props.compareItem[1].isChecked && name === "sex") {
-      const all = selection.find((option) => option.value === "all");
-      const allindex = selection.indexOf(all);
-      if (allindex == 0 && selection.length > 1) {
-        selection.splice(allindex, 1);
-      } else if (allindex > 0 && selection.length > 1) {
-        selection = [all];
-      }
-      setSex(selection);
+      // const all = selection.find((option) => option.value === "all");
+      // const allindex = selection.indexOf(all);
+      // if (allindex == 0 && selection.length > 1) {
+      //   selection.splice(allindex, 1);
+      // } else if (allindex > 0 && selection.length > 1) {
+      //   selection = [all];
+      // }
+      setSex(setAllOption(selection));
     }
     if (props.compareItem[3].isChecked && name === "ancestry") {
-      const all = selection.find((option) => option.value === "all");
-      const allindex = selection.indexOf(all);
-      if (allindex == 0 && selection.length > 1) {
-        selection.splice(allindex, 1);
-      } else if (allindex > 0 && selection.length > 1) {
-        selection = [all];
-      }
-      setAncestry(selection);
+      // const all = selection.find((option) => option.value === "all");
+      // const allindex = selection.indexOf(all);
+      // if (allindex == 0 && selection.length > 1) {
+      //   selection.splice(allindex, 1);
+      // } else if (allindex > 0 && selection.length > 1) {
+      //   selection = [all];
+      // }
+      setAncestry(setAllOption(selection));
     }
     if (props.compareItem[6].isChecked && name === "smoking") {
       setSmoking(selection);
     }
 
     if (props.compareItem[7].isChecked && name === "types") {
-      const all = selection.find((option) => option.value === "all");
-      const allindex = selection.indexOf(all);
-      //if all selected, then another option select, remove all
-      //if other option selected, and select all again, then remove other, keep all
-      if (allindex == 0 && selection.length > 1) {
-        selection.splice(allindex, 1);
-      } else if (allindex > 0 && selection.length > 1) {
-        selection = [all];
-      }
-      setTypes(selection);
+      // const all = selection.find((option) => option.value === "all");
+      // const allindex = selection.indexOf(all);
+      // //if all selected, then another option select, remove all
+      // //if other option selected, and select all again, then remove other, keep all
+      // if (allindex == 0 && selection.length > 1) {
+      //   selection.splice(allindex, 1);
+      // } else if (allindex > 0 && selection.length > 1) {
+      //   selection = [all];
+      // }
+      setTypes(setAllOption(selection));
       const notForXY = selection.find((option) => option.value === "loss" || option.value === "all");
       props.setShowXY(notForXY !== undefined && selection.length);
       console.log(selection);
     }
 
     if (props.compareItem[9].isChecked && name === "priorCancer") {
-      setPriorCancer(selection);
+      setPriorCancer(setAllOption(selection));
     }
     if (props.compareItem[10].isChecked && name === "hemaCancer") {
-      setHemaCancer(selection);
+      setHemaCancer(setAllOption(selection));
     }
     if (props.compareItem[11].isChecked && name === "lymCancer") {
-      setLymCancer(selection);
+      setLymCancer(setAllOption(selection));
     }
     if (props.compareItem[12].isChecked && name === "myeCancer") {
-      setMyeCancer(selection);
+      setMyeCancer(setAllOption(selection));
     }
 
     setCompareForm({ ...compareform, [name]: selection });
+  }
+
+  function setAllOption(selection) {
+    const all = selection.find((option) => option.value === "all");
+    const allindex = selection.indexOf(all);
+    if (allindex == 0 && selection.length > 1) {
+      selection.splice(allindex, 1);
+    } else if (allindex > 0 && selection.length > 1) {
+      selection = [all];
+    }
+    return selection;
   }
   //any click on form's group attributes values, pass groups filter values to compareform
   useEffect(() => {
@@ -237,6 +248,7 @@ export default function ComparePanel(props) {
           {props.compareItem[4].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label className="required">Study</Form.Label>
+              <Form.Label style={{ color: "red" }}>{study.length === 0 ? "Study field is required!" : ""}</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="study"
@@ -258,6 +270,7 @@ export default function ComparePanel(props) {
           {props.compareItem[7].isChecked ? (
             <Form.Group className="mb-3" controlId="types">
               <Form.Label className="required">Copy Number State</Form.Label>
+              <Form.Label style={{ color: "red" }}>{types.length === 0 ? "Study field is required!" : ""}</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="types"

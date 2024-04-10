@@ -36,6 +36,7 @@ export const TypeStateOptions = [
 ];
 
 export const StudyOptions = [
+  // { value: "all", label: "All Studies" },
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
 ];
@@ -47,16 +48,16 @@ export const SexOptions = [
 ];
 
 export const initialX = [
- // { block_id: "X", start: "0", end: "0", type: "Gain" },
-//  { block_id: "X", start: "0", end: "0", type: "Loss" },
-///  { block_id: "X", start: "0", end: "0", type: "CN-LOH" },
- // { block_id: "X", start: "0", end: "0", type: "Undetermined" },
+  // { block_id: "X", start: "0", end: "0", type: "Gain" },
+  //  { block_id: "X", start: "0", end: "0", type: "Loss" },
+  ///  { block_id: "X", start: "0", end: "0", type: "CN-LOH" },
+  // { block_id: "X", start: "0", end: "0", type: "Undetermined" },
 ];
 export const initialY = [
- //// { block_id: "Y", start: "0", end: "0", type: "Gain" },
- // { block_id: "Y", start: "0", end: "0", type: "Loss" },
- // { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
- // { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
+  //// { block_id: "Y", start: "0", end: "0", type: "Gain" },
+  // { block_id: "Y", start: "0", end: "0", type: "Loss" },
+  // { block_id: "Y", start: "0", end: "0", type: "CH-LOH" },
+  // { block_id: "Y", start: "0", end: "0", type: "Undetermined" },
 ];
 
 export const smokeNFC = [
@@ -74,7 +75,7 @@ export const platformArray = [
 ];
 
 export const ifCancer = [
+  { value: "all", label: "All" },
   { value: "1", label: "Yes" },
   { value: "0", label: "No" },
 ];
-

@@ -93,16 +93,16 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     // Check if "Study" is selected
-  if (!form.study || form.study.length === 0) {
-    isValid = false;
-    //warnings.push("Study field is required!");
-  }
+    if (!form.study || form.study.length === 0) {
+      isValid = false;
+      //warnings.push("Study field is required!");
+    }
 
-  // Check if "Copy Number State" is selected
-  if (!form.types || form.types.length === 0) {
-    isValid = false;
-    //warnings.push("Copy Number State field is required!");
-  }
+    // Check if "Copy Number State" is selected
+    if (!form.types || form.types.length === 0) {
+      isValid = false;
+      //warnings.push("Copy Number State field is required!");
+    }
 
     if (!isValid) {
       // Display warning messages
@@ -129,7 +129,16 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleSelectChange(name, selection = []) {
     //console.log(name, selection);
-    if (name === "types" || name === "ancestry" || name === "sex" || name === "smoking") {
+    if (
+      name === "types" ||
+      name === "ancestry" ||
+      name === "sex" ||
+      name === "smoking" ||
+      name === "hemaCancer" ||
+      name === "myeCancer" ||
+      name === "lymCancer" ||
+      name === "priorCancer"
+    ) {
       const all = selection.find((option) => option.value === "all");
       const allindex = selection.indexOf(all);
       //if all selected, then another option select, remove all
@@ -323,11 +332,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       )}
       <Form.Group className="mb-3">
         <Form.Label className="required">Study</Form.Label>
-        <Form.Label style={{ color: "red" }}>
-                {form.study.length === 0
-                  ? "Study field is required!"
-                  : ""}
-        </Form.Label>
+        <Form.Label style={{ color: "red" }}>{form.study.length === 0 ? "Study field is required!" : ""}</Form.Label>
         <Select
           aria-label="study"
           placeholder="No study selected"
@@ -345,10 +350,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       <Form.Group className="mb-3">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Form.Label style={{ color: "red" }}>
-                {form.types.length === 0
-                  ? "Copy Number State field is required!"
-                  : ""}
-              </Form.Label>
+          {form.types.length === 0 ? "Copy Number State field is required!" : ""}
+        </Form.Label>
         <Select
           aria-label="state"
           placeholder="- Select -"
@@ -526,7 +529,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="priorCancer"
-                isMulti={false}
+                isMulti={true}
                 value={form.priorCancer}
                 onChange={(ev) => handleSelectChange("priorCancer", ev)}
                 options={ifCancer}
@@ -537,7 +540,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="hemaCancer"
-                isMulti={false}
+                isMulti={true}
                 value={form.hemaCancer}
                 onChange={(ev) => handleSelectChange("hemaCancer", ev)}
                 options={ifCancer}
@@ -548,7 +551,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="lymCancer"
-                isMulti={false}
+                isMulti={true}
                 value={form.lymCancer}
                 onChange={(ev) => handleSelectChange("lymCancer", ev)}
                 options={ifCancer}
@@ -559,7 +562,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Select
                 placeholder="- Select -"
                 name="myeCancer"
-                isMulti={false}
+                isMulti={true}
                 value={form.myeCancer}
                 onChange={(ev) => handleSelectChange("myeCancer", ev)}
                 options={ifCancer}
