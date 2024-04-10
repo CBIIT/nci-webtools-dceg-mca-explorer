@@ -1116,7 +1116,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               .then((dataUrl4) => {
                 const pdf = new jsPDF();
                 const width = pdf.internal.pageSize.getWidth();
-                console.log("width ", width)
+                console.log("width ", width);
                 pdf.setFillColor(0, 128, 0);
                 pdf.rect(legendX, legendY, legendSize, legendSize, "F");
                 pdf.setFontSize(8);
@@ -1145,15 +1145,15 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
                 const imageSpacing = 10; // Adjust as needed
                 const imageWidth = width - 2 * imageSpacing + 10; // Stretch the image to fit the entire page width
-                const imageHeight = (width * 0.5) - 2 * imageSpacing; // Adjust spacing between images
+                const imageHeight = width * 0.5 - 2 * imageSpacing; // Adjust spacing between images
 
                 const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20); // Adjust the width as needed
-                pdf.text(circosTitleLines, width * 0.5, initalY + 5, { align: "center" });  
+                pdf.text(circosTitleLines, width * 0.5, initalY + 5, { align: "center" });
 
                 // pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
                 // pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
                 // pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20, width / 2, 0);
-                
+
                 pdf.addImage(dataUrl1, "PNG", imageSpacing, initalY + 10 + imageSpacing, imageWidth, imageHeight);
                 pdf.addImage(dataUrl3, "PNG", imageSpacing, width * 0.5 + 10 + imageSpacing, imageWidth, imageHeight);
                 pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
@@ -1774,8 +1774,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
+          <br></br>
           <div id="circosTable" className="table-responsive">
-            Total events in the circos plot<br></br>(for red one, first number is events not disply in the plot)
+            Total number of events displayed<br></br>(for red one, partial events displayed)
           </div>
         </div>
       )}

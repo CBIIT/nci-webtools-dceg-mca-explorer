@@ -151,7 +151,7 @@ export default function RangeView(props) {
     });
     //console.log(mergedResult.length);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
-    console.log(form);
+    // console.log(form);
     mergedResult.forEach((r) => {
       //if (r._source !== null) {
       const d = r;
@@ -436,11 +436,14 @@ export default function RangeView(props) {
       var hearderCelllabel = document.createElement("th");
       hearderCelllabel.innerHTML = "Chromosome";
       hearderRow.appendChild(hearderCelllabel);
+      hearderCelllabel.style.textAlign = "left";
+      hearderCelllabel.style.fontWeight = "bold";
       //hearderCelllabel.style.border='1px solid black';
 
       for (var i = 0; i < 22; i++) {
         var hearderCell = document.createElement("th");
         hearderCell.innerHTML = `${i + 1}`;
+        hearderCell.style.fontWeight = "bold";
         hearderRow.appendChild(hearderCell);
         //hearderCell.style.border='1px solid black';
       }
@@ -455,14 +458,21 @@ export default function RangeView(props) {
           trackData.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
           const cellLabel = row.insertCell(0);
           cellLabel.innerHTML = cellLabels[l];
+          cellLabel.style.textAlign = "left";
+          cellLabel.style.fontWeight = "bold";
           // cellLabel.style.border='1px solid black';
           // cellLabel.style.size='12px';
           trackData.forEach((item, index) => {
             const cell = row.insertCell(index + 1);
-            cell.innerHTML = (item.outBlock > 0 ? item.outBlock + "/" : "") + item.all;
+            if (item.outBlock > 0) {
+              cell.style.color = "red";
+              cell.style.cursor = "pointer";
+              cell.title = "Total number: " + item.all;
+            }
+            cell.innerHTML = item.outBlock > 0 ? item.all - item.outBlock : item.all;
             //cell.style.border='1px solid black';
             //cell.style.fontSize='12px';
-            cell.style.color = item.outBlock > 0 ? "red" : "";
+
             //cell.style.width="20px"
           });
           document.getElementById("circosTable").appendChild(tableLines);
