@@ -95,7 +95,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     // Check if "Study" is selected
     if (!form.study || form.study.length === 0) {
       isValid = false;
-      //warnings.push("Study field is required!");
+      //warnings.push("Study field is required");
     }
 
     // Check if "Copy Number State" is selected
@@ -332,7 +332,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       )}
       <Form.Group className="mb-3">
         <Form.Label className="required">Study</Form.Label>
-        <Form.Label style={{ color: "red" }}>{form.study.length === 0 ? "Study field is required!" : ""}</Form.Label>
+        <Form.Label style={{ color: "red" }}>{form.study.length === 0 ? "Study field is required" : ""}</Form.Label>
         <Select
           aria-label="study"
           placeholder="No study selected"
@@ -350,7 +350,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       <Form.Group className="mb-3">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Form.Label style={{ color: "red" }}>
-          {form.types.length === 0 ? "Copy Number State field is required!" : ""}
+          {form.types.length === 0 ? "Copy Number State field is required" : ""}
         </Form.Label>
         <Select
           aria-label="state"
@@ -425,7 +425,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
               <Form.Label>Age</Form.Label>
               <Form.Label style={{ color: "red" }}>
                 {form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)
-                  ? "Upper age limit must be greater than lower age limit!"
+                  ? "Upper age limit must be greater than lower age limit"
                   : ""}
               </Form.Label>
               {/* <Form.Control
@@ -481,13 +481,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 {
                   //submitClicked &&
                   form.maxFraction && form.minFraction && parseFloat(form.maxFraction) <= parseFloat(form.minFraction)
-                    ? "Maximum cellular fraction must be greater than minimum cellular fraction!"
+                    ? "Maximum cellular fraction must be greater than minimum cellular fraction"
                     : ""
                 }
               </Form.Label>
               <Row>
                 <Col xl={5}>
-                  <InputGroup>
+                  <InputGroup size="sm" className="mb-3">
                     <Form.Control
                       placeholder="Min"
                       name="minFraction"
@@ -500,7 +500,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 </Col>
                 __
                 <Col xl={5}>
-                  <InputGroup>
+                  <InputGroup size="sm" className="mb-3">
                     <Form.Control
                       placeholder="Max"
                       name="maxFraction"

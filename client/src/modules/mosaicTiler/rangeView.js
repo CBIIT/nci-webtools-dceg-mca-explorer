@@ -469,7 +469,7 @@ export default function RangeView(props) {
               cell.style.cursor = "pointer";
               cell.title = "Total number: " + item.all;
             }
-            cell.innerHTML = item.outBlock > 0 ? item.all - item.outBlock : item.all;
+            cell.innerHTML = item.outBlock > 0 ? item.all - item.outBlock + "*" : item.all;
             //cell.style.border='1px solid black';
             //cell.style.fontSize='12px';
 
@@ -513,11 +513,6 @@ export default function RangeView(props) {
             <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
               No Data Found
             </h6>
-          ) : (
-            ""
-          )}
-          {chrX.length > 0 || chrY.length > 0 ? (
-            <p>X, Y are representative subjects and all samples couldn’t be visualized</p>
           ) : (
             ""
           )}

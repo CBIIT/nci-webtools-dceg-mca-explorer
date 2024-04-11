@@ -1776,7 +1776,19 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           </Row>
           <br></br>
           <div id="circosTable" className="table-responsive">
-            Total number of events displayed<br></br>(for red one, partial events displayed)
+            Total number of events displayed
+            {form.chrX || form.chrY ? (
+              <>
+                <br />
+                X, Y are representative subjects and all samples couldn’t be visualized
+              </>
+            ) : (
+              ""
+            )}
+            <br></br>
+            <>
+              (<span style={{ color: "red" }}>*</span> Partial events displayed)
+            </>
           </div>
         </div>
       )}

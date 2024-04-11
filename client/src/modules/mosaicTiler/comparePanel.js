@@ -248,7 +248,7 @@ export default function ComparePanel(props) {
           {props.compareItem[4].isChecked ? (
             <Form.Group className="mb-3">
               <Form.Label className="required">Study</Form.Label>
-              <Form.Label style={{ color: "red" }}>{study.length === 0 ? "Study field is required!" : ""}</Form.Label>
+              <Form.Label style={{ color: "red" }}>{study.length === 0 ? "Study field is required" : ""}</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="study"
@@ -330,7 +330,7 @@ export default function ComparePanel(props) {
               <Form.Label>Age</Form.Label>
               <Form.Label style={{ color: "red" }}>
                 {maxAge && minAge && parseInt(maxAge) <= parseInt(minAge)
-                  ? "Upper age limit must be greater than lower age limit!"
+                  ? "Upper age limit must be greater than lower age limit"
                   : ""}
               </Form.Label>
               <Row>
@@ -390,13 +390,14 @@ export default function ComparePanel(props) {
               <Form.Label>Cellular Fraction</Form.Label>
               <Form.Label style={{ color: "red" }}>
                 {maxFraction && minFraction && parseFloat(maxFraction) <= parseFloat(minFraction)
-                  ? "Maximum cellular fraction must be greater than minimum cellular fraction!"
+                  ? "Maximum cellular fraction must be greater than minimum cellular fraction"
                   : ""}
               </Form.Label>
               <Row>
                 <Col xl={5}>
-                  <InputGroup>
+                  <InputGroup size="sm">
                     <Form.Control
+                      style={{ width: "auto", flex: 1 }}
                       placeholder="Min"
                       name="minFraction"
                       id={props.name + "minFractionCompare"}
@@ -408,7 +409,7 @@ export default function ComparePanel(props) {
                 </Col>
                 __
                 <Col xl={5}>
-                  <InputGroup>
+                  <InputGroup size="sm">
                     <Form.Control
                       placeholder="Max"
                       name="maxFraction"
