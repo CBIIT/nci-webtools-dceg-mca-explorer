@@ -43,6 +43,7 @@ export default function ComparePanel(props) {
     //console.log("&&&&", StudyOptions[0], compareform);
     if (props.isY || props.isX) setDisabledType(["all", "loh", "gain", "undetermined"]);
     else setDisabledType([]);
+    if (form.plotType.value === "static") setDisabledType([]);
     console.log(form);
   }, [props.onReset, props.isX, props.isY]);
 

@@ -145,7 +145,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
   }
-  console.log(qfilter);
+  console.log("for checking: ", qfilter, searchdataset);
   //query sex
   let sexarr = getAttributesArray(qsex, "sex");
 
@@ -377,7 +377,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const lymCancer = group.lymCancer;
     const myeCancer = group.myeCancer;
 
-    // console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -385,7 +385,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //queryString.push({ terms: { "type.keyword": qfilter } });
     if (chromesome === "Y") {
       queryString.push({ terms: { "type.keyword": ["mLOY"] } });
-      queryString.push({ match: { "chromosome.keyword": "chrX" } });
+      queryString.push({ match: { "chromosome.keyword": "chrY" } });
     } else if (chromesome === "X") {
       queryString.push({ match: { "chromosome.keyword": "chrX" } });
       queryString.push({ terms: { "type.keyword": ["mLOX"] } });
@@ -415,9 +415,11 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
       });
     }
-    if (atemp.length === 0 && chromesome !== "X" && chromesome !== "Y")
-      atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
-    if (atemp.length > 0) queryString.push({ terms: { "type.keyword": atemp } });
+    if (chromesome !== "X" && chromesome !== "Y") {
+      if (atemp.length > 0) queryString.push({ terms: { "type.keyword": atemp } });
+      else atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
+    }
+
     //add query for cf
     //query cf within the range, add query range in filter
     if (!Number.isNaN(mincf) || !Number.isNaN(maxcf)) {
@@ -425,7 +427,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       if (Number.isNaN(maxcf)) maxcf = "1";
       queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
     }
-
+    console.log(queryString);
     try {
       const result = await client.search({
         index: "mcaexplorer_index", //this index change beginGrch38 and endGrch38 as long type

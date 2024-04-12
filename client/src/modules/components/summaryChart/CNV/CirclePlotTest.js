@@ -1787,7 +1787,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             )}
             <br></br>
             <>
-              (<span style={{ color: "red" }}>*</span> Partial events displayed)
+              (<span style={{ color: "red" }}>*</span> - Partial events displayed)
             </>
           </div>
         </div>

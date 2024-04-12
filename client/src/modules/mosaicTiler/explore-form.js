@@ -47,8 +47,6 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   function handleChange(event) {
     const { name, value } = event.target;
-    console.log(event, name, value);
-
     if (name === "chrX") {
       setIsX(event.target.checked);
       mergeForm({ [name]: event.target.checked, types: [{ value: "loss", label: "Loss" }] });
@@ -150,6 +148,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       }
     }
     if (name === "types") {
+      console.log(selection);
       const notForXY = selection.find((option) => option.value === "loss" || option.value === "all");
       setShowXY(notForXY !== undefined && selection.length === 1);
     }
@@ -165,6 +164,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
       setStart(0);
+
+      if (selection.label === "X" || selection.label === "Y") {
+        setDisabledType(["all", "loh", "gain", "undetermined"]);
+      } else setDisabledType([]);
     }
 
     if (name === "plotType") {
@@ -179,6 +182,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         //  if (form.chrSingle !== "") setEnd(chromolimit.filter((c) => c.id === form.chrSingle.label + "")[0].len);
         // setStart(0);
         setResetCircos(false);
+        //if ) setDisabledType(["all", "loh", "gain", "undetermined"]);
       }
     }
 
@@ -187,6 +191,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   useEffect(() => {
     setForm({ ...form, end: end, start: start });
   }, [end, start]);
+
+  useEffect(() => {
+    if (disabledType.length > 0) mergeForm({ types: [{ value: "loss", label: "Loss" }] });
+  }, [disabledType]);
 
   useEffect(() => {
     if (resetCircos) {

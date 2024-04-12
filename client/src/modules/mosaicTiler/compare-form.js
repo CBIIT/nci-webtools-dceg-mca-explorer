@@ -123,9 +123,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
         { value: "ukbb", label: "UK Bio Bank" },
       ];
     }
-    // if (name === "plotType") {
-
-    // }
+    if (name === "plotType") {
+      //setDisabledType([])
+    }
 
     mergeForm({ [name]: selection });
   }
