@@ -33,20 +33,18 @@ export default function Explore() {
   function handleSubmit(event, name) {
     // setIsOpenCompare(true);
     //console.log(event.plotType, name);
-    
+
     if (event.plotType.value === "static" && event.chrSingle === "") {
     } else {
       setForm({
         ...event,
-        
+
         submitted: true,
         compare: false,
         counterSubmitted: name === undefined ? counter + 1 : 0,
       });
     }
-
   }
-
 
   function handleFilter(event) {
     console.log("filter:", form);
@@ -84,7 +82,6 @@ export default function Explore() {
     console.log("clear...", form);
   }, [clear]);
 
- 
   function handleReset(event) {
     //setForm(event);
     setForm(defaultFormState);
@@ -163,7 +160,8 @@ export default function Explore() {
               <ErrorBoundary
                 fallback={
                   <div style={{ color: "red" }}>
-                    The server encountered an internal error or misconfiguration. Please contact{" "}
+                    Please reload the page and retry. The server encountered an internal error or database disconnected.
+                    Please contact{" "}
                     <a href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov">NCImcaExplorerWebAdmin@mail.nih.gov</a> and
                     inform them your configuration settings and the time that the error occured.{" "}
                   </div>
