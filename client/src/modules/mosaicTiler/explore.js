@@ -55,6 +55,8 @@ export default function Explore() {
       setForm({
         ...form,
         compare: true,
+        chrX: false,
+        chrY: false,
         counterCompare: form.counterCompare + 1,
         groupA: { ...event.groupA },
         groupB: { ...event.groupB },

@@ -123,9 +123,21 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     }
     if (name === "plotType") {
       //setDisabledType([]);
-      console.log(isX, isY);
       setIsX(false);
       setIsY(false);
+      //handleFilterClear();
+      console.log(selection);
+      if (selection.value === "circos") {
+        handleFilterClear();
+        //onFilter({ ...form });
+        //onClear();
+        //onReset();
+        onClear();
+        //const backall = document.getElementById("backCircos");
+        //if (backall !== null) backall.click();
+        //const clearall = document.getElementById("clearCompare");
+        //clearall.click();
+      }
     }
     mergeForm({ [name]: selection });
   }
@@ -194,7 +206,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     }
 
     if (form.plotType.value !== "static" || (form.plotType.value === "static" && form.chrCompare !== "")) {
-      console.log("comparing...");
+      console.log("comparing...", form);
       setForm({ ...form, compare: true, counterCompare: counter + 1 });
       onFilter({ ...form });
     }

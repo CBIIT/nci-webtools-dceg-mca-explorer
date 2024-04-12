@@ -338,6 +338,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const handleCircosCompareBack = () => {
     setShowChart(false);
     setChromesomeId(0);
+    console.log(form);
     setForm({
       ...form,
       plotType: { value: "circos", label: "Circos" },
@@ -1392,7 +1393,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 All chromosomes &#8592;
               </Button>
             ) : (
-              <Button variant="link" style={{ padding: "2px " }} onClick={handleCircosCompareBack}>
+              <Button id="backCircos" variant="link" style={{ padding: "2px " }} onClick={handleCircosCompareBack}>
                 Back to circos compare &#8592;
               </Button>
             )}
