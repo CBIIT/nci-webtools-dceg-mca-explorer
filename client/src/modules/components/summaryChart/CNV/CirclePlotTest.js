@@ -338,7 +338,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const handleCircosCompareBack = () => {
     setShowChart(false);
     setChromesomeId(0);
-    setForm({ ...form, plotType: { value: "circos", label: "Circos" } });
+    setForm({
+      ...form,
+      plotType: { value: "circos", label: "Circos" },
+    });
     document.getElementById("compareSubmit").click();
     //console.log(circleA);
     setZoomRangeA(null);

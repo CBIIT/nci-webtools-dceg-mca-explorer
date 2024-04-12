@@ -385,7 +385,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //queryString.push({ terms: { "type.keyword": qfilter } });
     if (chromesome === "Y") {
       queryString.push({ terms: { "type.keyword": ["mLOY"] } });
-      queryString.push({ match: { "chromosome.keyword": "chrY" } });
+      queryString.push({ match: { "chromosome.keyword": "chrX" } });
     } else if (chromesome === "X") {
       queryString.push({ match: { "chromosome.keyword": "chrX" } });
       queryString.push({ terms: { "type.keyword": ["mLOX"] } });

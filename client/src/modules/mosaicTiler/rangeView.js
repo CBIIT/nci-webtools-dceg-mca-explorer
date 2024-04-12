@@ -80,6 +80,7 @@ export default function RangeView(props) {
     setChrX([]);
     setChrY([]);
     setLoaded(false);
+    setForm({ ...form, chrX: false, chrY: false });
     //setLoading(true)
     console.log(qform);
     const query = {

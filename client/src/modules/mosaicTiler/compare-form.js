@@ -84,14 +84,12 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
       setStart(0);
-      if (selection.label === "X" || selection.label === "Y") {
+      if (selection.label === "X") {
         setIsX(true);
-        setIsY(true);
-      } else {
-        setIsX(false);
-        setIsY(false);
       }
-
+      if (selection.label === "Y") {
+        setIsY(true);
+      }
       //handleFilterClear()
 
       /*  onClear({
@@ -124,9 +122,11 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       ];
     }
     if (name === "plotType") {
-      //setDisabledType([])
+      //setDisabledType([]);
+      console.log(isX, isY);
+      setIsX(false);
+      setIsY(false);
     }
-
     mergeForm({ [name]: selection });
   }
 

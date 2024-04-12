@@ -171,10 +171,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
 
     if (name === "plotType") {
-      console.log(selection, form);
       if (selection.value === "circos") {
         if (form.chrSingle !== "") {
           console.log("reseting");
+          setIsX(false);
+          setIsY(false);
           setResetCircos(true);
         }
       }
@@ -185,9 +186,9 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         //if ) setDisabledType(["all", "loh", "gain", "undetermined"]);
       }
     }
-
     mergeForm({ [name]: selection });
   }
+
   useEffect(() => {
     setForm({ ...form, end: end, start: start });
   }, [end, start]);
