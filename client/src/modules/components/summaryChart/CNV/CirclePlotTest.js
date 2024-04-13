@@ -293,6 +293,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       chrSingle: null,
       start: 0,
       end: "",
+      chrX: false,
+      chrY: false,
       plotType: { value: "circos", label: "Whole chromosome" },
       chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
         .map((i) => {

@@ -55,8 +55,8 @@ export default function Explore() {
       setForm({
         ...form,
         compare: true,
-        chrX: false,
-        chrY: false,
+        //   chrX: false,
+        //    chrY: false,
         counterCompare: form.counterCompare + 1,
         groupA: { ...event.groupA },
         groupB: { ...event.groupB },
@@ -92,7 +92,7 @@ export default function Explore() {
 
   function handleClick(value) {
     //setIsOpenCompare(true);
-    //console.log("in explore", value, form);
+    console.log("in explore", value, form);
   }
   function handleCheckboxChange() {
     setIsOpenCompare(!isOpenCompare);

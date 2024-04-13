@@ -45,6 +45,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   const [disabledType, setDisabledType] = useState([]);
   const [showXY, setShowXY] = useState(true);
 
+  useEffect(() => {
+    setIsX(form.chrX);
+    setIsY(form.chrY);
+  }, [form.chrX, form.chrY]);
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "chrX") {
@@ -177,6 +181,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
           setIsX(false);
           setIsY(false);
           setResetCircos(true);
+          onClear();
+          setShowXY(true);
         }
       }
       if (selection.value === "static") {
