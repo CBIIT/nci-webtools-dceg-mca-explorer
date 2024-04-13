@@ -40,6 +40,12 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
 
   const [showXY, setShowXY] = useState(true);
 
+  useEffect(() => {
+    setIsX(form.chrX);
+    setIsY(form.chrY);
+    setShowXY(true);
+  }, [form.chrX, form.chrY]);
+
   function handleChange(event) {
     const { name, value } = event.target;
     console.log(form, name, value);
@@ -129,10 +135,10 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       console.log(selection);
       if (selection.value === "circos") {
         handleFilterClear();
-        //onFilter({ ...form });
+        onFilter({ ...form });
         //onClear();
         //onReset();
-        onClear();
+        // onClear();
         //const backall = document.getElementById("backCircos");
         //if (backall !== null) backall.click();
         //const clearall = document.getElementById("clearCompare");
@@ -228,15 +234,6 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       groupB: { study: [{ value: "plco", label: "PLCO" }], types: [{ value: "all", label: "All Event Types" }] },
       //counterCompare: counter + 1,
     });
-    //clear all reset
-    // const resetBtns = document.querySelectorAll('a[data-val*="reset"]');
-    // if (resetBtns !== undefined) {
-    //   for (let i = 0; i < resetBtns.length; i++) {
-    //     resetBtns[i].click();
-    //     resetBtns[i].click();
-
-    //   }
-    // }
     const resetBtn = document.getElementById("clearCompare");
     resetBtn.click();
 

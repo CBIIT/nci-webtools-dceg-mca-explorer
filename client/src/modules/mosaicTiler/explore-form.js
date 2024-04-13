@@ -48,7 +48,6 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   useEffect(() => {
     setIsX(form.chrX);
     setIsY(form.chrY);
-
     setShowXY(true);
   }, [form.chrX, form.chrY]);
   function handleChange(event) {
