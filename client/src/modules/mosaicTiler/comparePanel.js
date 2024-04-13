@@ -34,6 +34,7 @@ export default function ComparePanel(props) {
   const [lymCancer, setLymCancer] = useState("");
   const [myeCancer, setMyeCancer] = useState("");
   const [disabledType, setDisabledType] = useState([]);
+  const [resetpanel, setResetpanel] = useState(false);
   // console.log(study);
   //reset
   useEffect(() => {
@@ -45,6 +46,12 @@ export default function ComparePanel(props) {
     else setDisabledType([]);
     if (form.plotType.value === "static") setDisabledType([]);
   }, [props.onReset, props.isX, props.isY]);
+
+  useEffect(() => {
+    console.log(compareform);
+    setCompareForm({ study: [StudyOptions[0]], types: [TypeStateOptions[0]] });
+    setResetpanel(true);
+  }, [props.onReset]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -163,11 +170,18 @@ export default function ComparePanel(props) {
   //based on if attributes checkbox, clean the selection
   useEffect(() => {
     //updateForm();
-    console.log("this is compare filter", compareform);
-    const updatedcompareform = {};
+    console.log("this is compare filter", compareform, resetpanel);
+    const updatedcompareform = {
+      study: [StudyOptions[0]],
+      types: [TypeStateOptions[0]],
+      // minAge: 0,
+      // maxAge: 100,
+      // minFraction: 0,
+      // maxFraction: 100,
+    };
 
     //props.compareItem.forEach((element) => {
-    if (compareform !== undefined) {
+    if (compareform !== undefined && !resetpanel) {
       for (const element of props.compareItem) {
         if (element.isChecked) {
           if (element.value === "age") {

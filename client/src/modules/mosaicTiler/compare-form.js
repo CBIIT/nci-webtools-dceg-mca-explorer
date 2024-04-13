@@ -220,7 +220,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   }
 
   const handleFilterClear = (event) => {
-    console.log("filterclear", form);
+    console.log("filter clear...", form);
     setSubmitClicked(false);
     setCompareChecks(CompareArray);
     updateGroup();
@@ -236,7 +236,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     });
     const resetBtn = document.getElementById("clearCompare");
     resetBtn.click();
-
+    setResetCounter(resetCounter + 1);
     //onFilter({ ...form, compare: true, counterCompare: counter + 1 });
   };
 
