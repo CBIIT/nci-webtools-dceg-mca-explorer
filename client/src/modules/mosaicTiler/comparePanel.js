@@ -171,17 +171,19 @@ export default function ComparePanel(props) {
   useEffect(() => {
     //updateForm();
     console.log("this is compare filter", compareform, resetpanel);
-    const updatedcompareform = {
-      study: [StudyOptions[0]],
-      types: [TypeStateOptions[0]],
-      // minAge: 0,
-      // maxAge: 100,
-      // minFraction: 0,
-      // maxFraction: 100,
-    };
+    const updatedcompareform = resetpanel
+      ? {
+          study: [StudyOptions[0]],
+          types: [TypeStateOptions[0]],
+          // minAge: 0,
+          // maxAge: 100,
+          // minFraction: 0,
+          // maxFraction: 100,
+        }
+      : {};
 
     //props.compareItem.forEach((element) => {
-    if (compareform !== undefined && !resetpanel) {
+    if (compareform !== undefined) {
       for (const element of props.compareItem) {
         if (element.isChecked) {
           if (element.value === "age") {
@@ -227,6 +229,7 @@ export default function ComparePanel(props) {
     }
     setCompareForm(updatedcompareform);
     props.onCompareChange(updatedcompareform, props.name);
+    setResetpanel(false);
   }, [props.compareItem]);
 
   let showBorder = false;
