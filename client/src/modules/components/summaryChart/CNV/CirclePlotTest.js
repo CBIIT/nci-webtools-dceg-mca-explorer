@@ -1111,6 +1111,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       downloadname = rangeLabel ? rangeLabel : "Chr" + chromesomeId + ".pdf";
     }
 
+    //console.log("downloadname ", downloadname);
     htmlToImage
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
       .then((dataUrl1) => {
@@ -1148,7 +1149,6 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 pdf.setFontSize(8);
                 if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width * 0.5, initalY, { align: "center" });
                 //pdf.text(circosTitle.slice(1), width * 0.5, initalY + 5, { align: "center" });
-
                 const imageSpacing = 10; // Adjust as needed
                 const imageWidth = width - 2 * imageSpacing + 10; // Stretch the image to fit the entire page width
                 const imageHeight = width * 0.5 - 2 * imageSpacing; // Adjust spacing between images
@@ -1165,8 +1165,12 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
 
                 pdf.setFontSize(5);
-                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
+                //if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
                 //}
+              
+                // Move rangeLabel down
+                const rangeLabelY = width * 0.5 + 12 + imageSpacing; // Adjust the vertical position as needed
+                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, rangeLabelY, { align: "center" });
 
                 pdf.save(downloadname);
                 //setTimeout(() => pdf.save(downloadname), 500);
