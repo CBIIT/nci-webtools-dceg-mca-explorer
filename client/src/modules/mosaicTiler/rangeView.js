@@ -412,13 +412,13 @@ export default function RangeView(props) {
             }
 
             const counterNotL = Object.values(counterL).filter((c) => c > 1);
-            totalLines += paths.length;
+            //totalLines += paths.length;
             //console.log(paths.length)
             //console.log(t.__data__,counterNotL,paths.length)
             var oline = chromosomes.find((o) => o.key === Number(t.__data__.key));
             if (oline) {
               oline.outBlock = counterNotL[0] ? counterNotL[0] - 1 : 0;
-              oline.all = paths.length - 1;
+              oline.all = paths.length - 2;
             }
           });
           linesSummary[index] = chromosomes;
