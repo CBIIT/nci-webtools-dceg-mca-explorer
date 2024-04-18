@@ -39,10 +39,10 @@ export default function ComparePanel(props) {
   //reset
   useEffect(() => {
     handleSelectChange("study", [StudyOptions[0]]);
-    handleSelectChange("types", [TypeStateOptions[props.isX || props.isY ? 2 : 0]]);
+    handleSelectChange("types", [TypeStateOptions[0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
     //console.log("&&&&", StudyOptions[0], compareform);
-    if (props.isY || props.isX) setDisabledType(["all", "loh", "gain", "undetermined"]);
+    if (props.isY || props.isX) setDisabledType(["loh", "gain", "undetermined"]);
     else setDisabledType([]);
     if (form.plotType.value === "static") setDisabledType([]);
   }, [props.onReset, props.isX, props.isY]);
