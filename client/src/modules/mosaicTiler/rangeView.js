@@ -298,7 +298,7 @@ export default function RangeView(props) {
         y: loh.map((e) => {
           return Number(e.value);
         }),
-        name: "Loh",
+        name: "CN-LOH",
         type: "violin",
         box: {
           visible: true,
@@ -616,7 +616,6 @@ export default function RangeView(props) {
       titlefont: {
         size: 16,
       },
-      type: "category",
     },
     yaxis: {
       title: "<b>Cellular Fraction</b>",
@@ -625,11 +624,11 @@ export default function RangeView(props) {
       },
       automargin: true,
     },
-    scattergap: 0.7,
     autosize: true,
-    scattermode: "group",
-    tickmode: "linear",
+
     title: "Cell Fraction Violin Boxplot",
+    width: null, // Setting width to null allows the plot to fill its container
+    height: null,
   };
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -696,7 +695,19 @@ export default function RangeView(props) {
         <Tab eventKey="scatter" title="Cellular Fraction">
           <Row className="m-3">
             <Col xl={12}>
-              <Plot data={getViolinData()} layout={layout} style={{ width: "100%", height: "100%" }} />
+              <Plot
+                data={getViolinData()}
+                layout={layout}
+                config={{
+                  ...defaultConfig,
+                  toImageButtonOptions: {
+                    ...defaultConfig.toImageButtonOptions,
+                    filename: "Violin boxplot",
+                  },
+                  responsive: true,
+                }}
+                style={{ width: "100%", height: "100%" }}
+              />
               {/* <Plot
                 data={getScatterData()}
                 layout={{
