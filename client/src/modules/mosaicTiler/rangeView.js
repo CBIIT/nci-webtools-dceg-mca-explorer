@@ -253,25 +253,25 @@ export default function RangeView(props) {
   const columns = Columns;
 
   function getViolinData() {
-    var data = [
-      {
-        type: "violin",
-        y: [1, 2, 3, 4, 5],
+    // var data = [
+    //   {
+    //     type: "violin",
+    //     y: [1, 2, 3, 4, 5],
 
-        box: {
-          visible: true,
-        },
-        boxpoints: false,
-        line: {
-          color: "black",
-        },
-        fillcolor: "#8dd3c7",
-        opacity: 0.6,
-        meanline: {
-          visible: true,
-        },
-      },
-    ];
+    //     box: {
+    //       visible: true,
+    //     },
+    //     boxpoints: false,
+    //     line: {
+    //       color: "black",
+    //     },
+    //     fillcolor: "#8dd3c7",
+    //     opacity: 0.6,
+    //     meanline: {
+    //       visible: true,
+    //     },
+    //   },
+    // ];
 
     gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
     var gainViolin = [
@@ -353,7 +353,7 @@ export default function RangeView(props) {
         },
       },
     ];
-
+    console.log(gainViolin);
     return gainViolin;
   }
 
@@ -627,8 +627,6 @@ export default function RangeView(props) {
     autosize: true,
 
     title: "Cell Fraction Violin Boxplot",
-    width: null, // Setting width to null allows the plot to fill its container
-    height: null,
   };
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -706,7 +704,7 @@ export default function RangeView(props) {
                   },
                   responsive: true,
                 }}
-                style={{ width: "100%", height: "100%" }}
+                style={{ width: "100%", height: browserSize.height }}
               />
               {/* <Plot
                 data={getScatterData()}
