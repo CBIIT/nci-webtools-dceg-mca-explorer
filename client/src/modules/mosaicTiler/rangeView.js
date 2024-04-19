@@ -252,6 +252,111 @@ export default function RangeView(props) {
 
   const columns = Columns;
 
+  function getViolinData() {
+    var data = [
+      {
+        type: "violin",
+        y: [1, 2, 3, 4, 5],
+
+        box: {
+          visible: true,
+        },
+        boxpoints: false,
+        line: {
+          color: "black",
+        },
+        fillcolor: "#8dd3c7",
+        opacity: 0.6,
+        meanline: {
+          visible: true,
+        },
+      },
+    ];
+
+    gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
+    var gainViolin = [
+      {
+        y: gain.map((e) => {
+          return Number(e.value);
+        }),
+        name: "Gain",
+        type: "violin",
+        box: {
+          visible: true,
+        },
+        boxpoints: false,
+        line: {
+          color: "black",
+        },
+        fillcolor: "green",
+        opacity: 0.6,
+        meanline: {
+          visible: true,
+        },
+      },
+      {
+        y: loh.map((e) => {
+          return Number(e.value);
+        }),
+        name: "Loh",
+        type: "violin",
+        box: {
+          visible: true,
+        },
+        boxpoints: false,
+        line: {
+          color: "black",
+        },
+        fillcolor: "blue",
+        opacity: 0.6,
+        meanline: {
+          visible: true,
+        },
+      },
+      {
+        y: loss.map((e) => {
+          return Number(e.value);
+        }),
+        name: "Loss",
+        type: "violin",
+        box: {
+          visible: true,
+        },
+        boxpoints: false,
+        line: {
+          color: "black",
+        },
+        fillcolor: "red",
+        opacity: 0.6,
+        meanline: {
+          visible: true,
+        },
+      },
+
+      {
+        y: undetermined.map((e) => {
+          return Number(e.value);
+        }),
+        name: "Undetermined",
+        type: "violin",
+        box: {
+          visible: true,
+        },
+        boxpoints: false,
+        line: {
+          color: "black",
+        },
+        fillcolor: "grey",
+        opacity: 0.6,
+        meanline: {
+          visible: true,
+        },
+      },
+    ];
+
+    return gainViolin;
+  }
+
   function getScatterData() {
     gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
     const gainScatter = {
@@ -504,6 +609,12 @@ export default function RangeView(props) {
   }
   resultData.sort((a, b) => Number(a.block_id) - Number(b.block_id));
 
+  const layout = {
+    title: "Violin Plot",
+    yaxis: {
+      title: "Value",
+    },
+  };
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
@@ -566,10 +677,11 @@ export default function RangeView(props) {
         </div>
       </Tab>
       {!form.compare ? (
-        <Tab eventKey="scatter" title="Scatter">
+        <Tab eventKey="scatter" title="Cellular Fraction">
           <Row className="m-3">
             <Col xl={12}>
-              <Plot
+              <Plot data={getViolinData()} layout={layout} style={{ width: "100%", height: "100%" }} />
+              {/* <Plot
                 data={getScatterData()}
                 layout={{
                   xaxis: {
@@ -602,7 +714,7 @@ export default function RangeView(props) {
                 }}
                 className="flex-fill w-100"
                 style={{ height: browserSize.height }}
-              />
+              /> */}
             </Col>
           </Row>
           <Row>
