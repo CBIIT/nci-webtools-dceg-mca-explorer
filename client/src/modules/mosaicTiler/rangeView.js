@@ -610,10 +610,26 @@ export default function RangeView(props) {
   resultData.sort((a, b) => Number(a.block_id) - Number(b.block_id));
 
   const layout = {
-    title: "Violin Plot",
-    yaxis: {
-      title: "Value",
+    xaxis: {
+      title: "<b>Copy Number State</b>",
+      zeroline: false,
+      titlefont: {
+        size: 16,
+      },
+      type: "category",
     },
+    yaxis: {
+      title: "<b>Cellular Fraction</b>",
+      tickfont: {
+        size: 14,
+      },
+      automargin: true,
+    },
+    scattergap: 0.7,
+    autosize: true,
+    scattermode: "group",
+    tickmode: "linear",
+    title: "Cell Fraction Violin Boxplot",
   };
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
