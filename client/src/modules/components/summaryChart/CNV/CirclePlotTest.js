@@ -98,6 +98,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [isinit, setIsinit] = useState(false);
   const [circleTableData, setCircleTableData] = useState([]);
   const [circosTitle, setCircosTitle] = useState("");
+  const [simpleTitle, setSimpleTitle] = useState("");
   const [fisherA, setFisherA] = useState(0);
   const [fisherB, setFisherB] = useState(0);
   const [rangeA, setRangeA] = useState(0);
@@ -852,6 +853,12 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         myeCancer: form.myeCancer,
       })
     );
+    setSimpleTitle(
+      singleTitle({
+        types: form.types,
+        study: form.study,
+      })
+    );
   }, [form.counterSubmitted]);
 
   const handleDownload = () => {
@@ -1559,7 +1566,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
                   {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
                   <br></br>
-                  {circosTitle.slice(1)}
+                  <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)}>
+                    {simpleTitle.slice(1)}
+                  </div>
                 </Col>
                 <Col
                   xs={12}
@@ -1613,7 +1622,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="bold-title-2">{circosTitle.slice(1)}</td>
+                        <td className="bold-title-2" title={circosTitle.slice(1)} style={{ cursor: "pointer" }}>
+                          {simpleTitle.slice(1)}
+                        </td>
                         <td className="numberCol">
                           {rangeLabel === "" ? data.length.toLocaleString() : singleZoomLength.toLocaleString()}
                         </td>
