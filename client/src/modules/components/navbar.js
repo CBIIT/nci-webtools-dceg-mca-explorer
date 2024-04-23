@@ -12,13 +12,13 @@ export default function Navbar({ links = [], className, children }) {
       <BootstrapNavbar.Collapse id="responsive-navbar-nav">
         <Container style={{ flex: 1 }}>
           {children}
-          <Nav className="mx-auto">
+          <Nav className="mx-auto ml-auto">
             {links?.map((link) => (
               <NavLink
                 to={link.path}
                 key={link.path}
                 // activeClassName="active"
-                className="nav-link mx-1"
+                className="nav-link px-1 mx-4 nav-font"
                 exact={link.exact}>
                 {link.title}
               </NavLink>

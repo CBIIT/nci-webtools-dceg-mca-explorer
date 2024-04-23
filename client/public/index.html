@@ -7,10 +7,40 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet' crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids.css">
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-minimal.css?samhc4">
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/ncids-home-landing.css?samhc4"> 
+
+    <!-- <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/css/css2.css">
+   -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>mCA Explorer</title>
-    <!-- Google tag (gtag.js) -->
+    <script async="" src="https://www.google-analytics.com/analytics.js"></script>
+      <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TZKNKFR0J4"></script>
+    <script src="%PUBLIC_URL%/js/ncids-minimal.js?samhc4"></script>
+    <script src="%PUBLIC_URL%/js/ncids-home-landing.js?samhc4"></script>
+    <script src="%PUBLIC_URL%/js/nr-rum-1.253.0.min.js"></script>
+     <!-- <script type="text/javascript" id="_fed_an_ua_tag" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=HHS&amp;subagency=NCI"></script>
+    <script src="https://assets.adobedtm.com/6a4249cd0a2c/949e98979342/71e155600bf8/RCcdc0a9518ff54d37b1c040be774e0cd0-source.min.js" async=""></script>
+    <script src="https://assets.adobedtm.com/6a4249cd0a2c/949e98979342/71e155600bf8/RC9956e3e85e694dfeafb5d0e9bc882f46-source.min.js" async=""></script>
+    <script>window.CDEConfig = {
+      "exitDisclaimerHref": {
+        "en": "https://www.cancer.gov/policies/linking",
+        "es": "https://www.cancer.gov/espanol/politicas/enlaces"
+      },
+      "showFloatingDelighters": false,
+      "general": {
+        "apiServer": "https://webapis.cancer.gov"
+      },
+      "glossaryConfig": {
+        "apiServer": "https://webapis.cancer.gov/glossary/v1/"
+      },
+      "sitewideSearchConfig": {
+        "searchApiServer": "https://webapis.cancer.gov/sitewidesearch/v1/"
+      }
+    };</script> -->
+    <!-- <script id="ncids-nav-info">window.ncidsNavInfo = { nav: { id: "301494", menu_type: "mobile-nav"}, item_id: 301494};</script> -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -20,112 +50,258 @@
     <style>
       body {
         font-family: 'Inter';
+     
       }
     </style>
 </head>
 
-<body class="d-flex flex-column vh-100" react-cloak >
+<body class="" react-cloak >
+  <div class="" data-off-canvas-main-canvas>
   <noscript>You need to enable JavaScript to run this app.</noscript>
-  <header class="flex-grow-0">
-    <div class="container">
-      <a href="https://ccr.cancer.gov/" target="_blank" class="h5 mb-1">
-        <img src="assets/images/logo.svg" class="img-fluid my-3" alt="National Cancer Institute"
-          style="height: 56px; max-width: 100%" />
-        <span class="visually-hidden">
-          Division of Cancer Control and Population Sciences
-        </span>
-      </a>
+  <section class="usa-banner" aria-label="Official government website">
+    <header class="usa-banner__header">
+      <div class="usa-banner__inner">
+        <div class="usa-banner__header-text">
+          An official website of the United States government
+        </div>
+      </div>
+    </header>
+  </section>
+  
+  <header id= "nci-header" class="nci-header" aria-label="NIH National Cancer Institute">
+    <div class="nci-header__navbar" >
+      <div class="nci-logo" id="extended-mega-logo">
+        <a href="https://ccr.cancer.gov/" target="_blank" class="h5 mb-1">
+          <img src="assets/images/logo.svg" class="img-fluid my-3" alt="National Cancer Institute"
+            style="height: 56px; max-width: 100%" />
+          <span class="visually-hidden">
+            Division of Cancer Control and Population Sciences
+          </span>
+        </a>
+      </div>
     </div>
-    <!-- <div class="bg-primary text-light align-items-center py-2 d-none d-md-block">
-      <div class="container">
-        <h1 class="h5 mx-5">
-          mCA Explorer - Mosaic Chromosomal Alteration Explorer
-        </h1>
+  
+    <!-- <nav aria-label="Primary Navigation Example" class="nci-header-nav">
+      <div class="nci-header-nav__inner">
+        <ul class="nci-header-nav__primary">
+          <li class="nci-header-nav__primary-item">
+            <a href="/" data-menu-id="1" class="nci-header-nav__primary-link">
+              <span>Home</span>
+            </a>
+          </li>
+          <li class="nci-header-nav__primary-item">
+            <a href="/#/mosaic" data-menu-id="2" class="nci-header-nav__primary-link">
+              <span>mCA Explorer</span>
+            </a>
+          </li>
+          <li class="nci-header-nav__primary-item">
+            <a href="/#/api" data-menu-id="3" class="nci-header-nav__primary-link">
+              <span>API Access</span>
+            </a>
+          </li>
+          <li class="nci-header-nav__primary-item">
+            <a href="/#/about" data-menu-id="4" class="nci-header-nav__primary-link">
+              <span>About</span>
+            </a>
+          </li>
+         
+        </ul>
       </div>
-    </div> -->
+    </nav> -->
   </header>
-
-  <main id="root" class="d-flex flex-column flex-grow-1 align-items-stretch bg-light"></main>
+</div>
+<div id="page">
+ <main id="root" class="d-flex flex-column flex-grow-1 align-items-stretch bg-light"></main>
+</div>
  
-  <footer id="footer" class="flex-grow-0" style="flex-shrink: 0;">
-    <div class="bg-primary text-light py-4">
-      <div class="container">
-        <div class="mb-4">
-          <a target="_blank" href="https://ccr.cancer.gov/" class="text-light h4 mb-1">
-            Center for Cancer Research
-          </a>
-          <div class="h6">
-            at the National Cancer Institute
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-4 mb-4">
-            <div class="h5 mb-1 font-weight-light">CONTACT INFORMATION</div>
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a class="text-light" href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov">
-                  Contact Us
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="col-lg-4 mb-4">
-            <div class="h5 mb-1 font-weight-light">POLICIES</div>
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a class="text-light" target="_blank" href="https://www.cancer.gov/policies/accessibility">
-                  Accessibility
-                </a>
-              </li>
-              <li>
-                <a class="text-light" target="_blank" href="https://www.cancer.gov/policies/disclaimer">
-                  Disclaimer
-                </a>
-              </li>
-              <li>
-                <a class="text-light" target="_blank" href="https://www.cancer.gov/policies/foia">
-                  FOIA
-                </a>
-              </li>
-              <li>
-                <a class="text-light" target="_blank"
-                  href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">
-                  HHS Vulnerability Disclosure
-                </a>
-              </li>
-            </ul>
-          </div>
-          <div class="col-lg-4 mb-4">
-            <div class="h5 mb-1 font-weight-light">MORE INFORMATION</div>
-            <ul class="list-unstyled mb-0">
-              <li>
-                <a class="text-light" target="_blank" href="http://www.hhs.gov/">
-                  U.S. Department of Health and Human Services
-                </a>
-              </li>
-              <li>
-                <a class="text-light" target="_blank" href="http://www.nih.gov/">
-                  National Institutes of Health
-                </a>
-              </li>
-              <li>
-                <a class="text-light" target="_blank" href="https://www.cancer.gov/">
-                  National Cancer Institute
-                </a>
-              </li>
-              <li>
-                <a class="text-light" target="_blank" href="http://usa.gov/">USA.gov</a>
-              </li>
-              <li>
-               Version 1.0.0
-              </li>
-            </ul>
+ <div id="block-ncifooterenglish">
+  <footer class="usa-footer usa-footer--nci-big" id="nci-footer" aria-label="Footer">
+
+    <div class="usa-footer__primary-section">
+      <div class="grid-footer-container">
+        <div class="grid-row grid-gap">
+          <div class="tablet:grid-col-8">
+            <nav class="usa-footer__nav" aria-label="FooterNavigation_Site">
+              <div class="grid-row grid-gap-4">
+                <div class="mobile-l g:grid-col-6 desktop:grid-col-4">
+                  <section class="usa-footer__primary-content usa-footer__primary-content--collapsible">
+                    <div><button aria-expanded="false" aria-controls="accordion1"
+                        class="usa-footer__primary-link usa-footer__nci-collapse-header">About</button><span
+                        class="usa-footer__primary-link usa-footer__nci-list-header">About</span></div>
+                    <ul aria-label="Header 1 Site" class="usa-list usa-list--unstyled hidden " id="accordion1">
+                      <li class="usa-footer__secondary-link"><a href="/#/about/" id="aboutLink">About mCA Explorer</a></li>                      
+                      <li class="usa-footer__secondary-link"><a  href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov">Contact Us</a></li>
+                    </ul>
+                  </section>
+                </div>
+                <div class="mobile-lg:grid-col-6 desktop:grid-col-4">
+                  <section class="usa-footer__primary-content usa-footer__primary-content--collapsible">
+                    <div><button aria-expanded="false" aria-controls="accordion2"
+                        class="usa-footer__primary-link usa-footer__nci-collapse-header">Resources</button><span
+                        class="usa-footer__primary-link usa-footer__nci-list-header">Resources</span></div>
+                    <ul aria-label="Header 2 Site" class="usa-list usa-list--unstyled hidden " id="accordion2">
+                      <li class="usa-footer__secondary-link"><a href="/#/mosaic" id="mcaExplorerLink">mCA Explorer</a></li>
+                      <li class="usa-footer__secondary-link"><a href="/#/api" id="APIAccessLink">API Access</a></li>
+                    </ul>
+                  </section>
+                </div>
+                <div class="mobile-lg:grid-col-6 desktop:grid-col-4">
+                  <section class="usa-footer__primary-content usa-footer__primary-content--collapsible">
+                    <div><button aria-expanded="false" aria-controls="accordion3"
+                        class="usa-footer__primary-link usa-footer__nci-collapse-header">Policies</button><span
+                        class="usa-footer__primary-link usa-footer__nci-list-header">Policies</span></div>
+                    <ul aria-label="Header 3 Site" class="usa-list usa-list--unstyled hidden " id="accordion3">
+                      <li class="usa-footer__secondary-link"><a
+                          href="https://www.cancer.gov/policies/accessibility">Accessibility</a></li>
+                      <li class="usa-footer__secondary-link"><a href="https://www.cancer.gov/policies/foia">FOIA</a></li>
+                      <li class="usa-footer__secondary-link"><a
+                          href="https://www.cancer.gov/policies/privacy-security">Privacy &amp; Security</a></li>
+                      <li class="usa-footer__secondary-link"><a
+                          href="https://www.cancer.gov/policies/disclaimer">Disclaimers</a></li>
+                      <li class="usa-footer__secondary-link"><a
+                          href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html">Vulnerability
+                          Disclosure</a></li>
+                    </ul>
+                  </section>
+                </div>
+              </div>
+            </nav>
           </div>
         </div>
       </div>
-      <div class="text-center">NIH ... Turning Discovery Into Health ®</div>
+    </div>
+    <div class="usa-footer__secondary-section">
+      <div class="grid-footer-container">
+        <div class="grid-row grid-gap">
+          <div class=" usa-footer__logo grid-row desktop:grid-col-5">
+            <div class="mobile-lg:grid-col-auto mobile-lg:margin-bottom-3">
+              <p class="usa-footer__logo-heading"><span class="logo__agency-name">National Cancer Institute </span><span
+                  class="logo__parent-organization">at the National Institute of Health</span></p>
+            </div>
+          </div>
+          <div class="usa-footer__contact-links desktop:grid-col-7">
+            <div class="usa-footer__contact-heading">Contact Us</div>
+            <div class="usa-footer__address">
+              <div class="usa-footer__contact-info grid-row grid-gap">
+                <div class="tablet:grid-col-auto"><a href="tel:1-800-4-CANCER">Live Chat</a></div>
+                <div class="tablet:grid-col-auto tablet:margin-left-2"><a href="tel:1-800-4-CANCER">1-800-4-CANCER</a>
+                </div>
+                <div class="tablet:grid-col-auto tablet:margin-left-2"><a
+                    href="mailto:NCIinfo@nih.gov">NCIinfo@nih.gov</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-row grid-gap">
+          <div class="usa-footer__social-links desktop:grid-col-5">
+            <div class="usa-footer__social-heading">Follow us</div>
+            <div class="grid-row grid-gap-1 nci-big__social">
+              <div class="grid-col-auto"><a class="usa-social-link usa-social-link--facebook"
+                  href="https://www.facebook.com/cancer.gov"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    width="24" class="usa-icon" role="img" aria-labelledby="facebook-title_site">
+                    <title id="facebook-title_site">Facebook</title>
+                    <rect fill="none" height="24" width="24"></rect>
+                    <path
+                      d="M22,12c0-5.52-4.48-10-10-10S2,6.48,2,12c0,4.84,3.44,8.87,8,9.8V15H8v-3h2V9.5C10,7.57,11.57,6,13.5,6H16v3h-2 c-0.55,0-1,0.45-1,1v2h3v3h-3v6.95C18.05,21.45,22,17.19,22,12z">
+                    </path>
+                  </svg></a></div>
+              <div class="grid-col-auto"><a class="usa-social-link" href="https://twitter.com/thenci"><svg
+                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="usa-icon" role="img"
+                    aria-labelledby="x-title">
+                    <title id="x-title">Follow on X</title>
+                    <path
+                      d="M12 22c5.5 0 10-4.5 10-10S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10zm5.2-15.6L13.3 11l4.3 6.2h-3.1L11.6 13 8 17.2h-.9l4.1-4.8-4.1-6h3.1l2.7 3.9 3.4-3.9h.9zm-5.6 5.4.4.6 2.8 4h1.4l-3.5-5-.4-.6-2.6-3.7H8.3l3.3 4.7z">
+                    </path>
+                  </svg></a></div>
+              <div class="grid-col-auto"><a class="usa-social-link usa-social-link--instagram"
+                  href="https://www.instagram.com/nationalcancerinstitute/"><svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" class="usa-icon" role="img" aria-labelledby="instagram-title_site">
+                    <title id="instagram-title_site">Instagram</title>
+                    <g id="Instagram_docsite">
+                      <path d="M12,10a2,2,0,1,0,2,2A2,2,0,0,0,12,10Z"></path>
+                      <path
+                        d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm6,12.69A3.32,3.32,0,0,1,14.69,18H9.31A3.32,3.32,0,0,1,6,14.69V9.31A3.32,3.32,0,0,1,9.31,6h5.38A3.32,3.32,0,0,1,18,9.31Z">
+                      </path>
+                      <path
+                        d="M16.94,9.31a2.25,2.25,0,0,0-2.25-2.25H9.31A2.25,2.25,0,0,0,7.06,9.31v5.38a2.25,2.25,0,0,0,2.25,2.25h5.38a2.25,2.25,0,0,0,2.25-2.25h0ZM12,15.09A3.09,3.09,0,1,1,15.09,12,3.09,3.09,0,0,1,12,15.09Zm3.77-5.75a.79.79,0,0,1-.55.23.83.83,0,0,1-.55-.23.78.78,0,0,1,0-1.11A.82.82,0,0,1,15.22,8a.78.78,0,0,1,.55,1.33Z">
+                      </path>
+                    </g>
+                  </svg></a></div>
+              <div class="grid-col-auto"><a class="usa-social-link usa-social-link--youtube"
+                  href="https://www.youtube.com/NCIgov"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                    class="usa-icon" role="img" aria-labelledby="youtube-title_site">
+                    <title id="youtube-title_site">Youtube</title>
+                    <g id="YouTube_docsite">
+                      <path
+                        d="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm5.75,12.91A1.49,1.49,0,0,1,16.69,16a34.65,34.65,0,0,1-4.69.26A34.65,34.65,0,0,1,7.31,16a1.49,1.49,0,0,1-1.06-1.06A15.88,15.88,0,0,1,6,12a15.88,15.88,0,0,1,.25-2.91A1.49,1.49,0,0,1,7.31,8,34.65,34.65,0,0,1,12,7.77,34.65,34.65,0,0,1,16.69,8a1.49,1.49,0,0,1,1.06,1.06A15.88,15.88,0,0,1,18,12,15.88,15.88,0,0,1,17.75,14.91Z">
+                      </path>
+                      <polygon points="10.77 13.78 13.91 12 10.77 10.22 10.77 13.78"></polygon>
+                    </g>
+                  </svg></a></div>
+              <div class="grid-col-auto"><a class="usa-social-link usa-social-link--linkedin"
+                  href="https://www.linkedin.com/company/nationalcancerinstitute/"><svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" class="usa-icon" role="img" aria-labelledby="linkedin-title_site">
+                    <title id="linkedin-title_site">Linkedin</title>
+                    <g id="final_docsite">
+                      <path
+                        d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M8.912001,17.584H6.584v-7.472h2.328001V17.584z M7.744,9.104C6.992,9.104,6.4,8.488,6.4,7.76c0-0.752,0.592-1.344,1.344-1.344c0.728,0,1.343999,0.592,1.343999,1.344 C9.087999,8.488,8.472,9.104,7.744,9.104z M17.6,17.584h-2.328v-3.64c0-0.856-0.024001-1.967999-1.216001-1.967999 s-1.392,0.927999-1.392,1.912v3.696H10.36v-7.472h2.224v1.008h0.024c0.464-0.752,1.296-1.216001,2.199999-1.192 c2.352001,0,2.792,1.552001,2.792,3.544001C17.6,13.472,17.6,17.584,17.6,17.584z">
+                      </path>
+                    </g>
+                  </svg></a></div>
+            </div>
+          </div>
+          <div class="usa-footer__contact-links desktop:grid-col-7">
+            <div class="usa-footer__address height-full">
+              <div class="usa-footer__contact-info grid-row grid-gap height-full">
+                <address><a href="https://www.hhs.gov/">U.S. Department of Health and Human Services</a><a
+                    href="https://www.nih.gov/">National Institutes of Health</a><a
+                    href="https://www.cancer.gov/">National Cancer Institute</a><a href="https://usa.gov/">USA.gov</a>
+                </address>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <input class="usa-input width-full" style="display: none;" id="email" name="email" type="email" value="" aria-describedby="email-error-message">
+    <div class=" usa-footer__return-to-top">
+      <a href="#" aria-label="Back To Top"><span>Back To Top</span></a>
     </div>
   </footer>
+</div>
+  <script>
+    // Get the links
+    const aboutLink = document.getElementById('aboutLink');
+    const mcaExplorerLink = document.getElementById('mcaExplorerLink');
+    const APIAccessLink = document.getElementById('APIAccessLink');
+  
+    // Function to handle link clicks
+    function handleClick(event, href) {
+      // Prevent default link behavior
+      event.preventDefault();
+  
+      // Navigate to the specified page
+      window.location.href = href;
+  
+      // Scroll the page to the top after navigation
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  
+    // Add click event listeners to all links
+    aboutLink.addEventListener('click', function(event) {
+      handleClick(event, this.getAttribute('href'));
+    });
+  
+    mcaExplorerLink.addEventListener('click', function(event) {
+      handleClick(event, this.getAttribute('href'));
+    });
+  
+    APIAccessLink.addEventListener('click', function(event) {
+      handleClick(event, this.getAttribute('href'));
+    });
+  </script>
+ 
+ 
 </body>
 
 </html>

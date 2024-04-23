@@ -107,7 +107,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         fd,
         JSON.stringify({
           index: {
-            _index: "mcaexplorer",
+            _index: "denomiator",
             _id: id,
           },
         }) + "\n",
@@ -187,7 +187,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish PLCO mLOY import`);
   }
 
-  const ukbbmLOX = await parseFile("UKBB_blood_mLOX_filter2_call_rate_ge0.97_baf_auto_le0.03.txt");
+  const ukbbmLOX = await parseFile("UKBB_mLOX_mCA_92005app_clean.txt");
 
   try {
     var fd = fs.openSync(path.resolve("data", "ukbbmLOX.json"), "a");
@@ -217,7 +217,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish UKBB ukbbmLOX import`);
   }
 
-  const ukbbmLOY = await parseFile("UKBB_blood_mLOY_filter2_call_rate_ge0.97_baf_auto_le0.03.txt");
+  const ukbbmLOY = await parseFile("UKBB_mLOY_mCA_92005app_clean.txt");
 
   try {
     var fd = fs.openSync(path.resolve("data", "ukbbmLOY.json"), "a");
@@ -247,7 +247,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish UKBB ukbbmLOY import`);
   }
 
-  const ukbbAuto = await parseFile("UKBB_blood_autosomal_mCA_filtered.tsv", "\n");
+  const ukbbAuto = await parseFile("UKBB_autosomal_mCA_92005app_clean.txt", "\r");
 
   try {
     var fd = fs.openSync(path.resolve("data", "ukbbAuto.json"), "a");
@@ -275,6 +275,36 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       fs.closeSync(fd);
     }
     console.log(`Finish UKBB ukbbAuto import`);
+  }
+
+  const ukbbdenominator = await parseFile("UKBB_denominator_92005app_clean.txt", "\r");
+
+  try {
+    var fd = fs.openSync(path.resolve("data", "ukbbdenominator.json"), "a");
+    ukbbdenominator.map((e) => {
+      e.dataset = "ukbb";
+      fs.appendFileSync(
+        fd,
+        JSON.stringify({
+          index: {
+            _index: "denominator",
+            _id: id,
+          },
+        }) + "\n",
+        "utf-8"
+      );
+
+      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+
+      id++;
+    });
+  } catch (err) {
+    console.log(`${err}`);
+  } finally {
+    if (fd) {
+      fs.closeSync(fd);
+    }
+    console.log(`Finish UKBB denominator import`);
   }
 
   // const combinedData = await parseFile("Combined_Gene_Dataset.tsv", "\n");
