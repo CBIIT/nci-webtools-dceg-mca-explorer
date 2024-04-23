@@ -24,7 +24,7 @@ export default function Home({ links }) {
                       and cell fraction (e.g., percentage of cells impacted by the event).
                     </p>
                     <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
-                      Explore mosaic
+                      Explore mCAs
                     </Link>
                   </div>
                 </div>
@@ -51,7 +51,7 @@ export default function Home({ links }) {
           <div className="container  text-dark">
             <h2 className="h4">Credits</h2>
             <p>
-              Mitchell Machiela, Hubbard Aubrey, Chapman Lesley and colleagues at the{" "}
+              Mitchell Machiela, Aubrey Hubbard,  Lesley Chapman Hannah and colleagues at the{" "}
               <a href="https://dceg.cancer.gov/" target="_blank">
                 Division of Cancer Epidemiology and Genetics (DCEG)
               </a>
