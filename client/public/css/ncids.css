@@ -51,7 +51,7 @@ line-height: 1.6;
 .usa-banner__header {
     font-size: .76rem;
     font-weight: 400;
-    margin-left: 5rem;
+    margin-left: 2.5rem !important;
     margin-right: auto;
     max-width: 87.5rem;
     min-height: 3rem;
