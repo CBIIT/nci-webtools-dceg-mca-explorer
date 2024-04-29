@@ -6,25 +6,25 @@ import { NavLink } from "react-router-dom";
 export default function Navbar({ links = [], className, children }) {
   return (
     <BootstrapNavbar expand="lg" bg="white" variant="light" className={className}>
-      <BootstrapNavbar.Toggle aria-controls="responsive-navbar-nav">
+      <BootstrapNavbar.Toggle aria-controls="responsive-navbar-nav" className="ml-3_5">
         <span class="navbar-toggler-icon"></span>
       </BootstrapNavbar.Toggle>
       <BootstrapNavbar.Collapse id="responsive-navbar-nav">
-        <Container style={{ flex: 1 }}>
+        <div className="ml-3_5">
           {children}
-          <Nav className="mx-auto">
+          <Nav >
             {links?.map((link) => (
               <NavLink
                 to={link.path}
                 key={link.path}
                 // activeClassName="active"
-                className="nav-link mx-1"
+                className="nav-link px-1 mx-4 nav-font"
                 exact={link.exact}>
                 {link.title}
               </NavLink>
             ))}
           </Nav>
-        </Container>
+        </div>
       </BootstrapNavbar.Collapse>
     </BootstrapNavbar>
   );

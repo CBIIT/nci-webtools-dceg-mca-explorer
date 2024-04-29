@@ -43,17 +43,13 @@ export default function About() {
 
           <p>
             Please submit comments and questions regarding mCA Explorer to{" "}
-            <a href="mailto:NCImosaicTilerWebAdmin@mail.nih.gov" style={{ fontWeight: "bold" }}>
-              NCImosaicTilerWebAdmin@mail.nih.gov
+            <a href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov" style={{ fontWeight: "bold" }}>
+              NCImcaExplorerWebAdmin@mail.nih.gov
             </a>
             .
           </p>
 
-          {/* <iframe
-           // src="http://localhost:8080/act24/participant/id/ef604633-78e7-4756-a4e3-2066a3de645f#"
-            //src="https://exploregwas.cancer.gov/plco-atlas/#/"
-            width="100%"
-            allowFullScreen="true"></iframe> */}
+          <p></p>
         </Card.Body>
       </Card>
     </Container>

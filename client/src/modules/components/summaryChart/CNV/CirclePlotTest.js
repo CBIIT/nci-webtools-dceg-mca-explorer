@@ -877,6 +877,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       if (snp.querySelectorAll("svg")[0] !== undefined) imagesnp = snp;
     }
     var gene = document.getElementById("geneplots");
+    console.log("GENNNEEE ", gene);
     // if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
     if (gene !== null) {
       if (gene.querySelectorAll("svg")[0] !== undefined) imagegene = gene;
@@ -1101,7 +1102,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     if (snp !== null) imagesnp = snp;
 
     var gene = document.getElementById("geneplots");
+    console.log("GENE IMG ", gene);
     var imagegene = image.querySelectorAll("svg")[1]; //set an intial value
+    console.log("imagegene ", imagegene);
     //if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
     if (gene !== null) {
       if (gene.querySelectorAll("svg")[0] !== undefined) imagegene = gene;
@@ -1113,23 +1116,39 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     const legendX = 150;
     let figResolution = 0.8;
     let downloadname = "Chr" + chromesomeId + ".pdf";
+    const geneImage = document.getElementById("geneplots");
+    let geneImageHeight =  0;
+    
     if (chromesomeId) {
       figResolution = 1;
       downloadname = rangeLabel ? rangeLabel : "Chr" + chromesomeId + ".pdf";
+    }
+
+    //console.log("downloadname ", downloadname);
+    // Replace commas with empty strings in the downloadname
+    downloadname = downloadname.replace(/,/g, "");
+    
+    // Check if imagegene height is more than 2000 pixels
+    if (gene !== null) {    
+       geneImageHeight = geneImage.clientHeight;
+      //console.log("geneImageHeight ", geneImageHeight);
+   
     }
 
     htmlToImage
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
       .then((dataUrl1) => {
         htmlToImage
-          .toPng(imagesnp, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+          .toPng(imagesnp, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white"  })
           .then((dataUrl3) => {
             htmlToImage
-              .toPng(imagegene, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
+              .toPng(imagegene, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white"})
               .then((dataUrl4) => {
                 const pdf = new jsPDF();
                 const width = pdf.internal.pageSize.getWidth();
-                console.log("width ", width);
+                const height = pdf.internal.pageSize.getHeight(); // Get the height of the PDF page
+
+                //console.log("width ", width);
                 pdf.setFillColor(0, 128, 0);
                 pdf.rect(legendX, legendY, legendSize, legendSize, "F");
                 pdf.setFontSize(8);
@@ -1152,14 +1171,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 pdf.text("Undetermined", legendX + 37, legendY2);
 
                 pdf.setTextColor(0, 0, 0);
-                pdf.setFontSize(8);
+                pdf.setFontSize(10);
                 if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width * 0.5, initalY, { align: "center" });
                 //pdf.text(circosTitle.slice(1), width * 0.5, initalY + 5, { align: "center" });
-
                 const imageSpacing = 10; // Adjust as needed
                 const imageWidth = width - 2 * imageSpacing + 10; // Stretch the image to fit the entire page width
                 const imageHeight = width * 0.5 - 2 * imageSpacing; // Adjust spacing between images
-
+                console.log("imageHeight ", imageHeight);
                 const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20); // Adjust the width as needed
                 pdf.text(circosTitleLines, width * 0.5, initalY + 5, { align: "center" });
 
@@ -1167,13 +1185,67 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 // pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
                 // pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20, width / 2, 0);
 
-                pdf.addImage(dataUrl1, "PNG", imageSpacing, initalY + 10 + imageSpacing, imageWidth, imageHeight);
-                pdf.addImage(dataUrl3, "PNG", imageSpacing, width * 0.5 + 10 + imageSpacing, imageWidth, imageHeight);
-                pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
+                let y = initalY + 10 + imageSpacing;
+                // Define the height of the PNG image
+                const pngHeight = 250; // Adjust as needed
+                const snpHeight = 15; // Adjust as needed
+                console.log("y ---- ", y);
+                console.log("height ", height);
 
-                pdf.setFontSize(5);
-                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
+                
+                pdf.addImage(dataUrl1, "PNG", imageSpacing, initalY + 10 + imageSpacing, imageWidth, imageHeight);
+                pdf.addImage(dataUrl3, "PNG", imageSpacing, width * 0.5 + 10 + imageSpacing, imageWidth, snpHeight);
+                //pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
+              
+                let rangeLabelY  = width * 0.5 + 12 + imageSpacing; // Adjust the vertical position as needed
+                //console.log("rangeLabelY ", rangeLabelY);
+                
+                console.log("geneImageHeight --- ", geneImageHeight);
+                let customGeneImgHeight;
+               
+                if (gene != null) {
+                  if (geneImageHeight >= 1500) {
+                    pdf.addPage();
+                    y = initalY;
+                    console.log("initalY ", initalY);
+                    // Move rangeLabel down
+                    rangeLabelY = pngHeight + 21;
+                    customGeneImgHeight = pngHeight;
+                    // Adjust the height of the last image to fill the remaining space on the page
+                    pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
+                  } else if (geneImageHeight < 1500 && geneImageHeight >= 1200) {
+                    pdf.addPage();
+                    y = width * 0.5 + 20 + imageSpacing;
+                    customGeneImgHeight = imageHeight * 1.5;
+                      pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
+                      rangeLabelY = customGeneImgHeight + y + imageSpacing;
+                  } else if (geneImageHeight < 1200 && geneImageHeight >= 1000) {
+                      y = width * 0.5 + 20 + imageSpacing;
+                      customGeneImgHeight = imageHeight * 1.5;
+                      pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
+                      rangeLabelY = customGeneImgHeight + y + imageSpacing;
+                  } else if (geneImageHeight < 1000 && geneImageHeight >= 500) {
+                    customGeneImgHeight = imageHeight;
+                      pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, customGeneImgHeight);
+                      rangeLabelY = 250;
+                  } else if (geneImageHeight < 500 && geneImageHeight > 300) {
+                    customGeneImgHeight = imageHeight;
+                      pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, customGeneImgHeight);
+                      rangeLabelY = 200;
+                  } else {
+                    customGeneImgHeight = geneImageHeight / 5;
+                      pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, customGeneImgHeight);
+                      rangeLabelY = imageHeight + snpHeight + customGeneImgHeight+ imageSpacing*3 + initalY + 5;
+                    }
+                } 
+                console.log("customGeneImgHeight ", customGeneImgHeight);
+                console.log("rangeLabelY **** ", rangeLabelY);
+
+                pdf.setFontSize(8);
+                //if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
                 //}
+               
+                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, rangeLabelY, { align: "center" });
 
                 pdf.save(downloadname);
                 //setTimeout(() => pdf.save(downloadname), 500);

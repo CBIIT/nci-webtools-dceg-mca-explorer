@@ -9,12 +9,14 @@ export default function Home({ links }) {
   return (
     <>
       <div className="">
-        <div className="cover-image" style={{ height: "600px", width: "100%", backgroundImage: `url(${genomeImage})` }}>
-          <Container>
+        <div
+          className="cover-image"
+          style={{ height: "600px", width: "100%", backgroundImage: `url(${genomeImage})`, marginLeft: "0px" }}>
+          <Container style={{ marginLeft: "6rem" }}>
             <Row>
-              <Col md={6}>
+              <Col md={6} style={{ paddingLeft: "0px" }}>
                 <div className="d-flex h-100 align-items-center my-4">
-                  <div style={{ marginTop: "20px" }}>
+                  <div style={{ marginTop: "0px" }}>
                     <h2 className="font-title text-dark mb-3">Mosaic Chromosomal Alteration Explorer</h2>
                     <hr className="border-dark" />
                     <p className="lead text-dark">
@@ -24,7 +26,7 @@ export default function Home({ links }) {
                       and cell fraction (e.g., percentage of cells impacted by the event).
                     </p>
                     <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
-                      Explore mosaic
+                      Explore mCAs
                     </Link>
                   </div>
                 </div>
@@ -34,7 +36,7 @@ export default function Home({ links }) {
         </div>
       </div>
 
-      <div className="bg-light py-4">
+      <div className="container bg-light py-4" style={{ marginLeft: "4.5rem" }}>
         {/* <Container>
           <Row>
             <Col>
@@ -51,7 +53,7 @@ export default function Home({ links }) {
           <div className="container  text-dark">
             <h2 className="h4">Credits</h2>
             <p>
-              Mitchell Machiela, Hubbard Aubrey, Lesley Chapman Hannah and colleagues at the{" "}
+              Mitchell Machiela, Aubrey Hubbard, Lesley Chapman Hannah and colleagues at the{" "}
               <a href="https://dceg.cancer.gov/" target="_blank">
                 Division of Cancer Epidemiology and Genetics (DCEG)
               </a>
@@ -63,8 +65,8 @@ export default function Home({ links }) {
               <a href="https://www.nih.gov/" target="_blank">
                 National Institutes of Health (NIH)
               </a>
-              , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Brian Park, Xiaozheng Yao, Ben
-              Chen, Madhu Kanigicherla, Kai-Ling Chen and staff at{" "}
+              , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Xiaozheng Yao, Madhu Kanigicherla,
+              Nguyen Thuong, Brian Park, Ben Chen, Kai-Ling Chen and staff at{" "}
               <a href="https://www.essential-soft.com/" target="_blank">
                 Essential Software Inc.
               </a>
