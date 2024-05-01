@@ -216,10 +216,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
-          if (b.__data__.key === "X" || b.__data__.key === "Y") {
-            bck.setAttribute("fill", "white");
-            bck.setAttribute("opacity", 0);
-          }
+          // if (b.__data__.key === "X" || b.__data__.key === "Y") {
+          //   bck.setAttribute("fill", "white");
+          //   bck.setAttribute("opacity", 0);
+          // }
+          // bck.setAttribute("fill", "red");
         });
       });
     }
@@ -228,7 +229,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   useEffect(() => {
     // call api or anything
     //console.log("backgroudcolor");
-    changeXYbackcolor();
+    //changeXYbackcolor();
   });
 
   const handleEnter = () => {
@@ -244,16 +245,17 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
+
           bck.addEventListener("mouseover", () => {
             // console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id
-            if (b.__data__.key !== "X" && b.__data__.key !== "Y")
-              alltracks.forEach((t) => changeBackground(t, b.__data__.key, 1));
-            else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
+            // if (b.__data__.key !== "X" && b.__data__.key !== "Y")
+            alltracks.forEach((t) => changeBackground(t, b.__data__.key, 1));
+            //else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
           });
           bck.addEventListener("mouseout", () => {
-            if (b.__data__.key !== "X" && b.__data__.key !== "Y")
-              alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
-            else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0));
+            // if (b.__data__.key !== "X" && b.__data__.key !== "Y")
+            alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
+            // else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0));
           });
           bck.addEventListener("click", () => {
             console.log("click", b.__data__.key);
@@ -1490,26 +1492,28 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             {!form.compare ? (
               <Button variant="link" style={{ padding: "2px" }} onClick={handleBack}>
-                All chromosomes &#8592;
+                All chromosomes
               </Button>
             ) : (
               <Button id="backCircos" variant="link" style={{ padding: "2px " }} onClick={handleCircosCompareBack}>
-                Back to circos compare &#8592;
+                Back to circos compare
               </Button>
             )}
             {rangeLabel ? (
               <>
+                &#8592;
                 <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomInitial}>
-                  Chr{chromesomeId} &#8592;
+                  Chr{chromesomeId}
                 </Button>
               </>
             ) : (
-              ""
+              <> &#8592; Chr{chromesomeId}</>
             )}
-            <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomback}>
-              {zoomRange}
-            </Button>
             {zoomRange ? <>&#8592;</> : ""}
+            <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomback}>
+              {zoomRange && zoomRange.substring(rangeLabel.indexOf(":") + 1)}
+            </Button>
+            {rangeLabel ? <>&#8592;</> : ""} {rangeLabel.substring(rangeLabel.indexOf(":") + 1)}
           </div>
 
           {form.compare && form.counterCompare > 0 && (
@@ -1519,7 +1523,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   <Legend></Legend>
                 </Col>
                 <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
-                  {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
+                  {/* {rangeLabel ? rangeLabel : "Chr" + chromesomeId} */}
+                  {"Chr" + chromesomeId}
                   <br></br> {commonTitle}
                 </Col>
                 <Col
@@ -1655,7 +1660,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   <Legend></Legend>
                 </Col>
                 <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
-                  {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
+                  {/* {rangeLabel ? rangeLabel : "Chr" + chromesomeId} */}
+                  {"Chr" + chromesomeId}
                   <br></br>
                   <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)}>
                     {simpleTitle.slice(1)}

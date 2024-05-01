@@ -29,65 +29,6 @@ export default function CircosPlot(props) {
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
-      {/* <div className={classCircle}>
-        {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
-      {/* <Circos
-          layout={layoutxy}
-          config={{
-            innerRadius: size / 2 - 50,
-            outerRadius: size / 2 - 30,
-            ticks: {
-              display: true,
-              color: "black",
-              labels: false,
-            },
-            labels: {
-              position: "center",
-              display: true,
-              size: 14,
-              color: "#000",
-              radialOffset: 28,
-            },
-          }}
-          tracks={[
-            {
-              type: STACK,
-              data: dataXY,
-              config: {
-                innerRadius: 0.25,
-                outerRadius: 0.5,
-                thickness: 0.5,
-                margin: 0,
-                strokeWidth: 1,
-                strokeColor: "red",
-                direction: "out",
-                // logScale: true,
-                color: "red",
-                backgrounds: [
-                  {
-                    start: 0,
-                    end: 1,
-                    color: "white",
-                    opacity: 1,
-                  },
-                ],
-                tooltipContent: function (d) {
-                  return hovertip(d);
-                },
-                // events: {
-                //   mouseover: function (d, i, nodes, event) {
-                //     console.log("mouse over");
-                //   },
-                //   click: function (d, i, nodes, event) {
-                //     console.log("mouse over");
-                //   },
-                // },
-              },
-            },
-          ]}
-          size={size}
-        /> 
-      </div> */}
       <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
         {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
         <div ref={props.circleRefTable}>
