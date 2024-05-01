@@ -13,7 +13,7 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions, initialData } from "../../../mosaicTiler/constants";
 import { fisherTest } from "../../utils";
 
 import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -194,7 +194,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       loss: props.loss,
       gain: props.gain,
       loh: props.loh,
-      undetermined: props.undetermined,
+      undetermined: props.undetermined.concat(initialData),
       chrx: props.chrx,
       chry: props.chry,
     });

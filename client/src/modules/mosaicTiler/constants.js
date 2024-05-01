@@ -85,18 +85,27 @@ export const initialData = Array.from({ length: 22 }, (_, i) => i + 1)
     return {
       chromosome: "chr" + i,
       block_id: i + "",
-      cf: "",
+      value: "",
       end: "0",
-      start: "-1",
+      start: "0",
     };
   })
   .concat([
     {
       chromosome: "chrX",
       block_id: "X",
-      cf: "",
+      value: "",
       end: "0",
-      start: "-1",
+      start: "0",
+    },
+  ])
+  .concat([
+    {
+      chromosome: "chrY",
+      block_id: "Y",
+      value: "0",
+      end: "0",
+      start: "0",
     },
   ]);
 export const initialChrX = [
@@ -105,7 +114,7 @@ export const initialChrX = [
     block_id: "X",
     cf: "",
     end: "0",
-    start: "-1",
+    start: "0",
   },
 ];
 
