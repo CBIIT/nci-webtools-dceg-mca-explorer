@@ -80,12 +80,41 @@ export const ifCancer = [
   { value: "0", label: "No" },
 ];
 
-export const initialData = Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
-  return {
-    chromosome: "chr" + i,
-    block_id: i + "",
+export const initialData = Array.from({ length: 22 }, (_, i) => i + 1)
+  .map((i) => {
+    return {
+      chromosome: "chr" + i,
+      block_id: i + "",
+      cf: "",
+      end: "0",
+      start: "-1",
+    };
+  })
+  .concat([
+    {
+      chromosome: "chrX",
+      block_id: "X",
+      cf: "",
+      end: "0",
+      start: "-1",
+    },
+  ]);
+export const initialChrX = [
+  {
+    chromosome: "chrX",
+    block_id: "X",
     cf: "",
     end: "0",
     start: "-1",
-  };
-});
+  },
+];
+
+export const initialChrY = [
+  {
+    chromosome: "chrY",
+    block_id: "Y",
+    cf: "0",
+    end: "0",
+    start: "0",
+  },
+];
