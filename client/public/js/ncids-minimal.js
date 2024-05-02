@@ -1342,11 +1342,24 @@
           this.element.classList.remove("show", "hide", "usa-footer__nci-return-to-top"),
             this.element.classList.add("grid-container", "usa-footer__return-to-top");
         }
+        // initialize() {
+        //   this.element.classList.remove("grid-container", "usa-footer__return-to-top"),
+        //     this.element.classList.add("usa-footer__nci-return-to-top", "hide");
+        //     window.addEventListener("scroll", this.scrollListener, !1);
+        // }
         initialize() {
-          this.element.classList.remove("grid-container", "usa-footer__return-to-top"),
-            this.element.classList.add("usa-footer__nci-return-to-top", "hide"),
-            window.addEventListener("scroll", this.scrollListener, !1);
-        }
+          this.element.classList.remove("grid-container", "usa-footer__return-to-top");
+          this.element.classList.add("usa-footer__nci-return-to-top", "hide");
+          window.addEventListener("scroll", this.scrollListener, false);
+          this.element.addEventListener("click", this.scrollToTop.bind(this));
+      }
+  
+      scrollToTop() {
+          window.scrollTo({
+              top: 0,
+              behavior: "instant" // "instant" here means no scrolling effect
+          });
+      }
       }
       class c {
         constructor(e, t) {
@@ -2938,35 +2951,35 @@
             "es" === document.documentElement.lang
               ? u.create(e, { subscribeInvalidEmailAlert: "Ingrese su dirección de correo electrónico" })
               : u.create(e),
-              e.querySelector(".usa-footer__nci-return-to-top a").addEventListener("click", () => {
-                t("RightEdge:LinkClick", "RightEdge:LinkClick", {
-                  linkText: "Back To Top",
-                  location: "Right Edge",
-                  section: "Back To Top",
-                });
-              }),
-              e.querySelectorAll(".usa-footer__primary-section a, .usa-footer__secondary-section a").forEach((e) => {
-                e.addEventListener("click", (e) => {
-                  const t = ((e) => e.currentTarget.textContent.trim() || "_ERROR_")(e),
-                    n = ((e) => {
-                      const t = e.currentTarget,
-                        n = t.parentElement,
-                        i = n.parentElement,
-                        s = "_ERROR_";
-                      if (n.matches("address")) return "OrganizationArea";
-                      if (n.classList.contains("usa-footer__secondary-link")) {
-                        const e = t.closest("section");
-                        return (e.firstElementChild.firstElementChild || e.firstElementChild).textContent || s;
-                      }
-                      return i.classList.contains("usa-footer__contact-info")
-                        ? t.closest(".usa-footer__contact-links").firstElementChild.textContent.trim() || s
-                        : t.classList.contains("usa-social-link")
-                        ? t.closest(".usa-footer__social-links").firstElementChild.textContent.trim() || s
-                        : t.textContent.trim() || s;
-                    })(e);
-                  x("Footer:LinkClick", t, n);
-                });
-              }),
+              // e.querySelector(".usa-footer__nci-return-to-top a").addEventListener("click", () => {
+              //   t("RightEdge:LinkClick", "RightEdge:LinkClick", {
+              //     linkText: "Back To Top",
+              //     location: "Right Edge",
+              //     section: "Back To Top",
+              //   });
+              // }),
+              // e.querySelectorAll(".usa-footer__primary-section a, .usa-footer__secondary-section a").forEach((e) => {
+              //   e.addEventListener("click", (e) => {
+              //     const t = ((e) => e.currentTarget.textContent.trim() || "_ERROR_")(e),
+              //       n = ((e) => {
+              //         const t = e.currentTarget,
+              //           n = t.parentElement,
+              //           i = n.parentElement,
+              //           s = "_ERROR_";
+              //         if (n.matches("address")) return "OrganizationArea";
+              //         if (n.classList.contains("usa-footer__secondary-link")) {
+              //           const e = t.closest("section");
+              //           return (e.firstElementChild.firstElementChild || e.firstElementChild).textContent || s;
+              //         }
+              //         return i.classList.contains("usa-footer__contact-info")
+              //           ? t.closest(".usa-footer__contact-links").firstElementChild.textContent.trim() || s
+              //           : t.classList.contains("usa-social-link")
+              //           ? t.closest(".usa-footer__social-links").firstElementChild.textContent.trim() || s
+              //           : t.textContent.trim() || s;
+              //       })(e);
+              //     x("Footer:LinkClick", t, n);
+              //   });
+              // }),
               e.addEventListener("usa-footer:nav-links:expand", (e) => {
                 const t = e.detail.querySelector("button.usa-footer__primary-link").textContent || "_ERROR_";
                 x("Footer:SectionExpand", "Expand", t);
