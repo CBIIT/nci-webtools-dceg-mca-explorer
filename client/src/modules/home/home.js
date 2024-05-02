@@ -53,7 +53,7 @@ export default function Home({ links }) {
           <div className="container  text-dark">
             <h2 className="h4">Credits</h2>
             <p>
-              Mitchell Machiela, Aubrey Hubbard,  Lesley Chapman Hannah and colleagues at the{" "}
+              Mitchell Machiela, Aubrey Hubbard, Lesley Chapman Hannah and colleagues at the{" "}
               <a href="https://dceg.cancer.gov/" target="_blank">
                 Division of Cancer Epidemiology and Genetics (DCEG)
               </a>
@@ -65,8 +65,8 @@ export default function Home({ links }) {
               <a href="https://www.nih.gov/" target="_blank">
                 National Institutes of Health (NIH)
               </a>
-              , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Brian Park, Xiaozheng Yao, Ben
-              Chen, Madhu Kanigicherla, Kai-Ling Chen and staff at{" "}
+              , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Xiaozheng Yao, Madhu Kanigicherla,
+              Nguyen Thuong, Brian Park, Ben Chen, Kai-Ling Chen and staff at{" "}
               <a href="https://www.essential-soft.com/" target="_blank">
                 Essential Software Inc.
               </a>

@@ -2,6 +2,7 @@
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { useEffect, useState } from "react";
+import { initialData } from "../../../mosaicTiler/constants";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -20,6 +21,11 @@ export default function CircosPlot(props) {
   const layoutxy = props.layoutxy;
   //const checkMaxLines = props.checkMaxLines;
   const [plotLoaded, setPlotLoaded] = useState(false);
+
+  const [plotgain, setPlotgain] = useState(circle.gain.concat(initialData));
+  const [plotloh, setPlotloh] = useState(circle.loh.concat(initialData));
+  const [plotloss, setPlotloss] = useState(circle.loss.concat(initialData));
+  const [plotunder, setPlotunder] = useState(circle.undetermined.concat(initialData));
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
@@ -115,7 +121,7 @@ export default function CircosPlot(props) {
             tracks={[
               {
                 type: STACK,
-                data: circle.undetermined,
+                data: plotunder,
                 config: {
                   innerRadius: 0.05,
                   outerRadius: 0.25,
@@ -125,12 +131,12 @@ export default function CircosPlot(props) {
                   strokeColor: "grey",
                   direction: "out",
                   // logScale: true,
-                  color: "grey",
+                  color: "#585858",
                   backgrounds: [
                     {
                       start: 0,
                       end: 1,
-                      color: "grey",
+                      color: "#808080",
                       opacity: 0.5,
                     },
                   ],
@@ -153,7 +159,7 @@ export default function CircosPlot(props) {
               },
               {
                 type: STACK,
-                data: circle.loss.concat(dataXY),
+                data: plotloss.concat(dataXY),
                 config: {
                   innerRadius: 0.25,
                   outerRadius: 0.5,
@@ -188,7 +194,7 @@ export default function CircosPlot(props) {
               },
               {
                 type: STACK,
-                data: circle.loh,
+                data: plotloh,
                 config: {
                   innerRadius: 0.5,
                   outerRadius: 0.75,
@@ -214,7 +220,7 @@ export default function CircosPlot(props) {
               },
               {
                 type: STACK,
-                data: circle.gain,
+                data: plotgain,
                 config: {
                   innerRadius: 0.75,
                   outerRadius: 1,
