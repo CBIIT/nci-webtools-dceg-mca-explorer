@@ -872,6 +872,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     );
   }, [form.counterSubmitted]);
 
+  //chromosome comparison download
   const handleDownload = () => {
     setIsLoaded(true);
     var imageAs = document.getElementById("A");
@@ -930,6 +931,17 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   .then((dataUrl4) => {
                     const pdf = new jsPDF();
                     const width = pdf.internal.pageSize.getWidth() / 2;
+                    const widthlabel = width / 2;
+                    const height = pdf.internal.pageSize.getHeight(); // Get the height of the PDF page
+                    const pngHeight = imageAs.offsetHeight; // chromosome plot height
+                    const pngWidth = imageAs.offsetWidth;
+                    const snpHeight = snp ? snp.offsetHeight : 0; // snp height
+                    const imageSpacing = 10; // Adjust as needed
+                    const scaleplot = Math.min((width - imageSpacing) / pngWidth, height / pngHeight);
+                    const plotheight = pngHeight * scaleplot;
+                    const plotwidth = pngWidth * scaleplot;
+                    console.log(width, height, pngHeight, pngWidth, plotheight, snpHeight, scaleplot);
+
                     pdf.setFillColor(0, 128, 0);
                     pdf.rect(legendX, legendY, legendSize, legendSize, "F");
                     pdf.setFontSize(8);
@@ -954,21 +966,44 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     pdf.setTextColor(0, 0, 0);
                     pdf.setFontSize(8);
                     if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
-                    pdf.text(commonTitle, width, initalY + 4, { align: "center" });
-                    pdf.text(titleA, width * 0.5, initalY + 8, { align: "center" });
-                    pdf.text(titleB, 1.5 * width, initalY + 8, { align: "center" });
+                    const texttitle = pdf.splitTextToSize(commonTitle, 2 * (width - imageSpacing));
+                    pdf.text(texttitle, width, initalY + 4, { align: "center" });
+                    const textA = pdf.splitTextToSize(titleA, width - imageSpacing);
+                    const textB = pdf.splitTextToSize(titleB, width - imageSpacing);
+                    pdf.text(textA, width * 0.5, initalY + 8, { align: "center" });
+                    pdf.text(textB, 1.5 * width, initalY + 8, { align: "center" });
 
-                    pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
-                    pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
+                    let y0 = initalY + 10 + imageSpacing;
+                    let y = plotheight + 30 + imageSpacing;
 
-                    pdf.addImage(dataUrl3, "PNG", 0, width + initalY + 20, width, 0);
-                    pdf.addImage(dataUrl3, "PNG", width, width + initalY + 20, width, 0);
-                    pdf.addImage(dataUrl4, "PNG", 0, width + initalY + 40, width, 0);
-                    pdf.addImage(dataUrl4, "PNG", width, width + initalY + 40, width, 0);
+                    pdf.addImage(dataUrl1, "PNG", imageSpacing, y0, plotwidth, plotheight);
+                    pdf.addImage(dataUrl2, "PNG", width, y0, plotwidth, plotheight);
 
-                    if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
-                    if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
+                    if (chromesomeId) pdf.text(rangeLabel, widthlabel, y, { align: "center" });
+                    if (chromesomeId) pdf.text(rangeLabel, width + widthlabel, y, { align: "center" });
+                    pdf.addImage(dataUrl3, "PNG", imageSpacing, y + 5, plotwidth, 0);
+                    pdf.addImage(dataUrl3, "PNG", width, y + 5, plotwidth, 0);
                     //}
+
+                    if (gene !== null) {
+                      const geneImageHeight = gene.offsetHeight;
+                      const geneImageWidth = gene.offsetWidth;
+                      let scale = 1;
+                      const geneY = height / 2; //if gene height is bigger than half of page, put gene in new page
+                      if (geneImageHeight * scaleplot > geneY) {
+                        pdf.addPage();
+                        // Calculate scale to fit the image within one page
+                        scale = Math.min((width - imageSpacing) / geneImageWidth, height / geneImageHeight);
+                        y = 0;
+                      } else {
+                        scale = scaleplot;
+                        y = y + imageSpacing + 20;
+                      }
+                      pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
+                      pdf.addImage(dataUrl4, "PNG", width, y, geneImageWidth * scale, geneImageHeight * scale);
+                      //pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
+                      console.log(geneImageWidth, scaleplot);
+                    }
 
                     pdf.save(downloadname);
                     //setTimeout(() => pdf.save(downloadname), 500);
@@ -991,7 +1026,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     var imageBs = document.getElementById("B");
     var imageB = imageBs.querySelectorAll("svg")[0];
     //initial
-
+    console.log(imageA, imageB);
     const initalY = 15;
     const legendSize = 2;
     const legendY = 5;
@@ -1007,7 +1042,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           .toPng(imageB, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
           .then((dataUrl2) => {
             const pdf = new jsPDF();
-            const width = pdf.internal.pageSize.getWidth() / 2;
+            const pdfwidth = pdf.internal.pageSize.getWidth();
+            const width = pdfwidth / 2;
             pdf.setFillColor(0, 128, 0);
             pdf.rect(legendX, legendY, legendSize, legendSize, "F");
             pdf.setFontSize(8);
@@ -1032,12 +1068,17 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             pdf.setTextColor(0, 0, 0);
             pdf.setFontSize(8);
             // if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
-            pdf.text(commonTitle.slice(1), width, initalY, { align: "center" });
-            pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
-            pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
+            const textTitle = pdf.splitTextToSize(commonTitle.slice(1), 2 * width - 10);
+            pdf.text(textTitle, width, initalY, { align: "center" });
 
-            pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
-            pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
+            const textA = pdf.splitTextToSize(titleA, width - 10);
+            const textB = pdf.splitTextToSize(titleB, width - 10);
+
+            pdf.text(textA, width * 0.5, initalY + 5, { align: "center" });
+            pdf.text(textB, 1.5 * width, initalY + 5, { align: "center" });
+
+            pdf.addImage(dataUrl1, "PNG", 0, initalY + 20, width, width);
+            pdf.addImage(dataUrl2, "PNG", width, initalY + 20, width, width);
 
             //if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
             // if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
@@ -1491,7 +1532,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       variant="link"
                       onClick={handleDownload}
                       style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
-                      Download comparison images
+                      Download image
                     </Button>
                   )}
                 </Col>
@@ -1713,7 +1754,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   variant="link"
                   onClick={handlecircleDownload}
                   style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
-                  Download comparison images
+                  Download image
                 </Button>
               ) : (
                 ""

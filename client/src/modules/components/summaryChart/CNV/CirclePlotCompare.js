@@ -41,7 +41,7 @@ export default function CircosPlot(props) {
         {/* <div style={{ fontSize: "14px" }}>{props.msg}</div> */}
         <Container style={{ position: "relative", width: "100%", textAlign: "center" }}>
           <div
-            id="A"
+            id="circleCompare"
             style={{
               textAlign: "center",
               position: "absolute",
