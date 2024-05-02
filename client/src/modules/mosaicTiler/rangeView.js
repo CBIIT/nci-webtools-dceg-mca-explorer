@@ -353,7 +353,7 @@ export default function RangeView(props) {
         },
       },
     ];
-    console.log(gainViolin);
+    // console.log(gainViolin);
     return gainViolin;
   }
 

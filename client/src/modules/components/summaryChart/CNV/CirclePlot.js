@@ -22,61 +22,10 @@ export default function CircosPlot(props) {
   //const checkMaxLines = props.checkMaxLines;
   const [plotLoaded, setPlotLoaded] = useState(false);
 
-  // const [plotgain, setPlotgain] = useState(circle.gain.length > 0 ? circle.gain.concat(initialData) : []);
-  // const [plotloh, setPlotloh] = useState(circle.loh.length > 0 ? circle.loh.concat(initialData) : []);
-  // const [plotloss, setPlotloss] = useState(circle.loss.length > 0 ? circle.loss.concat(initialData) : []);
-  // const [plotunder, setPlotunder] = useState(
-  //   circle.undetermined.length > 0 ? circle.undetermined.concat(initialData) : []
-  // );
-
   const [plotgain, setPlotgain] = useState(circle.gain.concat(initialData));
   const [plotloh, setPlotloh] = useState(circle.loh.concat(initialData));
   const [plotloss, setPlotloss] = useState(circle.loss.concat(initialData));
   const [plotunder, setPlotunder] = useState(circle.undetermined.concat(initialData));
-
-  // const test = [
-  //   {
-  //     PopID: "East Asian",
-  //     block_id: "7",
-
-  //     chromosome: "chr7",
-  //     computedGender: "F",
-  //     dataset: "UKBB",
-  //     end: "23063415",
-  //     endAngle: 0.043344639683771745,
-  //     endGrch38: "23063415",
-  //     id: 16953,
-  //     innerRadius: 17.212,
-  //     layer: 0,
-  //     length: "23063415",
-  //     outerRadius: 19.212,
-  //     start: "0",
-  //     startAngle: 0,
-
-  //     value: "0.0365",
-  //   },
-  //   {
-  //     PopID: "East Asian",
-  //     block_id: "8",
-
-  //     chromosome: "chr8",
-  //     computedGender: "F",
-  //     dataset: "UKBB",
-  //     end: "23063415",
-  //     endAngle: 0.043344639683771745,
-  //     endGrch38: "23063415",
-  //     id: 16953,
-  //     innerRadius: 17.212,
-  //     layer: 0,
-  //     length: "23063415",
-  //     outerRadius: 19.212,
-  //     start: "0",
-  //     startAngle: 0,
-
-  //     value: "0.0365",
-  //   },
-  // ];
-  //console.log(plotunder, initialData);
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
@@ -268,3 +217,48 @@ export default function CircosPlot(props) {
   );
   //return
 }
+
+////
+// const test = [
+//   {
+//     PopID: "East Asian",
+//     block_id: "7",
+
+//     chromosome: "chr7",
+//     computedGender: "F",
+//     dataset: "UKBB",
+//     end: "23063415",
+//     endAngle: 0.043344639683771745,
+//     endGrch38: "23063415",
+//     id: 16953,
+//     innerRadius: 17.212,
+//     layer: 0,
+//     length: "23063415",
+//     outerRadius: 19.212,
+//     start: "0",
+//     startAngle: 0,
+
+//     value: "0.0365",
+//   },
+//   {
+//     PopID: "East Asian",
+//     block_id: "8",
+
+//     chromosome: "chr8",
+//     computedGender: "F",
+//     dataset: "UKBB",
+//     end: "23063415",
+//     endAngle: 0.043344639683771745,
+//     endGrch38: "23063415",
+//     id: 16953,
+//     innerRadius: 17.212,
+//     layer: 0,
+//     length: "23063415",
+//     outerRadius: 19.212,
+//     start: "0",
+//     startAngle: 0,
+
+//     value: "0.0365",
+//   },
+// ];
+//console.log(plotunder, initialData);

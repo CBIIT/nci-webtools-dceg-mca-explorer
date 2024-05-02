@@ -13,7 +13,16 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions, initialData } from "../../../mosaicTiler/constants";
+import {
+  AncestryOptions,
+  initialX,
+  initialY,
+  smokeNFC,
+  SexOptions,
+  initialData,
+  imgWidth,
+  imgHeight,
+} from "../../../mosaicTiler/constants";
 import { fisherTest } from "../../utils";
 
 import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -1060,7 +1069,6 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const handleSummaryDownload = async () => {
     setIsLoaded(true);
     var images = document.getElementById("summaryCircle");
-    var image = images.querySelectorAll("svg")[1];
     var imageXY = images.querySelectorAll("svg")[0];
     const imgconfig = {
       quality: 1,
@@ -1071,23 +1079,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     // const canvasxy = await htmlToImage.toCanvas(imageXY);
     // const base64fDataUrlxy = canvas.toDataURL("image/png");
     // console.log(base64fDataUrl);
-    htmlToImage
-      .toPng(image, imgconfig)
-      .then((dataUrl) => {
-        htmlToImage.toPng(imageXY, imgconfig).then((dataUrl2) => {
-          const pdf = new jsPDF();
-          const width = pdf.internal.pageSize.getWidth();
-          //const height = pdf.internal.pageSize.getHeight();
-          //pdf.text("", width *0.5, 10, { align: "center" });
-          pdf.setTextColor(0, 0, 0);
-          pdf.setFontSize(12);
-          pdf.text(circosTitle.slice(1), width * 0.5, 15, { align: "center" });
 
-          pdf.addImage(dataUrl, "PNG", 0, 20, width, width);
-          pdf.addImage(dataUrl2, "PNG", 0, 20, width, width);
-          pdf.save(circosTitle.slice(1) + ".pdf");
-          setIsLoaded(false);
-        });
+    htmlToImage
+      .toPng(imageXY, imgconfig)
+      .then((dataUrl) => {
+        const pdf = new jsPDF();
+        const width = pdf.internal.pageSize.getWidth();
+        //const height = pdf.internal.pageSize.getHeight();
+        //pdf.text("", width *0.5, 10, { align: "center" });
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(12);
+        const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20);
+        pdf.text(circosTitleLines, width * 0.5, 15, { align: "center" });
+        pdf.addImage(dataUrl, "PNG", 0, 30, width, width);
+        pdf.save(simpleTitle.slice(1) + ".pdf");
+        setIsLoaded(false);
       })
       .catch(function (error) {
         console.error("oops, something went wrong!", error);
@@ -1120,6 +1126,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     let downloadname = "Chr" + chromesomeId + ".pdf";
     const geneImage = document.getElementById("geneplots");
     let geneImageHeight = 0;
+    let geneImageWidth = 0;
 
     if (chromesomeId) {
       figResolution = 1;
@@ -1132,7 +1139,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
     // Check if imagegene height is more than 2000 pixels
     if (gene !== null) {
-      geneImageHeight = geneImage.clientHeight;
+      geneImageHeight = geneImage.offsetHeight;
+      geneImageWidth = geneImage.offsetWidth;
       //console.log("geneImageHeight ", geneImageHeight);
     }
 
@@ -1188,7 +1196,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
                 let y = initalY + 10 + imageSpacing;
                 // Define the height of the PNG image
-                const pngHeight = 250; // Adjust as needed
+                const pngHeight = 300; // Adjust as needed
                 const snpHeight = 15; // Adjust as needed
                 console.log("y ---- ", y);
                 console.log("height ", height);
@@ -1197,76 +1205,88 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 pdf.addImage(dataUrl3, "PNG", imageSpacing, width * 0.5 + 10 + imageSpacing, imageWidth, snpHeight);
                 //pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
 
-                let rangeLabelY = width * 0.5 + 12 + imageSpacing; // Adjust the vertical position as needed
+                let rangeLabelY = width * 0.5 + 10 + imageSpacing; // Adjust the vertical position as needed
                 //console.log("rangeLabelY ", rangeLabelY);
 
                 console.log("geneImageHeight --- ", geneImageHeight);
                 let customGeneImgHeight;
+                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, rangeLabelY, { align: "center" });
+                if (gene !== null) {
+                  let scale = 1;
 
-                if (gene != null) {
-                  if (geneImageHeight >= 1500) {
+                  if (geneImageHeight > 150) {
                     pdf.addPage();
-                    y = initalY;
-                    console.log("initalY ", initalY);
-                    // Move rangeLabel down
-                    rangeLabelY = pngHeight + 21;
-                    customGeneImgHeight = pngHeight;
-                    // Adjust the height of the last image to fill the remaining space on the page
-                    pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
-                  } else if (geneImageHeight < 1500 && geneImageHeight >= 1200) {
-                    pdf.addPage();
-                    y = width * 0.5 + 20 + imageSpacing;
-                    customGeneImgHeight = imageHeight * 1.5;
-                    pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
-                    rangeLabelY = customGeneImgHeight + y + imageSpacing;
-                  } else if (geneImageHeight < 1200 && geneImageHeight >= 1000) {
-                    y = width * 0.5 + 20 + imageSpacing;
-                    customGeneImgHeight = imageHeight * 1.5;
-                    pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
-                    rangeLabelY = customGeneImgHeight + y + imageSpacing;
-                  } else if (geneImageHeight < 1000 && geneImageHeight >= 500) {
-                    customGeneImgHeight = imageHeight;
-                    pdf.addImage(
-                      dataUrl4,
-                      "PNG",
-                      imageSpacing,
-                      width * 0.5 + 20 + imageSpacing,
-                      imageWidth,
-                      customGeneImgHeight
-                    );
-                    rangeLabelY = 250;
-                  } else if (geneImageHeight < 500 && geneImageHeight > 300) {
-                    customGeneImgHeight = imageHeight;
-                    pdf.addImage(
-                      dataUrl4,
-                      "PNG",
-                      imageSpacing,
-                      width * 0.5 + 20 + imageSpacing,
-                      imageWidth,
-                      customGeneImgHeight
-                    );
-                    rangeLabelY = 200;
+                    // Calculate scale to fit the image within one page
+                    scale = Math.min((imgWidth - 2 * imageSpacing) / geneImageWidth, imgHeight / geneImageHeight);
+                    y = 0;
                   } else {
-                    customGeneImgHeight = geneImageHeight / 5;
-                    pdf.addImage(
-                      dataUrl4,
-                      "PNG",
-                      imageSpacing,
-                      width * 0.5 + 20 + imageSpacing,
-                      imageWidth,
-                      customGeneImgHeight
-                    );
-                    rangeLabelY = imageHeight + snpHeight + customGeneImgHeight + imageSpacing * 3 + initalY + 5;
+                    scale = Math.min((imgWidth - 2 * imageSpacing) / geneImageWidth, 150 / geneImageHeight);
+                    y = 150;
                   }
+                  pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
                 }
+                // if (gene != null) {
+                //   if (geneImageHeight >= 1500) {
+                //     pdf.addPage();
+                //     y = initalY;
+                //     console.log("initalY ", initalY);
+                //     // Move rangeLabel down
+                //     rangeLabelY = pngHeight + 21;
+                //     customGeneImgHeight = pngHeight;
+                //     // Adjust the height of the last image to fill the remaining space on the page
+                //     pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
+                //   } else if (geneImageHeight < 1500 && geneImageHeight >= 1200) {
+                //     pdf.addPage();
+                //     y = width * 0.5 + 20 + imageSpacing;
+                //     customGeneImgHeight = imageHeight * 1.5;
+                //     pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
+                //     rangeLabelY = customGeneImgHeight + y + imageSpacing;
+                //   } else if (geneImageHeight < 1200 && geneImageHeight >= 1000) {
+                //     y = width * 0.5 + 20 + imageSpacing;
+                //     customGeneImgHeight = imageHeight * 1.5;
+                //     pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
+                //     rangeLabelY = customGeneImgHeight + y + imageSpacing;
+                //   } else if (geneImageHeight < 1000 && geneImageHeight >= 500) {
+                //     customGeneImgHeight = imageHeight;
+                //     pdf.addImage(
+                //       dataUrl4,
+                //       "PNG",
+                //       imageSpacing,
+                //       width * 0.5 + 20 + imageSpacing,
+                //       imageWidth,
+                //       customGeneImgHeight
+                //     );
+                //     rangeLabelY = 250;
+                //   } else if (geneImageHeight < 500 && geneImageHeight > 300) {
+                //     customGeneImgHeight = imageHeight;
+                //     pdf.addImage(
+                //       dataUrl4,
+                //       "PNG",
+                //       imageSpacing,
+                //       width * 0.5 + 20 + imageSpacing,
+                //       imageWidth,
+                //       customGeneImgHeight
+                //     );
+                //     rangeLabelY = 200;
+                //   } else {
+                //     customGeneImgHeight = geneImageHeight / 5;
+                //     pdf.addImage(
+                //       dataUrl4,
+                //       "PNG",
+                //       imageSpacing,
+                //       width * 0.5 + 20 + imageSpacing,
+                //       imageWidth,
+                //       customGeneImgHeight
+                //     );
+                //     rangeLabelY = imageHeight + snpHeight + customGeneImgHeight + imageSpacing * 3 + initalY + 5;
+                //   }
+                // }
                 console.log("customGeneImgHeight ", customGeneImgHeight);
                 console.log("rangeLabelY **** ", rangeLabelY);
 
                 pdf.setFontSize(8);
                 //if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
                 //}
-
-                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, rangeLabelY, { align: "center" });
 
                 pdf.save(downloadname);
                 //setTimeout(() => pdf.save(downloadname), 500);

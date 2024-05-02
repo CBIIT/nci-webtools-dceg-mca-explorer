@@ -85,18 +85,18 @@ export const initialData = Array.from({ length: 22 }, (_, i) => i + 1)
     return {
       chromosome: "chr" + i,
       block_id: i + "",
-      value: "",
-      end: "0",
-      start: "0",
+      value: "0",
+      end: "-1",
+      start: "-1",
     };
   })
   .concat([
     {
       chromosome: "chrX",
       block_id: "X",
-      value: "",
-      end: "0",
-      start: "0",
+      value: "0",
+      end: "-1",
+      start: "-1",
     },
   ])
   .concat([
@@ -104,8 +104,8 @@ export const initialData = Array.from({ length: 22 }, (_, i) => i + 1)
       chromosome: "chrY",
       block_id: "Y",
       value: "0",
-      end: "0",
-      start: "0",
+      end: "-1",
+      start: "-1",
     },
   ]);
 export const initialChrX = [
@@ -127,3 +127,6 @@ export const initialChrY = [
     start: "0",
   },
 ];
+
+export const imgWidth = 210; // Width of the A4 page in mm
+export const imgHeight = 297; // Height of the A4 page in mm
