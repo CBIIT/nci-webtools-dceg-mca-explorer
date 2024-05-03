@@ -576,7 +576,7 @@ font-weight:600;
 @media (min-width: 992px) {
     .nci-logo img {
       height: 50px;
-      max-width:100%;
+      max-width597px%;
     }
   }
   
@@ -584,7 +584,26 @@ font-weight:600;
   @media (max-width: 991px) {
     .nci-logo img {
       height: 38px;
-      max-width: 100%;
+      max-width:288px;
     }
   }
   
+.usa-button {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: rgb(24, 83, 148) !important ;
+    border: 0;
+    border-radius: .25rem;
+    color: #fff ;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Open Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+    font-size: 1.01rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-right: .5rem;
+    padding: .75rem 1.25rem;
+    text-align: center;
+    text-decoration: none;
+    width: 100%;
+}

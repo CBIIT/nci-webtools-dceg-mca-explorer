@@ -2,6 +2,7 @@ import Container from "react-bootstrap/Container";
 import genomeImage from "./mca1.jpeg";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import Button from "react-bootstrap/Button";
 import { Link } from "react-router-dom";
 import "./home.scss";
 //text-light to text-dark
@@ -25,9 +26,15 @@ export default function Home({ links }) {
                       including mCA location (e.g., chromosome and bp position), mCA type (e.g., loss, gain, neutral),
                       and cell fraction (e.g., percentage of cells impacted by the event).
                     </p>
-                    <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none">
-                      Explore mCAs
-                    </Link>
+                    {/* <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none"> */}
+                    
+                    <Link to="/mosaic">
+                    <Button className="usa-button">
+                        Explore mCAs
+                        </Button>
+                      </Link>
+                   
+                   
                   </div>
                 </div>
               </Col>
