@@ -933,8 +933,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     const width = pdf.internal.pageSize.getWidth() / 2;
                     const widthlabel = width / 2;
                     const height = pdf.internal.pageSize.getHeight(); // Get the height of the PDF page
-                    const pngHeight = imageAs.offsetHeight; // chromosome plot height
-                    const pngWidth = imageAs.offsetWidth;
+                    const pngHeight = imageAs ? imageAs.offsetHeight : 0; // chromosome plot height
+                    const pngWidth = imageAs ? imageAs.offsetWidth : 0;
                     const snpHeight = snp ? snp.offsetHeight : 0; // snp height
                     const imageSpacing = 10; // Adjust as needed
                     const scaleplot = Math.min((width - imageSpacing) / pngWidth, height / pngHeight);
@@ -1197,9 +1197,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 const pdf = new jsPDF();
                 const width = pdf.internal.pageSize.getWidth();
                 const height = pdf.internal.pageSize.getHeight(); // Get the height of the PDF page
-                const pngHeight = image.offsetHeight; // chromosome plot height
-                const pngWidth = image.offsetWidth;
-                const snpHeight = snp.offsetHeight; // snp height
+                const pngHeight = image !== null ? image.offsetHeight : 0; // chromosome plot height
+                const pngWidth = image !== null ? image.offsetWidth : 0;
+                const snpHeight = snp !== null ? snp.offsetHeight : 0; // snp height
                 const imageSpacing = 10; // Adjust as needed
                 const scaleplot = Math.min((width - 2 * imageSpacing) / pngWidth, height / pngHeight);
                 const plotheight = pngHeight * scaleplot;
