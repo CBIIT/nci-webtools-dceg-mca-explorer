@@ -274,11 +274,15 @@ export default function RangeView(props) {
     // ];
 
     gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
-    var gainViolin = [
+    var violinData = [
       {
-        y: gain.map((e) => {
-          return Number(e.value);
-        }),
+        y: gain
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === chromoId : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "Gain",
         type: "violin",
         box: {
@@ -295,9 +299,13 @@ export default function RangeView(props) {
         },
       },
       {
-        y: loh.map((e) => {
-          return Number(e.value);
-        }),
+        y: loh
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === chromoId : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "CN-LOH",
         type: "violin",
         box: {
@@ -314,9 +322,13 @@ export default function RangeView(props) {
         },
       },
       {
-        y: loss.map((e) => {
-          return Number(e.value);
-        }),
+        y: loss
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === chromoId : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "Loss",
         type: "violin",
         box: {
@@ -334,9 +346,13 @@ export default function RangeView(props) {
       },
 
       {
-        y: undetermined.map((e) => {
-          return Number(e.value);
-        }),
+        y: undetermined
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === chromoId : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "Undetermined",
         type: "violin",
         box: {
@@ -353,8 +369,8 @@ export default function RangeView(props) {
         },
       },
     ];
-    // console.log(gainViolin);
-    return gainViolin;
+    //console.log(violinData, loh);
+    return violinData;
   }
 
   function getScatterData() {

@@ -176,7 +176,7 @@ function GenePlot(props) {
             id="showGenePlot"
             onClick={props.toggleVisibility}
             style={{ padding: "5px" }}>
-            {props.isVisible ? "Hide Gene plot" : "Show Gene plot"}
+            {props.isVisible ? "- Hide Gene plot" : "+ Show Gene plot"}
           </Button>
         </div>
       ) : (

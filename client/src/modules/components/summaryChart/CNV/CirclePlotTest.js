@@ -910,7 +910,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     const legendY = 5;
     const legendY2 = 7;
     const legendX = 150;
-    let figResolution = 0.8;
+    let figResolution = 1;
     let downloadname = "compareSummary.pdf";
     if (chromesomeId) {
       figResolution = 1;
