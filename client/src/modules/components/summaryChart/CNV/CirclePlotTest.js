@@ -13,19 +13,10 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import {
-  AncestryOptions,
-  initialX,
-  initialY,
-  smokeNFC,
-  SexOptions,
-  initialData,
-  imgWidth,
-  imgHeight,
-} from "../../../mosaicTiler/constants";
-import { fisherTest } from "../../utils";
+import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+//import { fisherTest } from "../../utils";
 
-import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
+//import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -127,6 +118,19 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [isLoadedA, setIsLoadedA] = useState(false);
   const [isLoadedB, setIsLoadedB] = useState(false);
   const [singleZoomLength, setSingleZoomLength] = useState(0);
+
+  const [showTitle, setShowTitle] = useState(false);
+  const [showTableTitle, setShowTableTitle] = useState(false);
+
+  const handleDisplayTitle = () => {
+    // Toggle display of circosTitle
+    setShowTitle(!showTitle);
+  };
+
+  const handleDisplayTableTitle = () => {
+    // Toggle display of circosTitle
+    setShowTableTitle(!showTableTitle);
+  };
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -269,6 +273,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           bck.addEventListener("click", () => {
             console.log("click", b.__data__.key);
             setShowChart(true);
+            setShowTitle(false);
             props.onClickedChr(true);
             setChromesomeId(b.__data__.key);
             sendClickedId(b.__data__.key);
@@ -295,6 +300,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setShowChart(false);
     sendClickedId(-1);
     setZoomRange(null);
+    setShowTitle(false);
     props.onClickedChr(false);
     setIsCompare(false);
     setForm({
@@ -305,8 +311,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       chrSingle: null,
       start: 0,
       end: "",
-      chrX: false,
-      chrY: false,
+      chrX: form.chrX,
+      chrY: form.chrY,
       plotType: { value: "circos", label: "Whole chromosome" },
       chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
         .map((i) => {
@@ -1655,9 +1661,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   {/* {rangeLabel ? rangeLabel : "Chr" + chromesomeId} */}
                   {"Chr" + chromesomeId}
                   <br></br>
-                  <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)}>
-                    {simpleTitle.slice(1)}
-                    <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                  <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)} onClick={handleDisplayTitle}>
+                    {!showTitle && (
+                      <div>
+                        {simpleTitle.slice(1)}{" "}
+                        <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                      </div>
+                    )}
+                    {showTitle && <div>{circosTitle.slice(1)}</div>}
                   </div>
                 </Col>
                 <Col
@@ -1699,7 +1710,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   <Table responsive bordered hover className="table fisherTable">
                     <thead>
                       <tr>
-                        <th rowSpan="2" className="bold-title-3" style={{ width: "400px" }}></th>
+                        <th rowSpan="2" className="bold-title-3" style={{ width: "410px" }}></th>
                         <th colSpan="3" className="bold-title-main">
                           mCA in region{" "}
                         </th>
@@ -1712,9 +1723,18 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="bold-title-2" title={circosTitle.slice(1)} style={{ cursor: "pointer" }}>
-                          {simpleTitle.slice(1)}
-                          {/* <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span> */}
+                        <td
+                          className="bold-title-2"
+                          title={circosTitle.slice(1)}
+                          style={{ cursor: "pointer" }}
+                          onClick={handleDisplayTableTitle}>
+                          {!showTableTitle && (
+                            <div>
+                              {simpleTitle.slice(1)}{" "}
+                              <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                            </div>
+                          )}
+                          {showTableTitle && <div>{circosTitle.slice(1)}</div>}
                         </td>
                         <td className="numberCol">
                           {rangeLabel === "" ? data.length.toLocaleString() : singleZoomLength.toLocaleString()}
@@ -1837,9 +1857,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               <Legend></Legend>
             </Col>
             <Col xs={12} md={12} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
-              <div style={{ cursor: "pointer", position: "relative" }} title={circosTitle.slice(1)}>
-                {simpleTitle.slice(1)}
-                <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+              <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)} onClick={handleDisplayTitle}>
+                {!showTitle && (
+                  <div>
+                    {simpleTitle.slice(1)}{" "}
+                    <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                  </div>
+                )}
+                {showTitle && <div>{circosTitle.slice(1)}</div>}
               </div>
             </Col>
             <Col

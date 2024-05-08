@@ -50,6 +50,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setIsY(form.chrY);
     setShowXY(true);
   }, [form.chrX, form.chrY]);
+
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "chrX") {
