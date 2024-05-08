@@ -80,39 +80,38 @@ export const ifCancer = [
   { value: "0", label: "No" },
 ];
 
-export const initialData = Array.from({ length: 22 }, (_, i) => i + 1)
-  .map((i) => {
-    return {
-      chromosome: "chr" + i,
-      block_id: i + "",
-      value: "0",
-      end: "-1",
-      start: "-1",
-    };
-  })
-  .concat([
-    {
-      chromosome: "chrX",
-      block_id: "X",
-      value: "0",
-      end: "-1",
-      start: "-1",
-    },
-  ])
-  .concat([
-    {
-      chromosome: "chrY",
-      block_id: "Y",
-      value: "0",
-      end: "-1",
-      start: "-1",
-    },
-  ]);
+export const initialData = Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
+  return {
+    chromosome: "chr" + i,
+    block_id: i + "",
+    value: "0",
+    end: "-1",
+    start: "-1",
+  };
+});
+// .concat([
+//   {
+//     chromosome: "chrX",
+//     block_id: "X",
+//     value: "0",
+//     end: "-1",
+//     start: "-1",
+//   },
+// ])
+// .concat([
+//   {
+//     chromosome: "chrY",
+//     block_id: "Y",
+//     value: "0",
+//     end: "-1",
+//     start: "-1",
+//   },
+// ]);
 export const initialChrX = [
   {
     chromosome: "chrX",
     block_id: "X",
-    cf: "",
+    value: "0",
     end: "0",
     start: "0",
   },
@@ -122,7 +121,7 @@ export const initialChrY = [
   {
     chromosome: "chrY",
     block_id: "Y",
-    cf: "0",
+    value: "0",
     end: "0",
     start: "0",
   },

@@ -203,7 +203,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       loss: props.loss,
       gain: props.gain,
       loh: props.loh,
-      undetermined: props.undetermined.concat(initialData),
+      undetermined: props.undetermined,
       chrx: props.chrx,
       chry: props.chry,
     });
@@ -1657,6 +1657,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   <br></br>
                   <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)}>
                     {simpleTitle.slice(1)}
+                    <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
                   </div>
                 </Col>
                 <Col
@@ -1672,7 +1673,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       variant="link"
                       onClick={handleSingleChrDownload}
                       style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
-                      Download images
+                      Download image
                     </Button>
                   )}
                 </Col>
@@ -1713,6 +1714,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       <tr>
                         <td className="bold-title-2" title={circosTitle.slice(1)} style={{ cursor: "pointer" }}>
                           {simpleTitle.slice(1)}
+                          {/* <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span> */}
                         </td>
                         <td className="numberCol">
                           {rangeLabel === "" ? data.length.toLocaleString() : singleZoomLength.toLocaleString()}
@@ -1835,8 +1837,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               <Legend></Legend>
             </Col>
             <Col xs={12} md={12} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
-              <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)}>
+              <div style={{ cursor: "pointer", position: "relative" }} title={circosTitle.slice(1)}>
                 {simpleTitle.slice(1)}
+                <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
               </div>
             </Col>
             <Col

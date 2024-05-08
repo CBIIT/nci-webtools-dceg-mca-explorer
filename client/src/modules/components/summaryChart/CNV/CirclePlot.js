@@ -2,12 +2,14 @@
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { useEffect, useState } from "react";
-import { initialData } from "../../../mosaicTiler/constants";
+import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
   const layoutAll = props.layoutAll;
   const dataXY = props.dataXY;
+  const isX = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "X");
+  const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
   const size = props.size;
   const thicknessloss = props.thicknessloss;
   const thicknessgain = props.thicknessgain;
@@ -22,10 +24,30 @@ export default function CircosPlot(props) {
   //const checkMaxLines = props.checkMaxLines;
   const [plotLoaded, setPlotLoaded] = useState(false);
 
-  const [plotgain, setPlotgain] = useState(circle.gain.concat(initialData));
-  const [plotloh, setPlotloh] = useState(circle.loh.concat(initialData));
-  const [plotloss, setPlotloss] = useState(circle.loss.concat(initialData));
-  const [plotunder, setPlotunder] = useState(circle.undetermined.concat(initialData));
+  const [plotgain, setPlotgain] = useState(
+    circle.gain
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotloh, setPlotloh] = useState(
+    circle.loh
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotloss, setPlotloss] = useState(
+    circle.loss
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotunder, setPlotunder] = useState(
+    circle.undetermined
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
