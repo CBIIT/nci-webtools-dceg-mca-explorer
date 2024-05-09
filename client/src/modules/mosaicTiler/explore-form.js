@@ -51,6 +51,15 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setShowXY(true);
   }, [form.chrX, form.chrY]);
 
+  useEffect(() => {
+    var chrSelected = form.chrSingle && form.chrSingle.value;
+    console.log(chrSelected, form.chrX);
+    if (!form.chrX && !form.chrY) {
+      setDisabledType([]);
+    } else {
+      if (chrSelected !== "chrX" && chrSelected !== "chrY" && chrSelected !== "") setDisabledType([]);
+    }
+  }, [form]);
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "chrX") {

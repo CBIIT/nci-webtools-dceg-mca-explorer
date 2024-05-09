@@ -188,10 +188,12 @@ export default function RangeView(props) {
           if (d.type === "mLOX") {
             chrXTemp.push(d);
             d.block_id = "X";
+            //lossTemp.push(d);
           }
           if (d.type === "mLOY") {
             chrYTemp.push(d);
             d.block_id = "Y";
+            //lossTemp.push(d);
           }
         }
       }
@@ -280,7 +282,7 @@ export default function RangeView(props) {
     //   },
     // ];
     // gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
-    console.log(data);
+    // console.log(data);
 
     var selectedChromeID = chromoId + "";
     var violinGain = filterDataByType(data, "Gain", gain);
