@@ -56,10 +56,13 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     console.log(chrSelected, form.chrX);
     if (!form.chrX && !form.chrY) {
       setDisabledType([]);
+      if (chrSelected === "chrX" || chrSelected === "chrY") setDisabledType(["loh", "gain", "undetermined"]);
     } else {
       if (chrSelected !== "chrX" && chrSelected !== "chrY" && chrSelected !== "") setDisabledType([]);
+      else setDisabledType(["loh", "gain", "undetermined"]);
     }
   }, [form]);
+
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "chrX") {

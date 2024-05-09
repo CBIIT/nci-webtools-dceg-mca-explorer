@@ -275,8 +275,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             setShowChart(true);
             setShowTitle(false);
             props.onClickedChr(true);
-            setChromesomeId(b.__data__.key);
-            sendClickedId(b.__data__.key);
+            setChromesomeId(b.__data__.key + "");
+            sendClickedId(b.__data__.key + "");
             const cid = "chr" + b.__data__.key;
             const chrid = form.chromosome.filter((c) => c.value === cid);
             setForm({
@@ -456,14 +456,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     //console.log(form, isLoadedA, isLoadedB);
   }, [isLoadedA, isLoadedB]);
-
+  var chromesomeIdString = chromesomeId + "";
   data = [
-    ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.loh.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.loss.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.undetermined.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.chrx.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.chry.filter((chr) => chr.block_id === chromesomeId + ""),
+    ...props.gain.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.loh.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.loss.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.undetermined.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.chrx.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.chry.filter((chr) => chr.block_id === chromesomeIdString),
     // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
   ];
 
@@ -505,6 +505,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
+        console.log(chromesomeId);
         query = {
           ...group,
           chr: chromesomeId,
@@ -1348,11 +1349,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
-  const linethickness = 0;
-  const thicknessgain = props.gain.length < 200 ? 1 : linethickness;
-  const thicknessloh = props.loh.length < 200 ? 1 : linethickness;
-  const thicknessloss = props.loss.length < 200 ? 1 : linethickness;
-  const thicknessundermined = props.undetermined.length < 200 ? 1 : linethickness;
+  // const linethickness = 0;
+  // const thicknessgain = props.gain.length < 200 ? 1 : linethickness;
+  // const thicknessloh = props.loh.length < 200 ? 1 : linethickness;
+  // const thicknessloss = props.loss.length < 200 ? 1 : linethickness;
+  // const thicknessundermined = props.undetermined.length < 200 ? 1 : linethickness;
 
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
@@ -1799,10 +1800,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       details="A"
                       msg={msgA}
                       size={compareCircleSize}
-                      thicknessloss={0}
-                      thicknessgain={0}
-                      thicknessundermined={0}
-                      thicknessloh={0}
+                      // thicknessloss={0}
+                      // thicknessgain={0}
+                      // thicknessundermined={0}
+                      // thicknessloh={0}
                       circle={circleA}
                       circleRef={circleRef}
                       maxtitleHeight={maxTitleheight - heightA}
@@ -1827,10 +1828,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       title={titleB}
                       details="B"
                       size={compareCircleSize}
-                      thicknessloss={0}
-                      thicknessgain={0}
-                      thicknessundermined={0}
-                      thicknessloh={0}
+                      // thicknessloss={0}
+                      // thicknessgain={0}
+                      // thicknessundermined={0}
+                      // thicknessloh={0}
                       circle={circleB}
                       circleRef={circleRef}
                       handleEnter={handleEnter}
@@ -1898,10 +1899,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 title={""}
                 msg={msg}
                 size={size > 1000 ? 1000 : size}
-                thicknessloss={thicknessloss}
-                thicknessgain={thicknessgain}
-                thicknessundermined={thicknessundermined}
-                thicknessloh={thicknessloh}
+                // thicknessloss={thicknessloss}
+                // thicknessgain={thicknessgain}
+                // thicknessundermined={thicknessundermined}
+                // thicknessloh={thicknessloh}
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}

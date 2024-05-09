@@ -211,7 +211,7 @@ export default function RangeView(props) {
       if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
       if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
     }
-    console.log(chrXTemp.length);
+    console.log(gain.length);
     setChrX(chrXTemp);
     setChrY(chrYTemp);
     setLoaded(true);
@@ -247,7 +247,9 @@ export default function RangeView(props) {
   const allValues = gain.concat(loss).concat(loh).concat(undetermined).concat(chrX).concat(chrY);
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
-    const clickedValues = allValues.filter((v) => v.block_id === chromoId);
+    var chromoIdString = chromoId + "";
+    const clickedValues = allValues.filter((v) => v.block_id === chromoId + "");
+    console.log(allValues, chromoId, clickedValues);
     setAllValue([...clickedValues]);
     //this is for single chromosome
   }, [chromoId]);
@@ -287,8 +289,15 @@ export default function RangeView(props) {
     var selectedChromeID = chromoId + "";
     var violinGain = filterDataByType(data, "Gain", gain);
     var violinloh = filterDataByType(data, "CN-LOH", loh);
-    var violinloss = filterDataByType(data, "Loss", loss);
+    var violinloss = filterDataByType(data, "Loss", loss.concat(chrX).concat(chrY));
     var violinundeter = filterDataByType(data, "Undetermined", undetermined);
+
+    if (chromoId === "X" || chromoId === "Y") {
+      violinGain = [];
+      violinloh = [];
+      violinundeter = [];
+      violinloss = chrX.concat(chrY);
+    }
 
     var violinDataSource = [
       {
@@ -527,7 +536,7 @@ export default function RangeView(props) {
     if (circleRef.current && loaded && document.getElementById("circosTable").getElementsByTagName("tr").length === 0) {
       [".track-0", ".track-1", ".track-2", ".track-3"].forEach((trackClass, index) => {
         const track = document.querySelectorAll(`${trackClass}` + " .block");
-        console.log(track.length);
+        // console.log(track.length);
         const chromosomes = [].concat(
           Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
             return { key: i, outBlock: 0, all: "" };
@@ -592,7 +601,7 @@ export default function RangeView(props) {
 
       for (let l = 0; l < fourTracks; l++) {
         const trackData = linesSummary[l];
-        console.log(trackData);
+        //  console.log(trackData);
         const row = tbody.insertRow(-1);
         if (trackData !== undefined && trackData.length > 0) {
           trackData.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
@@ -628,7 +637,7 @@ export default function RangeView(props) {
   //if not compare, with chromid => add data
   let resultData = tableData;
   if (!form.compare) {
-    if (chromoId > 0) {
+    if (chromoId > 0 || chromoId === "X" || chromoId === "Y") {
       resultData = tableData.length > 0 ? tableData : allValue;
       //filter data if zoomin for single chromo
     } else resultData = allValues;
