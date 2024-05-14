@@ -248,7 +248,7 @@ export default function RangeView(props) {
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     var chromoIdString = chromoId + "";
-    const clickedValues = allValues.filter((v) => v.block_id === chromoId + "");
+    const clickedValues = allValues.filter((v) => v.block_id === chromoIdString);
     console.log(allValues, chromoId, clickedValues);
     setAllValue([...clickedValues]);
     //this is for single chromosome

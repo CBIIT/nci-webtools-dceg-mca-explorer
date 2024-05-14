@@ -41,11 +41,18 @@ export default function ComparePanel(props) {
     handleSelectChange("study", [StudyOptions[0]]);
     handleSelectChange("types", [TypeStateOptions[0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
-    //console.log("&&&&", StudyOptions[0], compareform);
+    // console.log("&&&&", StudyOptions[0], compareform, form.chrCompare);
     if (props.isY || props.isX) setDisabledType(["loh", "gain", "undetermined"]);
     else setDisabledType([]);
-    if (form.plotType.value === "static") setDisabledType([]);
-  }, [props.onReset, props.isX, props.isY]);
+
+    if (form.plotType.value === "static") {
+      var clickedChr = form.chrCompare;
+      if (clickedChr !== "") {
+        if (clickedChr.label === "X" || clickedChr.label === "Y") setDisabledType(["loh", "gain", "undetermined"]);
+        else setDisabledType([]);
+      }
+    }
+  }, [props.onReset, props.isX, props.isY, form.chrCompare]);
 
   useEffect(() => {
     console.log(compareform);

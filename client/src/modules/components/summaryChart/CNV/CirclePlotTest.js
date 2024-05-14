@@ -1431,7 +1431,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   useEffect(() => {
     if (form.plotType.value === "circos") {
-      console.log("whole chromosome", circleTableData);
+      //console.log("whole chromosome", circleTableData);
       props.getData(circleTableData);
     } else {
       if (rangeLabel.length > 0) {
