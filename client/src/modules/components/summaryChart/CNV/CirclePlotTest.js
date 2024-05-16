@@ -121,10 +121,12 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   const [showTitle, setShowTitle] = useState(false);
   const [showTableTitle, setShowTableTitle] = useState(false);
+  const [visibleTooltip, setVisibleTooltip] = useState(false);
 
   const handleDisplayTitle = () => {
     // Toggle display of circosTitle
     setShowTitle(!showTitle);
+    setVisibleTooltip(false);
   };
 
   const handleDisplayTableTitle = () => {
@@ -1662,7 +1664,22 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   {/* {rangeLabel ? rangeLabel : "Chr" + chromesomeId} */}
                   {"Chr" + chromesomeId}
                   <br></br>
-                  <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)} onClick={handleDisplayTitle}>
+                  <div className="tooltip-container" onClick={handleDisplayTitle}>
+                    {!showTitle && (
+                      <span
+                        onMouseOver={() => setVisibleTooltip(true)}
+                        onMouseOut={() => setVisibleTooltip(false)}
+                        className="tooltip-trigger">
+                        {simpleTitle.slice(1)}{" "}
+                        <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                      </span>
+                    )}
+                    {visibleTooltip && <div className="tooltip-box">{circosTitle.slice(1)}</div>}
+                    {showTitle && <div>{circosTitle.slice(1)}</div>}
+                  </div>
+                  {/* <div
+                    style={{ cursor: "pointer", position: "relative", textAlign: "center" }}
+                    onClick={handleDisplayTitle}>
                     {!showTitle && (
                       <div>
                         {simpleTitle.slice(1)}{" "}
@@ -1670,7 +1687,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       </div>
                     )}
                     {showTitle && <div>{circosTitle.slice(1)}</div>}
-                  </div>
+                  </div> */}
                 </Col>
                 <Col
                   xs={12}
@@ -1858,7 +1875,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               <Legend></Legend>
             </Col>
             <Col xs={12} md={12} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
-              <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)} onClick={handleDisplayTitle}>
+              <div className="tooltip-container" onClick={handleDisplayTitle}>
+                {!showTitle && (
+                  <span
+                    onMouseOver={() => setVisibleTooltip(true)}
+                    onMouseOut={() => setVisibleTooltip(false)}
+                    className="tooltip-trigger">
+                    {simpleTitle.slice(1)}{" "}
+                    <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                  </span>
+                )}
+                {visibleTooltip && <div className="tooltip-box">{circosTitle.slice(1)}</div>}
+                {showTitle && <div>{circosTitle.slice(1)}</div>}
+              </div>
+
+              {/* <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)} onClick={handleDisplayTitle}>
                 {!showTitle && (
                   <div>
                     {simpleTitle.slice(1)}{" "}
@@ -1866,7 +1897,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   </div>
                 )}
                 {showTitle && <div>{circosTitle.slice(1)}</div>}
-              </div>
+              </div> */}
             </Col>
             <Col
               xs={12}

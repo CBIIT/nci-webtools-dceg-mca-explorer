@@ -654,11 +654,12 @@ export default function RangeView(props) {
 
   const layout = {
     xaxis: {
-      title: "<b>Copy Number State</b>",
+      // title: "<b>Copy Number State</b>",
       zeroline: false,
       titlefont: {
-        size: 16,
+        size: 14,
       },
+      // side: "top",
     },
     yaxis: {
       title: "<b>Cellular Fraction</b>",
@@ -666,6 +667,13 @@ export default function RangeView(props) {
         size: 14,
       },
       automargin: true,
+    },
+    margin: {
+      // l: 10,
+      // r: 0,
+      b: 20,
+      t: 40,
+      pad: 0,
     },
     autosize: true,
 
@@ -747,7 +755,7 @@ export default function RangeView(props) {
                   },
                   responsive: true,
                 }}
-                style={{ width: "100%", height: browserSize.height }}
+                style={{ width: "100%", height: browserSize.height * 0.7 }}
               />
               {/* <Plot
                 data={getScatterData()}
