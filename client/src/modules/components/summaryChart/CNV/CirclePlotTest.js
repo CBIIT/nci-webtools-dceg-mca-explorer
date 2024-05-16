@@ -122,6 +122,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [showTitle, setShowTitle] = useState(false);
   const [showTableTitle, setShowTableTitle] = useState(false);
   const [visibleTooltip, setVisibleTooltip] = useState(false);
+  const [compareChr, setCompareChr] = useState(0);
 
   const handleDisplayTitle = () => {
     // Toggle display of circosTitle
@@ -504,6 +505,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     //   lohTemp = [...initialY];
     //   undeterTemp = [...initialY];
     // }
+    setCompareChr(chromesomeId);
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
@@ -1508,7 +1510,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 </Button>
               </>
             ) : (
-              <> &#8592; Chr{chromesomeId}</>
+              <> &#8592; Chr{compareChr}</>
             )}
             {zoomRange ? <>&#8592;</> : ""}
             <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomback}>
@@ -1525,7 +1527,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 </Col>
                 <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
                   {/* {rangeLabel ? rangeLabel : "Chr" + chromesomeId} */}
-                  {"Chr" + chromesomeId}
+                  {"Chr" + compareChr}
                   <br></br> {commonTitle}
                 </Col>
                 <Col
