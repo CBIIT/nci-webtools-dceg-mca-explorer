@@ -56,12 +56,22 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     console.log(chrSelected, form.chrX);
     if (!form.chrX && !form.chrY) {
       setDisabledType([]);
-      if (chrSelected === "chrX" || chrSelected === "chrY") setDisabledType(["loh", "gain", "undetermined"]);
+      if (chrSelected === "chrX" || chrSelected === "chrY") {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      }
     } else {
       if (chrSelected !== "chrX" && chrSelected !== "chrY" && chrSelected !== "") setDisabledType([]);
-      else setDisabledType(["loh", "gain", "undetermined"]);
+      else {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      }
     }
-  }, [form]);
+  }, [form.chrSingle]);
+
+  useEffect(() => {
+    if (disabledType.length === 3) {
+      handleSelectChange("types", [TypeStateOptions[0]]);
+    }
+  }, [disabledType]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -69,13 +79,15 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       console.log("clicking X");
       setIsX(event.target.checked);
       mergeForm({ [name]: event.target.checked });
-      if (event.target.checked || isY) setDisabledType(["loh", "gain", "undetermined"]);
-      else setDisabledType([]);
+      if (event.target.checked || isY) {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      } else setDisabledType([]);
     } else if (name === "chrY") {
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
-      if (event.target.checked || isX) setDisabledType(["loh", "gain", "undetermined"]);
-      else setDisabledType([]);
+      if (event.target.checked || isX) {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      } else setDisabledType([]);
     } else if (name === "maxAge") {
       if (value <= 150) mergeForm({ [name]: Number(value) });
       else mergeForm({ [name]: 150 });

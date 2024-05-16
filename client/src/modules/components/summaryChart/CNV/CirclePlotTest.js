@@ -122,7 +122,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [showTitle, setShowTitle] = useState(false);
   const [showTableTitle, setShowTableTitle] = useState(false);
   const [visibleTooltip, setVisibleTooltip] = useState(false);
-  const [compareChr, setCompareChr] = useState(0);
+  const [compareChr, setCompareChr] = useState(form.chrSingle && form.chrSingle.label);
 
   const handleDisplayTitle = () => {
     // Toggle display of circosTitle
@@ -1506,7 +1506,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               <>
                 &#8592;
                 <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomInitial}>
-                  Chr{chromesomeId}
+                  Chr{compareChr}
                 </Button>
               </>
             ) : (
