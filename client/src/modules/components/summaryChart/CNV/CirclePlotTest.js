@@ -927,6 +927,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       figResolution = 1;
       downloadname = rangeLabel ? rangeLabel : "Chr" + chromesomeId + ".pdf";
     }
+    downloadname = downloadname.replace(/,/g, "");
 
     htmlToImage
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
