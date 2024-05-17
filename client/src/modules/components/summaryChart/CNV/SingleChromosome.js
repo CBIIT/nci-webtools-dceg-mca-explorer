@@ -161,15 +161,30 @@ function SingleChromosome(props) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  props.data.sort((a, b) =>
-    a.type === b.type
-      ? a.start === b.start
-        ? b.end - a.end
-        : a.start - b.start
-      : a.type !== undefined
-      ? a.type.localeCompare(b.type)
-      : ""
-  );
+  props.data.sort((a, b) => {
+    // Check if both a and b have the 'type' property defined
+    if (a.type !== undefined && b.type !== undefined) {
+      // Compare 'type' properties first
+      if (a.type === b.type) {
+        // If 'type' properties are equal, compare 'start' properties
+        if (a.start === b.start) {
+          // If 'start' properties are equal, compare 'end' properties in reverse order
+          return b.end - a.end;
+        } else {
+          // If 'start' properties are different, compare 'start' properties
+          return a.start - b.start;
+        }
+      } else {
+        // If 'type' properties are different, compare them using localeCompare
+        return a.type.localeCompare(b.type);
+      }
+    } else {
+      // Handle the case where 'type' property is undefined for either a or b
+      // For simplicity, you can choose how to handle this case based on your requirements
+      // Here, we assume that if 'type' is undefined, we prioritize sorting based on 'start' and 'end'
+      return a.start - b.start;
+    }
+  });
 
   let zoomeddata = props.data;
 
