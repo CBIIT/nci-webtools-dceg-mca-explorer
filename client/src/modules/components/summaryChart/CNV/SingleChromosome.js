@@ -162,7 +162,13 @@ function SingleChromosome(props) {
   }, []);
 
   props.data.sort((a, b) =>
-    a.type === b.type ? (a.start === b.start ? b.end - a.end : a.start - b.start) : a.type.localeCompare(b.type)
+    a.type === b.type
+      ? a.start === b.start
+        ? b.end - a.end
+        : a.start - b.start
+      : a.type !== undefined
+      ? a.type.localeCompare(b.type)
+      : ""
   );
 
   let zoomeddata = props.data;
