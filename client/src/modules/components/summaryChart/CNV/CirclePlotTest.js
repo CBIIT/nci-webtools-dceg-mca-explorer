@@ -418,14 +418,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       if (form.counterCompare > 0) {
         handleGroupQuery(form.groupA).then((data) => {
           if (showChart) {
-            setGroupA(data[0]);
+            setGroupA(data[0].filter((item) => item.type !== undefined));
             setFisherA(data[1]);
           } else setCircleA({ ...data });
           setIsLoadedA(true);
         });
         handleGroupQuery(form.groupB).then((data) => {
           if (showChart) {
-            setGroupB(data[0]);
+            setGroupB(data[0].filter((item) => item.type !== undefined));
             setFisherB(data[1]);
           } else setCircleB({ ...data });
           setIsLoadedB(true);
@@ -1558,7 +1558,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeA}
-                      data={groupA}
+                      data={groupA.filter((item) => item.type !== undefined)}
                       title={titleA}
                       msg={msgA}
                       fisherP={fisherA}
@@ -1585,7 +1585,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeB}
-                      data={groupB}
+                      data={groupB.filter((item) => item.type !== undefined)}
                       title={titleB}
                       msg={msgB}
                       fisherP={fisherB}

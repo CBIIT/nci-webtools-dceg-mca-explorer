@@ -182,6 +182,7 @@ function SingleChromosome(props) {
       // Handle the case where 'type' property is undefined for either a or b
       // For simplicity, you can choose how to handle this case based on your requirements
       // Here, we assume that if 'type' is undefined, we prioritize sorting based on 'start' and 'end'
+
       return a.start - b.start;
     }
   });
