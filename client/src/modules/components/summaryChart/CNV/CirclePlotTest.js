@@ -1946,7 +1946,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             </Col>
           </Row>
           <br></br>
-          <div id="circosTable" className="table-responsive">
+          <div id="circosTable" className="table-responsive" style={{ fontSize: "14px" }}>
             Total number of events displayed
             {form.chrX || form.chrY ? (
               <>

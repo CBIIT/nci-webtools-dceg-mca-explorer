@@ -10,6 +10,20 @@ legend {
 
 .table thead th {
   border-bottom: 3px solid #dee2e6;
+  border-top:  2px solid #dee2e6;
+  font-weight: bolder;
+  color: black;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.table tbody{
+  font-size: 14px;
+}
+
+
+.page-link{
+  font-size: 14px;
 }
 
 :disabled {

@@ -85,6 +85,8 @@ export default function Table({ columns, data, options, defaultSort }) {
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                     style={{
                       whiteSpace: column.id === "pValue" ? "nowrap" : "normal",
+
+                      fontSize: "14px",
                     }}>
                     {column.render("Header")}{" "}
                     {column.isSorted ? (
@@ -130,14 +132,15 @@ export default function Table({ columns, data, options, defaultSort }) {
         </BootstrapTable>
       </div>
 
-      <div className="d-flex flex-wrap align-items-center justify-content-between px-3">
+      <div className="d-flex flex-wrap align-items-center justify-content-between px-3" style={{ fontSize: "14px" }}>
         <div>
           Showing rows {(1 + pageIndex * pageSize).toLocaleString()}-
           {Math.min(rows.length, (pageIndex + 1) * pageSize).toLocaleString()} of {rows.length.toLocaleString()}
         </div>
 
-        <div className="d-flex" style={{paddingTop:10}}>
+        <div className="d-flex" style={{ paddingTop: 10, fontSize: "14px" }}>
           <Form.Control
+            style={{ fontSize: "14px" }}
             as="select"
             className="mr-2"
             name="select-page-size"
@@ -156,10 +159,10 @@ export default function Table({ columns, data, options, defaultSort }) {
               href={`#/`}
               onClick={(e) => {
                 e.preventDefault();
-
                 gotoPage(0);
               }}
-              disabled={!canPreviousPage}>
+              disabled={!canPreviousPage}
+              style={{ fontSize: "14px" }}>
               First
             </Pagination.First>
             <Pagination.Prev
@@ -168,7 +171,8 @@ export default function Table({ columns, data, options, defaultSort }) {
                 e.preventDefault();
                 previousPage();
               }}
-              disabled={!canPreviousPage}>
+              disabled={!canPreviousPage}
+              style={{ fontSize: "14px" }}>
               Previous
             </Pagination.Prev>
             <Pagination.Next
