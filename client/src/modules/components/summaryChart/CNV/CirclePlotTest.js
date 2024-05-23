@@ -1563,7 +1563,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       msg={msgA}
                       fisherP={fisherA}
                       details="A"
-                      chromesomeId={chromesomeId}
+                      chromesomeId={compareChr}
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
@@ -1590,7 +1590,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       msg={msgB}
                       fisherP={fisherB}
                       details="B"
-                      chromesomeId={chromesomeId}
+                      chromesomeId={compareChr}
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
