@@ -302,7 +302,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
             <Form.Group className="mb-3">
               <Form.Label className="required">Chromosome</Form.Label>
               <Form.Label style={{ color: "red" }}>
-                {submitClicked && form.chrCompare === "" ? "Plese select chromosome" : ""}
+                {submitClicked && form.chrCompare === "" ? "Please select chromosome" : ""}
               </Form.Label>
               <Select
                 aria-label="chromosome"

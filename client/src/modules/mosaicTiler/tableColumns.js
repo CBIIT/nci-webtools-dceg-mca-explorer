@@ -51,24 +51,24 @@ export const Columns = [
       </OverlayTrigger>
     ),
   },
-  {
-    accessor: "PopID",
-    id: "ancestry",
-    label: "Ancestry",
-    Header: <b>Ancestry</b>,
-  },
-  {
-    accessor: "sex",
-    id: "sex",
-    label: "Sex",
-    Header: <b>Sex</b>,
-  },
-  {
-    accessor: "age",
-    id: "age",
-    label: "Age",
-    Header: <b>Age</b>,
-  },
+  // {
+  //   accessor: "PopID",
+  //   id: "ancestry",
+  //   label: "Ancestry",
+  //   Header: <b>Ancestry</b>,
+  // },
+  // {
+  //   accessor: "sex",
+  //   id: "sex",
+  //   label: "Sex",
+  //   Header: <b>Sex</b>,
+  // },
+  // {
+  //   accessor: "age",
+  //   id: "age",
+  //   label: "Age",
+  //   Header: <b>Age</b>,
+  // },
   {
     accessor: "array",
     id: "array",
@@ -122,9 +122,9 @@ export function exportTable(tableData) {
           { value: e.value },
           { value: e.start },
           { value: e.end },
-          { value: e.PopID },
-          { value: e.sex },
-          { value: e.age },
+          // { value: e.PopID },
+          // { value: e.sex },
+          // { value: e.age },
           { value: e.array },
           { value: e.smokeNFC },
         ];

@@ -257,12 +257,6 @@ function SingleChromosome(props) {
             e.type +
             "<br>Cellular Fraction:" +
             e.value +
-            "<br>Ancestry: " +
-            e.PopID +
-            "<br>Sex: " +
-            e.sex +
-            "<br>Age: " +
-            e.age +
             "<br> Smoke: " +
             e.smokeNFC;
           return text;

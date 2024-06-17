@@ -310,6 +310,14 @@ export default function RangeView(props) {
           }),
         name: "Gain",
         type: "violin",
+        hoverinfo: "y",
+        hoveron: "point+kde",
+        bandwidth: 0,
+        // hovertemplate: "%{y} <extra></extra>",
+
+        // span: [0, Math.max(...violinGain)],
+        //spanmode: "manual",
+
         box: {
           visible: true,
         },
@@ -333,6 +341,9 @@ export default function RangeView(props) {
           }),
         name: "CN-LOH",
         type: "violin",
+        hoverinfo: "y",
+        hoveron: "point+kde",
+        bandwidth: 0,
         box: {
           visible: true,
         },
@@ -356,6 +367,9 @@ export default function RangeView(props) {
           }),
         name: "Loss",
         type: "violin",
+        hoverinfo: "y",
+        hoveron: "point+kde",
+        bandwidth: 0,
         box: {
           visible: true,
         },
@@ -380,6 +394,9 @@ export default function RangeView(props) {
           }),
         name: "Undetermined",
         type: "violin",
+        hoverinfo: "y",
+        hoveron: "point+kde",
+        bandwidth: 0,
         box: {
           visible: true,
         },
@@ -666,6 +683,7 @@ export default function RangeView(props) {
       tickfont: {
         size: 14,
       },
+      range: [0, 1],
       automargin: true,
     },
     margin: {

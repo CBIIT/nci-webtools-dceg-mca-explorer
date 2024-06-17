@@ -311,7 +311,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <>
           <Form.Group className="mb-3">
             <Form.Label className="required">Chromosome</Form.Label>
-            <Form.Label style={{ color: "red" }}>{form.chrSingle === "" ? "Plese select chromosome" : ""}</Form.Label>
+            <Form.Label style={{ color: "red" }}>{form.chrSingle === "" ? "Please select chromosome" : ""}</Form.Label>
             <Select
               aria-label="chromosome"
               placeholder="- Select -"
