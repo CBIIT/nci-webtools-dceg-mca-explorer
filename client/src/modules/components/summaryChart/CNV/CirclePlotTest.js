@@ -1631,7 +1631,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                           {rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}
                         </td>
                         <td className="numberCol">
-                          {fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}
+                          {fisherA > rangeA
+                            ? (fisherA - (rangeLabel === "" ? groupA.length : Number(rangeA))).toLocaleString()
+                            : fisherA.toLocaleString()}
                         </td>
                         <td className="numberCol">{fisherA.toLocaleString()}</td>
                       </tr>
@@ -1641,7 +1643,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                           {rangeLabel === "" ? groupB.length.toLocaleString() : rangeB.toLocaleString()}
                         </td>
                         <td className="numberCol">
-                          {fisherB > rangeB ? (fisherB - groupB.length).toLocaleString() : fisherB.toLocaleString()}
+                          {fisherB > rangeB
+                            ? (fisherB - (rangeLabel === "" ? groupB.length : Number(rangeB))).toLocaleString()
+                            : fisherB.toLocaleString()}
                         </td>
                         <td className="numberCol">{fisherB.toLocaleString()}</td>
                       </tr>
@@ -1756,7 +1760,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                         </td>
                         <td className="numberCol">
                           {props.allDenominator > singleZoomLength
-                            ? (props.allDenominator - data.length).toLocaleString()
+                            ? (
+                                props.allDenominator - (rangeLabel === "" ? data.length : Number(singleZoomLength))
+                              ).toLocaleString()
                             : props.allDenominator.toLocaleString()}
                         </td>
                         <td className="numberCol">{props.allDenominator.toLocaleString()}</td>
