@@ -256,9 +256,9 @@ function SingleChromosome(props) {
             "<br>Type: " +
             e.type +
             "<br>Cellular Fraction:" +
-            e.value +
-            "<br> Smoke: " +
-            e.smokeNFC;
+            e.value;
+          // "<br> Smoke: " +
+          // e.smokeNFC;
           return text;
         }),
         hovertemplate: "<br>%{hovertext} <extra></extra>",

@@ -36,9 +36,9 @@ const hovertip = (d) => {
     d.start +
     "<br> End: " +
     d.end +
-    "<br> Smoke: " +
-    d.smokeNFC +
-    " " +
+    // "<br> Smoke: " +
+    // d.smokeNFC +
+    // " " +
     "</p>"
   );
 };

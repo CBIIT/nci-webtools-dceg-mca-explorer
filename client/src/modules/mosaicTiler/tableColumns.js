@@ -75,36 +75,36 @@ export const Columns = [
     label: "Array",
     Header: <b>Array</b>,
   },
-  {
-    accessor: "smokeNFC",
-    id: "smoke",
-    label: "Smoke",
-    Header: <b>Smoke</b>,
-  },
-  {
-    accessor: "priorCancer",
-    id: "priorCancer",
-    label: "Prior Cancer",
-    Header: <b>Prior Cancer</b>,
-  },
-  {
-    accessor: "incidentCancerHem",
-    id: "incidentCancerHem",
-    label: "Incident Hematological Cancer",
-    Header: <b>Hematological Cancer</b>,
-  },
-  {
-    accessor: "incidentCancerLymphoid",
-    id: "incidentCancerLymphoid",
-    label: "Incident Lymphoid Cancer",
-    Header: <b>Lymphoid Cancer</b>,
-  },
-  {
-    accessor: "incidentCancerMyeloid",
-    id: "incidentCancerMyeloid",
-    label: "Incident Myeloid Cancer",
-    Header: <b>Myeloid Cancer</b>,
-  },
+  // {
+  //   accessor: "smokeNFC",
+  //   id: "smoke",
+  //   label: "Smoke",
+  //   Header: <b>Smoke</b>,
+  // },
+  // {
+  //   accessor: "priorCancer",
+  //   id: "priorCancer",
+  //   label: "Prior Cancer",
+  //   Header: <b>Prior Cancer</b>,
+  // },
+  // {
+  //   accessor: "incidentCancerHem",
+  //   id: "incidentCancerHem",
+  //   label: "Incident Hematological Cancer",
+  //   Header: <b>Hematological Cancer</b>,
+  // },
+  // {
+  //   accessor: "incidentCancerLymphoid",
+  //   id: "incidentCancerLymphoid",
+  //   label: "Incident Lymphoid Cancer",
+  //   Header: <b>Lymphoid Cancer</b>,
+  // },
+  // {
+  //   accessor: "incidentCancerMyeloid",
+  //   id: "incidentCancerMyeloid",
+  //   label: "Incident Myeloid Cancer",
+  //   Header: <b>Myeloid Cancer</b>,
+  // },
 ];
 
 export function exportTable(tableData) {
@@ -126,7 +126,7 @@ export function exportTable(tableData) {
           // { value: e.sex },
           // { value: e.age },
           { value: e.array },
-          { value: e.smokeNFC },
+          // { value: e.smokeNFC },
         ];
       }),
     },
