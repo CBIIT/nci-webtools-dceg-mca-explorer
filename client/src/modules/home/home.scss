@@ -1,0 +1,49 @@
+.banner-container {
+  z-index: 0;
+  overflow: hidden;
+  display: block;
+  height: 233px;
+  position: relative;
+
+  .banner-overlay-text {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.cover-image {
+  background-attachment:initial;
+    background-position: 30%;
+    background-repeat: no-repeat;
+    background-size:cover;
+}
+
+a {
+  font-weight: 500;
+}
+
+.card {
+  //position: inherit !important;
+  //min-width: 250px !important;
+  border: 0ch;
+}
+.card-example {
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.card-example::-webkit-scrollbar {
+  display: none;
+}
+
+.g-0{
+  --bs-gutter-x: 0rem;
+}
+
+.card2 {
+  position: inherit !important;
+  min-width: 250px !important;
+  border: 0ch;
+}

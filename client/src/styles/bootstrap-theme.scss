@@ -1,0 +1,112 @@
+a,
+.fw-semibold {
+  font-weight: 500;
+}
+
+.vh-100 {
+  height: 100vh;
+}
+
+body {
+  font-family: "Inter", $font-family-sans-serif;
+}
+
+@mixin nav-link {
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+  border-left: none;
+  border-right: none;
+  color: black;
+  text-decoration: none;
+  transition: all 0.1s;
+  background-color: transparent;
+ // font-weight: 500;
+  font-size: 20px !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  
+
+  &:hover,
+  &:focus {
+    color: $primary!important;
+    border-color:transparent;
+  }
+  &.active {
+    border-color: transparent;
+    border-bottom-color: $primary;
+    background-color: transparent;//#a0ade6 !important;
+    color: $primary !important;
+    
+      button {
+        background-color: white !important;
+        color: #333c4e !important;
+        font-weight: 700 !important;
+      }
+    }
+}
+
+.navbar-light {
+  .navbar-toggler {
+    border: none;
+  }
+
+  .navbar-nav .nav-link {
+    @include nav-link;
+  }
+}
+
+.nav-tabs .nav-link {
+  @include nav-link;
+}
+
+.table {
+  font-variant-numeric: tabular-nums;
+}
+
+.tooltip-inner {
+  text-align: left;
+}
+
+.pagination {
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: flex;
+  &.required::after {
+    content: "*";
+    color: $danger;
+    margin-left: 0.2rem;
+  }
+}
+
+.cover-image {
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.loader {
+  z-index: 9999;
+  opacity: 0.7;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: $light;
+  width: 100%;
+  height: 100%;
+}
+
+[react-cloak] {
+  display: none !important;
+}
+
+input::-webkit-calendar-picker-indicator,
+::-webkit-list-button {
+  display: none !important;
+}

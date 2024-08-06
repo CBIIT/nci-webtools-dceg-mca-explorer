@@ -1,0 +1,306 @@
+.overlay__background {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    z-index: 9;
+}
+
+.overlay__container {
+    background-color: white;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    z-index: 10;
+    padding: 30px;
+    width: fit-content;
+    height: fit-content;
+}
+
+.overlay__controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.overlay__close:after {
+    display: inline-block;
+    content: "\00d7";
+}
+
+.overlay__close {
+    border: none;
+    background-color: transparent;
+    font-size: 36px;
+    cursor: pointer;
+}
+
+.overlayX{
+    position: absolute;
+    /* width: 800px;
+    height: 800px; */
+    top: 100;
+    /*right: 0%;*/
+    bottom: 10;
+    /*left: 9%; */
+   
+}
+.overlayX2 {
+    position: absolute;
+    /* width: 800px;
+    height: 800px; */
+    /* top: 100; */
+    right: 50%;
+    bottom: 10;
+    left: 0%;
+}
+.overlayX3 {
+    position: absolute;
+    /* width: 800px;
+    height: 800px; */
+    /* top: 100; */
+    right: 0%;
+    bottom: 10;
+    left: 50%;
+}
+.compareTable {
+        position: absolute;
+            bottom: 10;
+        
+}
+
+/* @media screen and (max-width:1200px) {
+    .overlayX3 {
+        position: absolute;
+        right: 0%;
+        bottom: 10;
+        left: 0%;
+     }
+    .overlayX2 {
+        position: absolute;
+        right: 0%;
+        bottom: 10;
+        left: 0%;
+    }
+        /* .tableRow {
+            position: absolute;
+            flex-grow: 1;
+            top: 1400px;
+        } */
+                 
+        /* #footer {
+            margin-top: 700px;
+        } */
+    /* .legendContainer{
+        right: 0%;
+    }
+    .tableRow {
+        position: absolute;
+        flex-grow: 1;
+        top: 1200px;
+    }
+    #footer{
+      margin-top: auto;
+    } 
+} */
+
+
+
+.buttonCircle{
+    position: relative;
+        /* width: 800px;
+        height: 800px; */
+        /* top: 800px; */
+        right: 50%;
+        bottom: 10;
+        left: 50%;
+}
+
+.overlaySpinner{
+    position: absolute;
+    z-index: -1;
+    top: 40%;
+    right: 0%;
+    bottom: 10;
+    left: 5%;
+}
+.compareCircle{
+    top: 1000;
+    left: 0
+}
+
+.circleContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.circleContainerSvg {
+    flex: 1 0 100%;
+    max-width: 100%;
+    margin: 10%;
+}
+
+@media screen and (max-width:600px) {
+    .circleContainerSvg {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+.chromoContainer {
+    display: block;
+    justify-content: "center";
+    /* align-items: center; */
+    /* height: 100vh; */
+            }
+   
+.legendClass{
+    position: relative; 
+    right:0;
+}
+.legendContainer{
+    position: relative;
+    top: 10px;
+
+    /* left: 80%; */
+}
+
+.compareContainer{
+    display: flex;
+    flex-direction: column;
+    overflow-y:hidden;
+    overflow-x: hidden;
+    align-items: stretch;
+    flex-grow: 1;
+
+}
+.tableRow{
+    flex-grow: 1;
+}
+
+.fisherTable{
+    width: auto;
+    border-collapse: collapse;
+    background-color: #fafafa;
+    margin: auto;
+   
+}
+
+.fisherTable th,
+.fisherTable td{
+    padding: 2px 2px 2px 2px;
+    text-align: center;
+  
+}
+.fisherTable .bold-title{
+    font-weight: bold !important;
+    padding: 0px;
+    padding-right: 2px;
+    padding-left: 2px;
+    margin: 0px;
+}
+
+.fisherTable tr:hover{
+    background-color: #ececec;
+}
+/*.fisherTable tr:nth-child(odd),
+.fisherTable tr:nth-child(even){
+    background-color: #f0f5f7;
+}*/
+
+.fisherTable .bold-title-main{
+    font-weight: bold !important;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 0px;
+    max-width: 75px;
+}
+.fisherTable .bold-title-2{
+    font-weight: bold !important;
+    text-align: center;
+    padding-right: 5px;
+    padding-left:5px;
+    margin: 0px;
+    max-width: 75px;
+
+   
+}
+.fisherTable .bold-title-3{
+    font-weight: bold !important;
+    text-align: center;
+  
+    vertical-align: middle;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 0px;
+}
+
+.fisherTable .numberCol{
+    text-align: center;
+    vertical-align: middle;
+    padding-right: 5px;
+    padding-left: 5px;
+    margin: 0px;
+}
+
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip-trigger {
+    cursor: pointer;
+  }
+  
+  .tooltip-box {
+    position: absolute;
+    left: 50%;
+    top: 120%;
+    transform: translateX(-50%);
+    border: 1px solid gray;
+    border-radius: 4px;
+    max-width: 500px;
+    min-width: 300px;
+    z-index: 1000;
+    background: white;
+    padding: 4px 8px;
+    font-size: 10px;
+    /* top:100%; */
+    /* margin-top: 8px;
+    padding: 4px 8px;
+    font-size: 10px;
+    color: black;
+    background: white;
+    text-align: center;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.5s;
+    white-space: wrap;
+    max-width: 500px;
+    min-width: 300px;
+    display: inline-block;
+    border: 1px solid gray;
+    border-radius: 4px;
+    white-space: normal;
+    word-wrap: break-word;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s, visibility 0.5s;
+    z-index: 1000;
+    box-sizing: border-box;
+  } */
+}
+
+  .tooltip-trigger:hover .tooltip-box{
+    visibility: visible;
+    opacity: 1;
+  }
+
+
