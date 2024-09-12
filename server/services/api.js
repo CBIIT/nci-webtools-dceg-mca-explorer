@@ -726,13 +726,13 @@ const getAttributesArray = (atti, name) => {
   if (attiarray.length === 0) {
     switch (name) {
       case "sex":
-        attiarray = ["0", "1", "NA"];
+        attiarray = ["1", "2", "NA"];
         break;
       case "ancestry":
         AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));
         break;
       case "array":
-        attiarray = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
+        attiarray = ["Axiom", "BiLEVE", "Global Screening Array", "ONCO Array"];
         break;
       case "smoking":
         attiarray = ["0", "1", "2", "9"];

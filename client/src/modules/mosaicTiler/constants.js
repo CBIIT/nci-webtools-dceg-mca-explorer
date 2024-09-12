@@ -44,7 +44,7 @@ export const StudyOptions = [
 export const SexOptions = [
   { value: "all", label: "All Sexes" },
   { value: "1", label: "Male" },
-  { value: "0", label: "Female" },
+  { value: "2", label: "Female" },
 ];
 
 export const initialX = [
@@ -68,8 +68,8 @@ export const smokeNFC = [
 ];
 
 export const platformArray = [
-  { value: "gsa", label: "Illumina Global Screening" },
-  { value: "oncoArray", label: "Illumina OncoArray" },
+  { value: "Global Screening Array", label: "Global Screening Array" },
+  { value: "ONCO Array", label: "ONCO Array" },
   { value: "Axiom", label: "Axiom" },
   { value: "BiLEVE", label: "BiLEVE" },
 ];
