@@ -345,7 +345,7 @@ export default function ComparePanel(props) {
                 value={approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
                 options={platformArray.filter((obj, index) =>
-                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 2 : index >= 2) : true
+                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 4 : index >= 4) : true
                 )}
                 classNamePrefix="select"
               />

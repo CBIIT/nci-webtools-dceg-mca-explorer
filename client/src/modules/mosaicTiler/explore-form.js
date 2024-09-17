@@ -431,8 +431,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 options={platformArray.filter((obj, index) =>
                   form.study.length < 2 && form.study.length > 0
                     ? form.study[0].value === "plco"
-                      ? index < 2
-                      : index >= 2
+                      ? index < 4
+                      : index >= 4
                     : true
                 )}
                 classNamePrefix="select"
