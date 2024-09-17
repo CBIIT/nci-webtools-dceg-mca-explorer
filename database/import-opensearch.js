@@ -10,15 +10,16 @@ const client = new Client({
   ssl: {
     rejectUnauthorized: false,
   },
+  requestTimeout: 2400000,
 });
 const sources = [
-  // { path: "data/plcoAuto.json", index: "mcaexplorer" },
-  // { path: "data/plcoDenominator.json", index: "denominator" },
-  //  { path: "data/plcomLOX.json", index: "mcaexplorer" },
-  //  { path: "data/plcomLOY.json", index: "mcaexplorer" },
-  //  { path: "data/ukbbAuto.json", index: "mcaexplorer" },
-  //   { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
-  //   { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
+  //{ path: "data/plcoAuto.json", index: "mcaexplorer" },
+  { path: "data/plcoDenominator.json", index: "denominator" },
+  // { path: "data/plcomLOX.json", index: "mcaexplorer" },
+  // { path: "data/plcomLOY.json", index: "mcaexplorer" },
+  // { path: "data/ukbbAuto.json", index: "mcaexplorer" },
+  //{ path: "data/ukbbmLOX.json", index: "mcaexplorer" },
+  //{ path: "data/ukbbmLOY.json", index: "mcaexplorer" },
   { path: "data/ukbbdenominator.json", index: "denominator" },
   // { path: "data/combined_gene_test.json", index: "combinedgene_test" },
   //{ path: "/Users/yaox5/Downloads/snp-platforms/snp_col.csv", index: "snp" },
@@ -30,6 +31,7 @@ runImport(client, sources)
     client.close();
     process.exit();
   });
+
 async function runImport(client, sources, logger = console) {
   for (const source of sources) {
     logger.info(`Importing ${source.path} into ${source.index}`);
@@ -37,27 +39,78 @@ async function runImport(client, sources, logger = console) {
     const reader = readline.createInterface({
       input: fs.createReadStream(source.path),
     });
-    let id = 0;
+
     for await (const line of reader) {
-      // console.log(line);
-      let contents = JSON.parse(line);
-      if (!contents.index) {
-        datasource.push({ id, ...contents });
-        id++;
-        //console.log(datasource);
+      datasource.push(line);
+      if (datasource.length >= BATCH_SIZE * 2) {
+        // Each document consists of 2 lines
+        await importBatch(client, source.index, datasource, logger);
+        datasource.length = 0; // Clear the array
       }
     }
-    //console.log(datasource.length);
-    logger.info(`Read ${datasource.length} documents, starting import.`);
-    const result = await client.helpers.bulk({
-      datasource,
-      onDocument(doc) {
-        return {
-          index: { _index: source.index, _id: source.id },
-        };
-      },
-    });
-    logger.info(result);
-    logger.info(`Imported ${source.index}`);
+
+    // Import any remaining documents
+    if (datasource.length > 0) {
+      await importBatch(client, source.index, datasource, logger);
+    }
   }
 }
+
+async function importBatch(client, index, datasource, logger) {
+  logger.info(`Importing batch of ${datasource.length / 2} documents.`);
+  try {
+    const response = await client.bulk({
+      body: datasource,
+      timeout: "5m", // Increase bulk request timeout to 5 minutes
+    });
+    logger.info(`Successfully imported batch of ${datasource.length / 2} documents.`);
+  } catch (error) {
+    logger.error(`Error importing batch: ${error}`);
+  }
+}
+
+async function getDocumentCount(client, index) {
+  try {
+    const response = await client.count({
+      index: index,
+    });
+    return response.body.count;
+  } catch (error) {
+    console.error(`Error getting document count for index ${index}:`, error);
+    throw error;
+  }
+}
+
+const BATCH_SIZE = 1000; // Define a batch size
+
+// async function runImport(client, sources, logger = console) {
+//   for (const source of sources) {
+//     logger.info(`Importing ${source.path} into ${source.index}`);
+//     const datasource = [];
+//     const reader = readline.createInterface({
+//       input: fs.createReadStream(source.path),
+//     });
+//     let id = 0;
+//     for await (const line of reader) {
+//       // console.log(line);
+//       let contents = JSON.parse(line);
+//       if (!contents.index) {
+//         datasource.push({ id, ...contents });
+//         id++;
+//         // console.log(id);
+//       }
+//     }
+//     //console.log(datasource.length);
+//     logger.info(`Read ${datasource.length} documents, starting import.`);
+//     const result = await client.helpers.bulk({
+//       datasource,
+//       onDocument(doc) {
+//         return {
+//           index: { _index: source.index, _id: source.id },
+//         };
+//       },
+//     });
+//     logger.info(result);
+//     logger.info(`Imported ${source.index}`);
+//   }
+// }

@@ -80,7 +80,7 @@ function removeNewlines(obj) {
 }
 
 (async function main() {
-  const ukbbdenominator = await parseFile("UKBB_PLCO_V3/UKBB_denominator_92005app_clean.txt", "\r");
+  const ukbbdenominator = await parseFile("data/raw_v3_20240916/UKBB_denominator_92005app_clean.txt", "\r");
   var id = 1;
 
   try {
@@ -110,7 +110,7 @@ function removeNewlines(obj) {
     }
     console.log(`Finish UKBB denominator import`);
   }
-  const plcodenominator = await parseFile("UKBB_PLCO_V3/PLCO_denominator_clean.txt", "\r");
+  const plcodenominator = await parseFile("data/raw_v3_20240916/UKBB_PLCO_V3/PLCO_denominator_clean.txt", "\r");
   try {
     var fd = fs.openSync(path.resolve("data", "plcodenominator.json"), "a");
     plcodenominator.map((e) => {
