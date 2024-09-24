@@ -93,10 +93,10 @@ line-height: 1.6;
     padding-left: 6rem;
     padding-right: 6rem;
 }
-.nci-logo {
+/* .nci-logo {
     height: auto;
     width: 100%;
-}
+} */
 .nci-header--extended .nci-header__navbar .nci-header-nav__secondary {
      margin-top: 0;
  }
@@ -556,4 +556,52 @@ font-weight:600;
 
 .ml-3_5{
  margin-left: 3.5rem;
+}
+/* For desktop view - Logo and search bar aligned on the same row */
+.nci-header__navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 6rem;
+    padding-right: 6rem;
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+.nci-logo {
+    flex: 0 0 auto; /* Prevent shrinking */
+    max-width: 100%;
+}
+
+
+.nci-header-search {
+    flex: 1; /* Allow the search bar to grow and take remaining space */
+    display: flex;
+    justify-content: flex-end;
+    max-width: 50%; /* Ensure it fits within the row */
+}
+
+.nci-header-search .form-control {
+    width: 100%;
+    max-width: 300px; /* Limit the width of the search input */
+}
+
+/* Mobile view - Stack the logo and search bar */
+@media (max-width: 991px) {
+    .nci-header__navbar {
+        flex-direction: column;
+        align-items: flex-start; 
+        padding-left: 1rem;
+        padding-right: 1rem;
+        margin-left: 4.5rem;
+    }
+
+    .nci-header-search {
+        justify-content: flex-start;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .nci-header-search .form-control {
+        width: 100%; /* Full width on mobile */
+    }
 }
