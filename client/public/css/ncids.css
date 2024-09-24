@@ -598,6 +598,14 @@ font-weight:600;
     width: 100%;
     max-width: 300px; /* Limit the width of the search input */
 }
+/* Desktop view (default) */
+.desktop-logo {
+    display: block;
+}
+
+.mobile-logo {
+    display: none;
+}
 
 /* Mobile view - Stack the logo and search bar */
 @media (max-width: 991px) {
@@ -617,5 +625,12 @@ font-weight:600;
 
     .nci-header-search .form-control {
         width: 100%; /* Full width on mobile */
+    }
+    .desktop-logo {
+        display: none;
+    }
+    
+    .mobile-logo {
+        display: block;
     }
 }
