@@ -41,11 +41,39 @@ export default function ComparePanel(props) {
     handleSelectChange("study", [StudyOptions[0]]);
     handleSelectChange("types", [TypeStateOptions[0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
-    //console.log("&&&&", StudyOptions[0], compareform);
-    if (props.isY || props.isX) setDisabledType(["loh", "gain", "undetermined"]);
-    else setDisabledType([]);
-    if (form.plotType.value === "static") setDisabledType([]);
+    // console.log("&&&&", StudyOptions[0], compareform, form.chrCompare);
+    if (props.isY || props.isX) {
+      setDisabledType(["loh", "gain", "undetermined"]);
+      handleSelectChange("types", [TypeStateOptions[0]]);
+    } else setDisabledType([]);
+
+    if (form.plotType.value === "static") {
+      var clickedChr = form.chrCompare;
+      if (clickedChr !== "") {
+        if (clickedChr.label === "X" || clickedChr.label === "Y") {
+          setDisabledType(["loh", "gain", "undetermined"]);
+          handleSelectChange("types", [TypeStateOptions[0]]);
+        } else setDisabledType([]);
+      }
+    }
   }, [props.onReset, props.isX, props.isY]);
+
+  useEffect(() => {
+    if (props.isY || props.isX) {
+      setDisabledType(["loh", "gain", "undetermined"]);
+      handleSelectChange("types", [TypeStateOptions[0]]);
+    } else setDisabledType([]);
+
+    if (form.plotType.value === "static") {
+      var clickedChr = form.chrCompare;
+      if (clickedChr !== "") {
+        if (clickedChr.label === "X" || clickedChr.label === "Y") {
+          handleSelectChange("types", [TypeStateOptions[0]]);
+          setDisabledType(["loh", "gain", "undetermined"]);
+        } else setDisabledType([]);
+      }
+    }
+  }, [form.chrCompare]);
 
   useEffect(() => {
     console.log(compareform);
@@ -85,6 +113,7 @@ export default function ComparePanel(props) {
     // console.log(name, selection);
     if (props.compareItem[4].isChecked && name === "study") {
       setStudy(selection);
+      console.log(name, selection);
     }
     //mergeForm({ [name]: selection });
 
@@ -316,7 +345,7 @@ export default function ComparePanel(props) {
                 value={approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
                 options={platformArray.filter((obj, index) =>
-                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 2 : index >= 2) : true
+                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 4 : index >= 4) : true
                 )}
                 classNamePrefix="select"
               />

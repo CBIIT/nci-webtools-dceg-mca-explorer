@@ -206,6 +206,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
+    console.log(platformarr);
     //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
     try {
       const resultdemo = await client.search({
@@ -230,7 +231,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
               must: [
                 {
                   terms: {
-                    sampleId: resultsIds,
+                    "sampleId.keyword": resultsIds,
                   },
                 },
                 {
@@ -726,13 +727,13 @@ const getAttributesArray = (atti, name) => {
   if (attiarray.length === 0) {
     switch (name) {
       case "sex":
-        attiarray = ["0", "1", "NA"];
+        attiarray = ["1", "2", "NA"];
         break;
       case "ancestry":
         AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));
         break;
       case "array":
-        attiarray = ["Axiom", "BiLEVE", "Illumina Global Screening", "Illumina OncoArray"];
+        attiarray = ["Axiom", "BiLEVE", "Global Screening Array", "OMNI 2.5 Million", "OMNI Express", "ONCO Array"];
         break;
       case "smoking":
         attiarray = ["0", "1", "2", "9"];

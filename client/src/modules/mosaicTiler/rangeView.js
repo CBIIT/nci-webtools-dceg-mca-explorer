@@ -7,9 +7,8 @@ import { Tabs, Tab, Row, Col, Spinner } from "react-bootstrap";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import Table from "../components/table";
 import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
-import Legend from "../components/legend";
 import { Columns, exportTable } from "./tableColumns";
-import { initialX, initialY, AncestryOptions, smokeNFC, SexOptions } from "./constants";
+import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
 
 export default function RangeView(props) {
@@ -50,6 +49,7 @@ export default function RangeView(props) {
   const [tableData, setTableData] = useState([]); //for compare data
   const [loaded, setLoaded] = useState(false);
   const [allDenominator, setAllDenominator] = useState(0);
+  const [violinData, setViolinData] = useState([]);
   const circleRef = useRef(null);
 
   const study_value = form.study;
@@ -188,10 +188,12 @@ export default function RangeView(props) {
           if (d.type === "mLOX") {
             chrXTemp.push(d);
             d.block_id = "X";
+            //lossTemp.push(d);
           }
           if (d.type === "mLOY") {
             chrYTemp.push(d);
             d.block_id = "Y";
+            //lossTemp.push(d);
           }
         }
       }
@@ -209,7 +211,7 @@ export default function RangeView(props) {
       if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
       if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
     }
-    console.log(chrXTemp.length);
+    console.log(gain.length);
     setChrX(chrXTemp);
     setChrY(chrYTemp);
     setLoaded(true);
@@ -245,14 +247,23 @@ export default function RangeView(props) {
   const allValues = gain.concat(loss).concat(loh).concat(undetermined).concat(chrX).concat(chrY);
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
-    const clickedValues = allValues.filter((v) => v.block_id === chromoId);
+    var chromoIdString = chromoId + "";
+    const clickedValues = allValues.filter((v) => v.block_id === chromoIdString);
+    console.log(allValues, chromoId, clickedValues);
     setAllValue([...clickedValues]);
     //this is for single chromosome
   }, [chromoId]);
 
   const columns = Columns;
 
-  function getViolinData() {
+  function filterDataByType(data, type, defaultValue) {
+    if (Array.isArray(data) && data.length > 0) {
+      return data.filter((item) => item.type === type);
+    }
+    return defaultValue;
+  }
+
+  function getViolinData(data) {
     // var data = [
     //   {
     //     type: "violin",
@@ -272,15 +283,41 @@ export default function RangeView(props) {
     //     },
     //   },
     // ];
+    // gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
+    // console.log(data);
 
-    gain.sort((a, b) => Number(a.block_id) - Number(b.block_id));
-    var gainViolin = [
+    var selectedChromeID = chromoId + "";
+    var violinGain = filterDataByType(data, "Gain", gain);
+    var violinloh = filterDataByType(data, "CN-LOH", loh);
+    var violinloss = filterDataByType(data, "Loss", loss.concat(chrX).concat(chrY));
+    var violinundeter = filterDataByType(data, "Undetermined", undetermined);
+
+    if (chromoId === "X" || chromoId === "Y") {
+      violinGain = [];
+      violinloh = [];
+      violinundeter = [];
+      violinloss = chrX.concat(chrY);
+    }
+
+    var violinDataSource = [
       {
-        y: gain.map((e) => {
-          return Number(e.value);
-        }),
+        y: violinGain
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === selectedChromeID : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "Gain",
         type: "violin",
+        hoverinfo: "none",
+        hoveron: "kde",
+        bandwidth: 0,
+        // hovertemplate: "%{y} <extra></extra>",
+
+        // span: [0, Math.max(...violinGain)],
+        //spanmode: "manual",
+
         box: {
           visible: true,
         },
@@ -295,11 +332,18 @@ export default function RangeView(props) {
         },
       },
       {
-        y: loh.map((e) => {
-          return Number(e.value);
-        }),
+        y: violinloh
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === selectedChromeID : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "CN-LOH",
         type: "violin",
+        hoverinfo: "none",
+        hoveron: "point+kde",
+        bandwidth: 0,
         box: {
           visible: true,
         },
@@ -314,11 +358,18 @@ export default function RangeView(props) {
         },
       },
       {
-        y: loss.map((e) => {
-          return Number(e.value);
-        }),
+        y: violinloss
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === selectedChromeID : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "Loss",
         type: "violin",
+        hoverinfo: "none",
+        hoveron: "point+kde",
+        bandwidth: 0,
         box: {
           visible: true,
         },
@@ -334,11 +385,18 @@ export default function RangeView(props) {
       },
 
       {
-        y: undetermined.map((e) => {
-          return Number(e.value);
-        }),
+        y: violinundeter
+          .filter((o) => {
+            return chromoId > 0 ? o.block_id === selectedChromeID : o;
+          })
+          .map((e) => {
+            return Number(e.value);
+          }),
         name: "Undetermined",
         type: "violin",
+        hoverinfo: "none",
+        hoveron: "point+kde",
+        bandwidth: 0,
         box: {
           visible: true,
         },
@@ -353,8 +411,9 @@ export default function RangeView(props) {
         },
       },
     ];
-    console.log(gainViolin);
-    return gainViolin;
+    console.log(violinData);
+    setViolinData(violinDataSource);
+    return violinData;
   }
 
   function getScatterData() {
@@ -475,8 +534,9 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    // console.log(data.length);
+    console.log(data.length);
     setTableData(data);
+    getViolinData(data);
   };
   const handleCheckboxChange = () => {
     props.onPair();
@@ -493,7 +553,7 @@ export default function RangeView(props) {
     if (circleRef.current && loaded && document.getElementById("circosTable").getElementsByTagName("tr").length === 0) {
       [".track-0", ".track-1", ".track-2", ".track-3"].forEach((trackClass, index) => {
         const track = document.querySelectorAll(`${trackClass}` + " .block");
-        console.log(track.length);
+        // console.log(track.length);
         const chromosomes = [].concat(
           Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
             return { key: i, outBlock: 0, all: "" };
@@ -558,7 +618,7 @@ export default function RangeView(props) {
 
       for (let l = 0; l < fourTracks; l++) {
         const trackData = linesSummary[l];
-        console.log(trackData);
+        //  console.log(trackData);
         const row = tbody.insertRow(-1);
         if (trackData !== undefined && trackData.length > 0) {
           trackData.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
@@ -594,7 +654,7 @@ export default function RangeView(props) {
   //if not compare, with chromid => add data
   let resultData = tableData;
   if (!form.compare) {
-    if (chromoId > 0) {
+    if (chromoId > 0 || chromoId === "X" || chromoId === "Y") {
       resultData = tableData.length > 0 ? tableData : allValue;
       //filter data if zoomin for single chromo
     } else resultData = allValues;
@@ -611,22 +671,31 @@ export default function RangeView(props) {
 
   const layout = {
     xaxis: {
-      title: "<b>Copy Number State</b>",
+      // title: "<b>Copy Number State</b>",
       zeroline: false,
       titlefont: {
-        size: 16,
+        size: 14,
       },
+      // side: "top",
     },
     yaxis: {
       title: "<b>Cellular Fraction</b>",
       tickfont: {
         size: 14,
       },
+      range: [0, 1],
       automargin: true,
+    },
+    margin: {
+      // l: 10,
+      // r: 0,
+      b: 20,
+      t: 40,
+      pad: 0,
     },
     autosize: true,
 
-    title: "Cell Fraction Violin Boxplot",
+    title: "Cellular Fraction Violin Boxplot",
   };
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -648,10 +717,10 @@ export default function RangeView(props) {
                   ref={circleRef}
                   clickedChromoId={handleClickedChromoId}
                   key={clickedCounter}
-                  loss={[...loss, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
-                  loh={[...loh, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
-                  gain={[...gain, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
-                  undetermined={[...undetermined, ...(form.chrX ? initialX : []), ...(form.chrY ? initialY : [])]}
+                  loss={loss}
+                  loh={loh}
+                  gain={gain}
+                  undetermined={undetermined}
                   allDenominator={allDenominator}
                   chrx={chrX}
                   chry={chrY}
@@ -694,7 +763,7 @@ export default function RangeView(props) {
           <Row className="m-3">
             <Col xl={12}>
               <Plot
-                data={getViolinData()}
+                data={violinData}
                 layout={layout}
                 config={{
                   ...defaultConfig,
@@ -704,7 +773,7 @@ export default function RangeView(props) {
                   },
                   responsive: true,
                 }}
-                style={{ width: "100%", height: browserSize.height }}
+                style={{ width: "100%", height: browserSize.height * 0.7 }}
               />
               {/* <Plot
                 data={getScatterData()}

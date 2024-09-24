@@ -1,12 +1,12 @@
 version: "3"
 services:
-  backend:
-    build:
-      context: "."
-      dockerfile: "./docker/backend.dockerfile"
-    env_file: server/.env
-    ports:
-      - "9000:9000"
+  # backend:
+  #   build:
+  #     context: "."
+  #     dockerfile: "./docker/backend.dockerfile"
+  #   env_file: server/.env
+  #   ports:
+  #     - "9000:9000"
 
   frontend:
     build:
@@ -22,34 +22,34 @@ services:
   # to start only the database container, run:
   # docker compose up database
   # ensure vm.max_map_count is at least 262144
-  database:
-    image: opensearchproject/opensearch:latest
+  #database:
+  #  image: opensearchproject/opensearch:latest
     #env_file: server/.env
-    container_name: opensearch
-    environment:
+  #  container_name: opensearch
+  #  environment:
       #- discovery.type=single-node # Name the cluster
-      - cluster.name=opensearch-cluster
-      - discovery.type=single-node
-      - plugins.security.ssl.http.enabled=false
+  #    - cluster.name=opensearch-cluster
+  #    - discovery.type=single-node
+  #    - plugins.security.ssl.http.enabled=false
       #- plugins.security.disabled=true
-    ports:
-      - 9200:9200 # REST API
-    volumes:
-      - opensearch-data:/usr/share/opensearch/data
-    networks:
-      - opensearch-network
+  #  ports:
+  #    - 9200:9200 # REST API
+  #  volumes:
+  #    - opensearch-data:/usr/share/opensearch/data
+  #  networks:
+  #    - opensearch-network
  
-  opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
-    container_name: opensearch-dashboards
-    ports:
-      - "5601:5601"
-    environment:
-      - OPENSEARCH_HOSTS=http://database:9200
-    depends_on:
-      - database
-    networks:
-      - opensearch-network
+  #opensearch-dashboards:
+  #  image: opensearchproject/opensearch-dashboards:latest
+  #  container_name: opensearch-dashboards
+  #  ports:
+  #    - "5601:5601"
+  #  environment:
+  #    - OPENSEARCH_HOSTS=http://database:9200
+  #  depends_on:
+  #    - database
+  #  networks:
+  #    - opensearch-network
 
 volumes:
   opensearch-data:

@@ -85,7 +85,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    console.log(name, selection);
+    console.log(name, selection, form);
     if (name === "chrCompare") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
@@ -96,6 +96,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
       if (selection.label === "Y") {
         setIsY(true);
       }
+      //mergeForm({ [name]: selection });
       //handleFilterClear()
 
       /*  onClear({
@@ -301,7 +302,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
             <Form.Group className="mb-3">
               <Form.Label className="required">Chromosome</Form.Label>
               <Form.Label style={{ color: "red" }}>
-                {submitClicked && form.chrCompare === "" ? "Plese select chromosome" : ""}
+                {submitClicked && form.chrCompare === "" ? "Please select chromosome" : ""}
               </Form.Label>
               <Select
                 aria-label="chromosome"

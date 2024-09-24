@@ -51,67 +51,67 @@ export const Columns = [
       </OverlayTrigger>
     ),
   },
-  {
-    accessor: "PopID",
-    id: "ancestry",
-    label: "Ancestry",
-    Header: <b>Ancestry</b>,
-  },
-  {
-    accessor: "sex",
-    id: "sex",
-    label: "Sex",
-    Header: <b>Sex</b>,
-  },
-  {
-    accessor: "age",
-    id: "age",
-    label: "Age",
-    Header: <b>Age</b>,
-  },
+  // {
+  //   accessor: "PopID",
+  //   id: "ancestry",
+  //   label: "Ancestry",
+  //   Header: <b>Ancestry</b>,
+  // },
+  // {
+  //   accessor: "sex",
+  //   id: "sex",
+  //   label: "Sex",
+  //   Header: <b>Sex</b>,
+  // },
+  // {
+  //   accessor: "age",
+  //   id: "age",
+  //   label: "Age",
+  //   Header: <b>Age</b>,
+  // },
   {
     accessor: "array",
     id: "array",
     label: "Array",
     Header: <b>Array</b>,
   },
-  {
-    accessor: "smokeNFC",
-    id: "smoke",
-    label: "Smoke",
-    Header: <b>Smoke</b>,
-  },
-  {
-    accessor: "priorCancer",
-    id: "priorCancer",
-    label: "Prior Cancer",
-    Header: <b>Prior Cancer</b>,
-  },
-  {
-    accessor: "incidentCancerHem",
-    id: "incidentCancerHem",
-    label: "Incident Hematological Cancer",
-    Header: <b>Hematological Cancer</b>,
-  },
-  {
-    accessor: "incidentCancerLymphoid",
-    id: "incidentCancerLymphoid",
-    label: "Incident Lymphoid Cancer",
-    Header: <b>Lymphoid Cancer</b>,
-  },
-  {
-    accessor: "incidentCancerMyeloid",
-    id: "incidentCancerMyeloid",
-    label: "Incident Myeloid Cancer",
-    Header: <b>Myeloid Cancer</b>,
-  },
+  // {
+  //   accessor: "smokeNFC",
+  //   id: "smoke",
+  //   label: "Smoke",
+  //   Header: <b>Smoke</b>,
+  // },
+  // {
+  //   accessor: "priorCancer",
+  //   id: "priorCancer",
+  //   label: "Prior Cancer",
+  //   Header: <b>Prior Cancer</b>,
+  // },
+  // {
+  //   accessor: "incidentCancerHem",
+  //   id: "incidentCancerHem",
+  //   label: "Incident Hematological Cancer",
+  //   Header: <b>Hematological Cancer</b>,
+  // },
+  // {
+  //   accessor: "incidentCancerLymphoid",
+  //   id: "incidentCancerLymphoid",
+  //   label: "Incident Lymphoid Cancer",
+  //   Header: <b>Lymphoid Cancer</b>,
+  // },
+  // {
+  //   accessor: "incidentCancerMyeloid",
+  //   id: "incidentCancerMyeloid",
+  //   label: "Incident Myeloid Cancer",
+  //   Header: <b>Myeloid Cancer</b>,
+  // },
 ];
 
 export function exportTable(tableData) {
   return [
     {
       columns: Columns.map((e) => {
-        return { title: e.label, width: { wpx: 160 } };
+        return { title: e.label === "value" ? "Cellular Fraction" : e.label, width: { wpx: 160 } };
       }),
       data: tableData.map((e) => {
         return [
@@ -122,11 +122,11 @@ export function exportTable(tableData) {
           { value: e.value },
           { value: e.start },
           { value: e.end },
-          { value: e.PopID },
-          { value: e.sex },
-          { value: e.age },
+          // { value: e.PopID },
+          // { value: e.sex },
+          // { value: e.age },
           { value: e.array },
-          { value: e.smokeNFC },
+          // { value: e.smokeNFC },
         ];
       }),
     },

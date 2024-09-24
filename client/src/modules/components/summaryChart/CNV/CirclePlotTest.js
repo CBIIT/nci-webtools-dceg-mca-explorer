@@ -13,10 +13,10 @@ import CircosPlot from "./CirclePlot";
 import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
-import { AncestryOptions, initialX, initialY, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
-import { fisherTest } from "../../utils";
+import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+//import { fisherTest } from "../../utils";
 
-import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
+//import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
 
 //import { saveAs } from "file-saver";
 //import ChromosomeCompare from "./ChromosomeCompare";
@@ -36,15 +36,9 @@ const hovertip = (d) => {
     d.start +
     "<br> End: " +
     d.end +
-    "<br> Ancestry: " +
-    d.PopID +
-    "<br> Sex: " +
-    d.sex +
-    "<br> Age: " +
-    d.age +
-    "<br> Smoke: " +
-    d.smokeNFC +
-    " " +
+    // "<br> Smoke: " +
+    // d.smokeNFC +
+    // " " +
     "</p>"
   );
 };
@@ -118,6 +112,22 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [isLoadedA, setIsLoadedA] = useState(false);
   const [isLoadedB, setIsLoadedB] = useState(false);
   const [singleZoomLength, setSingleZoomLength] = useState(0);
+
+  const [showTitle, setShowTitle] = useState(false);
+  const [showTableTitle, setShowTableTitle] = useState(false);
+  const [visibleTooltip, setVisibleTooltip] = useState(false);
+  const [compareChr, setCompareChr] = useState(form.chrSingle && form.chrSingle.label);
+
+  const handleDisplayTitle = () => {
+    // Toggle display of circosTitle
+    setShowTitle(!showTitle);
+    setVisibleTooltip(false);
+  };
+
+  const handleDisplayTableTitle = () => {
+    // Toggle display of circosTitle
+    setShowTableTitle(!showTableTitle);
+  };
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -216,10 +226,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
-          if (b.__data__.key === "X" || b.__data__.key === "Y") {
-            bck.setAttribute("fill", "white");
-            bck.setAttribute("opacity", 0);
-          }
+          // if (b.__data__.key === "X" || b.__data__.key === "Y") {
+          //   bck.setAttribute("fill", "white");
+          //   bck.setAttribute("opacity", 0);
+          // }
+          // bck.setAttribute("fill", "red");
         });
       });
     }
@@ -228,7 +239,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   useEffect(() => {
     // call api or anything
     //console.log("backgroudcolor");
-    changeXYbackcolor();
+    //changeXYbackcolor();
   });
 
   const handleEnter = () => {
@@ -244,23 +255,25 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
+
           bck.addEventListener("mouseover", () => {
             // console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id
-            if (b.__data__.key !== "X" && b.__data__.key !== "Y")
-              alltracks.forEach((t) => changeBackground(t, b.__data__.key, 1));
-            else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
+            // if (b.__data__.key !== "X" && b.__data__.key !== "Y")
+            alltracks.forEach((t) => changeBackground(t, b.__data__.key, 1));
+            //else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
           });
           bck.addEventListener("mouseout", () => {
-            if (b.__data__.key !== "X" && b.__data__.key !== "Y")
-              alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
-            else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0));
+            // if (b.__data__.key !== "X" && b.__data__.key !== "Y")
+            alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0.5));
+            // else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0));
           });
           bck.addEventListener("click", () => {
             console.log("click", b.__data__.key);
             setShowChart(true);
+            setShowTitle(false);
             props.onClickedChr(true);
-            setChromesomeId(b.__data__.key);
-            sendClickedId(b.__data__.key);
+            setChromesomeId(b.__data__.key + "");
+            sendClickedId(b.__data__.key + "");
             const cid = "chr" + b.__data__.key;
             const chrid = form.chromosome.filter((c) => c.value === cid);
             setForm({
@@ -284,6 +297,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setShowChart(false);
     sendClickedId(-1);
     setZoomRange(null);
+    setShowTitle(false);
     props.onClickedChr(false);
     setIsCompare(false);
     setForm({
@@ -398,14 +412,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       if (form.counterCompare > 0) {
         handleGroupQuery(form.groupA).then((data) => {
           if (showChart) {
-            setGroupA(data[0]);
+            setGroupA(data[0].filter((item) => item.type !== undefined));
             setFisherA(data[1]);
           } else setCircleA({ ...data });
           setIsLoadedA(true);
         });
         handleGroupQuery(form.groupB).then((data) => {
           if (showChart) {
-            setGroupB(data[0]);
+            setGroupB(data[0].filter((item) => item.type !== undefined));
             setFisherB(data[1]);
           } else setCircleB({ ...data });
           setIsLoadedB(true);
@@ -439,14 +453,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     //console.log(form, isLoadedA, isLoadedB);
   }, [isLoadedA, isLoadedB]);
-
+  var chromesomeIdString = chromesomeId + "";
   data = [
-    ...props.gain.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.loh.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.loss.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.undetermined.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.chrx.filter((chr) => chr.block_id === chromesomeId + ""),
-    ...props.chry.filter((chr) => chr.block_id === chromesomeId + ""),
+    ...props.gain.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.loh.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.loss.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.undetermined.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.chrx.filter((chr) => chr.block_id === chromesomeIdString),
+    ...props.chry.filter((chr) => chr.block_id === chromesomeIdString),
     // ...props.chry.filter(chr=>chr.block_id===chromesomeId)
   ];
 
@@ -485,9 +499,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     //   lohTemp = [...initialY];
     //   undeterTemp = [...initialY];
     // }
+    setCompareChr(chromesomeId);
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
+        console.log(chromesomeId);
         query = {
           ...group,
           chr: chromesomeId,
@@ -861,6 +877,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     );
   }, [form.counterSubmitted]);
 
+  //chromosome comparison download
   const handleDownload = () => {
     setIsLoaded(true);
     var imageAs = document.getElementById("A");
@@ -898,12 +915,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     const legendY = 5;
     const legendY2 = 7;
     const legendX = 150;
-    let figResolution = 0.8;
+    let figResolution = 1;
     let downloadname = "compareSummary.pdf";
     if (chromesomeId) {
       figResolution = 1;
       downloadname = rangeLabel ? rangeLabel : "Chr" + chromesomeId + ".pdf";
     }
+    downloadname = downloadname.replace(/,/g, "");
 
     htmlToImage
       .toPng(imageA, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
@@ -919,6 +937,17 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   .then((dataUrl4) => {
                     const pdf = new jsPDF();
                     const width = pdf.internal.pageSize.getWidth() / 2;
+                    const widthlabel = width / 2;
+                    const height = pdf.internal.pageSize.getHeight(); // Get the height of the PDF page
+                    const pngHeight = imageAs ? imageAs.offsetHeight : 0; // chromosome plot height
+                    const pngWidth = imageAs ? imageAs.offsetWidth : 0;
+                    const snpHeight = snp ? snp.offsetHeight : 0; // snp height
+                    const imageSpacing = 10; // Adjust as needed
+                    const scaleplot = Math.min((width - imageSpacing) / pngWidth, height / pngHeight);
+                    const plotheight = pngHeight * scaleplot;
+                    const plotwidth = pngWidth * scaleplot;
+                    console.log(width, height, pngHeight, pngWidth, plotheight, snpHeight, scaleplot);
+
                     pdf.setFillColor(0, 128, 0);
                     pdf.rect(legendX, legendY, legendSize, legendSize, "F");
                     pdf.setFontSize(8);
@@ -943,21 +972,44 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     pdf.setTextColor(0, 0, 0);
                     pdf.setFontSize(8);
                     if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
-                    pdf.text(commonTitle, width, initalY + 4, { align: "center" });
-                    pdf.text(titleA, width * 0.5, initalY + 8, { align: "center" });
-                    pdf.text(titleB, 1.5 * width, initalY + 8, { align: "center" });
+                    const texttitle = pdf.splitTextToSize(commonTitle, 2 * (width - imageSpacing));
+                    pdf.text(texttitle, width, initalY + 4, { align: "center" });
+                    const textA = pdf.splitTextToSize(titleA, width - imageSpacing);
+                    const textB = pdf.splitTextToSize(titleB, width - imageSpacing);
+                    pdf.text(textA, width * 0.5, initalY + 8, { align: "center" });
+                    pdf.text(textB, 1.5 * width, initalY + 8, { align: "center" });
 
-                    pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
-                    pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
+                    let y0 = initalY + 10 + imageSpacing;
+                    let y = plotheight + 30 + imageSpacing;
 
-                    pdf.addImage(dataUrl3, "PNG", 0, width + initalY + 20, width, 0);
-                    pdf.addImage(dataUrl3, "PNG", width, width + initalY + 20, width, 0);
-                    pdf.addImage(dataUrl4, "PNG", 0, width + initalY + 40, width, 0);
-                    pdf.addImage(dataUrl4, "PNG", width, width + initalY + 40, width, 0);
+                    pdf.addImage(dataUrl1, "PNG", imageSpacing, y0, plotwidth, plotheight);
+                    pdf.addImage(dataUrl2, "PNG", width, y0, plotwidth, plotheight);
 
-                    if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
-                    if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
+                    if (chromesomeId) pdf.text(rangeLabel, widthlabel, y, { align: "center" });
+                    if (chromesomeId) pdf.text(rangeLabel, width + widthlabel, y, { align: "center" });
+                    pdf.addImage(dataUrl3, "PNG", imageSpacing, y + 5, plotwidth, 0);
+                    pdf.addImage(dataUrl3, "PNG", width, y + 5, plotwidth, 0);
                     //}
+
+                    if (gene !== null) {
+                      const geneImageHeight = gene.offsetHeight;
+                      const geneImageWidth = gene.offsetWidth;
+                      let scale = 1;
+                      const geneY = height / 2; //if gene height is bigger than half of page, put gene in new page
+                      if (geneImageHeight * scaleplot > geneY) {
+                        pdf.addPage();
+                        // Calculate scale to fit the image within one page
+                        scale = Math.min((width - imageSpacing) / geneImageWidth, height / geneImageHeight);
+                        y = 0;
+                      } else {
+                        scale = scaleplot;
+                        y = y + imageSpacing + 20;
+                      }
+                      pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
+                      pdf.addImage(dataUrl4, "PNG", width, y, geneImageWidth * scale, geneImageHeight * scale);
+                      //pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
+                      console.log(geneImageWidth, scaleplot);
+                    }
 
                     pdf.save(downloadname);
                     //setTimeout(() => pdf.save(downloadname), 500);
@@ -980,7 +1032,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     var imageBs = document.getElementById("B");
     var imageB = imageBs.querySelectorAll("svg")[0];
     //initial
-
+    console.log(imageA, imageB);
     const initalY = 15;
     const legendSize = 2;
     const legendY = 5;
@@ -996,7 +1048,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           .toPng(imageB, { quality: figResolution, pixelRatio: figResolution, backgroundColor: "white" })
           .then((dataUrl2) => {
             const pdf = new jsPDF();
-            const width = pdf.internal.pageSize.getWidth() / 2;
+            const pdfwidth = pdf.internal.pageSize.getWidth();
+            const width = pdfwidth / 2;
             pdf.setFillColor(0, 128, 0);
             pdf.rect(legendX, legendY, legendSize, legendSize, "F");
             pdf.setFontSize(8);
@@ -1021,12 +1074,17 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             pdf.setTextColor(0, 0, 0);
             pdf.setFontSize(8);
             // if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width, initalY, { align: "center" });
-            pdf.text(commonTitle.slice(1), width, initalY, { align: "center" });
-            pdf.text(titleA, width * 0.5, initalY + 5, { align: "center" });
-            pdf.text(titleB, 1.5 * width, initalY + 5, { align: "center" });
+            const textTitle = pdf.splitTextToSize(commonTitle.slice(1), 2 * width - 10);
+            pdf.text(textTitle, width, initalY, { align: "center" });
 
-            pdf.addImage(dataUrl1, "PNG", 0, initalY + 10, width, width);
-            pdf.addImage(dataUrl2, "PNG", width, initalY + 10, width, width);
+            const textA = pdf.splitTextToSize(titleA, width - 10);
+            const textB = pdf.splitTextToSize(titleB, width - 10);
+
+            pdf.text(textA, width * 0.5, initalY + 5, { align: "center" });
+            pdf.text(textB, 1.5 * width, initalY + 5, { align: "center" });
+
+            pdf.addImage(dataUrl1, "PNG", 0, initalY + 20, width, width);
+            pdf.addImage(dataUrl2, "PNG", width, initalY + 20, width, width);
 
             //if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width + 30, { align: "center" });
             // if (chromesomeId) pdf.text(rangeLabel, width * 1.5, width + 30, { align: "center" });
@@ -1058,7 +1116,6 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const handleSummaryDownload = async () => {
     setIsLoaded(true);
     var images = document.getElementById("summaryCircle");
-    var image = images.querySelectorAll("svg")[1];
     var imageXY = images.querySelectorAll("svg")[0];
     const imgconfig = {
       quality: 1,
@@ -1069,23 +1126,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     // const canvasxy = await htmlToImage.toCanvas(imageXY);
     // const base64fDataUrlxy = canvas.toDataURL("image/png");
     // console.log(base64fDataUrl);
-    htmlToImage
-      .toPng(image, imgconfig)
-      .then((dataUrl) => {
-        htmlToImage.toPng(imageXY, imgconfig).then((dataUrl2) => {
-          const pdf = new jsPDF();
-          const width = pdf.internal.pageSize.getWidth();
-          //const height = pdf.internal.pageSize.getHeight();
-          //pdf.text("", width *0.5, 10, { align: "center" });
-          pdf.setTextColor(0, 0, 0);
-          pdf.setFontSize(12);
-          pdf.text(circosTitle.slice(1), width * 0.5, 15, { align: "center" });
 
-          pdf.addImage(dataUrl, "PNG", 0, 20, width, width);
-          pdf.addImage(dataUrl2, "PNG", 0, 20, width, width);
-          pdf.save(circosTitle.slice(1) + ".pdf");
-          setIsLoaded(false);
-        });
+    htmlToImage
+      .toPng(imageXY, imgconfig)
+      .then((dataUrl) => {
+        const pdf = new jsPDF();
+        const width = pdf.internal.pageSize.getWidth();
+        //const height = pdf.internal.pageSize.getHeight();
+        //pdf.text("", width *0.5, 10, { align: "center" });
+        pdf.setTextColor(0, 0, 0);
+        pdf.setFontSize(12);
+        const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20);
+        pdf.text(circosTitleLines, width * 0.5, 15, { align: "center" });
+        pdf.addImage(dataUrl, "PNG", 0, 30, width, width);
+        pdf.save(simpleTitle.slice(1) + ".pdf");
+        setIsLoaded(false);
       })
       .catch(function (error) {
         console.error("oops, something went wrong!", error);
@@ -1102,9 +1157,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     if (snp !== null) imagesnp = snp;
 
     var gene = document.getElementById("geneplots");
-    console.log("GENE IMG ", gene);
+    //console.log("GENE IMG ", gene);
     var imagegene = image.querySelectorAll("svg")[1]; //set an intial value
-    console.log("imagegene ", imagegene);
+    //console.log("imagegene ", imagegene);
     //if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
     if (gene !== null) {
       if (gene.querySelectorAll("svg")[0] !== undefined) imagegene = gene;
@@ -1118,6 +1173,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     let downloadname = "Chr" + chromesomeId + ".pdf";
     const geneImage = document.getElementById("geneplots");
     let geneImageHeight = 0;
+    let geneImageWidth = 0;
 
     if (chromesomeId) {
       figResolution = 1;
@@ -1130,7 +1186,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
     // Check if imagegene height is more than 2000 pixels
     if (gene !== null) {
-      geneImageHeight = geneImage.clientHeight;
+      geneImageHeight = geneImage.offsetHeight;
+      geneImageWidth = geneImage.offsetWidth;
       //console.log("geneImageHeight ", geneImageHeight);
     }
 
@@ -1146,8 +1203,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 const pdf = new jsPDF();
                 const width = pdf.internal.pageSize.getWidth();
                 const height = pdf.internal.pageSize.getHeight(); // Get the height of the PDF page
+                const pngHeight = image !== null ? image.offsetHeight : 0; // chromosome plot height
+                const pngWidth = image !== null ? image.offsetWidth : 0;
+                const snpHeight = snp !== null ? snp.offsetHeight : 0; // snp height
+                const imageSpacing = 10; // Adjust as needed
+                const scaleplot = Math.min((width - 2 * imageSpacing) / pngWidth, height / pngHeight);
+                const plotheight = pngHeight * scaleplot;
+                console.log(width, height, pngHeight, pngWidth, plotheight, plotheight, snpHeight, scaleplot);
 
-                //console.log("width ", width);
                 pdf.setFillColor(0, 128, 0);
                 pdf.rect(legendX, legendY, legendSize, legendSize, "F");
                 pdf.setFontSize(8);
@@ -1173,99 +1236,36 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 pdf.setFontSize(10);
                 if (chromesomeId) pdf.text("Chromosome " + chromesomeId, width * 0.5, initalY, { align: "center" });
                 //pdf.text(circosTitle.slice(1), width * 0.5, initalY + 5, { align: "center" });
-                const imageSpacing = 10; // Adjust as needed
-                const imageWidth = width - 2 * imageSpacing + 10; // Stretch the image to fit the entire page width
-                const imageHeight = width * 0.5 - 2 * imageSpacing; // Adjust spacing between images
-                console.log("imageHeight ", imageHeight);
+
                 const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20); // Adjust the width as needed
                 pdf.text(circosTitleLines, width * 0.5, initalY + 5, { align: "center" });
 
-                // pdf.addImage(dataUrl1, "PNG", 0.25 * width, initalY + 10, width / 2, 0);
-                // pdf.addImage(dataUrl3, "PNG", 0.25 * width, width * 0.5 + 10, width / 2, 0);
-                // pdf.addImage(dataUrl4, "PNG", 0.25 * width, width * 0.5 + 20, width / 2, 0);
-
-                let y = initalY + 10 + imageSpacing;
+                let y0 = initalY + 10 + imageSpacing;
+                let y = plotheight + 30 + imageSpacing;
                 // Define the height of the PNG image
-                const pngHeight = 250; // Adjust as needed
-                const snpHeight = 15; // Adjust as needed
-                console.log("y ---- ", y);
-                console.log("height ", height);
 
-                pdf.addImage(dataUrl1, "PNG", imageSpacing, initalY + 10 + imageSpacing, imageWidth, imageHeight);
-                pdf.addImage(dataUrl3, "PNG", imageSpacing, width * 0.5 + 10 + imageSpacing, imageWidth, snpHeight);
+                pdf.addImage(dataUrl1, "PNG", imageSpacing, y0, pngWidth * scaleplot, pngHeight * scaleplot);
+                pdf.addImage(dataUrl3, "PNG", imageSpacing, y, pngWidth * scaleplot, snpHeight * scaleplot);
                 //pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
-
-                let rangeLabelY = width * 0.5 + 12 + imageSpacing; // Adjust the vertical position as needed
-                //console.log("rangeLabelY ", rangeLabelY);
-
                 console.log("geneImageHeight --- ", geneImageHeight);
-                let customGeneImgHeight;
 
-                if (gene != null) {
-                  if (geneImageHeight >= 1500) {
+                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, plotheight + 38, { align: "center" });
+
+                if (gene !== null) {
+                  let scale = 1;
+                  const geneY = height / 2; //if gene height is bigger than half of page, put gene in new page
+                  if (geneImageHeight * scaleplot > geneY) {
                     pdf.addPage();
-                    y = initalY;
-                    console.log("initalY ", initalY);
-                    // Move rangeLabel down
-                    rangeLabelY = pngHeight + 21;
-                    customGeneImgHeight = pngHeight;
-                    // Adjust the height of the last image to fill the remaining space on the page
-                    pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
-                  } else if (geneImageHeight < 1500 && geneImageHeight >= 1200) {
-                    pdf.addPage();
-                    y = width * 0.5 + 20 + imageSpacing;
-                    customGeneImgHeight = imageHeight * 1.5;
-                    pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
-                    rangeLabelY = customGeneImgHeight + y + imageSpacing;
-                  } else if (geneImageHeight < 1200 && geneImageHeight >= 1000) {
-                    y = width * 0.5 + 20 + imageSpacing;
-                    customGeneImgHeight = imageHeight * 1.5;
-                    pdf.addImage(dataUrl4, "PNG", imageSpacing, y, imageWidth, customGeneImgHeight);
-                    rangeLabelY = customGeneImgHeight + y + imageSpacing;
-                  } else if (geneImageHeight < 1000 && geneImageHeight >= 500) {
-                    customGeneImgHeight = imageHeight;
-                    pdf.addImage(
-                      dataUrl4,
-                      "PNG",
-                      imageSpacing,
-                      width * 0.5 + 20 + imageSpacing,
-                      imageWidth,
-                      customGeneImgHeight
-                    );
-                    rangeLabelY = 250;
-                  } else if (geneImageHeight < 500 && geneImageHeight > 300) {
-                    customGeneImgHeight = imageHeight;
-                    pdf.addImage(
-                      dataUrl4,
-                      "PNG",
-                      imageSpacing,
-                      width * 0.5 + 20 + imageSpacing,
-                      imageWidth,
-                      customGeneImgHeight
-                    );
-                    rangeLabelY = 200;
+                    // Calculate scale to fit the image within one page
+                    scale = Math.min((width - 2 * imageSpacing) / geneImageWidth, height / geneImageHeight);
+                    y = 0;
                   } else {
-                    customGeneImgHeight = geneImageHeight / 5;
-                    pdf.addImage(
-                      dataUrl4,
-                      "PNG",
-                      imageSpacing,
-                      width * 0.5 + 20 + imageSpacing,
-                      imageWidth,
-                      customGeneImgHeight
-                    );
-                    rangeLabelY = imageHeight + snpHeight + customGeneImgHeight + imageSpacing * 3 + initalY + 5;
+                    scale = scaleplot;
+                    y = y + imageSpacing;
                   }
+                  pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
                 }
-                console.log("customGeneImgHeight ", customGeneImgHeight);
-                console.log("rangeLabelY **** ", rangeLabelY);
-
                 pdf.setFontSize(8);
-                //if (chromesomeId) pdf.text(rangeLabel, width * 0.5, width * 0.5 + 5, { align: "center" });
-                //}
-
-                if (chromesomeId) pdf.text(rangeLabel, width * 0.5, rangeLabelY, { align: "center" });
-
                 pdf.save(downloadname);
                 //setTimeout(() => pdf.save(downloadname), 500);
                 setIsLoaded(false);
@@ -1348,11 +1348,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
-  const linethickness = 0;
-  const thicknessgain = props.gain.length < 200 ? 1 : linethickness;
-  const thicknessloh = props.loh.length < 200 ? 1 : linethickness;
-  const thicknessloss = props.loss.length < 200 ? 1 : linethickness;
-  const thicknessundermined = props.undetermined.length < 200 ? 1 : linethickness;
+  // const linethickness = 0;
+  // const thicknessgain = props.gain.length < 200 ? 1 : linethickness;
+  // const thicknessloh = props.loh.length < 200 ? 1 : linethickness;
+  // const thicknessloss = props.loss.length < 200 ? 1 : linethickness;
+  // const thicknessundermined = props.undetermined.length < 200 ? 1 : linethickness;
 
   let layoutAll = !form.chrX || form.chrX === undefined ? layout.filter((l) => l.label !== "X") : layout;
   layoutAll = !form.chrY || form.chrY === undefined ? layoutAll.filter((l) => l.label !== "Y") : layoutAll;
@@ -1490,26 +1490,28 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           <div style={{ display: "flex", justifyContent: "flex-start", alignItems: "center" }}>
             {!form.compare ? (
               <Button variant="link" style={{ padding: "2px" }} onClick={handleBack}>
-                All chromosomes &#8592;
+                All chromosomes
               </Button>
             ) : (
               <Button id="backCircos" variant="link" style={{ padding: "2px " }} onClick={handleCircosCompareBack}>
-                Back to circos compare &#8592;
+                Back to circos compare
               </Button>
             )}
             {rangeLabel ? (
               <>
+                &#8592;
                 <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomInitial}>
-                  Chr{chromesomeId} &#8592;
+                  Chr{compareChr}
                 </Button>
               </>
             ) : (
-              ""
+              <> &#8592; Chr{compareChr}</>
             )}
-            <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomback}>
-              {zoomRange}
-            </Button>
             {zoomRange ? <>&#8592;</> : ""}
+            <Button variant="link" style={{ padding: "2px" }} onClick={handleZoomback}>
+              {zoomRange && zoomRange.substring(rangeLabel.indexOf(":") + 1)}
+            </Button>
+            {rangeLabel ? <>&#8592;</> : ""} {rangeLabel.substring(rangeLabel.indexOf(":") + 1)}
           </div>
 
           {form.compare && form.counterCompare > 0 && (
@@ -1519,7 +1521,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   <Legend></Legend>
                 </Col>
                 <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
-                  {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
+                  {/* {rangeLabel ? rangeLabel : "Chr" + chromesomeId} */}
+                  {"Chr" + compareChr}
                   <br></br> {commonTitle}
                 </Col>
                 <Col
@@ -1535,7 +1538,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       variant="link"
                       onClick={handleDownload}
                       style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
-                      Download comparison images
+                      Download image
                     </Button>
                   )}
                 </Col>
@@ -1549,12 +1552,12 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeA}
-                      data={groupA}
+                      data={groupA.filter((item) => item.type !== undefined)}
                       title={titleA}
                       msg={msgA}
                       fisherP={fisherA}
                       details="A"
-                      chromesomeId={chromesomeId}
+                      chromesomeId={compareChr}
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
@@ -1576,12 +1579,12 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     <SingleChromosome
                       onZoomChange={handleZoomChange}
                       zoomRange={zoomRangeB}
-                      data={groupB}
+                      data={groupB.filter((item) => item.type !== undefined)}
                       title={titleB}
                       msg={msgB}
                       fisherP={fisherB}
                       details="B"
-                      chromesomeId={chromesomeId}
+                      chromesomeId={compareChr}
                       width={singleFigWidth}
                       height={singleFigWidth}
                       zoomHistory={handleZoomHistory}
@@ -1628,7 +1631,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                           {rangeLabel === "" ? groupA.length.toLocaleString() : rangeA.toLocaleString()}
                         </td>
                         <td className="numberCol">
-                          {fisherA > rangeA ? (fisherA - groupA.length).toLocaleString() : fisherA.toLocaleString()}
+                          {fisherA > rangeA
+                            ? (fisherA - (rangeLabel === "" ? groupA.length : Number(rangeA))).toLocaleString()
+                            : fisherA.toLocaleString()}
                         </td>
                         <td className="numberCol">{fisherA.toLocaleString()}</td>
                       </tr>
@@ -1638,7 +1643,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                           {rangeLabel === "" ? groupB.length.toLocaleString() : rangeB.toLocaleString()}
                         </td>
                         <td className="numberCol">
-                          {fisherB > rangeB ? (fisherB - groupB.length).toLocaleString() : fisherB.toLocaleString()}
+                          {fisherB > rangeB
+                            ? (fisherB - (rangeLabel === "" ? groupB.length : Number(rangeB))).toLocaleString()
+                            : fisherB.toLocaleString()}
                         </td>
                         <td className="numberCol">{fisherB.toLocaleString()}</td>
                       </tr>
@@ -1655,11 +1662,33 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   <Legend></Legend>
                 </Col>
                 <Col xs={12} md={6} lg={6} style={{ fontSize: "14px" }}>
-                  {rangeLabel ? rangeLabel : "Chr" + chromesomeId}
+                  {/* {rangeLabel ? rangeLabel : "Chr" + chromesomeId} */}
+                  {"Chr" + chromesomeId}
                   <br></br>
-                  <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)}>
-                    {simpleTitle.slice(1)}
+                  <div className="tooltip-container" onClick={handleDisplayTitle}>
+                    {!showTitle && (
+                      <span
+                        onMouseOver={() => setVisibleTooltip(true)}
+                        onMouseOut={() => setVisibleTooltip(false)}
+                        className="tooltip-trigger">
+                        {simpleTitle.slice(1)}{" "}
+                        <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                      </span>
+                    )}
+                    {visibleTooltip && <div className="tooltip-box">{circosTitle.slice(1)}</div>}
+                    {showTitle && <div>{circosTitle.slice(1)}</div>}
                   </div>
+                  {/* <div
+                    style={{ cursor: "pointer", position: "relative", textAlign: "center" }}
+                    onClick={handleDisplayTitle}>
+                    {!showTitle && (
+                      <div>
+                        {simpleTitle.slice(1)}{" "}
+                        <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                      </div>
+                    )}
+                    {showTitle && <div>{circosTitle.slice(1)}</div>}
+                  </div> */}
                 </Col>
                 <Col
                   xs={12}
@@ -1674,7 +1703,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       variant="link"
                       onClick={handleSingleChrDownload}
                       style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
-                      Download images
+                      Download image
                     </Button>
                   )}
                 </Col>
@@ -1700,7 +1729,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   <Table responsive bordered hover className="table fisherTable">
                     <thead>
                       <tr>
-                        <th rowSpan="2" className="bold-title-3" style={{ width: "400px" }}></th>
+                        <th rowSpan="2" className="bold-title-3" style={{ width: "410px" }}></th>
                         <th colSpan="3" className="bold-title-main">
                           mCA in region{" "}
                         </th>
@@ -1713,15 +1742,27 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     </thead>
                     <tbody>
                       <tr>
-                        <td className="bold-title-2" title={circosTitle.slice(1)} style={{ cursor: "pointer" }}>
-                          {simpleTitle.slice(1)}
+                        <td
+                          className="bold-title-2"
+                          title={circosTitle.slice(1)}
+                          style={{ cursor: "pointer" }}
+                          onClick={handleDisplayTableTitle}>
+                          {!showTableTitle && (
+                            <div>
+                              {simpleTitle.slice(1)}{" "}
+                              <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                            </div>
+                          )}
+                          {showTableTitle && <div>{circosTitle.slice(1)}</div>}
                         </td>
                         <td className="numberCol">
                           {rangeLabel === "" ? data.length.toLocaleString() : singleZoomLength.toLocaleString()}
                         </td>
                         <td className="numberCol">
                           {props.allDenominator > singleZoomLength
-                            ? (props.allDenominator - data.length).toLocaleString()
+                            ? (
+                                props.allDenominator - (rangeLabel === "" ? data.length : Number(singleZoomLength))
+                              ).toLocaleString()
                             : props.allDenominator.toLocaleString()}
                         </td>
                         <td className="numberCol">{props.allDenominator.toLocaleString()}</td>
@@ -1756,7 +1797,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   variant="link"
                   onClick={handlecircleDownload}
                   style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
-                  Download comparison images
+                  Download image
                 </Button>
               ) : (
                 ""
@@ -1779,10 +1820,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       details="A"
                       msg={msgA}
                       size={compareCircleSize}
-                      thicknessloss={0}
-                      thicknessgain={0}
-                      thicknessundermined={0}
-                      thicknessloh={0}
+                      // thicknessloss={0}
+                      // thicknessgain={0}
+                      // thicknessundermined={0}
+                      // thicknessloh={0}
                       circle={circleA}
                       circleRef={circleRef}
                       maxtitleHeight={maxTitleheight - heightA}
@@ -1807,10 +1848,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       title={titleB}
                       details="B"
                       size={compareCircleSize}
-                      thicknessloss={0}
-                      thicknessgain={0}
-                      thicknessundermined={0}
-                      thicknessloh={0}
+                      // thicknessloss={0}
+                      // thicknessgain={0}
+                      // thicknessundermined={0}
+                      // thicknessloh={0}
                       circle={circleB}
                       circleRef={circleRef}
                       handleEnter={handleEnter}
@@ -1837,9 +1878,29 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               <Legend></Legend>
             </Col>
             <Col xs={12} md={12} lg={6} style={{ justifyContent: "center", fontSize: "14px" }}>
-              <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)}>
-                {simpleTitle.slice(1)}
+              <div className="tooltip-container" onClick={handleDisplayTitle}>
+                {!showTitle && (
+                  <span
+                    onMouseOver={() => setVisibleTooltip(true)}
+                    onMouseOut={() => setVisibleTooltip(false)}
+                    className="tooltip-trigger">
+                    {simpleTitle.slice(1)}{" "}
+                    <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                  </span>
+                )}
+                {visibleTooltip && <div className="tooltip-box">{circosTitle.slice(1)}</div>}
+                {showTitle && <div>{circosTitle.slice(1)}</div>}
               </div>
+
+              {/* <div style={{ cursor: "pointer" }} title={circosTitle.slice(1)} onClick={handleDisplayTitle}>
+                {!showTitle && (
+                  <div>
+                    {simpleTitle.slice(1)}{" "}
+                    <span style={{ position: "relative", top: "-0.2em", right: 0 }}> &#9432;</span>
+                  </div>
+                )}
+                {showTitle && <div>{circosTitle.slice(1)}</div>}
+              </div> */}
             </Col>
             <Col
               xs={12}
@@ -1872,10 +1933,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 title={""}
                 msg={msg}
                 size={size > 1000 ? 1000 : size}
-                thicknessloss={thicknessloss}
-                thicknessgain={thicknessgain}
-                thicknessundermined={thicknessundermined}
-                thicknessloh={thicknessloh}
+                // thicknessloss={thicknessloss}
+                // thicknessgain={thicknessgain}
+                // thicknessundermined={thicknessundermined}
+                // thicknessloh={thicknessloh}
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}
@@ -1885,7 +1946,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             </Col>
           </Row>
           <br></br>
-          <div id="circosTable" className="table-responsive">
+          <div id="circosTable" className="table-responsive" style={{ fontSize: "14px" }}>
             Total number of events displayed
             {form.chrX || form.chrY ? (
               <>

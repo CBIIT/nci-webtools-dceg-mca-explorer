@@ -1,7 +1,9 @@
 database/data
 database/*.db
 database.db
-database/.env
+database/*.env
 node_modules
 .env
 data/*
+server/.env
+**/*.env

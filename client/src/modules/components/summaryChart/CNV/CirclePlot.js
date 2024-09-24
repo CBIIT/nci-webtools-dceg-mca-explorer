@@ -2,12 +2,14 @@
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { useEffect, useState } from "react";
-import { initialData } from "../../../mosaicTiler/constants";
+import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
   const layoutAll = props.layoutAll;
   const dataXY = props.dataXY;
+  const isX = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "X");
+  const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
   const size = props.size;
   const thicknessloss = props.thicknessloss;
   const thicknessgain = props.thicknessgain;
@@ -22,72 +24,33 @@ export default function CircosPlot(props) {
   //const checkMaxLines = props.checkMaxLines;
   const [plotLoaded, setPlotLoaded] = useState(false);
 
-  const [plotgain, setPlotgain] = useState(circle.gain.concat(initialData));
-  const [plotloh, setPlotloh] = useState(circle.loh.concat(initialData));
-  const [plotloss, setPlotloss] = useState(circle.loss.concat(initialData));
-  const [plotunder, setPlotunder] = useState(circle.undetermined.concat(initialData));
+  const [plotgain, setPlotgain] = useState(
+    circle.gain
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotloh, setPlotloh] = useState(
+    circle.loh
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotloss, setPlotloss] = useState(
+    circle.loss
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotunder, setPlotunder] = useState(
+    circle.undetermined
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
-      {/* <div className={classCircle}>
-        {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
-      {/* <Circos
-          layout={layoutxy}
-          config={{
-            innerRadius: size / 2 - 50,
-            outerRadius: size / 2 - 30,
-            ticks: {
-              display: true,
-              color: "black",
-              labels: false,
-            },
-            labels: {
-              position: "center",
-              display: true,
-              size: 14,
-              color: "#000",
-              radialOffset: 28,
-            },
-          }}
-          tracks={[
-            {
-              type: STACK,
-              data: dataXY,
-              config: {
-                innerRadius: 0.25,
-                outerRadius: 0.5,
-                thickness: 0.5,
-                margin: 0,
-                strokeWidth: 1,
-                strokeColor: "red",
-                direction: "out",
-                // logScale: true,
-                color: "red",
-                backgrounds: [
-                  {
-                    start: 0,
-                    end: 1,
-                    color: "white",
-                    opacity: 1,
-                  },
-                ],
-                tooltipContent: function (d) {
-                  return hovertip(d);
-                },
-                // events: {
-                //   mouseover: function (d, i, nodes, event) {
-                //     console.log("mouse over");
-                //   },
-                //   click: function (d, i, nodes, event) {
-                //     console.log("mouse over");
-                //   },
-                // },
-              },
-            },
-          ]}
-          size={size}
-        /> 
-      </div> */}
       <div className={classCircle} ref={circleRef} onMouseEnter={handleEnter} onClick={handleEnter}>
         {/* <div style={{ justifyContent: "flex-start", fontSize: "14px" }}>{props.title.slice(1)}</div> */}
         <div ref={props.circleRefTable}>
@@ -276,3 +239,48 @@ export default function CircosPlot(props) {
   );
   //return
 }
+
+////
+// const test = [
+//   {
+//     PopID: "East Asian",
+//     block_id: "7",
+
+//     chromosome: "chr7",
+//     computedGender: "F",
+//     dataset: "UKBB",
+//     end: "23063415",
+//     endAngle: 0.043344639683771745,
+//     endGrch38: "23063415",
+//     id: 16953,
+//     innerRadius: 17.212,
+//     layer: 0,
+//     length: "23063415",
+//     outerRadius: 19.212,
+//     start: "0",
+//     startAngle: 0,
+
+//     value: "0.0365",
+//   },
+//   {
+//     PopID: "East Asian",
+//     block_id: "8",
+
+//     chromosome: "chr8",
+//     computedGender: "F",
+//     dataset: "UKBB",
+//     end: "23063415",
+//     endAngle: 0.043344639683771745,
+//     endGrch38: "23063415",
+//     id: 16953,
+//     innerRadius: 17.212,
+//     layer: 0,
+//     length: "23063415",
+//     outerRadius: 19.212,
+//     start: "0",
+//     startAngle: 0,
+
+//     value: "0.0365",
+//   },
+// ];
+//console.log(plotunder, initialData);

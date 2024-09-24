@@ -50,19 +50,44 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     setIsY(form.chrY);
     setShowXY(true);
   }, [form.chrX, form.chrY]);
+
+  useEffect(() => {
+    var chrSelected = form.chrSingle && form.chrSingle.value;
+    console.log(chrSelected, form.chrX);
+    if (!form.chrX && !form.chrY) {
+      setDisabledType([]);
+      if (chrSelected === "chrX" || chrSelected === "chrY") {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      }
+    } else {
+      if (chrSelected !== "chrX" && chrSelected !== "chrY" && chrSelected !== "") setDisabledType([]);
+      else {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      }
+    }
+  }, [form.chrSingle]);
+
+  useEffect(() => {
+    if (disabledType.length === 3) {
+      handleSelectChange("types", [TypeStateOptions[0]]);
+    }
+  }, [disabledType]);
+
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "chrX") {
       console.log("clicking X");
       setIsX(event.target.checked);
       mergeForm({ [name]: event.target.checked });
-      if (event.target.checked || isY) setDisabledType(["loh", "gain", "undetermined"]);
-      else setDisabledType([]);
+      if (event.target.checked || isY) {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      } else setDisabledType([]);
     } else if (name === "chrY") {
       setIsY(event.target.checked);
       mergeForm({ [name]: event.target.checked });
-      if (event.target.checked || isX) setDisabledType(["loh", "gain", "undetermined"]);
-      else setDisabledType([]);
+      if (event.target.checked || isX) {
+        setDisabledType(["loh", "gain", "undetermined"]);
+      } else setDisabledType([]);
     } else if (name === "maxAge") {
       if (value <= 150) mergeForm({ [name]: Number(value) });
       else mergeForm({ [name]: 150 });
@@ -286,7 +311,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <>
           <Form.Group className="mb-3">
             <Form.Label className="required">Chromosome</Form.Label>
-            <Form.Label style={{ color: "red" }}>{form.chrSingle === "" ? "Plese select chromosome" : ""}</Form.Label>
+            <Form.Label style={{ color: "red" }}>{form.chrSingle === "" ? "Please select chromosome" : ""}</Form.Label>
             <Select
               aria-label="chromosome"
               placeholder="- Select -"
@@ -406,8 +431,8 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 options={platformArray.filter((obj, index) =>
                   form.study.length < 2 && form.study.length > 0
                     ? form.study[0].value === "plco"
-                      ? index < 2
-                      : index >= 2
+                      ? index < 4
+                      : index >= 4
                     : true
                 )}
                 classNamePrefix="select"

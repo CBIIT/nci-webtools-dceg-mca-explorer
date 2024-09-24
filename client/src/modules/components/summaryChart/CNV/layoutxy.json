@@ -134,13 +134,13 @@
   ,
   {
     "len": 155270560,
-    "color": "white",
+    "color": "transparent",
     "label": "X",
     "id": "X"
   },
   {
     "len": 155270560,
-    "color": "white",
+    "color": "transparent",
     "label": "Y",
     "id": "Y"
   }

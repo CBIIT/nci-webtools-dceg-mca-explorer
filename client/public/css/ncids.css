@@ -107,10 +107,10 @@ line-height: 1.6;
     padding-left: 6rem;
     padding-right: 6rem;
 }
-.nci-logo {
+/* .nci-logo {
     height: auto;
     width: 100%;
-}
+} */
 .nci-header--extended .nci-header__navbar .nci-header-nav__secondary {
      margin-top: 0;
  }
@@ -571,39 +571,51 @@ font-weight:600;
 .ml-3_5{
  margin-left: 3.5rem;
 }
+/* For desktop view - Logo and search bar aligned on the same row */
+.nci-header__navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 6rem;
+    padding-right: 6rem;
+    flex-wrap: nowrap; /* Prevent wrapping */
+}
 
-/* For desktop screens */
-@media (min-width: 992px) {
-    .nci-logo img {
-      height: 50px;
-      max-width597px%;
-    }
-  }
-  
-  /* For tablet and mobile screens */
-  @media (max-width: 991px) {
-    .nci-logo img {
-      height: 38px;
-      max-width:288px;
-    }
-  }
-  
-.usa-button {
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: rgb(24, 83, 148) !important ;
-    border: 0;
-    border-radius: .25rem;
-    color: #fff ;
-    cursor: pointer;
-    display: inline-block;
-    font-family: Open Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
-    font-size: 1.01rem;
-    font-weight: 600;
-    line-height: 1;
-    margin-right: .5rem;
-    padding: .75rem 1.25rem;
-    text-align: center;
-    text-decoration: none;
+.nci-logo {
+    flex: 0 0 auto; /* Prevent shrinking */
+    max-width: 100%;
+}
+
+
+.nci-header-search {
+    flex: 1; /* Allow the search bar to grow and take remaining space */
+    display: flex;
+    justify-content: flex-end;
+    max-width: 50%; /* Ensure it fits within the row */
+}
+
+.nci-header-search .form-control {
     width: 100%;
+    max-width: 300px; /* Limit the width of the search input */
+}
+
+/* Mobile view - Stack the logo and search bar */
+@media (max-width: 991px) {
+    .nci-header__navbar {
+        flex-direction: column;
+        align-items: flex-start; 
+        padding-left: 1rem;
+        padding-right: 1rem;
+        margin-left: 4.5rem;
+    }
+
+    .nci-header-search {
+        justify-content: flex-start;
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .nci-header-search .form-control {
+        width: 100%; /* Full width on mobile */
+    }
 }

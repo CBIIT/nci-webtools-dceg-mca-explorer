@@ -2,17 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { Container } from "react-bootstrap";
-import { initialData } from "../../../mosaicTiler/constants";
+import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
   const layoutAll = props.layoutAll;
   const dataXY = [...props.circle.chrx, ...props.circle.chry];
+  const isX = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "X");
+  const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
+
   const size = props.size;
-  const thicknessloss = props.thicknessloss;
-  const thicknessgain = props.thicknessgain;
-  const thicknessundermined = props.thicknessundermined;
-  const thicknessloh = props.thicknessloh;
+  const thicknessloss = 0;
+  const thicknessgain = 0;
+  const thicknessundermined = 0;
+  const thicknessloh = 0;
   const circle = props.circle;
   const circleRef = props.circleRef;
   const handleEnter = props.handleEnter;
@@ -21,10 +24,30 @@ export default function CircosPlot(props) {
   const layoutxy = props.layoutxy;
   const titleHeight = props.maxtitleHeight;
 
-  const [plotgain, setPlotgain] = useState(circle.gain.concat(initialData));
-  const [plotloh, setPlotloh] = useState(circle.loh.concat(initialData));
-  const [plotloss, setPlotloss] = useState(circle.loss.concat(initialData));
-  const [plotunder, setPlotunder] = useState(circle.undetermined.concat(initialData));
+  const [plotgain, setPlotgain] = useState(
+    circle.gain
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotloh, setPlotloh] = useState(
+    circle.loh
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotloss, setPlotloss] = useState(
+    circle.loss
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
+  const [plotunder, setPlotunder] = useState(
+    circle.undetermined
+      .concat(initialData)
+      .concat(isX ? initialChrX : [])
+      .concat(isY ? initialChrY : [])
+  );
 
   return (
     <>
@@ -41,7 +64,7 @@ export default function CircosPlot(props) {
         {/* <div style={{ fontSize: "14px" }}>{props.msg}</div> */}
         <Container style={{ position: "relative", width: "100%", textAlign: "center" }}>
           <div
-            id="A"
+            id="circleCompare"
             style={{
               textAlign: "center",
               position: "absolute",

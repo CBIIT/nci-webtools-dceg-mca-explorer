@@ -44,7 +44,7 @@ export const StudyOptions = [
 export const SexOptions = [
   { value: "all", label: "All Sexes" },
   { value: "1", label: "Male" },
-  { value: "0", label: "Female" },
+  { value: "2", label: "Female" },
 ];
 
 export const initialX = [
@@ -68,8 +68,10 @@ export const smokeNFC = [
 ];
 
 export const platformArray = [
-  { value: "gsa", label: "Illumina Global Screening" },
-  { value: "oncoArray", label: "Illumina OncoArray" },
+  { value: "Global Screening Array", label: "Global Screening Array" },
+  { value: "ONCO Array", label: "ONCO Array" },
+  { value: "OMNI 2.5 Million", label: "OMNI 2.5 Million" },
+  { value: "OMNI Express", label: "OMNI Express" },
   { value: "Axiom", label: "Axiom" },
   { value: "BiLEVE", label: "BiLEVE" },
 ];
@@ -80,32 +82,40 @@ export const ifCancer = [
   { value: "0", label: "No" },
 ];
 
-export const initialData = Array.from({ length: 22 }, (_, i) => i + 1)
-  .map((i) => {
-    return {
-      chromosome: "chr" + i,
-      block_id: i + "",
-      cf: "",
-      end: "0",
-      start: "-1",
-    };
-  })
-  .concat([
-    {
-      chromosome: "chrX",
-      block_id: "X",
-      cf: "",
-      end: "0",
-      start: "-1",
-    },
-  ]);
+export const initialData = Array.from({ length: 22 }, (_, i) => i + 1).map((i) => {
+  return {
+    chromosome: "chr" + i,
+    block_id: i + "",
+    value: "0",
+    end: "-1",
+    start: "-1",
+  };
+});
+// .concat([
+//   {
+//     chromosome: "chrX",
+//     block_id: "X",
+//     value: "0",
+//     end: "-1",
+//     start: "-1",
+//   },
+// ])
+// .concat([
+//   {
+//     chromosome: "chrY",
+//     block_id: "Y",
+//     value: "0",
+//     end: "-1",
+//     start: "-1",
+//   },
+// ]);
 export const initialChrX = [
   {
     chromosome: "chrX",
     block_id: "X",
-    cf: "",
+    value: "0",
     end: "0",
-    start: "-1",
+    start: "0",
   },
 ];
 
@@ -113,8 +123,11 @@ export const initialChrY = [
   {
     chromosome: "chrY",
     block_id: "Y",
-    cf: "0",
+    value: "0",
     end: "0",
     start: "0",
   },
 ];
+
+export const imgWidth = 210; // Width of the A4 page in mm
+export const imgHeight = 297; // Height of the A4 page in mm

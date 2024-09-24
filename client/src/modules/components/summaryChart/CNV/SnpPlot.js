@@ -9,9 +9,11 @@ function SnpPlot(props) {
   const [snps, setSnps] = useState([]);
   const snpwidth = Math.round(props.width);
   const snparr = [];
+  const [xMin, setXMin] = useState(props.xMin);
+  const [xMax, setXMax] = useState(props.xMax);
 
   const snpPlotHeight = 100;
-  //console.log(props.xMax, props.xMin);
+  // console.log(props.xMax, props.xMin);
   //
   //const unit = Math.round((props.xMax - props.xMin) / snpwidth);
 
@@ -32,7 +34,7 @@ function SnpPlot(props) {
       handleQuery();
     } else {
     }
-  }, [props.xMax]);
+  }, [props.xMin]);
 
   async function handleQuery() {
     //setLoading(true)

@@ -82,7 +82,48 @@
   </section>
   
   <header id= "nci-header" class="nci-header" aria-label="NIH National Cancer Institute">
-    <div class="nci-header__navbar" >
+    <div class="nci-header__navbar">
+      <div class="nci-logo" id="extended-mega-logo">
+        <a href="https://ccr.cancer.gov/" target="_blank" class="h5 mb-1">
+          <img src="assets/images/logo.svg" class="img-fluid my-3" alt="National Cancer Institute" style="height: 56px;" />
+          <span class="visually-hidden">Division of Cancer Control and Population Sciences</span>
+        </a>       
+      </div>
+      <div class="d-flex mb-3">
+        <div class="nci-header-search"></div>
+          <form
+            class=""
+            role="search"
+            action="https://www.google.com/search"
+            onSubmit="siteSearch()"
+          >
+            <div class="input-group border-white">
+              <input
+                class="form-control search-control"
+                type="search"
+                placeholder="Site Search"
+                aria-label="search"
+                name="q"
+              />
+              <div class="input-group-append">
+                <button
+                  class="btn btn-outline-secondary search-control-button"
+                  type="submit"
+                >
+                  <span class="fas fa-search"></span>
+                  <span class="sr-only">Search</span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+  
+      
+    </div>
+
+
+    <!-- <div class="nci-header__navbar" >
       <div class="nci-logo container" id="extended-mega-logo">
         <a href="https://ccr.cancer.gov/" target="_blank" class="h5 mb-1">
           <img src="assets/images/logo.svg" class="img-fluid my-3" alt="National Cancer Institute"
@@ -92,7 +133,7 @@
           </span>
         </a>
       </div>
-    </div>
+    </div> -->
   
     <!-- <nav aria-label="Primary Navigation Example" class="nci-header-nav">
       <div class="nci-header-nav__inner">

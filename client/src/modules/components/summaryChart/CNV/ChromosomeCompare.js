@@ -26,7 +26,7 @@ function ChromosomeCompare(props) {
   const [xMin, setXMin] = useState();
 
   const [loading, setLoading] = useState(false);
-
+  console.log(dataA);
   return (
     <>
       <Row className="justify-content-center">
@@ -35,7 +35,7 @@ function ChromosomeCompare(props) {
             <SingleChromosome
               onZoomChange={handleZoomChange}
               zoomRange={zoomRangeA}
-              data={dataA}
+              data={dataA.filter((item) => item.type !== undefined)}
               title={titleA}
               details={detailsA}
               chromesomeId={chromesomeId}
@@ -50,7 +50,7 @@ function ChromosomeCompare(props) {
             <SingleChromosome
               onZoomChange={handleZoomChange}
               zoomRange={zoomRangeB}
-              data={dataB}
+              data={dataB.filter((item) => item.type !== undefined)}
               title={titleB}
               details={detailsB}
               chromesomeId={chromesomeId}
