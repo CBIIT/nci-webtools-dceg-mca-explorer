@@ -61,7 +61,145 @@
           }
         }
       }
-    }    
+    },
+    "/api/opensearch/denominator": {
+      "post": {
+        "tags": ["Denominator"],
+        "summary": "Finds the total number of samples matching the query criteria",
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/DenominatorRequest"
+              },
+              "example": {
+                "sex": "male",
+                "ancestry": "EUR",
+                "smoking": "yes",
+                "approach": "array_A",
+                "minAge": 40,
+                "maxAge": 60,
+                "study": "plco"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation returning total count of matching samples",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/DenominatorResponse"
+                },
+                "example": 2500
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters supplied"
+          }
+        }
+      }
+    },
+    "/api/opensearch/snpchip": {
+      "post": {
+        "tags": ["SNP Chip"],
+        "summary": "Performs a search on the SNP chip index based on specified parameters",
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/SnpChipRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/SnpChipResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters supplied"
+          }
+        }
+      }
+    },
+    "/api/opensearch/gene": {
+      "post": {
+        "tags": ["Gene Search"],
+        "summary": "Searches the gene index by chromosome and transcription start/end positions",
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/GeneSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/GeneSearchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters supplied"
+          }
+        }
+      }
+    },
+    "/fishertest": {
+      "post": {
+        "tags": ["Statistical Tests"],
+        "summary": "Runs a Fisher's exact test on a given matrix",
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/FisherTestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation with p-value result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/FisherTestResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error running the Fisher's test"
+          }
+        }
+      }
+    }      
   },
    "definitions":{
     "SummaryRequest":{
@@ -331,6 +469,232 @@
           ]
         }
       }
-    }
+    },
+    "DenominatorRequest": {
+      "type": "object",
+      "properties": {
+        "sex": {
+          "type": "string",
+          "description": "Specifies the sex, e.g., male or female"
+        },
+        "ancestry": {
+          "type": "string",
+          "description": "Specifies the ancestry value"
+        },
+        "smoking": {
+          "type": "string",
+          "description": "Specifies smoking status"
+        },
+        "approach": {
+          "type": "string",
+          "description": "Specifies the platform/approach used"
+        },
+        "minAge": {
+          "type": "integer",
+          "description": "Specifies the minimum age",
+          "default": 0
+        },
+        "maxAge": {
+          "type": "integer",
+          "description": "Specifies the maximum age",
+          "default": 100
+        },
+        "study": {
+          "type": "string",
+          "description": "Specifies the study name, e.g., plco, ukbb"
+        }
+      },
+      "example": {
+        "sex": "male",
+        "ancestry": "EUR",
+        "smoking": "yes",
+        "approach": "array_A",
+        "minAge": 40,
+        "maxAge": 60,
+        "study": "plco"
+      }
+    },
+    "DenominatorResponse": {
+      "type": "integer",
+      "description": "The total number of samples matching the query criteria",
+      "example": 2500
+    },
+    "SnpChipRequest": {
+      "type": "object",
+      "properties": {
+        "search": {
+          "type": "object",
+          "properties": {
+            "xMax": {
+              "type": "number",
+              "description": "Maximum value for the x-coordinate (end position)"
+            },
+            "xMin": {
+              "type": "number",
+              "description": "Minimum value for the x-coordinate (start position)"
+            },
+            "chr": {
+              "type": "string",
+              "description": "Chromosome number"
+            },
+            "bins": {
+              "type": "integer",
+              "description": "Number of bins to divide the range into"
+            }
+          },
+          "required": ["xMax", "xMin", "chr", "bins"]
+        }
+      },
+      "example": {
+        "search": {
+          "xMax": 100000,
+          "xMin": 0,
+          "chr": "1",
+          "bins": 10
+        }
+      }
+    },
+    "SnpChipResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "number",
+            "description": "Starting position of the range"
+          },
+          "to": {
+            "type": "number",
+            "description": "Ending position of the range"
+          },
+          "doc_count": {
+            "type": "integer",
+            "description": "Number of documents in the specified range"
+          }
+        }
+      },
+      "example": [
+        {
+          "from": 0,
+          "to": 10000,
+          "doc_count": 123
+        },
+        {
+          "from": 10000,
+          "to": 20000,
+          "doc_count": 87
+        }
+      ]
+    },
+    "GeneSearchRequest": {
+      "type": "object",
+      "properties": {
+        "search": {
+          "type": "object",
+          "properties": {
+            "xMax": {
+              "type": "number",
+              "description": "Maximum value for the transcription end position"
+            },
+            "xMin": {
+              "type": "number",
+              "description": "Minimum value for the transcription start position"
+            },
+            "chr": {
+              "type": "string",
+              "description": "Chromosome number"
+            }
+          },
+          "required": ["xMax", "xMin", "chr"]
+        }
+      },
+      "example": {
+        "search": {
+          "xMax": 150000,
+          "xMin": 50000,
+          "chr": "1"
+        }
+      }
+    },
+    "GeneSearchResponse": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "The unique identifier of the gene record"
+          },
+          "_source": {
+            "type": "object",
+            "properties": {
+              "geneName": {
+                "type": "string",
+                "description": "Name of the gene"
+              },
+              "chromosome": {
+                "type": "string",
+                "description": "Chromosome of the gene"
+              },
+              "transcriptionStart": {
+                "type": "number",
+                "description": "Transcription start position"
+              },
+              "transcriptionEnd": {
+                "type": "number",
+                "description": "Transcription end position"
+              }
+            }
+          }
+        }
+      },
+      "example": [
+        {
+          "_id": "gene123",
+          "_source": {
+            "geneName": "BRCA1",
+            "chromosome": "17",
+            "transcriptionStart": 43044295,
+            "transcriptionEnd": 43125482
+          }
+        },
+        {
+          "_id": "gene124",
+          "_source": {
+            "geneName": "TP53",
+            "chromosome": "17",
+            "transcriptionStart": 7565097,
+            "transcriptionEnd": 7590856
+          }
+        }
+      ]
+    },
+    "FisherTestRequest": {
+      "type": "array",
+      "description": "A 2x2 or larger matrix (array of arrays) for Fisher's exact test",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "description": "Integer values in the matrix"
+        }
+      },
+      "example": [
+        [10, 20],
+        [30, 40]
+      ]
+    },
+    "FisherTestResponse": {
+      "type": "object",
+      "properties": {
+        "pValue": {
+          "type": "string",
+          "description": "The p-value result from the Fisher's exact test"
+        }
+      },
+      "example": {
+        "pValue": "0.01234"
+      }
+    }  
    }
 }
