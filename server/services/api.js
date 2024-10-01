@@ -378,7 +378,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const lymCancer = group.lymCancer;
     const myeCancer = group.myeCancer;
 
-    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+    console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -465,7 +465,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       });
       //  console.log(queryString);
       const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
-
+      console.log("line 468:", resultsIds.length);
       try {
         const resultdemo = await client.search({
           index: "denominator_age",
@@ -489,7 +489,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
                 must: [
                   {
                     terms: {
-                      sampleId: resultsIds,
+                      "sampleId.keyword": resultsIds,
                     },
                   },
                   {
