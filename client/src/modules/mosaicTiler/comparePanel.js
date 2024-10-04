@@ -161,21 +161,27 @@ export default function ComparePanel(props) {
     }
 
     if (props.compareItem[9].isChecked && name === "priorCancer") {
-      setPriorCancer(setAllOption(selection));
+      setPriorCancer(setCancer(selection));
     }
     if (props.compareItem[10].isChecked && name === "hemaCancer") {
-      setHemaCancer(setAllOption(selection));
+      setHemaCancer(setCancer(selection));
     }
     if (props.compareItem[11].isChecked && name === "lymCancer") {
-      setLymCancer(setAllOption(selection));
+      setLymCancer(setCancer(selection));
     }
     if (props.compareItem[12].isChecked && name === "myeCancer") {
-      setMyeCancer(setAllOption(selection));
+      setMyeCancer(setCancer(selection));
     }
 
     setCompareForm({ ...compareform, [name]: selection });
   }
 
+  function setCancer(selection) {
+    const yes_op = selection.find((option) => option.value === "1");
+    const no_op = selection.find((option) => option.value === "0");
+    if (yes_op && no_op) return ifCancer[0];
+    else return setAllOption(selection);
+  }
   function setAllOption(selection) {
     const all = selection.find((option) => option.value === "all");
     const allindex = selection.indexOf(all);
