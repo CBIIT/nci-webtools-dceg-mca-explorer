@@ -181,7 +181,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       if (name.includes("Cancer")) {
         const yes_op = selection.find((option) => option.value === "1");
         const no_op = selection.find((option) => option.value === "0");
-        if (yes_op && no_op) selection = ifCancer[0];
+        if (yes_op && no_op) selection = [ifCancer[0]];
       }
     }
 

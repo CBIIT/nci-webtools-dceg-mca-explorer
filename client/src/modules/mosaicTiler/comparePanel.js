@@ -179,7 +179,7 @@ export default function ComparePanel(props) {
   function setCancer(selection) {
     const yes_op = selection.find((option) => option.value === "1");
     const no_op = selection.find((option) => option.value === "0");
-    if (yes_op && no_op) return ifCancer[0];
+    if (yes_op && no_op) return [ifCancer[0]];
     else return setAllOption(selection);
   }
   function setAllOption(selection) {
