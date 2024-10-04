@@ -111,7 +111,16 @@ export function exportTable(tableData) {
   return [
     {
       columns: Columns.map((e) => {
-        return { title: e.label === "value" ? "Cellular Fraction" : e.label, width: { wpx: 160 } };
+        //return { title: e.label === "value" ? "Cellular Fraction" : e.label, width: { wpx: 160 } };
+        let title;
+        if (e.label === "value") {
+          title = "Cellular Fraction";
+        } else if (e.label === "sampleId") {
+          title = "Sample ID";
+        } else {
+          title = e.label;
+        }
+        return { title, width: { wpx: 160 } };
       }),
       data: tableData.map((e) => {
         return [
