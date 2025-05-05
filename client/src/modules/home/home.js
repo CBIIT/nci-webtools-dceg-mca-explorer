@@ -18,7 +18,7 @@ export default function Home({ links }) {
               <Col md={6} style={{ paddingLeft: "0px" }}>
                 <div className="d-flex h-100 align-items-center my-4">
                   <div style={{ marginTop: "0px" }}>
-                    <h2 className="font-title text-dark mb-3">Mosaic Chromosomal Alteration Explorer</h2>
+                    <h1 className="h2 font-title text-dark mb-3">Mosaic Chromosomal Alteration Explorer</h1>
                     <hr className="border-dark" />
                     <p className="lead text-dark">
                       An interactive mCA visualization and analysis tools that allows for aggregation, visualization,
