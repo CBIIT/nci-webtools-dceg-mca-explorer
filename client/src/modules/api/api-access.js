@@ -7,10 +7,10 @@ export default function ApiAccess() {
       <Container className="py-5">
         <h1 className="display-6 text-muted text-center text-uppercase ">API Access</h1>
         <hr />
-        <h5 className="text-center">
+        <h2 className="h5 text-center">
           The mCA API provides programmatic access to endpoints which allow users to search a The following resources
           are available:
-        </h5>
+        </h2>
         <hr></hr>
         <SwaggerUI url={process.env.PUBLIC_URL + "/api"} />
       </Container>
