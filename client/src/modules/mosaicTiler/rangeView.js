@@ -631,7 +631,7 @@ export default function RangeView(props) {
           trackData.forEach((item, index) => {
             const cell = row.insertCell(index + 1);
             if (item.outBlock > 0) {
-              cell.style.color = "red";
+              cell.style.color = "#B30000";
               cell.style.cursor = "pointer";
               cell.title = "Total number: " + item.all;
             }
