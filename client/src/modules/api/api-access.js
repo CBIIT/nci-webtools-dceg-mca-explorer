@@ -1,5 +1,10 @@
 import Container from "react-bootstrap/Container";
 import SwaggerUI from "swagger-ui-react";
+import { useEffect } from "react";
+import SwaggerButtonLabelInjector from "./swagger-ui/swagger-injecttion";
+import SwaggerColorCustomizer from "./swagger-ui/swagger-color-customizer";
+import SwaggerScrollablePreEnhancer from "./swagger-ui/swagger-scrollable";
+import SwaggerLandmarkLabeler from "./swagger-ui/swagger-landmark-labeler";
 
 export default function ApiAccess() {
   return (
@@ -13,6 +18,10 @@ export default function ApiAccess() {
         </h2>
         <hr></hr>
         <SwaggerUI url={process.env.PUBLIC_URL + "/api"} />
+        <SwaggerButtonLabelInjector />
+          <SwaggerColorCustomizer />
+          <SwaggerScrollablePreEnhancer />
+          <SwaggerLandmarkLabeler />
       </Container>
     </div>
   );

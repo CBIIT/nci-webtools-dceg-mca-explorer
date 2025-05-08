@@ -15,3 +15,75 @@
     color:black
   }
 }
+
+/* Improve contrast of opblock-section-header */
+.opblock-section-header {
+  background-color: #ffffff !important; /* white background */
+  color: #000000 !important; /* black text */
+}
+
+/* Improve contrast of the Parameters heading */
+.opblock-title span {
+  color: #000000 !important;
+}
+
+/* Improve contrast of the cancel button */
+.try-out__btn.cancel {
+  background-color: #f2f2f2 !important;
+  color: #000000 !important;
+  border: 1px solid #999999;
+}
+
+.swagger-ui .btn.cancel {
+  border-color: #48CC90 !important;
+}
+
+.swagger-ui .opblock.opblock-post .opblock-summary-method { 
+  background-color: #48CC90 !important; /* Change POST method block color */
+}
+
+
+.opblock-summary opblock-summary-get {
+  background-color: #48CC90 !important;
+}
+
+
+.opblock-section-header .opblock-title span {
+  color: #d90000 !important; /* Darker red with better contrast */
+}
+
+.swagger-ui .btn.cancel {
+  background-color: #0000;
+  border-color: #B30000 !important;
+  color: #B30000 !important;
+}
+
+.swagger-ui .btn.execute {
+  background-color: #48CC90 !important;
+  border-color: #48CC90 !important;
+  color:#000000 !important;
+}
+
+
+.swagger-ui .download-contents,
+.swagger-ui .curl-command .copy-to-clipboard, 
+.swagger-ui .copy-to-clipboard,
+.swagger-ui .download-contents{
+  background: #545964 !important;
+}
+
+.swagger-ui .response-col_status .response-undocumented{
+  color:#595959;
+}
+
+.swagger-ui .parameter__extension, .swagger-ui .parameter__in{
+  color:#595959;
+}
+
+.response-control-media-type__accept-message code {
+  color: #1a1a1a;         /* Dark gray for strong contrast */
+  background-color: #f5f5f5; /* Optional: subtle background to make it pop */
+  padding: 1px 3px;
+  border-radius: 3px;
+  font-weight: 500;
+}
