@@ -11,6 +11,3 @@ RUN mkdir -p /app/database
 WORKDIR /app/database
 
 
-
-RUN npm install
-
