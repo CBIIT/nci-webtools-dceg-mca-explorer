@@ -26,7 +26,11 @@ const sources = [
   // { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
   // { path: "data/combined_gene_test.json", index: "combinedgene_test" },
   // { path: "data/snp_test2.csv", index: "snpchip" },
-  { path: "/Users/yaox5/Downloads/snp-platforms/snp_col.csv", index: "snpchip" },
+  //{ path: "/Users/yaox5/Downloads/snp-platforms/snp_col.csv", index: "snpchip" },
+  { path: "data/biovudenominator.json", index: "mcaexplorer" },
+  { path: "data/biovuAuto.json", index: "mcaexplorer" },
+  { path: "data/biovumLOX.json", index: "mcaexplorer" },
+  { path: "data/biovumLOY.json", index: "mcaexplorer" },
 ];
 
 runImport(client, sources)

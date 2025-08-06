@@ -30,3 +30,13 @@ fetch("/api/query/samples", {
   }),
 }).then(async (e) => console.log(await e.json()));
 ```
+
+### Import data
+in data folder: it has
+1. PLCO
+2. UKBB  - 09-10-2024
+3. BIOVU - 08-05-2025
+
+source.js define the columns of files
+opensearch3.js will convert data as json by loading source.js: node convertJsonBiovu.js
+import-opensearch2.js import json into opensearch db, 
