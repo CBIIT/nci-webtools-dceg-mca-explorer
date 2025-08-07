@@ -195,6 +195,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       selection = [
         { value: "plco", label: "PLCO" },
         { value: "ukbb", label: "UK Bio Bank" },
+          { value: "biovu", label: "BioVU" },
       ];
     }
 
@@ -393,6 +394,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             { value: "all", label: "All Studies" },
             { value: "plco", label: "PLCO" },
             { value: "ukbb", label: "UK Biobank" },
+            { value: "biovu", label: "BioVU" },
           ]}
         />
       </Form.Group>

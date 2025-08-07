@@ -845,6 +845,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
           }
         }
+        if (s.value === "biovu" && group.approach.length > 0) {
+          const biovuArray = group.approach.filter((a) => a.value === "Illumina MEGAEX array" );
+          if (biovuArray.length === 0) {
+            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+            errorMessage = "Note: BioVU does not contain " + group.approach.map((obj) => obj.label);
+          }
+        }
       });
     //  console.log(group.approach, errorMessage, title);
     return [title, errorMessage];

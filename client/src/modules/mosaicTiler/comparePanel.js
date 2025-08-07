@@ -312,6 +312,7 @@ export default function ComparePanel(props) {
                 options={[
                   { value: "plco", label: "PLCO" },
                   { value: "ukbb", label: "UK Biobank" },
+                  { value: "biovu", label: "BioVU" },
                 ]}
                 classNamePrefix="select"
               />

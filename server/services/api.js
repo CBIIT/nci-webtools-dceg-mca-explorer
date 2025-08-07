@@ -733,7 +733,7 @@ const getAttributesArray = (atti, name) => {
         AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));
         break;
       case "array":
-        attiarray = ["Axiom", "BiLEVE", "Global Screening Array", "OMNI 2.5 Million", "OMNI Express", "ONCO Array"];
+        attiarray = ["Axiom", "BiLEVE", "Global Screening Array", "OMNI 2.5 Million", "OMNI Express", "ONCO Array", "Illumina MEGAEX array"];
         break;
       case "smoking":
         attiarray = ["0", "1", "2", "9"];

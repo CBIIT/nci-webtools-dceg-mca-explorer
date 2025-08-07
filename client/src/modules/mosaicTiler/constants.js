@@ -39,6 +39,7 @@ export const StudyOptions = [
   // { value: "all", label: "All Studies" },
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
+  { value: "biovu", label: "BioVU" },
 ];
 
 export const SexOptions = [
@@ -74,6 +75,7 @@ export const platformArray = [
   { value: "OMNI Express", label: "OMNI Express" },
   { value: "Axiom", label: "Axiom" },
   { value: "BiLEVE", label: "BiLEVE" },
+  { value: "Illumina MEGAEX array", label: "Illumina MEGAEX array" },
 ];
 
 export const ifCancer = [
