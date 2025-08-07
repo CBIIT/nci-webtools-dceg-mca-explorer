@@ -40,3 +40,14 @@ in data folder: it has
 source.js define the columns of files
 opensearch3.js will convert data as json by loading source.js: node convertJsonBiovu.js
 import-opensearch2.js import json into opensearch db, 
+
+### Total counts
+931	
+31	
+1084	
+176400	9384
+  11572
+  13104
+  71412
+  65788
+  181540

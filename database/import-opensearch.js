@@ -13,26 +13,32 @@ const client = new Client({
   requestTimeout: 2400000,
 });
 const sources = [
-  { path: "data/plcoAuto.json", index: "mcaexplorer" },
+  //{ path: "data/plcoAuto.json", index: "mcaexplorer" },
   //{ path: "data/plcoDenominator.json", index: "denominator" },
-  { path: "data/plcomLOX.json", index: "mcaexplorer" },
-  { path: "data/plcomLOY.json", index: "mcaexplorer" },
-  { path: "data/ukbbAuto.json", index: "mcaexplorer" },
-  { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
-  { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
-  //{ path: "data/ukbbdenominator.json", index: "denominator" },
-  //// { path: "data/combined_gene_test.json", index: "combinedgene_test" },
-  ////{ path: "/Users/yaox5/Downloads/snp-platforms/snp_col.csv", index: "snp" },
-  ////{ path: "data/snp_test2.csv", index: "snp" },
+ // { path: "data/plcomLOX.json", index: "mcaexplorer" },
+ //  { path: "data/plcomLOY.json", index: "mcaexplorer" },
+ //  { path: "data/ukbbAuto.json", index: "mcaexplorer" },
+ //  { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
+ //  { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
+ // { path: "data/ukbbdenominator.json", index: "denominator" },
+  { path: "data/biovudenominator.json", index: "denominator" },
+  // { path: "data/biovuAuto.json", index: "mcaexplorer" },
+  // { path: "data/biovumLOX.json", index: "mcaexplorer" },
+  // { path: "data/biovumLOY.json", index: "mcaexplorer" },
 ];
 runImport(client, sources)
+  .then((totalImported) => {
+    console.log(`\n=== IMPORT COMPLETE ===`);
+    console.log(`Total documents imported: ${totalImported}`);
+  })
   .catch(console.error)
   .finally(() => {
     client.close();
     process.exit();
   });
-
+let total = 0;
 async function runImport(client, sources, logger = console) {
+  let totalImported = 0;
   for (const source of sources) {
     logger.info(`Importing ${source.path} into ${source.index}`);
     const datasource = [];
@@ -44,28 +50,36 @@ async function runImport(client, sources, logger = console) {
       datasource.push(line);
       if (datasource.length >= BATCH_SIZE * 2) {
         // Each document consists of 2 lines
-        await importBatch(client, source.index, datasource, logger);
+        const imported = await importBatch(client, source.index, datasource, logger);
+        totalImported += imported;
         datasource.length = 0; // Clear the array
       }
     }
 
     // Import any remaining documents
     if (datasource.length > 0) {
-      await importBatch(client, source.index, datasource, logger);
+      const imported = await importBatch(client, source.index, datasource, logger);
+      totalImported += imported;
     }
   }
+  
+  logger.info(`Total documents imported: ${totalImported}`);
+  return totalImported;
 }
 
 async function importBatch(client, index, datasource, logger) {
-  logger.info(`Importing batch of ${datasource.length / 2} documents.`);
+  const documentsCount = datasource.length / 2;
+  // logger.info(`Importing batch of ${documentsCount} documents.`);
   try {
     const response = await client.bulk({
       body: datasource,
       timeout: "5m", // Increase bulk request timeout to 5 minutes
     });
-    logger.info(`Successfully imported batch of ${datasource.length / 2} documents.`);
+    logger.info(`Successfully imported batch of ${documentsCount} documents.`);
+    return documentsCount;
   } catch (error) {
     logger.error(`Error importing batch: ${error}`);
+    return 0;
   }
 }
 

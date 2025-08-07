@@ -17,20 +17,21 @@ const client = new Client({
 const args = process.argv;
 console.log(args[2]);
 const sources = [
-  // { path: "data/plcoAuto.json", index: "mcaexplorer" },
-  // { path: "data/plcoDenominator.json", index: "mcaexplorer" },
-  // { path: "data/plcomLOX.json", index: "mcaexplorer" },
-  // { path: "data/plcomLOY.json", index: "mcaexplorer" },
-  // { path: "data/ukbbAuto.json", index: "mcaexplorer" },
-  // { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
-  // { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
+   { path: "data/plcoAuto.json", index: "mcaexplorer" },
+   { path: "data/plcoDenominator.json", index: "mcaexplorer" },
+   { path: "data/plcomLOX.json", index: "mcaexplorer" },
+   { path: "data/plcomLOY.json", index: "mcaexplorer" },
+   { path: "data/ukbbAuto.json", index: "mcaexplorer" },
+   { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
+   { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
+   { path: "data/ukbbdenominator.json", index: "mcaexplorer" },
   // { path: "data/combined_gene_test.json", index: "combinedgene_test" },
   // { path: "data/snp_test2.csv", index: "snpchip" },
   //{ path: "/Users/yaox5/Downloads/snp-platforms/snp_col.csv", index: "snpchip" },
-  { path: "data/biovudenominator.json", index: "mcaexplorer" },
-  { path: "data/biovuAuto.json", index: "mcaexplorer" },
-  { path: "data/biovumLOX.json", index: "mcaexplorer" },
-  { path: "data/biovumLOY.json", index: "mcaexplorer" },
+   { path: "data/biovudenominator.json", index: "mcaexplorer" },
+   { path: "data/biovuAuto.json", index: "mcaexplorer" },
+   { path: "data/biovumLOX.json", index: "mcaexplorer" },
+   { path: "data/biovumLOY.json", index: "mcaexplorer" },
 ];
 
 runImport(client, sources)

@@ -3,6 +3,17 @@ import path from "path";
 
 import { sources } from "./sources_v3.js";
 
+function deleteFileIfExists(filePath) {
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log(`Deleted existing file: ${filePath}`);
+    }
+  } catch (err) {
+    console.log(`Error deleting file ${filePath}: ${err}`);
+  }
+}
+
 async function parseFile(filename, delimitter = "\r\n", columnSeparator = "\t") {
   const filePath = path.resolve("data", filename);
   const fullPath = `data/${filename}`;
@@ -32,7 +43,14 @@ async function parseFile(filename, delimitter = "\r\n", columnSeparator = "\t") 
         console.log(`Warning: No column mapping found for header: "${headers[i]}"`);
         continue;
       }
-      jsonLine[header.name] = contentCells[i];
+      
+      // Apply formatter if it exists
+      let value = contentCells[i];
+      if (header.formatter && typeof header.formatter === 'function') {
+        value = header.formatter(value);
+      }
+      
+      jsonLine[header.name] = value;
     }
 
     json.push(jsonLine);
@@ -63,7 +81,16 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
 
       const header = columns.find((e) => e.sourceName === headers[i]);
       //console.log(header);
-      jsonLine[header.name] = contentCells[i];
+      
+      // Apply formatter if it exists
+      let value = contentCells[i];
+      if (header && header.formatter && typeof header.formatter === 'function') {
+        value = header.formatter(value);
+      }
+      
+      if (header) {
+        jsonLine[header.name] = value;
+      }
     }
 
     json.push(jsonLine);
@@ -93,8 +120,12 @@ function removeNewlines(obj) {
   console.log("Processing BioVU denominator data...");
   const biovuDenominator = await parseFile("biovu/BioVU_denominator_clean_02052025.txt", "\n", "\t");
   console.log(`Found ${biovuDenominator.length} records in BioVU denominator data`);
+  
+  const denominatorFilePath = path.resolve("data", "biovudenominator.json");
+  deleteFileIfExists(denominatorFilePath);
+  
   try {
-    var fd = fs.openSync(path.resolve("data", "biovudenominator.json"), "w");
+    var fd = fs.openSync(denominatorFilePath, "w");
     biovuDenominator.map((e) => {
       e.dataset = "biovu";
       fs.appendFileSync(
@@ -123,15 +154,19 @@ function removeNewlines(obj) {
   // Process BioVU autosomal mCAs data
   console.log("Processing BioVU autosomal mCAs data...");
   const biovuAuto = await parseFile("biovu/BioVU_autosomalmcas_clean_02052025.txt", "\n", " ");
+  
+  const autoFilePath = path.resolve("data", "biovuAuto.json");
+  deleteFileIfExists(autoFilePath);
+  
   try {
-    var fd = fs.openSync(path.resolve("data", "biovuAuto.json"), "w");
+    var fd = fs.openSync(autoFilePath, "w");
     biovuAuto.map((e) => {
       e.dataset = "biovu";
       fs.appendFileSync(
         fd,
         JSON.stringify({
           index: {
-            _index: "sample",
+            _index: "mcaexplorer",
             _id: id,
           },
         }) + "\n",
@@ -153,15 +188,19 @@ function removeNewlines(obj) {
   // Process BioVU mLOX data
   console.log("Processing BioVU mLOX data...");
   const biovuLox = await parseFile("biovu/BioVU_mlox_clean_02052025.txt", "\n", " ");
+  
+  const loxFilePath = path.resolve("data", "biovumLOX.json");
+  deleteFileIfExists(loxFilePath);
+  
   try {
-    var fd = fs.openSync(path.resolve("data", "biovumLOX.json"), "w");
+    var fd = fs.openSync(loxFilePath, "w");
     biovuLox.map((e) => {
       e.dataset = "biovu";
       fs.appendFileSync(
         fd,
         JSON.stringify({
           index: {
-            _index: "sample",
+            _index: "mcaexplorer",
             _id: id,
           },
         }) + "\n",
@@ -183,15 +222,19 @@ function removeNewlines(obj) {
   // Process BioVU mLOY data
   console.log("Processing BioVU mLOY data...");
   const biovuLoy = await parseFile("biovu/BioVU_mloy_clean_02052025.txt", "\n", " ");
+  
+  const loyFilePath = path.resolve("data", "biovumLOY.json");
+  deleteFileIfExists(loyFilePath);
+  
   try {
-    var fd = fs.openSync(path.resolve("data", "biovumLOY.json"), "w");
+    var fd = fs.openSync(loyFilePath, "w");
     biovuLoy.map((e) => {
       e.dataset = "biovu";
       fs.appendFileSync(
         fd,
         JSON.stringify({
           index: {
-            _index: "sample",
+            _index: "mcaexplorer",
             _id: id,
           },
         }) + "\n",
