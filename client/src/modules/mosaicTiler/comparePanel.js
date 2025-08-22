@@ -351,9 +351,20 @@ export default function ComparePanel(props) {
                 isMulti={true}
                 value={approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={platformArray.filter((obj, index) =>
-                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 4 : index >= 4) : true
-                )}
+                options={(() => {
+                  if (study.length > 0) {
+                    let indices = [];
+                    study.forEach((s) => {
+                      if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
+                      if (s.value === "ukbb") indices = indices.concat([4, 5]);
+                      if (s.value === "biovu") indices = indices.concat([6]);
+                    });
+                    // Remove duplicates and sort
+                    indices = Array.from(new Set(indices)).sort((a, b) => a - b);
+                    return indices.map((i) => platformArray[i]);
+                  }
+                  return platformArray;
+                })()}
                 classNamePrefix="select"
               />
             </Form.Group>

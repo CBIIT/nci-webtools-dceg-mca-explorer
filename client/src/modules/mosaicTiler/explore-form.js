@@ -194,9 +194,24 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     if (name === "study" && selection.find((option) => option.value === "all")) {
       selection = [
         { value: "plco", label: "PLCO" },
-        { value: "ukbb", label: "UK Bio Bank" },
-          { value: "biovu", label: "BioVU" },
+        { value: "ukbb", label: "UK Biobank" },
+        { value: "biovu", label: "BioVU" },
       ];
+    }
+
+    // When study changes, reset platformArray selection
+    if (name === "study") {
+      let newApproach = [];
+      if (selection.length === 1) {
+        if (selection[0].value === "plco") {
+          newApproach = platformArray.slice(0, 4);
+        } else if (selection[0].value === "ukbb") {
+          newApproach = platformArray.slice(4, 6);
+        } else if (selection[0].value === "biovu") {
+          newApproach = platformArray.slice(6, 7);
+        }
+      }
+      mergeForm({ approach: [] }); // Clear previous selection
     }
 
     if (name === "chrSingle") {
@@ -437,13 +452,20 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 isMulti={true}
                 value={form.approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={platformArray.filter((obj, index) =>
-                  form.study.length < 2 && form.study.length > 0
-                    ? form.study[0].value === "plco"
-                      ? index < 4
-                      : index >= 4
-                    : true
-                )}
+                options={(() => {
+                  if (form.study.length > 0) {
+                    let indices = [];
+                    form.study.forEach((s) => {
+                      if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
+                      if (s.value === "ukbb") indices = indices.concat([4, 5]);
+                      if (s.value === "biovu") indices = indices.concat([6]);
+                    });
+                    // Remove duplicates and sort
+                    indices = Array.from(new Set(indices)).sort((a, b) => a - b);
+                    return indices.map((i) => platformArray[i]);
+                  }
+                  return platformArray;
+                })()}
                 classNamePrefix="select"
               />
             </Form.Group>
