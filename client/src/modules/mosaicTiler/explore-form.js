@@ -89,20 +89,46 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         setDisabledType(["loh", "gain", "undetermined"]);
       } else setDisabledType([]);
     } else if (name === "maxAge") {
-      if (value <= 150) mergeForm({ [name]: Number(value) });
-      else mergeForm({ [name]: 150 });
+      if (value === "" || value === null) {
+        mergeForm({ [name]: null });
+      } else if (value <= 150) {
+        mergeForm({ [name]: Number(value) });
+      } else {
+        mergeForm({ [name]: 150 });
+      }
     } else if (name === "minAge") {
-      if (value <= 150) mergeForm({ [name]: Number(value) });
-      else mergeForm({ [name]: 0 });
+      if (value === "" || value === null) {
+        mergeForm({ [name]: null });
+      } else if (value <= 150) {
+        mergeForm({ [name]: Number(value) });
+      } else {
+        mergeForm({ [name]: 0 });
+      }
     } else if (name === "minFraction") {
       if (value <= 100) mergeForm({ [name]: value });
       else mergeForm({ [name]: 0 });
     } else if (name === "maxFraction") {
       if (value <= 100) mergeForm({ [name]: value });
       else mergeForm({ [name]: 100 });
-    } else mergeForm({ [name]: value });
+    } else if (name === "start" || name === "end") {
+      // Allow any input, show error if not integer
+      if (value === "" || value === null) {
+        mergeForm({ [name]: null });
+      } else {
+        mergeForm({ [name]: value });
+      }
+    } else {
+      mergeForm({ [name]: value });
+    }
   }
-
+// Validation for start/end
+function getRangeError(start, end) {
+  if (!/^\d+$/.test(start)) return "Start must be an integer.";
+  if (!/^\d+$/.test(end)) return "End must be an integer.";
+  if (start === "" || end === "") return "";
+  if (parseInt(start) >= parseInt(end)) return "Start must be less than End.";
+  return "";
+}
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -110,7 +136,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     const warnings = [];
     setSubmitClicked(true);
     // Check for age limitation
-    if (form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)) {
+    if (
+      form.maxAge !== null && form.maxAge !== "" &&
+      form.minAge !== null && form.minAge !== "" &&
+      parseInt(form.maxAge) <= parseInt(form.minAge)
+    ) {
       isValid = false;
       //warnings.push("Upper age limit must be greater than lower age limit!");
     }
@@ -346,7 +376,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Range</Form.Label>
+            <Form.Label>
+              Range
+              {form.chrSingle && form.chrSingle.value && getRangeError(form.start, form.end) && (
+                <span style={{ color: "red", marginLeft: "10px" }}>{getRangeError(form.start, form.end)}</span>
+              )}
+            </Form.Label>
             <Row>
               <Col xl={5}>
                 <InputGroup>
@@ -497,7 +532,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
               <Form.Label style={{ color: "red" }}>
-                {form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)
+                {(form.maxAge !== null && form.maxAge !== "" && form.minAge !== null && form.minAge !== "" && parseInt(form.maxAge) <= parseInt(form.minAge))
                   ? "Upper age limit must be greater than lower age limit"
                   : ""}
               </Form.Label>
@@ -512,10 +547,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Min"
+                      placeholder={form.minAge === null || form.minAge === "" ? "Min" : ""}
                       name="minAge"
                       id="minAge"
-                      value={form.minAge}
+                      value={form.minAge === null ? "" : form.minAge}
                       onChange={handleChange}
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
@@ -525,10 +560,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Max"
+                      placeholder={form.maxAge === null || form.maxAge === "" ? "Max" : ""}
                       name="maxAge"
                       id="maxAge"
-                      value={form.maxAge}
+                      value={form.maxAge === null ? "" : form.maxAge}
                       onChange={handleChange}
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
@@ -648,12 +683,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <Button variant="outline-secondary" className="me-3" type="reset" id="summaryReset">
           Reset
         </Button>
-        {/* <OverlayTrigger overlay={!isValid() ? <Tooltip id="config_val">Missing Required Parameters</Tooltip> : <></>}> */}
-        {/* <Button variant="primary" type="submit" id="summarySubmit" disabled={!isValid()}> */}
-        <Button variant="primary" type="submit" id="summarySubmit">
+        <Button
+          variant="primary"
+          type="submit"
+          id="summarySubmit"
+          disabled={form.chrSingle && form.chrSingle.value && getRangeError(form.start, form.end)}
+        >
           Submit
         </Button>
-        {/* </OverlayTrigger> */}
       </div>
       {/* {isOpen && (
         <Accordion defaultActiveKey="0">
