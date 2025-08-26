@@ -378,7 +378,7 @@ function getRangeError(start, end) {
           <Form.Group className="mb-3">
             <Form.Label>
               Range
-              {form.chrSingle && form.chrSingle.value && getRangeError(form.start, form.end) && (
+              {form.chrSingle && form.chrSingle.valueOf && getRangeError(form.start, form.end) && (
                 <span style={{ color: "red", marginLeft: "10px" }}>{getRangeError(form.start, form.end)}</span>
               )}
             </Form.Label>

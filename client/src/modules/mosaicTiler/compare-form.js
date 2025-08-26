@@ -61,7 +61,16 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     //   mergeForm({ [name]: event.target.checked})
     //   onCompare({compare:event.target.checked})
     // }
-    else mergeForm({ [name]: value });
+    else if (name === "start" || name === "end") {
+      // Allow any input, show error if not integer
+      if (value === "" || value === null) {
+        mergeForm({ [name]: null });
+      } else {
+        mergeForm({ [name]: value });
+      }
+    } else {
+      mergeForm({ [name]: value });
+    }
   }
 
   function handleSubmit(event) {
@@ -272,6 +281,14 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleShowXY = (val) => {
     setShowXY(val);
   };
+  // Validation for start/end
+function getRangeError(start, end) {
+  if (!/^\d+$/.test(start)) return "Start must be an integer.";
+  if (!/^\d+$/.test(end)) return "End must be an integer.";
+  if (start === "" || end === "") return "";
+  if (parseInt(start) >= parseInt(end)) return "Start must be less than End.";
+  return "";
+}
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3">
@@ -316,15 +333,19 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Range</Form.Label>
+              <Form.Label>Range
+                {(form.chrSingle || form.chrCompare !== "") && getRangeError(form.start, form.end) && (
+                  <span style={{ color: "red", marginLeft: "10px" }}>{getRangeError(form.start, form.end)}</span>
+                )}
+              </Form.Label>
               <Row>
                 <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Start"
+                      placeholder={form.start === null || form.start === "" ? "Start" : ""}
                       name="start"
                       id={"Start"}
-                      value={form.start}
+                      value={form.start === null ? "" : form.start}
                       onChange={handleChange}
                     />
                   </InputGroup>
@@ -332,7 +353,13 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
                 <Col xl={2}>__</Col>
                 <Col xl={5}>
                   <InputGroup>
-                    <Form.Control placeholder="End" name="end" id={"end"} value={form.end} onChange={handleChange} />
+                    <Form.Control
+                      placeholder={form.end === null || form.end === "" ? "End" : ""}
+                      name="end"
+                      id={"end"}
+                      value={form.end === null ? "" : form.end}
+                      onChange={handleChange}
+                    />
                   </InputGroup>
                 </Col>
               </Row>
@@ -438,7 +465,18 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
             onClick={handleFilterClear}>
             Reset
           </Button>
-          <Button variant="primary" className="me-1" type="button" id="compareSubmit" onClick={handleFilter}>
+          <Button variant="primary" className="me-1" type="button" 
+                id="compareSubmit" 
+                onClick={handleFilter}
+                disabled={
+                    (form.plotType.value === "static" && !!getRangeError(form.start, form.end)) ||
+                    (form.plotType.value === "static" && form.chrCompare === "") ||
+                    ( !form.groupA.study || form.groupA.study.length === 0) ||
+                    ( !form.groupA.types || form.groupA.types.length === 0) ||
+                    ( !form.groupB.study || form.groupB.study.length === 0) ||
+                    ( !form.groupB.types || form.groupB.types.length === 0)
+            }
+          >
             Submit
           </Button>
         </div>

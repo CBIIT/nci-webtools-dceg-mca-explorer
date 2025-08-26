@@ -22,10 +22,10 @@ export default function ComparePanel(props) {
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
-  const [types, setTypes] = useState([]);
+  const [types, setTypes] = useState([TypeStateOptions[0]]);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
-  const [compareform, setCompareForm] = useState({ study: study, types: types });
+  const [compareform, setCompareForm] = useState({ study: [StudyOptions[0]], types: [TypeStateOptions[0]] });
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
@@ -76,7 +76,7 @@ export default function ComparePanel(props) {
   }, [form.chrCompare]);
 
   useEffect(() => {
-    console.log(compareform);
+    console.log("this is compareform:",compareform);
     setCompareForm({ study: [StudyOptions[0]], types: [TypeStateOptions[0]] });
     setResetpanel(true);
   }, [props.onReset]);
