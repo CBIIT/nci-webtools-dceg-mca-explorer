@@ -24,7 +24,7 @@ import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/cons
 
 const hovertip = (d) => {
   return (
-    "<p style='text-align:left'>Study: " +
+    "<p style='text-align:left; margin:0; padding:0;'>Study: " +
     d.dataset +
     "<br> Sample ID: " +
     d.sampleId +
@@ -35,12 +35,8 @@ const hovertip = (d) => {
     "<br> Type: " +
     d.type +
     "<br> Cellular Fraction: " +
-    d.value 
-   
-    // "<br> Smoke: " +
-    // d.smokeNFC +
-    // " " +
-
+    d.value +
+    "</p>"
   );
 };
 
