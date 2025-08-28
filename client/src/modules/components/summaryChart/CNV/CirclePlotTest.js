@@ -26,7 +26,7 @@ const hovertip = (d) => {
   return (
     "<p style='text-align:left'>Study: " +
     d.dataset +
-    " Sample ID: " +
+    "<br> Sample ID: " +
     d.sampleId +
     "<br> Start: " +
     d.start +
@@ -35,12 +35,12 @@ const hovertip = (d) => {
     "<br> Type: " +
     d.type +
     "<br> Cellular Fraction: " +
-    d.value +
+    d.value 
    
     // "<br> Smoke: " +
     // d.smokeNFC +
     // " " +
-    "</p>"
+
   );
 };
 

@@ -42,6 +42,15 @@ export default function About() {
               PLCO)
             </a><sup>2</sup>, and BioVU<sup>3</sup>. </p>
 
+           <p>
+           Please submit any questions or comments regarding mCA Explorer to{" "}
+            <a href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov" style={{ fontWeight: "bold" }}>
+              NCImcaExplorerWebAdmin@mail.nih.gov
+            </a>
+            .
+          </p>
+          <br></br>
+
           <h5>Data Sources</h5>
           <ol>
             <li>Sudlow, C. et al. UK Biobank: An Open Access Resource for Identifying the Causes of a Wide Range of Complex Diseases of Middle and Old Age. PLoS Med. 12, (2015).</li>
@@ -49,13 +58,7 @@ export default function About() {
             <li>Pulley, J., Clayton, E., Bernard, G. R., Roden, D. M. & Masys, D. R. Principles of Human Subjects Protections Applied in an Opt‐Out, De‐identified Biobank. Clin. Transl. Sci. 3, 42–48 (2010).</li>
           </ol>
 
-          <p>
-           Please submit any questions or comments regarding mCA Explorer to{" "}
-            <a href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov" style={{ fontWeight: "bold" }}>
-              NCImcaExplorerWebAdmin@mail.nih.gov
-            </a>
-            .
-          </p>
+         
 
           <p></p>
         </Card.Body>

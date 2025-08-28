@@ -13,18 +13,18 @@ const client = new Client({
   requestTimeout: 2400000,
 });
 const sources = [
-  //{ path: "data/plcoAuto.json", index: "mcaexplorer" },
-  //{ path: "data/plcoDenominator.json", index: "denominator" },
- // { path: "data/plcomLOX.json", index: "mcaexplorer" },
- //  { path: "data/plcomLOY.json", index: "mcaexplorer" },
- //  { path: "data/ukbbAuto.json", index: "mcaexplorer" },
- //  { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
- //  { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
- // { path: "data/ukbbdenominator.json", index: "denominator" },
+  { path: "data/plcoAuto.json", index: "mcaexplorer" },
+  { path: "data/plcoDenominator.json", index: "denominator" },
+  { path: "data/plcomLOX.json", index: "mcaexplorer" },
+   { path: "data/plcomLOY.json", index: "mcaexplorer" },
+   { path: "data/ukbbAuto.json", index: "mcaexplorer" },
+   { path: "data/ukbbmLOX.json", index: "mcaexplorer" },
+   { path: "data/ukbbmLOY.json", index: "mcaexplorer" },
+  { path: "data/ukbbdenominator.json", index: "denominator" },
   { path: "data/biovudenominator.json", index: "denominator" },
-  // { path: "data/biovuAuto.json", index: "mcaexplorer" },
-  // { path: "data/biovumLOX.json", index: "mcaexplorer" },
-  // { path: "data/biovumLOY.json", index: "mcaexplorer" },
+   { path: "data/biovuAuto.json", index: "mcaexplorer" },
+   { path: "data/biovumLOX.json", index: "mcaexplorer" },
+   { path: "data/biovumLOY.json", index: "mcaexplorer" },
 ];
 runImport(client, sources)
   .then((totalImported) => {

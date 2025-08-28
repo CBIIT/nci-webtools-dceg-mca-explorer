@@ -287,6 +287,15 @@ function getRangeError(start, end) {
   if (!/^\d+$/.test(end)) return "End must be an integer.";
   if (start === "" || end === "") return "";
   if (parseInt(start) >= parseInt(end)) return "Start must be less than End.";
+
+  // Get max end value from selected chromosome
+  if (form.chrCompare && form.chrCompare.label) {
+    const selectedChromo = chromolimit.filter((c) => c.id === form.chrCompare.label + "");
+    if (selectedChromo.length > 0 && parseInt(end) > selectedChromo[0].len) {
+      return ("End value cannot be more than " + selectedChromo[0].len);
+    }
+  }
+
   return "";
 }
   return (

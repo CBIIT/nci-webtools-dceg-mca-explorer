@@ -47,12 +47,12 @@ GET _cat/indices?v
 DELETE mcaexplorer
 DELETE denominator
 
-# run node import-opensearch.js to import
+# run node import-opensearch.js to import --check import-opensearch to see if the json is what want to import
 GET /mcaexplorer/_count
 GET /denominator/_count
 
 DELETE mcaexplorer_index
-DEIETE denominator_age
+DELETE denominator_age
 
 PUT mcaexplorer/_settings
 {
