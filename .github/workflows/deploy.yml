@@ -1,0 +1,206 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - "*_dev"
+      - "*_qa"
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Tier to deploy to"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+      import_data:
+        description: "Run data import task"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.tier || (endsWith(github.ref_name, '_dev') && 'dev' || 'qa') }}
+    env:
+      APP: mca-explorer
+      AWS_REGION: us-east-1
+      DOCKER_BUILDKIT: 1
+      FRONTEND_CONTAINER_PORT: 80
+      BACKEND_CONTAINER_PORT: 9000
+      ECS_CPU_UNITS: "2 vCPU"
+      ECS_MEMORY_UNITS: "4 GB"
+      ECS_DATA_IMPORT_CPU_UNITS: "2 vCPU"
+      ECS_DATA_IMPORT_MEMORY_UNITS: "4 GB"
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set environment variables
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          [[ "${{ github.event_name }}" == "workflow_dispatch" ]] \
+            && TIER="${{ inputs.tier }}" \
+            || TIER="${BRANCH##*_}"
+
+          [[ "$TIER" =~ ^(prod|stage)$ ]] && IMAGE_TIER="release" || IMAGE_TIER="development"
+
+          TIMESTAMP=$(date +"%Y%m%d%H%M%S")
+          REPO="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$APP"
+
+          cat << EOF >> $GITHUB_ENV
+          TIER=$TIER
+          IMAGE_TIER=$IMAGE_TIER
+          IMAGE_REPOSITORY=$REPO
+          FRONTEND_IMAGE=$REPO:$IMAGE_TIER-frontend-$BRANCH-$TIMESTAMP
+          BACKEND_IMAGE=$REPO:$IMAGE_TIER-backend-$BRANCH-$TIMESTAMP
+          DATA_IMPORT_IMAGE=$REPO:$IMAGE_TIER-data-import-$BRANCH-$TIMESTAMP
+          FRONTEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-frontend-latest
+          BACKEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-backend-latest
+          DATA_IMPORT_IMAGE_LATEST=$REPO:$IMAGE_TIER-data-import-latest
+          PARAMETER_PATH=/analysistools/$TIER/$APP
+          ENVIRONMENT_TIER=${TIER^^}
+          EOF
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          role-to-assume: ${{ secrets.CICD_ROLE_ARN }}
+          role-session-name: ${{ env.TIER }}-${{ env.APP }}-deploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get parameters from AWS SSM
+        uses: dkershner6/aws-ssm-getparameters-action@v2
+        with:
+          parameterPairs: |
+            ${{ env.PARAMETER_PATH }}/subnet_ids = SUBNET_IDS,
+            ${{ env.PARAMETER_PATH }}/security_group_ids = SECURITY_GROUP_IDS,
+            ${{ env.PARAMETER_PATH }}/ecs_cluster = ECS_CLUSTER,
+            ${{ env.PARAMETER_PATH }}/ecs_web_task = ECS_WEB_TASK,
+            ${{ env.PARAMETER_PATH }}/ecs_data_import_task = ECS_DATA_IMPORT_TASK,
+            ${{ env.PARAMETER_PATH }}/ecs_web_service = ECS_WEB_SERVICE,
+            ${{ env.PARAMETER_PATH }}/role_arn = ROLE_ARN
+          withDecryption: "true"
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/backend.dockerfile
+          pull: true
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}
+            ${{ env.BACKEND_IMAGE_LATEST }}
+          cache-from: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:backend-cache
+          cache-to: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:backend-cache,mode=max
+
+      - name: Build and push data import image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/data-import.dockerfile
+          pull: true
+          push: true
+          tags: |
+            ${{ env.DATA_IMPORT_IMAGE }}
+            ${{ env.DATA_IMPORT_IMAGE_LATEST }}
+          cache-from: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:data-import-cache
+          cache-to: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:data-import-cache,mode=max
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/frontend.dockerfile
+          pull: true
+          push: true
+          tags: |
+            ${{ env.FRONTEND_IMAGE }}
+            ${{ env.FRONTEND_IMAGE_LATEST }}
+          cache-from: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:frontend-cache
+          cache-to: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:frontend-cache,mode=max
+
+      - name: Render and register web task definition
+        run: |
+          envsubst < aws/web.yml > web.yml
+          cat web.yml
+          aws ecs register-task-definition --cli-input-yaml file://web.yml
+        env:
+          ECS_WEB_TASK: ${{ env.ECS_WEB_TASK }}
+          ECS_CPU_UNITS: ${{ env.ECS_CPU_UNITS }}
+          ECS_MEMORY_UNITS: ${{ env.ECS_MEMORY_UNITS }}
+          ROLE_ARN: ${{ env.ROLE_ARN }}
+          FRONTEND_CONTAINER_PORT: ${{ env.FRONTEND_CONTAINER_PORT }}
+          BACKEND_CONTAINER_PORT: ${{ env.BACKEND_CONTAINER_PORT }}
+          FRONTEND_IMAGE_LATEST: ${{ env.FRONTEND_IMAGE_LATEST }}
+          BACKEND_IMAGE_LATEST: ${{ env.BACKEND_IMAGE_LATEST }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          TIER: ${{ env.TIER }}
+          APP: ${{ env.APP }}
+          ENVIRONMENT_TIER: ${{ env.ENVIRONMENT_TIER }}
+
+      - name: Render and register data import task definition
+        run: |
+          envsubst < aws/data-import.yml > data-import.yml
+          cat data-import.yml
+          aws ecs register-task-definition --cli-input-yaml file://data-import.yml
+        env:
+          ECS_DATA_IMPORT_TASK: ${{ env.ECS_DATA_IMPORT_TASK }}
+          ECS_CPU_UNITS: ${{ env.ECS_DATA_IMPORT_CPU_UNITS }}
+          ECS_MEMORY_UNITS: ${{ env.ECS_DATA_IMPORT_MEMORY_UNITS }}
+          ROLE_ARN: ${{ env.ROLE_ARN }}
+          DATA_IMPORT_IMAGE_LATEST: ${{ env.DATA_IMPORT_IMAGE_LATEST }}
+          AWS_REGION: ${{ env.AWS_REGION }}
+          TIER: ${{ env.TIER }}
+          APP: ${{ env.APP }}
+          ENVIRONMENT_TIER: ${{ env.ENVIRONMENT_TIER }}
+
+      - name: Update web service
+        run: |
+          aws ecs update-service \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --service ${{ env.ECS_WEB_SERVICE }} \
+            --task-definition ${{ env.ECS_WEB_TASK }} \
+            --desired-count 1 \
+            --force-new-deployment
+
+      - name: Wait for service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --services ${{ env.ECS_WEB_SERVICE }}
+
+      - name: Run data import task
+        if: github.event.inputs.import_data == 'true'
+        run: |
+          aws ecs run-task \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --count 1 \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[${{ env.SUBNET_IDS }}],securityGroups=[${{ env.SECURITY_GROUP_IDS }}]}" \
+            --task-definition ${{ env.ECS_DATA_IMPORT_TASK }}
+
+      - name: Prune old task definitions
+        run: |
+          for family in "$ECS_WEB_TASK" "$ECS_DATA_IMPORT_TASK"; do
+            echo "Pruning old revisions for: $family"
+            aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text \
+              | xargs -n1 -r aws ecs deregister-task-definition --task-definition
+          done

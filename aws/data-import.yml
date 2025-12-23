@@ -1,0 +1,67 @@
+family: "${ECS_DATA_IMPORT_TASK}"
+networkMode: awsvpc
+cpu: "${ECS_CPU_UNITS}"
+memory: "${ECS_MEMORY_UNITS}"
+executionRoleArn: "${ROLE_ARN}"
+taskRoleArn: "${ROLE_ARN}"
+requiresCompatibilities:
+  - FARGATE
+containerDefinitions:
+  - name: logs
+    image: public.ecr.aws/aws-observability/aws-for-fluent-bit:stable
+    firelensConfiguration:
+      type: fluentbit
+    memoryReservation: 50
+    logConfiguration:
+      logDriver: awslogs
+      options:
+        awslogs-group: "/analysistools/${TIER}/${APP}/data-import"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: logs
+
+  - name: data_import
+    image: "${DATA_IMPORT_IMAGE_LATEST}"
+    environment:
+      - name: AWS_DEFAULT_REGION
+        value: "${AWS_REGION}"
+      - name: TIER
+        value: "${TIER}"
+    secrets:
+      - name: APPLICATION_NAME
+        valueFrom: "/analysistools/${TIER}/${APP}/application_name"
+      - name: BASE_URL
+        valueFrom: "/analysistools/${TIER}/${APP}/base_url"
+      - name: OPENSEARCH_USERNAME
+        valueFrom: "/analysistools/${TIER}/${APP}/opensearch_username"
+      - name: OPENSEARCH_PASSWORD
+        valueFrom: "/analysistools/${TIER}/${APP}/opensearch_password"
+      - name: OPENSEARCH_ENDPOINT
+        valueFrom: "/analysistools/${TIER}/${APP}/opensearch_endpoint"
+    logConfiguration:
+      logDriver: awsfirelens
+      options:
+        Name: datadog
+        tls: "on"
+        tls.verify: "off"
+        dd_service: "${TIER}-${APP}-data_import"
+        dd_source: "nodejs"
+        dd_tags: "project:${APP} tier:${TIER}"
+        provider: ecs
+      secretOptions:
+        - name: Host
+          valueFrom: /analysistools/${TIER}/datadog/log_endpoint_host
+        - name: apikey
+          valueFrom: /analysistools/${TIER}/datadog/api_key
+tags:
+  - key: Project
+    value: "${APP}"
+  - key: ApplicationName
+    value: "${APP}"
+  - key: ResourceName
+    value: "${TIER}-${APP}-data-import-ecs-task"
+  - key: EnvironmentTier
+    value: "${ENVIRONMENT_TIER}"
+  - key: ResourceFunction
+    value: compute
+  - key: Creator
+    value: TF
