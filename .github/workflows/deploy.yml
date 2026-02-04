@@ -67,7 +67,7 @@ jobs:
           BACKEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-backend-latest
           DATA_IMPORT_IMAGE_LATEST=$REPO:$IMAGE_TIER-data-import-latest
           PARAMETER_PATH=/analysistools/$TIER/$APP
-          ENVIRONMENT_TIER=${TIER^^}
+          ENVIRONMENT_TIER=${TIER}
           EOF
 
       - name: Configure AWS credentials
@@ -140,7 +140,6 @@ jobs:
       - name: Render and register web task definition
         run: |
           envsubst < aws/web.yml > web.yml
-          cat web.yml
           aws ecs register-task-definition --cli-input-yaml file://web.yml
         env:
           ECS_WEB_TASK: ${{ env.ECS_WEB_TASK }}
@@ -159,7 +158,6 @@ jobs:
       - name: Render and register data import task definition
         run: |
           envsubst < aws/data-import.yml > data-import.yml
-          cat data-import.yml
           aws ecs register-task-definition --cli-input-yaml file://data-import.yml
         env:
           ECS_DATA_IMPORT_TASK: ${{ env.ECS_DATA_IMPORT_TASK }}
