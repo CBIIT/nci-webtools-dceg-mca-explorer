@@ -12,11 +12,6 @@ on:
           - qa
           - stage
           - prod
-      import_data:
-        description: "Run data import task"
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   id-token: write
@@ -122,21 +117,10 @@ jobs:
           tags: |
             ${{ env.BACKEND_IMAGE }}
             ${{ env.BACKEND_IMAGE_LATEST }}
-          cache-from: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:backend-cache
-          cache-to: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:backend-cache,image-manifest=true,oci-mediatypes=true,mode=max
-
-      - name: Build and push data import image
-        uses: docker/build-push-action@v6.18.0
-        with:
-          context: .
-          file: docker/data-import.dockerfile
-          pull: true
-          push: true
-          tags: |
-            ${{ env.DATA_IMPORT_IMAGE }}
-            ${{ env.DATA_IMPORT_IMAGE_LATEST }}
-          cache-from: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:data-import-cache
-          cache-to: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:data-import-cache,image-manifest=true,oci-mediatypes=true,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
+          cache-from: type=registry,ref=${{ env.BACKEND_IMAGE_LATEST }}
+          cache-to: type=inline
 
       - name: Build and push frontend image
         uses: docker/build-push-action@v6.18.0
@@ -150,12 +134,6 @@ jobs:
             ${{ env.FRONTEND_IMAGE_LATEST }}
           cache-from: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:frontend-cache
           cache-to: type=registry,ref=${{ env.IMAGE_REPOSITORY }}:frontend-cache,image-manifest=true,oci-mediatypes=true,mode=max
-
-      - name: Debug frontend build artifacts
-        run: |
-          echo "Frontend image: ${{ env.FRONTEND_IMAGE }}"
-          echo "Inspecting frontend container build directory:"
-          docker run --rm ${{ env.FRONTEND_IMAGE }} ls -l /var/www/html || echo "Failed to inspect container"
 
       - name: Render web task definition
         run: |
