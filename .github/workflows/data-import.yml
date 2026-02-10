@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   build-data-import:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     environment: ${{ inputs.tier }}
     env:
