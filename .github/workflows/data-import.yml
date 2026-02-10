@@ -28,7 +28,7 @@ jobs:
       AWS_REGION: us-east-1
       TIER: ${{ inputs.tier }}
       IMAGE_TIER: ${{ contains(fromJson('["dev","qa"]'), inputs.tier) && 'development' || 'release' }}
-      CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-cicd-role
+      CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
 
     steps:
       - uses: "actions/checkout@v6.0.1"
@@ -69,8 +69,6 @@ jobs:
           tags: |
             ${{ env.DATA_IMPORT_IMAGE }}
             ${{ env.DATA_IMPORT_IMAGE_LATEST }}
-          build-args: |
-            BUILDKIT_INLINE_CACHE=1
           cache-from: type=registry,ref=${{ env.DATA_IMPORT_IMAGE_LATEST }}
           cache-to: type=inline
 
