@@ -1,110 +1,80 @@
-name: Build Data Import Image
+name: Data Import to AWS ECS
 on:
   workflow_dispatch:
     inputs:
       tier:
-        description: "Deploy environment"
+        description: 'Deployment tier'
         required: true
-        default: "dev"
         type: choice
         options:
           - dev
           - qa
           - stage
           - prod
-      run_task:
-        description: "Run data import task"
-        required: false
-        default: true
-        type: boolean
-
-permissions:
-  id-token: write
-  contents: read
 
 jobs:
-  build-data-import:
+  data-import:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     environment: ${{ inputs.tier }}
     env:
       APP: mca-explorer
-      TZ: America/New_York
       AWS_REGION: us-east-1
-      TASK_DEFINITION_TEMPLATE_PATH: aws
-      ECS_DATA_IMPORT_CPU_UNITS: ${{ secrets.ECS_DATA_IMPORT_CPU_UNITS || '2048' }}
-      ECS_DATA_IMPORT_MEMORY_UNITS: ${{ secrets.ECS_DATA_IMPORT_MEMORY_UNITS || '4096' }}
-      TIER: ${{ inputs.tier }}
-      IMAGE_TIER: ${{ contains(fromJson('["dev","qa"]'), inputs.tier) && 'development' || 'release' }}
-      CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      DATA_IMPORT_CONTAINER_PORT: 9000
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
-      - uses: "actions/checkout@v6.0.1"
+      - name: Checkout code
+        uses: actions/checkout@v6.0.1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5.1.1
         with:
-          role-to-assume: ${{ env.CICD_ROLE_ARN }}
-          role-session-name: ${{ env.TIER }}-${{ env.APP }}-data-import-${{ github.ref_name }}
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set dynamic environment variables
+      - name: Setup environment variables
         run: |
-          echo "DATE=$(date +"%Y%m%d")" >> $GITHUB_ENV
-
-          TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-          REPO=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$APP
-          echo "IMAGE_REPOSITORY=$REPO" >> $GITHUB_ENV
-          echo "DATA_IMPORT_IMAGE=$REPO:$IMAGE_TIER-data-import-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
-          echo "DATA_IMPORT_IMAGE_LATEST=$REPO:$IMAGE_TIER-data-import-${{ github.ref_name }}-latest" >> $GITHUB_ENV
-          echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
-
-          if [[ "$TIER" == "dev" ]]; then
-              echo "LOG_LEVEL=debug" >> $GITHUB_ENV
+          echo "TIER=${{ inputs.tier }}" >> $GITHUB_ENV
+          echo "TIER_UPPER=$(echo ${{ inputs.tier }} | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
+          echo "DATETIME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          echo "APP_GIT_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "PARAMETER_PATH=/analysistools/${{ inputs.tier }}/${{ env.APP }}" >> $GITHUB_ENV
+          if [[ "${{ inputs.tier }}" == "prod" || "${{ inputs.tier }}" == "stage" ]]; then
+            echo "IMAGE_TIER=release" >> $GITHUB_ENV
           else
-              echo "LOG_LEVEL=info" >> $GITHUB_ENV
+            echo "IMAGE_TIER=development" >> $GITHUB_ENV
           fi
 
-      - name: Retrieve SSM parameters
+      - name: Set Docker registry and repository
         run: |
-          PARAMETER_PATH="/analysistools/${TIER}/${APP}"
+          echo "DOCKER_REGISTRY=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com" >> $GITHUB_ENV
+          echo "IMAGE_REPOSITORY=${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.APP }}" >> $GITHUB_ENV
 
-          # Define parameters to retrieve (SSM name = ENV_VAR_NAME)
-          declare -A PARAMS=(
-            ["subnet_ids"]="SUBNET_IDS"
-            ["security_group_ids"]="SECURITY_GROUP_IDS"
-            ["ecs_cluster"]="ECS_CLUSTER"
-            ["ecs_data_import_task"]="ECS_DATA_IMPORT_TASK"
-            ["role_arn"]="ROLE_ARN"
-          )
+      - name: Set data import image tags
+        run: |
+          echo "DATA_IMPORT_IMAGE=${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TIER }}-data-import-${{ env.APP_GIT_TAG }}-${{ env.DATETIME }}" >> $GITHUB_ENV
+          echo "DATA_IMPORT_IMAGE_LATEST=${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TIER }}-data-import-latest" >> $GITHUB_ENV
 
-          # Retrieve each parameter and export to environment
-          for ssm_name in "${!PARAMS[@]}"; do
-            env_var="${PARAMS[$ssm_name]}"
-            echo "Retrieving ${PARAMETER_PATH}/${ssm_name} -> ${env_var}"
-            value=$(aws ssm get-parameter \
-              --name "${PARAMETER_PATH}/${ssm_name}" \
-              --with-decryption \
-              --query "Parameter.Value" \
-              --output text 2>&1) || {
-                echo "ERROR: Failed to retrieve parameter: ${PARAMETER_PATH}/${ssm_name}"
-                exit 1
-              }
-            echo "${env_var}=${value}" >> $GITHUB_ENV
-            echo "✓ Retrieved ${ssm_name} -> ${env_var}"
-          done
+      - name: Retrieve AWS SSM parameters
+        run: |
+          PARAMS=$(aws ssm get-parameters-by-path --path ${{ env.PARAMETER_PATH }} --output json)
+          echo "SUBNET_IDS=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/subnet_ids") | .Value')" >> $GITHUB_ENV
+          echo "SECURITY_GROUP_IDS=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/security_group_ids") | .Value')" >> $GITHUB_ENV
+          echo "ECS_CLUSTER=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/ecs_cluster") | .Value')" >> $GITHUB_ENV
+          echo "ECS_DATA_IMPORT_TASK=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/ecs_data_import_task") | .Value')" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2.0.1
-        with:
-          mask-password: true
+        run: aws ecr get-login-password | docker login --username AWS --password-stdin ${{ env.DOCKER_REGISTRY }}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.12.0
+        uses: docker/setup-buildx-action@v3
 
       - name: Build and push data import image
-        uses: docker/build-push-action@v6.18.0
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: docker/data-import.dockerfile
@@ -116,24 +86,15 @@ jobs:
           cache-from: type=registry,ref=${{ env.DATA_IMPORT_IMAGE_LATEST }}
           cache-to: type=inline
 
-      - name: Image built successfully
+      - name: Prepare data-import task definition
         run: |
-          echo "✓ Data import image built and pushed successfully"
-          echo "Image: ${{ env.DATA_IMPORT_IMAGE }}"
-          echo "Latest tag: ${{ env.DATA_IMPORT_IMAGE_LATEST }}"
-
-      - name: Render data import task definition
-        run: |
-          envsubst < $TASK_DEFINITION_TEMPLATE_PATH/data-import.yml > data-import.yml
-          echo "Rendered data import Task Definition:"
-          cat data-import.yml
+          mkdir -p ecs-tasks
+          envsubst < .github/aws/data-import.yml > ecs-tasks/data-import.yml
 
       - name: Register data import task definition
-        run: |
-          aws ecs register-task-definition --cli-input-yaml file://data-import.yml
+        run: aws ecs register-task-definition --cli-input-yaml file://ecs-tasks/data-import.yml
 
       - name: Run data import task
-        if: github.event.inputs.run_task == 'true'
         run: |
           aws ecs run-task \
             --cluster ${{ env.ECS_CLUSTER }} \
@@ -141,12 +102,3 @@ jobs:
             --launch-type FARGATE \
             --network-configuration "awsvpcConfiguration={subnets=[${{ env.SUBNET_IDS }}],securityGroups=[${{ env.SECURITY_GROUP_IDS }}]}" \
             --task-definition ${{ env.ECS_DATA_IMPORT_TASK }}
-
-      - name: Cleanup old task definitions
-        run: |
-          family="$ECS_DATA_IMPORT_TASK"
-          echo "Pruning old revisions for family: $family"
-          aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text \
-              | tr '\t' '\n' | while read -r arn; do
-                  [ -n "$arn" ] && aws ecs deregister-task-definition --task-definition "$arn" --no-cli-pager
-              done
