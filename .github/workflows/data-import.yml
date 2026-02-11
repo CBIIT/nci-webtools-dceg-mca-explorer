@@ -12,6 +12,11 @@ on:
           - qa
           - stage
           - prod
+      run_task:
+        description: "Run data import task"
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   id-token: write
@@ -26,6 +31,9 @@ jobs:
       APP: mca-explorer
       TZ: America/New_York
       AWS_REGION: us-east-1
+      TASK_DEFINITION_TEMPLATE_PATH: aws
+      ECS_DATA_IMPORT_CPU_UNITS: ${{ secrets.ECS_DATA_IMPORT_CPU_UNITS || '2048' }}
+      ECS_DATA_IMPORT_MEMORY_UNITS: ${{ secrets.ECS_DATA_IMPORT_MEMORY_UNITS || '4096' }}
       TIER: ${{ inputs.tier }}
       IMAGE_TIER: ${{ contains(fromJson('["dev","qa"]'), inputs.tier) && 'development' || 'release' }}
       CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
@@ -49,6 +57,42 @@ jobs:
           echo "IMAGE_REPOSITORY=$REPO" >> $GITHUB_ENV
           echo "DATA_IMPORT_IMAGE=$REPO:$IMAGE_TIER-data-import-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
           echo "DATA_IMPORT_IMAGE_LATEST=$REPO:$IMAGE_TIER-data-import-${{ github.ref_name }}-latest" >> $GITHUB_ENV
+          echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
+
+          if [[ "$TIER" == "dev" ]]; then
+              echo "LOG_LEVEL=debug" >> $GITHUB_ENV
+          else
+              echo "LOG_LEVEL=info" >> $GITHUB_ENV
+          fi
+
+      - name: Retrieve SSM parameters
+        run: |
+          PARAMETER_PATH="/analysistools/${TIER}/${APP}"
+
+          # Define parameters to retrieve (SSM name = ENV_VAR_NAME)
+          declare -A PARAMS=(
+            ["subnet_ids"]="SUBNET_IDS"
+            ["security_group_ids"]="SECURITY_GROUP_IDS"
+            ["ecs_cluster"]="ECS_CLUSTER"
+            ["ecs_data_import_task"]="ECS_DATA_IMPORT_TASK"
+            ["role_arn"]="ROLE_ARN"
+          )
+
+          # Retrieve each parameter and export to environment
+          for ssm_name in "${!PARAMS[@]}"; do
+            env_var="${PARAMS[$ssm_name]}"
+            echo "Retrieving ${PARAMETER_PATH}/${ssm_name} -> ${env_var}"
+            value=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/${ssm_name}" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text 2>&1) || {
+                echo "ERROR: Failed to retrieve parameter: ${PARAMETER_PATH}/${ssm_name}"
+                exit 1
+              }
+            echo "${env_var}=${value}" >> $GITHUB_ENV
+            echo "✓ Retrieved ${ssm_name} -> ${env_var}"
+          done
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -77,3 +121,32 @@ jobs:
           echo "✓ Data import image built and pushed successfully"
           echo "Image: ${{ env.DATA_IMPORT_IMAGE }}"
           echo "Latest tag: ${{ env.DATA_IMPORT_IMAGE_LATEST }}"
+
+      - name: Render data import task definition
+        run: |
+          envsubst < $TASK_DEFINITION_TEMPLATE_PATH/data-import.yml > data-import.yml
+          echo "Rendered data import Task Definition:"
+          cat data-import.yml
+
+      - name: Register data import task definition
+        run: |
+          aws ecs register-task-definition --cli-input-yaml file://data-import.yml
+
+      - name: Run data import task
+        if: github.event.inputs.run_task == 'true'
+        run: |
+          aws ecs run-task \
+            --cluster ${{ env.ECS_CLUSTER }} \
+            --count 1 \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[${{ env.SUBNET_IDS }}],securityGroups=[${{ env.SECURITY_GROUP_IDS }}]}" \
+            --task-definition ${{ env.ECS_DATA_IMPORT_TASK }}
+
+      - name: Cleanup old task definitions
+        run: |
+          family="$ECS_DATA_IMPORT_TASK"
+          echo "Pruning old revisions for family: $family"
+          aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text \
+              | tr '\t' '\n' | while read -r arn; do
+                  [ -n "$arn" ] && aws ecs deregister-task-definition --task-definition "$arn" --no-cli-pager
+              done
