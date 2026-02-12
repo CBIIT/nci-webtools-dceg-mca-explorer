@@ -1,6 +1,6 @@
 import { atom, selector, selectorFamily } from "recoil";
 import { query, post } from "../../services/query";
-import { initialX, initialY } from "./constants";
+import { initialX, initialY, StudyOptions } from "./constants";
 export const loadingState = atom({
   key: "analysis.loadingState",
   default: false,
@@ -110,7 +110,7 @@ export async function getData(params) {
 }
 export const defaultFormState = {
   openSidebar: true,
-  study: [{ value: "plco", label: "PLCO" }],
+  study: StudyOptions,
   approach: [],
   chrSingle: "",
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
@@ -147,7 +147,7 @@ export const defaultFormState = {
 };
 export const resetFormState = {
   openSidebar: true,
-  study: [{ value: "plco", label: "PLCO" }],
+  study: StudyOptions,
   approach: [],
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
     .map((i) => {

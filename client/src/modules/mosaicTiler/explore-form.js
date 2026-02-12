@@ -438,7 +438,7 @@ function getRangeError(start, end) {
           />
         </Form.Group>
       )}
-      <Form.Group className="mb-3">
+      {/* <Form.Group className="mb-3">
         <Form.Label className="required">Study</Form.Label>
         <Form.Label style={{ color: "red" }}>{form.study.length === 0 ? "Study field is required" : ""}</Form.Label>
         <Select
@@ -455,7 +455,7 @@ function getRangeError(start, end) {
             { value: "biovu", label: "BioVU" },
           ]}
         />
-      </Form.Group>
+      </Form.Group> */}
       <Form.Group className="mb-3">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Form.Label style={{ color: "red" }}>
@@ -496,17 +496,17 @@ function getRangeError(start, end) {
                 value={form.approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
                 options={(() => {
-                  if (form.study.length > 0) {
-                    let indices = [];
-                    form.study.forEach((s) => {
-                      if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
-                      if (s.value === "ukbb") indices = indices.concat([4, 5]);
-                      if (s.value === "biovu") indices = indices.concat([6]);
-                    });
-                    // Remove duplicates and sort
-                    indices = Array.from(new Set(indices)).sort((a, b) => a - b);
-                    return indices.map((i) => platformArray[i]);
-                  }
+                  // if (form.study.length > 0) {
+                  //   let indices = [];
+                  //   form.study.forEach((s) => {
+                  //     if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
+                  //     if (s.value === "ukbb") indices = indices.concat([4, 5]);
+                  //     if (s.value === "biovu") indices = indices.concat([6]);
+                  //   });
+                  //   // Remove duplicates and sort
+                  //   indices = Array.from(new Set(indices)).sort((a, b) => a - b);
+                  //   return indices.map((i) => platformArray[i]);
+                  // }
                   return platformArray;
                 })()}
                 classNamePrefix="select"

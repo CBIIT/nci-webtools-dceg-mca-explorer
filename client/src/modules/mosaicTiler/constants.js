@@ -35,8 +35,16 @@ export const TypeStateOptions = [
   { value: "undetermined", label: "Undetermined" },
 ];
 
+// export const StudyOptions = [
+// //   { value: "all", label: "All Studies" },
+//   { value: "plco", label: "PLCO" },
+//   { value: "ukbb", label: "UK Biobank" },
+//   { value: "biovu", label: "BioVU" },
+// ];
+
+
 export const StudyOptions = [
-  // { value: "all", label: "All Studies" },
+//   { value: "all", label: "All Studies" },
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
   { value: "biovu", label: "BioVU" },
