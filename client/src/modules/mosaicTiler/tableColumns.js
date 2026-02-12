@@ -7,12 +7,12 @@ export const Columns = [
     label: "sampleId",
     Header: <b>Sample ID</b>,
   },
-  {
-    accessor: "dataset",
-    id: "dataset",
-    label: "Dataset",
-    Header: <b>Dataset</b>,
-  },
+  // {
+  //   accessor: "dataset",
+  //   id: "dataset",
+  //   label: "Dataset",
+  //   Header: <b>Dataset</b>,
+  // },
   {
     accessor: "block_id",
     id: "chromosome",
@@ -125,7 +125,7 @@ export function exportTable(tableData) {
       data: tableData.map((e) => {
         return [
           { value: e.sampleId },
-          { value: e.dataset },
+          // { value: e.dataset },
           { value: e.block_id },
           { value: e.type },
           { value: e.value },

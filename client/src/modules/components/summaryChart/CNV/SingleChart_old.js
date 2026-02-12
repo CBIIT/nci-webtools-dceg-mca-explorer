@@ -127,8 +127,8 @@ function SingleChart(props) {
               tooltip.transition().duration(200).style("opacity", 0.9);
               tooltip
                 .html(
-                  "Study: " +
-                    d.data.dataset +
+                  // "Study: " +
+                  //   d.data.dataset +
                     "<br/>Sample Id: " +
                     d.data.sampleId +
                     "<br/>Start: " +

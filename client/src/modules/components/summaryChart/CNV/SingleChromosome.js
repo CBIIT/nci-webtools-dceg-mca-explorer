@@ -245,8 +245,8 @@ function SingleChromosome(props) {
         },
         hovertext: props.data.map((e) => {
           var text =
-            "Study: " +
-            e.dataset +
+            // "Study: " +
+            // e.dataset +
             "<br>Sample ID: " +
             e.sampleId +
             "<br>Start: " +

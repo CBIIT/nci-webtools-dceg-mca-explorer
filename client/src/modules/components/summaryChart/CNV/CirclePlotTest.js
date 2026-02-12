@@ -24,8 +24,7 @@ import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/cons
 
 const hovertip = (d) => {
   return (
-    "<p style='text-align:left; margin:0; padding:0;'>Study: " +
-    d.dataset +
+    "<p style='text-align:left; margin:0; padding:0;'> " +
     "<br> Sample ID: " +
     d.sampleId +
     "<br> Start: " +
@@ -658,7 +657,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       let itemB = form.groupB[key];
       let itemTitle = "";
 
-      if (Array.isArray(itemA)) {
+      if (Array.isArray(itemA) && key !=="study") {
         if (itemA.length === itemB.length) {
           itemTitle = "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           if (itemA.length > 0) {
@@ -759,9 +758,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const singleTitle = (group) => {
     let title = "";
     //console.log(group);
-    for (let key in group) {
+    for (let key in group ) {
       const values = group[key];
-      if (values !== undefined) {
+      if (values !== undefined && key !=="study") {
         if (typeof values === "object" && Array.isArray(values) && values.length > 0) {
           title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           values.forEach((s) => {
@@ -859,7 +858,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       singleTitle({
         types: form.types,
         sex: form.sex,
-        study: form.study,
+        // study: form.study,
         ancestry: form.ancestry,
         approach: form.approach,
         smoking: form.smoking,
@@ -876,7 +875,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setSimpleTitle(
       singleTitle({
         types: form.types,
-        study: form.study,
+        // study: form.study,
       })
     );
   }, [form.counterSubmitted]);
