@@ -165,9 +165,9 @@ function SingleChromosomeTest(props) {
         var text =
           // "Study: " +
           // e.dataset +
-          "<br>Sample ID: " +
-          e.sampleId +
-          "<br>Start: " +
+          // "<br>Sample ID: " +
+          // e.sampleId +
+          "Start: " +
           e.start +
           "<br>End: " +
           e.end +

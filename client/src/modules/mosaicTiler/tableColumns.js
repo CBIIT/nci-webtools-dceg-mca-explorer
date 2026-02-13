@@ -1,12 +1,12 @@
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export const Columns = [
-  {
-    accessor: "sampleId",
-    id: "sampleId",
-    label: "sampleId",
-    Header: <b>Sample ID</b>,
-  },
+  // {
+  //   accessor: "sampleId",
+  //   id: "sampleId",
+  //   label: "sampleId",
+  //   Header: <b>Sample ID</b>,
+  // },
   // {
   //   accessor: "dataset",
   //   id: "dataset",
@@ -124,7 +124,7 @@ export function exportTable(tableData) {
       }),
       data: tableData.map((e) => {
         return [
-          { value: e.sampleId },
+          // { value: e.sampleId },
           // { value: e.dataset },
           { value: e.block_id },
           { value: e.type },

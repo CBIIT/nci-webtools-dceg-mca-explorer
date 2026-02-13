@@ -25,9 +25,9 @@ import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/cons
 const hovertip = (d) => {
   return (
     "<p style='text-align:left; margin:0; padding:0;'> " +
-    "<br> Sample ID: " +
-    d.sampleId +
-    "<br> Start: " +
+    // "<br> Sample ID: " +
+    // d.sampleId +
+    "Start: " +
     d.start +
     "<br> End: " +
     d.end +

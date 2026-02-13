@@ -129,9 +129,9 @@ function SingleChart(props) {
                 .html(
                   // "Study: " +
                   //   d.data.dataset +
-                    "<br/>Sample Id: " +
-                    d.data.sampleId +
-                    "<br/>Start: " +
+                    // "<br/>Sample Id: " +
+                    // d.data.sampleId +
+                    "Start: " +
                     d.data.start +
                     "<br/>End: " +
                     d.data.end +
