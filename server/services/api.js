@@ -209,85 +209,34 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     console.log(platformarr);
     //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
     try {
-      const resultdemo = await client.search({
-        index: "denominator_age",
-        _source: [
-          "sampleId",
-          "age",
-          "sex",
-          "smokeNFC",
-          "PopID",
-          "array",
-          "priorCancer",
-          "incidentCancerHem",
-          "incidentCancerLymphoid",
-          "incidentCancerMyeloid",
-        ],
-        body: {
-          track_total_hits: true,
-          size: 200000,
-          query: {
-            bool: {
-              must: [
-                {
-                  terms: {
-                    "sampleId.keyword": resultsIds,
-                  },
-                },
-                {
-                  terms: {
-                    "sex.keyword": sexarr,
-                  },
-                },
-                {
-                  terms: {
-                    PopID: ancestryarr,
-                  },
-                },
-                {
-                  terms: {
-                    smokeNFC: smokearr,
-                  },
-                },
-                {
-                  terms: {
-                    "array.keyword": platformarr,
-                  },
-                },
-                {
-                  terms: {
-                    priorCancer: priorCancerarr,
-                  },
-                },
-                {
-                  terms: {
-                    incidentCancerHem: hemaCancerarr,
-                  },
-                },
-                {
-                  terms: {
-                    incidentCancerLymphoid: lymCancerarr,
-                  },
-                },
-                {
-                  terms: {
-                    incidentCancerMyeloid: myeCancerarr,
-                  },
-                },
-              ],
-              filter: [
-                {
-                  range: { age: { gte: minAge, lte: maxAge } },
-                },
-              ],
-            },
-          },
-        },
-      });
-      console.log(resultdemo.body.hits.hits.length, result.body.hits.hits.length);
+      const baseMust = [
+        { terms: { "sex.keyword": sexarr } },
+        { terms: { PopID: ancestryarr } },
+        { terms: { smokeNFC: smokearr } },
+        { terms: { "array.keyword": platformarr } },
+        { terms: { priorCancer: priorCancerarr } },
+        { terms: { incidentCancerHem: hemaCancerarr } },
+        { terms: { incidentCancerLymphoid: lymCancerarr } },
+        { terms: { incidentCancerMyeloid: myeCancerarr } },
+      ];
+      const baseFilter = [{ range: { age: { gte: minAge, lte: maxAge } } }];
 
-      //merge two results based on denominatore reulsts
-      const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
+      const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
+        "sampleId",
+        "age",
+        "sex",
+        "smokeNFC",
+        "PopID",
+        "array",
+        "priorCancer",
+        "incidentCancerHem",
+        "incidentCancerLymphoid",
+        "incidentCancerMyeloid",
+      ]);
+
+      console.log(denomHits.length, result.body.hits.hits.length);
+
+      const mergedResult = { nominator: result.body.hits.hits, denominator: denomHits };
 
       response.json(mergedResult);
       //response.json(result.body.hits.hits);
@@ -467,84 +416,34 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
       console.log("line 468:", resultsIds.length);
       try {
-        const resultdemo = await client.search({
-          index: "denominator_age",
-          _source: [
-            "sampleId",
-            "age",
-            "sex",
-            "smokeNFC",
-            "PopID",
-            "array",
-            "priorCancer",
-            "incidentCancerHem",
-            "incidentCancerLymphoid",
-            "incidentCancerMyeloid",
-          ],
-          body: {
-            track_total_hits: true,
-            size: 200000,
-            query: {
-              bool: {
-                must: [
-                  {
-                    terms: {
-                      "sampleId.keyword": resultsIds,
-                    },
-                  },
-                  {
-                    terms: {
-                      "sex.keyword": sexarr,
-                    },
-                  },
-                  {
-                    terms: {
-                      PopID: ancestryarry,
-                    },
-                  },
-                  {
-                    terms: {
-                      smokeNFC: smokearr,
-                    },
-                  },
-                  {
-                    terms: {
-                      "array.keyword": platformarr,
-                    },
-                  },
-                  {
-                    terms: {
-                      priorCancer: priorCancerarr,
-                    },
-                  },
-                  {
-                    terms: {
-                      incidentCancerHem: hemaCancerarr,
-                    },
-                  },
-                  {
-                    terms: {
-                      incidentCancerLymphoid: lymCancerarr,
-                    },
-                  },
-                  {
-                    terms: {
-                      incidentCancerMyeloid: myeCancerarr,
-                    },
-                  },
-                ],
-                filter: [
-                  {
-                    range: { age: { gte: minAge, lte: maxAge } },
-                  },
-                ],
-              },
-            },
-          },
-        });
-        console.log("denominator", resultdemo.body.hits.hits.length, "nominator:", result.body.hits.hits.length);
+        const baseMust = [
+          { terms: { "sex.keyword": sexarr } },
+          { terms: { PopID: ancestryarry } },
+          { terms: { smokeNFC: smokearr } },
+          { terms: { "array.keyword": platformarr } },
+          { terms: { priorCancer: priorCancerarr } },
+          { terms: { incidentCancerHem: hemaCancerarr } },
+          { terms: { incidentCancerLymphoid: lymCancerarr } },
+          { terms: { incidentCancerMyeloid: myeCancerarr } },
+        ];
+        const baseFilter = [{ range: { age: { gte: minAge, lte: maxAge } } }];
 
-        const mergedResult = { nominator: result.body.hits.hits, denominator: resultdemo.body.hits.hits };
+        const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
+          "sampleId",
+          "age",
+          "sex",
+          "smokeNFC",
+          "PopID",
+          "array",
+          "priorCancer",
+          "incidentCancerHem",
+          "incidentCancerLymphoid",
+          "incidentCancerMyeloid",
+        ]);
+
+        console.log("denominator", denomHits.length, "nominator:", result.body.hits.hits.length);
+
+        const mergedResult = { nominator: result.body.hits.hits, denominator: denomHits };
 
         response.json(mergedResult);
         //response.json(result.body.hits.hits);
@@ -818,6 +717,49 @@ const getStudy = (qdataset, qfilter) => {
   const filterlist = qfilter;
   console.log(filterlist);
   return { datasets, filterlist };
+};
+
+// Helper to avoid reaching the index.max_terms_count limit by chunking large
+// `terms` queries for `sampleId.keyword`. Returns combined hits from all
+// chunked searches.
+const fetchDenominatorBySampleIds = async (client, resultsIds, baseMust = [], baseFilter = [], _source = undefined) => {
+  if (!resultsIds || resultsIds.length === 0) return [];
+  const MAX_TERMS = 65000; // keep below OpenSearch default (65536)
+  if (resultsIds.length <= MAX_TERMS) {
+    const body = {
+      track_total_hits: true,
+      size: 200000,
+      query: {
+        bool: {
+          must: [{ terms: { "sampleId.keyword": resultsIds } }, ...baseMust],
+          filter: baseFilter,
+        },
+      },
+    };
+    if (_source) body._source = _source;
+    const res = await client.search({ index: "denominator_age", body });
+    return res.body.hits.hits;
+  }
+
+  console.warn(`Chunking denominator query into ${Math.ceil(resultsIds.length / MAX_TERMS)} requests (total ids: ${resultsIds.length})`);
+  const hits = [];
+  for (let i = 0; i < resultsIds.length; i += MAX_TERMS) {
+    const chunk = resultsIds.slice(i, i + MAX_TERMS);
+    const body = {
+      track_total_hits: true,
+      size: 200000,
+      query: {
+        bool: {
+          must: [{ terms: { "sampleId.keyword": chunk } }, ...baseMust],
+          filter: baseFilter,
+        },
+      },
+    };
+    if (_source) body._source = _source;
+    const res = await client.search({ index: "denominator_age", body });
+    if (res && res.body && res.body.hits && Array.isArray(res.body.hits.hits)) hits.push(...res.body.hits.hits);
+  }
+  return hits;
 };
 
 apiRouter.post("/fishertest", async (request, response) => {
