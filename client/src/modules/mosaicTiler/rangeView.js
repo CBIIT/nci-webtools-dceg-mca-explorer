@@ -103,53 +103,65 @@ export default function RangeView(props) {
       myeCancer: qform.myeCancer,
     };
 
-    const response = await axios.post("api/opensearch/mca", query);
+    const [response, allresponseDenominator] = await Promise.all([
+      axios.post("api/opensearch/mca", query),
+      axios.post("api/opensearch/denominator", query),
+    ]);
     let gainTemp = [];
     let lossTemp = [];
     let lohTemp = [];
     let undeterTemp = [];
-    //find the total number of denominator based on query
-    let allresponseDenominator = await axios.post("api/opensearch/denominator", query);
-
     //console.log(response.data.denominator.length, allresponseDenominator.data);
     setAllDenominator(allresponseDenominator.data);
     const chrXTemp = [];
     const chrYTemp = [];
-    let results = null;
-    let responseDenominator = null;
-    if (
-      //if any attribute filer is selected, then use the value as the filter, that means filter out no value
-      qform.smoking.length === 0 &&
-      qform.approach.length === 0 &&
-      (qform.ancestry[0] === undefined || (qform.ancestry[0] !== undefined && qform.ancestry[0].value === "all")) &&
-      (qform.sex[0] === undefined || (qform.sex[0] !== undefined && qform.sex[0].value === "all")) &&
-      qform.minAge === "" &&
-      qform.maxAge === "" &&
-      qform.priorCancer.length === 0 &&
-      qform.hemaCancer.length === 0 &&
-      qform.lymCancer.length === 0 &&
-      qform.myeCancer.length === 0
-    ) {
-      results = response.data.denominator;
-      responseDenominator = response.data.nominator;
-    } else {
-      results = response.data.nominator;
-      responseDenominator = response.data.denominator;
-    }
+    const mergedResult = Array.isArray(response.data.merged)
+      ? response.data.merged
+      : (() => {
+          let results = null;
+          let responseDenominator = null;
+          if (
+            //if any attribute filer is selected, then use the value as the filter, that means filter out no value
+            qform.smoking.length === 0 &&
+            qform.approach.length === 0 &&
+            (qform.ancestry[0] === undefined || (qform.ancestry[0] !== undefined && qform.ancestry[0].value === "all")) &&
+            (qform.sex[0] === undefined || (qform.sex[0] !== undefined && qform.sex[0].value === "all")) &&
+            qform.minAge === "" &&
+            qform.maxAge === "" &&
+            qform.priorCancer.length === 0 &&
+            qform.hemaCancer.length === 0 &&
+            qform.lymCancer.length === 0 &&
+            qform.myeCancer.length === 0
+          ) {
+            results = response.data.denominator || [];
+            responseDenominator = response.data.nominator || [];
+          } else {
+            results = response.data.nominator || [];
+            responseDenominator = response.data.denominator || [];
+          }
 
-    const mergedResult = responseDenominator.map((itemA) => {
-      let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
-      // const { age, sex, ancestry, ...restItems } = nominatorItem;
-      if (nominatorItem !== undefined)
-        return {
-          ...itemA._source,
-          ...nominatorItem._source,
-        };
-      else
-        return {
-          ...itemA._source,
-        };
-    });
+          const resultBySampleId = new Map();
+          results.forEach((item) => {
+            const sampleId = item?._source?.sampleId;
+            if (sampleId !== undefined && !resultBySampleId.has(sampleId)) {
+              resultBySampleId.set(sampleId, item._source);
+            }
+          });
+
+          return responseDenominator.map((itemA) => {
+            const sampleId = itemA?._source?.sampleId;
+            const nominatorSource = sampleId !== undefined ? resultBySampleId.get(sampleId) : undefined;
+            if (nominatorSource !== undefined)
+              return {
+                ...itemA._source,
+                ...nominatorSource,
+              };
+            else
+              return {
+                ...itemA._source,
+              };
+          });
+        })();
     //console.log(mergedResult.length);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
     // console.log(form);

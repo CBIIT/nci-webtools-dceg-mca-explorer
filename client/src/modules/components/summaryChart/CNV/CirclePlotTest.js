@@ -519,10 +519,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           myeCancer: group.myeCancer,
         };
         // console.log(query);
-        responseDeno = await axios.post("api/opensearch/denominator", query);
+        [responseDeno, response] = await Promise.all([
+          axios.post("api/opensearch/denominator", query),
+          axios.post("api/opensearch/chromosome", query),
+        ]);
         // console.log(responseDeno.data);
-
-        response = await axios.post("api/opensearch/chromosome", query);
       } else {
         console.log("do query...", form.counterCompare, group);
         //const dataset = group.study;
@@ -548,41 +549,53 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         });
       }
 
-      let results = null;
-      let responseDenominator = null;
-      // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
-      //if choose any of these filter, should use denominator returns since only denominator has these attribute values
-      if (
-        (group.smoking === undefined || group.smoking.length === 0) &&
-        (group.approach === undefined || group.approach.length === 0) &&
-        (group.ancestry === undefined || group.ancestry.length === 0) &&
-        (group.sex === undefined || group.sex.length === 0) &&
-        !group.hasOwnProperty("minAge") &&
-        !group.hasOwnProperty("priorCancer") &&
-        !group.hasOwnProperty("hemaCancer") &&
-        !group.hasOwnProperty("lymCancer") &&
-        !group.hasOwnProperty("myeCancer")
-      ) {
-        results = response.data.denominator;
-        responseDenominator = response.data.nominator;
-      } else {
-        results = response.data.nominator;
-        responseDenominator = response.data.denominator;
-      }
-      //console.log(results, responseDenominator);
-      const mergedResult = responseDenominator.map((itemA) => {
-        let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
-        // const { age, sex, ancestry, ...restItems } = nominatorItem;
-        if (nominatorItem !== undefined)
-          return {
-            ...itemA._source,
-            ...nominatorItem._source,
-          };
-        else
-          return {
-            ...itemA._source,
-          };
-      });
+      const mergedResult = Array.isArray(response.data.merged)
+        ? response.data.merged
+        : (() => {
+            let results = null;
+            let responseDenominator = null;
+            // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
+            //if choose any of these filter, should use denominator returns since only denominator has these attribute values
+            if (
+              (group.smoking === undefined || group.smoking.length === 0) &&
+              (group.approach === undefined || group.approach.length === 0) &&
+              (group.ancestry === undefined || group.ancestry.length === 0) &&
+              (group.sex === undefined || group.sex.length === 0) &&
+              !group.hasOwnProperty("minAge") &&
+              !group.hasOwnProperty("priorCancer") &&
+              !group.hasOwnProperty("hemaCancer") &&
+              !group.hasOwnProperty("lymCancer") &&
+              !group.hasOwnProperty("myeCancer")
+            ) {
+              results = response.data.denominator || [];
+              responseDenominator = response.data.nominator || [];
+            } else {
+              results = response.data.nominator || [];
+              responseDenominator = response.data.denominator || [];
+            }
+            //console.log(results, responseDenominator);
+            const resultBySampleId = new Map();
+            results.forEach((item) => {
+              const sampleId = item?._source?.sampleId;
+              if (sampleId !== undefined && !resultBySampleId.has(sampleId)) {
+                resultBySampleId.set(sampleId, item._source);
+              }
+            });
+
+            return responseDenominator.map((itemA) => {
+              const sampleId = itemA?._source?.sampleId;
+              const nominatorSource = sampleId !== undefined ? resultBySampleId.get(sampleId) : undefined;
+              if (nominatorSource !== undefined)
+                return {
+                  ...itemA._source,
+                  ...nominatorSource,
+                };
+              else
+                return {
+                  ...itemA._source,
+                };
+            });
+          })();
 
       mergedResult.forEach((r) => {
         //if (r._source !== null) {
