@@ -4,6 +4,9 @@ database.db
 database/*.env
 node_modules
 .env
+**/.env
 data/*
 server/.env
 **/*.env
+.DS_Store
+**/.DS_Store

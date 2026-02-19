@@ -17,3 +17,12 @@ export function asArray(value) {
     return value;
   }
 }
+
+export function chromosomeFormatter() {
+  return function (value) {
+    if (value && !value.toString().startsWith('chr')) {
+      return 'chr' + value;
+    }
+    return value;
+  };
+}

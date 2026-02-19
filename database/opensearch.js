@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-import { sources } from "./sources.js";
+import { sources } from "./sources_v3.js";
 
 async function parseFile(filename, delimitter = "\r\n") {
   const filePath = path.resolve("data", filename);
@@ -66,7 +66,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
 }
 
 (async function main() {
-  const plcoAuto = await parseFile("PLCO_GSA_blood_autosomal_mCAs.txt");
+  const plcoAuto = await parseFile("raw_v3_20240916/PLCO_GSA_blood_autosomal_mCAs.txt");
   var id = 1;
 
   try {
@@ -83,8 +83,10 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         }) + "\n",
         "utf-8"
       );
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      //fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -97,7 +99,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish PLCO Autosomal import`);
   }
 
-  const plcoDenominator = await parseFile("PLCO_GSA_blood_denominator.txt");
+  const plcoDenominator = await parseFile("raw_v3_20240916/PLCO_denominator_clean.txt");
 
   try {
     var fd = fs.openSync(path.resolve("data", "plcoDenominator.json"), "a");
@@ -107,14 +109,16 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         fd,
         JSON.stringify({
           index: {
-            _index: "denomiator",
+            _index: "denominator",
             _id: id,
           },
         }) + "\n",
         "utf-8"
       );
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      // fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -127,7 +131,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish PLCO Denominator import`);
   }
 
-  const plcomLOX = await parseFile("PLCO_GSA_blood_mLOX.txt");
+  const plcomLOX = await parseFile("raw_v3_20240916/PLCO_GSA_blood_mLOX.txt");
 
   try {
     var fd = fs.openSync(path.resolve("data", "plcomLOX.json"), "a");
@@ -143,8 +147,10 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         }) + "\n",
         "utf-8"
       );
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      // fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -157,7 +163,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish PLCO mLOX import`);
   }
 
-  const plcomLOY = await parseFile("PLCO_GSA_blood_mLOY.txt");
+  const plcomLOY = await parseFile("raw_v3_20240916/PLCO_GSA_blood_mLOY.txt");
 
   try {
     var fd = fs.openSync(path.resolve("data", "plcomLOY.json"), "a");
@@ -173,8 +179,10 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         }) + "\n",
         "utf-8"
       );
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      // fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -187,7 +195,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish PLCO mLOY import`);
   }
 
-  const ukbbmLOX = await parseFile("UKBB_mLOX_mCA_92005app_clean.txt");
+  const ukbbmLOX = await parseFile("raw_v3_20240916/UKBB_mLOX_mCA_92005app_clean.txt");
 
   try {
     var fd = fs.openSync(path.resolve("data", "ukbbmLOX.json"), "a");
@@ -204,7 +212,10 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         "utf-8"
       );
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
+
+      //      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -217,7 +228,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish UKBB ukbbmLOX import`);
   }
 
-  const ukbbmLOY = await parseFile("UKBB_mLOY_mCA_92005app_clean.txt");
+  const ukbbmLOY = await parseFile("raw_v3_20240916/UKBB_mLOY_mCA_92005app_clean.txt");
 
   try {
     var fd = fs.openSync(path.resolve("data", "ukbbmLOY.json"), "a");
@@ -233,8 +244,10 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         }) + "\n",
         "utf-8"
       );
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      // fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -247,7 +260,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish UKBB ukbbmLOY import`);
   }
 
-  const ukbbAuto = await parseFile("UKBB_autosomal_mCA_92005app_clean.txt", "\r");
+  const ukbbAuto = await parseFile("raw_v3_20240916/UKBB_autosomal_mCA_92005app_clean.txt", "\r");
 
   try {
     var fd = fs.openSync(path.resolve("data", "ukbbAuto.json"), "a");
@@ -263,8 +276,10 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         }) + "\n",
         "utf-8"
       );
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      //  fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -277,7 +292,7 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
     console.log(`Finish UKBB ukbbAuto import`);
   }
 
-  const ukbbdenominator = await parseFile("UKBB_denominator_92005app_clean.txt", "\r");
+  const ukbbdenominator = await parseFile("raw_v3_20240916/UKBB_denominator_92005app_clean.txt", "\r");
 
   try {
     var fd = fs.openSync(path.resolve("data", "ukbbdenominator.json"), "a");
@@ -293,8 +308,10 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
         }) + "\n",
         "utf-8"
       );
+      const cleanedObject = removeNewlines(e);
+      fs.appendFileSync(fd, JSON.stringify(cleanedObject) + "\n", "utf-8");
 
-      fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
+      // fs.appendFileSync(fd, JSON.stringify(e) + "\n", "utf-8");
 
       id++;
     });
@@ -376,3 +393,17 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
   //   console.log(`Finish snp Dataset import`);
   // }
 })();
+
+function removeNewlines(obj) {
+  if (typeof obj === "string") {
+    return obj.replace(/\n/g, "");
+  } else if (Array.isArray(obj)) {
+    return obj.map(removeNewlines);
+  } else if (typeof obj === "object" && obj !== null) {
+    return Object.keys(obj).reduce((acc, key) => {
+      acc[key] = removeNewlines(obj[key]);
+      return acc;
+    }, {});
+  }
+  return obj;
+}

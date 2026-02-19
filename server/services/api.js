@@ -206,6 +206,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     console.log(result.body.hits.hits.length);
 
     const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
+    console.log(platformarr);
     //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
     try {
       const resultdemo = await client.search({
@@ -230,7 +231,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
               must: [
                 {
                   terms: {
-                    sampleId: resultsIds,
+                    "sampleId.keyword": resultsIds,
                   },
                 },
                 {
@@ -377,7 +378,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     const lymCancer = group.lymCancer;
     const myeCancer = group.myeCancer;
 
-    console.log("query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+    console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
     const dataset = [];
     const queryString = [];
     let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
@@ -464,7 +465,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       });
       //  console.log(queryString);
       const resultsIds = result.body.hits.hits.map((item) => item._source.sampleId);
-
+      console.log("line 468:", resultsIds.length);
       try {
         const resultdemo = await client.search({
           index: "denominator_age",
@@ -488,7 +489,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
                 must: [
                   {
                     terms: {
-                      sampleId: resultsIds,
+                      "sampleId.keyword": resultsIds,
                     },
                   },
                   {
@@ -732,7 +733,7 @@ const getAttributesArray = (atti, name) => {
         AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));
         break;
       case "array":
-        attiarray = ["Axiom", "BiLEVE", "Global Screening Array", "ONCO Array"];
+        attiarray = ["Axiom", "BiLEVE", "Global Screening Array", "OMNI 2.5 Million", "OMNI Express", "ONCO Array", "Illumina MEGAEX array"];
         break;
       case "smoking":
         attiarray = ["0", "1", "2", "9"];

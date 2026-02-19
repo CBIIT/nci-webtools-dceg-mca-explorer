@@ -24,21 +24,18 @@ import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/cons
 
 const hovertip = (d) => {
   return (
-    "<p style='text-align:left'>Sample ID: " +
-    d.sampleId +
-    "<br> Study: " +
+    "<p style='text-align:left; margin:0; padding:0;'>Study: " +
     d.dataset +
-    "<br> Type: " +
-    d.type +
-    "<br> Cellular Fraction: " +
-    d.value +
+    "<br> Sample ID: " +
+    d.sampleId +
     "<br> Start: " +
     d.start +
     "<br> End: " +
     d.end +
-    // "<br> Smoke: " +
-    // d.smokeNFC +
-    // " " +
+    "<br> Type: " +
+    d.type +
+    "<br> Cellular Fraction: " +
+    d.value +
     "</p>"
   );
 };
@@ -843,6 +840,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           if (ukArray.length === 0) {
             // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
             errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
+          }
+        }
+        if (s.value === "biovu" && group.approach.length > 0) {
+          const biovuArray = group.approach.filter((a) => a.value === "Illumina MEGAEX array" );
+          if (biovuArray.length === 0) {
+            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+            errorMessage = "Note: BioVU does not contain " + group.approach.map((obj) => obj.label);
           }
         }
       });

@@ -30,3 +30,119 @@ fetch("/api/query/samples", {
   }),
 }).then(async (e) => console.log(await e.json()));
 ```
+
+### Import data
+in data folder: it has
+1. PLCO
+2. UKBB  - 09-10-2024
+3. BIOVU - 08-05-2025
+
+source.js define the columns of files
+opensearch3.js will convert data as json by loading source.js: node convertJsonBiovu.js
+import-opensearch2.js import json into opensearch db, 
+
+### queries run on opensearch console:
+GET _cat/indices?v
+
+DELETE mcaexplorer
+DELETE denominator
+
+# run node import-opensearch.js to import --check import-opensearch to see if the json is what want to import
+GET /mcaexplorer/_count
+GET /denominator/_count
+
+DELETE mcaexplorer_index
+DELETE denominator_age
+
+PUT mcaexplorer/_settings
+{
+  "index.max_result_window": 200000
+}
+
+PUT /mcaexplorer_index
+{
+  "mappings": {
+    "properties": {
+      "beginGrch38": {
+          "type" : "long",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        },
+         "endGrch38": {
+          "type" : "long",
+          "fields" : {
+            "keyword" : {
+              "type" : "keyword",
+              "ignore_above" : 256
+            }
+          }
+        }
+        
+    }
+  }
+}
+
+
+POST _reindex
+{
+  "source": {
+    "index": "mcaexplorer"
+  },
+  "dest": {
+    "index": "mcaexplorer_index"
+  }
+}
+
+
+PUT mcaexplorer_index/_settings
+{
+  "index.max_result_window": 200000
+}
+
+
+
+PUT /denominator_age
+	{
+	  "mappings": {"properties": {
+	      "age":{
+	        "type": "integer"
+	      }
+	  }}
+	  
+	}
+	
+	
+		POST /_reindex
+	{
+	  "source":{
+	    "index": "denominator"
+	  },
+	  "dest":{
+	    "index": "denominator_age"
+	  },
+	  "script": {
+	    "source": """
+	    if (ctx._source.age!=null){
+	      def ageMatcher = /^[0-9]+$/.matcher(ctx._source.age);
+	      if ( ageMatcher.matches()){
+	        ctx._source.age = Integer.parseInt(ctx._source.age);
+	      }else{
+	        ctx._source.age = null;
+	      }
+	      
+	    }
+	    """,
+	    "lang": "painless"
+	  }
+	  
+	}
+		
+	PUT denominator_age/_settings
+	{
+	  "index.max_result_window": 200000
+	}
+

@@ -22,10 +22,10 @@ export default function ComparePanel(props) {
   const [minAge, setMinAge] = useState("");
   const [maxAge, setMaxAge] = useState("");
   const [smoking, setSmoking] = useState([]);
-  const [types, setTypes] = useState([]);
+  const [types, setTypes] = useState([TypeStateOptions[0]]);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
-  const [compareform, setCompareForm] = useState({ study: study, types: types });
+  const [compareform, setCompareForm] = useState({ study: [StudyOptions[0]], types: [TypeStateOptions[0]] });
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
@@ -76,7 +76,7 @@ export default function ComparePanel(props) {
   }, [form.chrCompare]);
 
   useEffect(() => {
-    console.log(compareform);
+    console.log("this is compareform:",compareform);
     setCompareForm({ study: [StudyOptions[0]], types: [TypeStateOptions[0]] });
     setResetpanel(true);
   }, [props.onReset]);
@@ -161,21 +161,27 @@ export default function ComparePanel(props) {
     }
 
     if (props.compareItem[9].isChecked && name === "priorCancer") {
-      setPriorCancer(setAllOption(selection));
+      setPriorCancer(setCancer(selection));
     }
     if (props.compareItem[10].isChecked && name === "hemaCancer") {
-      setHemaCancer(setAllOption(selection));
+      setHemaCancer(setCancer(selection));
     }
     if (props.compareItem[11].isChecked && name === "lymCancer") {
-      setLymCancer(setAllOption(selection));
+      setLymCancer(setCancer(selection));
     }
     if (props.compareItem[12].isChecked && name === "myeCancer") {
-      setMyeCancer(setAllOption(selection));
+      setMyeCancer(setCancer(selection));
     }
 
     setCompareForm({ ...compareform, [name]: selection });
   }
 
+  function setCancer(selection) {
+    const yes_op = selection.find((option) => option.value === "1");
+    const no_op = selection.find((option) => option.value === "0");
+    if (yes_op && no_op) return [ifCancer[0]];
+    else return setAllOption(selection);
+  }
   function setAllOption(selection) {
     const all = selection.find((option) => option.value === "all");
     const allindex = selection.indexOf(all);
@@ -306,6 +312,7 @@ export default function ComparePanel(props) {
                 options={[
                   { value: "plco", label: "PLCO" },
                   { value: "ukbb", label: "UK Biobank" },
+                  { value: "biovu", label: "BioVU" },
                 ]}
                 classNamePrefix="select"
               />
@@ -344,9 +351,20 @@ export default function ComparePanel(props) {
                 isMulti={true}
                 value={approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={platformArray.filter((obj, index) =>
-                  study.length < 2 && study.length > 0 ? (study[0].value === "plco" ? index < 2 : index >= 2) : true
-                )}
+                options={(() => {
+                  if (study.length > 0) {
+                    let indices = [];
+                    study.forEach((s) => {
+                      if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
+                      if (s.value === "ukbb") indices = indices.concat([4, 5]);
+                      if (s.value === "biovu") indices = indices.concat([6]);
+                    });
+                    // Remove duplicates and sort
+                    indices = Array.from(new Set(indices)).sort((a, b) => a - b);
+                    return indices.map((i) => platformArray[i]);
+                  }
+                  return platformArray;
+                })()}
                 classNamePrefix="select"
               />
             </Form.Group>

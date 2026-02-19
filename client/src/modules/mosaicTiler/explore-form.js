@@ -89,20 +89,54 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         setDisabledType(["loh", "gain", "undetermined"]);
       } else setDisabledType([]);
     } else if (name === "maxAge") {
-      if (value <= 150) mergeForm({ [name]: Number(value) });
-      else mergeForm({ [name]: 150 });
+      if (value === "" || value === null) {
+        mergeForm({ [name]: null });
+      } else if (value <= 150) {
+        mergeForm({ [name]: Number(value) });
+      } else {
+        mergeForm({ [name]: 150 });
+      }
     } else if (name === "minAge") {
-      if (value <= 150) mergeForm({ [name]: Number(value) });
-      else mergeForm({ [name]: 0 });
+      if (value === "" || value === null) {
+        mergeForm({ [name]: null });
+      } else if (value <= 150) {
+        mergeForm({ [name]: Number(value) });
+      } else {
+        mergeForm({ [name]: 0 });
+      }
     } else if (name === "minFraction") {
       if (value <= 100) mergeForm({ [name]: value });
       else mergeForm({ [name]: 0 });
     } else if (name === "maxFraction") {
       if (value <= 100) mergeForm({ [name]: value });
       else mergeForm({ [name]: 100 });
-    } else mergeForm({ [name]: value });
+    } else if (name === "start" || name === "end") {
+      // Allow any input, show error if not integer
+      if (value === "" || value === null) {
+        mergeForm({ [name]: null });
+      } else {
+        mergeForm({ [name]: value });
+      }
+    } else {
+      mergeForm({ [name]: value });
+    }
   }
-
+// Validation for start/end
+function getRangeError(start, end) {
+  if (!/^\d+$/.test(start)) return "Start must be an integer.";
+  if (!/^\d+$/.test(end)) return "End must be an integer.";
+  if (start === "" || end === "") return "";
+  if (parseInt(start) >= parseInt(end)) return "Start must be less than End.";
+  
+  // Get max end value from selected chromosome
+  if (form.chrSingle && form.chrSingle.label) {
+    const selectedChromo = chromolimit.filter((c) => c.id === form.chrSingle.label + "");
+    if (selectedChromo.length > 0 && parseInt(end) > selectedChromo[0].len) {
+      return ("End value cannot be more than " + selectedChromo[0].len);
+    }
+  }
+  return "";
+}
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -110,7 +144,11 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     const warnings = [];
     setSubmitClicked(true);
     // Check for age limitation
-    if (form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)) {
+    if (
+      form.maxAge !== null && form.maxAge !== "" &&
+      form.minAge !== null && form.minAge !== "" &&
+      parseInt(form.maxAge) <= parseInt(form.minAge)
+    ) {
       isValid = false;
       //warnings.push("Upper age limit must be greater than lower age limit!");
     }
@@ -177,7 +215,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       } else if (allindex > 0 && selection.length > 1) {
         selection = [all];
       }
+
+      if (name.includes("Cancer")) {
+        const yes_op = selection.find((option) => option.value === "1");
+        const no_op = selection.find((option) => option.value === "0");
+        if (yes_op && no_op) selection = [ifCancer[0]];
+      }
     }
+
     if (name === "types") {
       console.log(selection);
       const notForXY = selection.find((option) => option.value === "loss" || option.value === "all");
@@ -187,8 +232,24 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     if (name === "study" && selection.find((option) => option.value === "all")) {
       selection = [
         { value: "plco", label: "PLCO" },
-        { value: "ukbb", label: "UK Bio Bank" },
+        { value: "ukbb", label: "UK Biobank" },
+        { value: "biovu", label: "BioVU" },
       ];
+    }
+
+    // When study changes, reset platformArray selection
+    if (name === "study") {
+      let newApproach = [];
+      if (selection.length === 1) {
+        if (selection[0].value === "plco") {
+          newApproach = platformArray.slice(0, 4);
+        } else if (selection[0].value === "ukbb") {
+          newApproach = platformArray.slice(4, 6);
+        } else if (selection[0].value === "biovu") {
+          newApproach = platformArray.slice(6, 7);
+        }
+      }
+      mergeForm({ approach: [] }); // Clear previous selection
     }
 
     if (name === "chrSingle") {
@@ -323,7 +384,12 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label>Range</Form.Label>
+            <Form.Label>
+              Range
+              {form.chrSingle && form.chrSingle.valueOf && getRangeError(form.start, form.end) && (
+                <span style={{ color: "red", marginLeft: "10px" }}>{getRangeError(form.start, form.end)}</span>
+              )}
+            </Form.Label>
             <Row>
               <Col xl={5}>
                 <InputGroup>
@@ -386,6 +452,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             { value: "all", label: "All Studies" },
             { value: "plco", label: "PLCO" },
             { value: "ukbb", label: "UK Biobank" },
+            { value: "biovu", label: "BioVU" },
           ]}
         />
       </Form.Group>
@@ -428,13 +495,20 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 isMulti={true}
                 value={form.approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
-                options={platformArray.filter((obj, index) =>
-                  form.study.length < 2 && form.study.length > 0
-                    ? form.study[0].value === "plco"
-                      ? index < 2
-                      : index >= 2
-                    : true
-                )}
+                options={(() => {
+                  if (form.study.length > 0) {
+                    let indices = [];
+                    form.study.forEach((s) => {
+                      if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
+                      if (s.value === "ukbb") indices = indices.concat([4, 5]);
+                      if (s.value === "biovu") indices = indices.concat([6]);
+                    });
+                    // Remove duplicates and sort
+                    indices = Array.from(new Set(indices)).sort((a, b) => a - b);
+                    return indices.map((i) => platformArray[i]);
+                  }
+                  return platformArray;
+                })()}
                 classNamePrefix="select"
               />
             </Form.Group>
@@ -466,7 +540,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
               <Form.Label style={{ color: "red" }}>
-                {form.maxAge && form.minAge && parseInt(form.maxAge) <= parseInt(form.minAge)
+                {(form.maxAge !== null && form.maxAge !== "" && form.minAge !== null && form.minAge !== "" && parseInt(form.maxAge) <= parseInt(form.minAge))
                   ? "Upper age limit must be greater than lower age limit"
                   : ""}
               </Form.Label>
@@ -481,10 +555,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Min"
+                      placeholder={form.minAge === null || form.minAge === "" ? "Min" : ""}
                       name="minAge"
                       id="minAge"
-                      value={form.minAge}
+                      value={form.minAge === null ? "" : form.minAge}
                       onChange={handleChange}
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
@@ -494,10 +568,10 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
                 <Col xl={5}>
                   <InputGroup>
                     <Form.Control
-                      placeholder="Max"
+                      placeholder={form.maxAge === null || form.maxAge === "" ? "Max" : ""}
                       name="maxAge"
                       id="maxAge"
-                      value={form.maxAge}
+                      value={form.maxAge === null ? "" : form.maxAge}
                       onChange={handleChange}
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
@@ -617,12 +691,14 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
         <Button variant="outline-secondary" className="me-3" type="reset" id="summaryReset">
           Reset
         </Button>
-        {/* <OverlayTrigger overlay={!isValid() ? <Tooltip id="config_val">Missing Required Parameters</Tooltip> : <></>}> */}
-        {/* <Button variant="primary" type="submit" id="summarySubmit" disabled={!isValid()}> */}
-        <Button variant="primary" type="submit" id="summarySubmit">
+        <Button
+          variant="primary"
+          type="submit"
+          id="summarySubmit"
+          disabled={form.chrSingle && form.chrSingle.value && getRangeError(form.start, form.end)}
+        >
           Submit
         </Button>
-        {/* </OverlayTrigger> */}
       </div>
       {/* {isOpen && (
         <Accordion defaultActiveKey="0">

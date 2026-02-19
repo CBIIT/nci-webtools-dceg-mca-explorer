@@ -15,39 +15,50 @@ export default function About() {
           <h3>About mCA Explorer</h3>
 
           <hr />
-
           <p>
-            Background and Significance: Mosaic chromosomal alterations (mCAs) are the clonal expansion of cells
-            harboring large chromosomal alterations that differ from the inherited germline genome.1 mCAs are large
-            (usually {">"} 2 Mb) somatic structural mutations characterized by genomic deletions, amplifications, or
-            copy neutral loss of heterozygosity (LOH). 2 Commonly detected mCAs include loss of chromosome Y (LOY;
-            frequency 10-20%+) in men, loss of chromosome X (LOX, frequency 5-8%) in women, and autosomal mCAs
-            (frequency 3-5%) such as 20q deletions and chromosome 12 amplifications. During aging, cellular expansion
-            and selective forces shape the clonal trajectory of mutated cells resulting in a dynamic process of clonal
-            growth with observable increases and decreases in mutated cellular fraction over time that can lead to
-            increased risk of hematologic malignancies and infections.2,3 Despite an expanding number of recent i
-            nvestigations with large numbers of individuals characterized, to date, no public repositories exist that
-            catalog mCAs. In addition, interactive mCA visualization and analysis tools are lacking that can be useful
-            for identifying genomic regions of enrichment as well as subgroup specific events.
+            The mCA Explorer is a publicly available webtool developed and hosted by the Division of Cancer Epidemiology and Genetics (DCEG), 
+            National Cancer Institute, National Institutes of Health. 
           </p>
-          <p>This webtool that allows for aggregation, visualization, and analysis of mCAs in large populations</p>
-
-          <p>Features of mCA Explorer include:</p>
 
           <p>
-            The data from mCA Explorer are derived from the{" "}
+           Mosaic chromosomal alterations (mCAs) are large, somatically acquired structural chromosomal changes that drive clonal expansion 
+           of affected cells. Detectable mCAs are typically {'>'} 50 Kb in length, and may result in copy number loss, copy number gain,
+            or copy neutral loss of heterozygosity (CNLOH). mCAs are most frequently detected as loss of the sex chromosomes 
+            (e.g., mosaic loss of the Y chromosome (mLOY) in males and mosaic loss of the X chromosome (mLOX) in females),
+             followed by autosomal mCAs. Established risk factors for mCAs include age, with increased prevalence as age advances, 
+             and smoking, with the greatest risk observed in current smokers. The presence of mCAs may increase risk for some types of 
+             infections and hematologic malignancies.
+          </p>
+          <p>mCA Explorer is a publicly available tool designed for aggregation, visualization, and analysis of mCAs in population-level genomic datasets. 
+            Researchers can examine the distribution and frequencies of mCAs of interest using Circos plots or chromosome-specific 
+            plots and compare data across studies or participant attributes using pairwise plots. Descriptive characteristics,
+             such as sex, age, genetic similarity, smoking status, prior cancer, and incident hematologic cancer, as well as event characteristics, 
+             such as cellular fraction, mCA type (loss, gain, CNLOH), and genomic location, are available for data stratification, visualization, 
+             and statistical enrichment testing. </p>
+
+          <p>Presently, mCA Explorer includes data from 690,019 participants across three studies: UK Biobank<sup>1</sup>, 
+            the Prostate, Lung, Colorectal, Ovarian Cancer Screening Trial (
             <a target="_blank" href="https://exploregwas.cancer.gov/plco-atlas/#/" style={{ fontWeight: "bold" }}>
-              PLCO
-            </a>{" "}
-          </p>
+              PLCO)
+            </a><sup>2</sup>, and BioVU<sup>3</sup>. </p>
 
-          <p>
-            Please submit comments and questions regarding mCA Explorer to{" "}
+           <p>
+           Please submit any questions or comments regarding mCA Explorer to{" "}
             <a href="mailto:NCImcaExplorerWebAdmin@mail.nih.gov" style={{ fontWeight: "bold" }}>
               NCImcaExplorerWebAdmin@mail.nih.gov
             </a>
             .
           </p>
+          <br></br>
+
+          <h5>Data Sources</h5>
+          <ol>
+            <li>Sudlow, C. et al. UK Biobank: An Open Access Resource for Identifying the Causes of a Wide Range of Complex Diseases of Middle and Old Age. PLoS Med. 12, (2015).</li>
+            <li>Black, A. et al. PLCO: Evolution of an Epidemiologic Resource and Opportunities for Future Studies. Rev. Recent Clin. Trials 10, 238–245 (2015).</li>
+            <li>Pulley, J., Clayton, E., Bernard, G. R., Roden, D. M. & Masys, D. R. Principles of Human Subjects Protections Applied in an Opt‐Out, De‐identified Biobank. Clin. Transl. Sci. 3, 42–48 (2010).</li>
+          </ol>
+
+         
 
           <p></p>
         </Card.Body>

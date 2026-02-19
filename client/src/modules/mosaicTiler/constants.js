@@ -39,6 +39,7 @@ export const StudyOptions = [
   // { value: "all", label: "All Studies" },
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
+  { value: "biovu", label: "BioVU" },
 ];
 
 export const SexOptions = [
@@ -70,8 +71,11 @@ export const smokeNFC = [
 export const platformArray = [
   { value: "Global Screening Array", label: "Global Screening Array" },
   { value: "ONCO Array", label: "ONCO Array" },
+  { value: "OMNI 2.5 Million", label: "OMNI 2.5 Million" },
+  { value: "OMNI Express", label: "OMNI Express" },
   { value: "Axiom", label: "Axiom" },
   { value: "BiLEVE", label: "BiLEVE" },
+  { value: "Illumina MEGAEX array", label: "Illumina MEGAEX array" },
 ];
 
 export const ifCancer = [

@@ -669,6 +669,27 @@ export default function RangeView(props) {
   }
   resultData.sort((a, b) => Number(a.block_id) - Number(b.block_id));
 
+  // Sorting function
+  const defaultSort = [
+    { id: "chromosome", asc: true },
+    { id: "start", asc: true },
+    { id: "end", asc: true },
+  ];
+  const sortData = (data, sortCriteria) => {
+    return data.sort((a, b) => {
+      for (let { id, asc } of sortCriteria) {
+        const aValue = id === "start" || id === "end" ? Number(a[id]) : a[id];
+        const bValue = id === "start" || id === "end" ? Number(b[id]) : b[id];
+        if (aValue < bValue) return asc ? -1 : 1;
+        if (aValue > bValue) return asc ? 1 : -1;
+      }
+      return 0;
+    });
+  };
+
+  // Sort the resultData based on defaultSort
+  const sortedData = sortData(resultData, defaultSort);
+
   const layout = {
     xaxis: {
       // title: "<b>Copy Number State</b>",
@@ -740,7 +761,7 @@ export default function RangeView(props) {
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                     element={<a href="javascript:void(0)">Export Data</a>}>
-                    <ExcelSheet dataSet={exportTable(resultData)} name="Autosomal mCA Distribution" />
+                    <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
                 </div>
 
@@ -817,7 +838,7 @@ export default function RangeView(props) {
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                   element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet dataSet={exportTable(resultData)} name="Autosomal mCA Distribution" />
+                  <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
               </div>
               <Table
