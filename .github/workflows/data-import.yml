@@ -14,13 +14,15 @@ on:
 
 jobs:
   data-import:
-    timeout-minutes: 10
+    timeout-minutes: 60
     runs-on: ubuntu-latest
     environment: ${{ inputs.tier }}
     env:
       APP: mca-explorer
       AWS_REGION: us-east-1
       AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      ECS_CPU_UNITS: 2048
+      ECS_MEMORY_UNITS: 4096
       DATA_IMPORT_CONTAINER_PORT: 9000
     permissions:
       id-token: write
