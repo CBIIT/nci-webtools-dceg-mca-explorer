@@ -146,10 +146,45 @@ jobs:
               --force-new-deployment
 
       - name: Cleanup old task definitions
+        continue-on-error: true
+        env:
+          AWS_RETRY_MODE: adaptive
+          AWS_MAX_ATTEMPTS: 10
         run: |
+          set -euo pipefail
+
           family="$ECS_WEB_TASK"
           echo "Pruning old revisions for family: $family"
-          aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text \
-              | tr '\t' '\n' | while read -r arn; do
-                  [ -n "$arn" ] && aws ecs deregister-task-definition --task-definition "$arn" --no-cli-pager
-              done
+
+          arns=$(aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text)
+
+          if [[ -z "$arns" || "$arns" == "None" ]]; then
+            echo "No old task definitions to prune."
+            exit 0
+          fi
+
+          echo "$arns" | tr '\t' '\n' | while read -r arn; do
+            [[ -z "$arn" ]] && continue
+
+            echo "Deregistering $arn"
+            attempt=1
+            max_attempts=6
+            while true; do
+              if aws ecs deregister-task-definition --task-definition "$arn" --no-cli-pager; then
+                echo "✓ Deregistered $arn"
+                break
+              fi
+
+              if (( attempt >= max_attempts )); then
+                echo "⚠ Failed to deregister $arn after $attempt attempts; continuing."
+                break
+              fi
+
+              sleep_seconds=$(( attempt * 3 ))
+              echo "Throttled/failed on $arn, retrying in ${sleep_seconds}s (attempt $((attempt + 1))/$max_attempts)..."
+              sleep "$sleep_seconds"
+              attempt=$(( attempt + 1 ))
+            done
+
+            sleep 1
+          done
