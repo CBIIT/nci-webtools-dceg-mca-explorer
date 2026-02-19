@@ -14,7 +14,7 @@ on:
 
 jobs:
   data-import:
-    timeout-minutes: 60
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     environment: ${{ inputs.tier }}
     env:
@@ -59,13 +59,34 @@ jobs:
           echo "DATA_IMPORT_IMAGE=${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TIER }}-data-import-${{ env.APP_GIT_TAG }}-${{ env.DATETIME }}" >> $GITHUB_ENV
           echo "DATA_IMPORT_IMAGE_LATEST=${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TIER }}-data-import-latest" >> $GITHUB_ENV
 
-      - name: Retrieve AWS SSM parameters
+     
+      - name: Retrieve SSM parameters
         run: |
-          PARAMS=$(aws ssm get-parameters-by-path --path ${{ env.PARAMETER_PATH }} --output json)
-          echo "SUBNET_IDS=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/subnet_ids") | .Value')" >> $GITHUB_ENV
-          echo "SECURITY_GROUP_IDS=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/security_group_ids") | .Value')" >> $GITHUB_ENV
-          echo "ECS_CLUSTER=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/ecs_cluster") | .Value')" >> $GITHUB_ENV
-          echo "ECS_DATA_IMPORT_TASK=$(echo $PARAMS | jq -r '.Parameters[] | select(.Name=="${{ env.PARAMETER_PATH }}/ecs_data_import_task") | .Value')" >> $GITHUB_ENV
+          PARAMETER_PATH="/analysistools/${TIER}/${APP}"
+
+          # Define parameters to retrieve (SSM name = ENV_VAR_NAME)
+          declare -A PARAMS=(
+            ["ecs_cluster"]="ECS_CLUSTER"
+            ["ecs_web_task"]="ECS_WEB_TASK"
+            ["ecs_web_service"]="ECS_WEB_SERVICE"
+            ["role_arn"]="ROLE_ARN"
+          )
+
+          # Retrieve each parameter and export to environment
+          for ssm_name in "${!PARAMS[@]}"; do
+            env_var="${PARAMS[$ssm_name]}"
+            echo "Retrieving ${PARAMETER_PATH}/${ssm_name} -> ${env_var}"
+            value=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/${ssm_name}" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text 2>&1) || {
+                echo "ERROR: Failed to retrieve parameter: ${PARAMETER_PATH}/${ssm_name}"
+                exit 1
+              }
+            echo "${env_var}=${value}" >> $GITHUB_ENV
+            echo "✓ Retrieved ${ssm_name} -> ${env_var}"
+          done
 
       - name: Login to Amazon ECR
         run: aws ecr get-login-password | docker login --username AWS --password-stdin ${{ env.DOCKER_REGISTRY }}
