@@ -15,9 +15,10 @@ import {
   ifCancer,
 } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
+import { parseRangeLable } from "./range-utils";
 
 const compareArray = CompareArray;
-export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
+export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen, rangeLable }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
@@ -72,6 +73,21 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       handleSelectChange("types", [TypeStateOptions[0]]);
     }
   }, [disabledType]);
+
+  useEffect(() => {
+    const parsedRange = parseRangeLable(rangeLable);
+    if (!parsedRange) return;
+
+    setStart(parsedRange.start);
+    setEnd(parsedRange.end);
+    setForm((prev) => ({
+      ...prev,
+      plotType: { value: "static", label: "Chromosome level" },
+      chrSingle: parsedRange.chrOption,
+      start: parsedRange.start,
+      end: parsedRange.end,
+    }));
+  }, [rangeLable, setForm]);
 
   function handleChange(event) {
     const { name, value } = event.target;

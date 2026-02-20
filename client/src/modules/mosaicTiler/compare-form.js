@@ -6,8 +6,9 @@ import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
+import { parseRangeLable } from "./range-utils";
 
-export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
+export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rangeLable }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
@@ -281,6 +282,22 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleShowXY = (val) => {
     setShowXY(val);
   };
+
+  useEffect(() => {
+    const parsedRange = parseRangeLable(rangeLable);
+    if (!parsedRange) return;
+
+    setStart(parsedRange.start);
+    setEnd(parsedRange.end);
+    setForm((prev) => ({
+      ...prev,
+      plotType: { value: "static", label: "Chromosome level" },
+      chrCompare: parsedRange.chrOption,
+      start: parsedRange.start,
+      end: parsedRange.end,
+    }));
+  }, [rangeLable, setForm]);
+
   // Validation for start/end
 function getRangeError(start, end) {
   if (!/^\d+$/.test(start)) return "Start must be an integer.";

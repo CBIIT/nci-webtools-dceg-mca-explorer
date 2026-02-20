@@ -1320,6 +1320,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     if (zoomHistory.length == 2) {
       setZoomRange(zoomHistory[0]);
       setRangeLabel(zoomHistory[1]);
+      props.onClickedChr({ rangeLable: zoomHistory[1] || "" });
       //update tableData based on zoom range
       //console.log(tableData);
     }
