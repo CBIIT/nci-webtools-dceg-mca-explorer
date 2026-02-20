@@ -1,42 +1,73 @@
 
 import Container from "react-bootstrap/Container";
 import SwaggerUI from "swagger-ui-react";
-import { useRef } from "react";
+
+const defaultStudy = [
+  { value: "plco", label: "PLCO" },
+  { value: "ukbb", label: "UK Biobank" },
+  { value: "biovu", label: "BioVU" },
+  "",
+  "",
+];
+
+const mcaResponseFields = ["chromosome", "sex", "type", "cf", "beginGrch38", "endGrch38", "array"];
+const isMcaEndpoint =
+  (url) => typeof url === "string" && (url.includes("/api/opensearch/mca") || url.includes("/api/opensearch/chromosome"));
+
+const normalizeStudySelection = (study) => {
+  if (!Array.isArray(study)) return [];
+  return study.filter(
+    (item) => item && typeof item === "object" && typeof item.value === "string" && item.value.trim().length > 0
+  );
+};
+
 export default function ApiAccess() {
-  const mcaSourceFieldsRef = useRef(null);
   const requestInterceptor = (request) => {
     try {
-      if (request.url && request.url.includes("/api/opensearch/mca") && request.body) {
-        const parsedBody = JSON.parse(request.body);
-        const sourceFields = Array.isArray(parsedBody?.sourceFields)
-          ? parsedBody.sourceFields.filter((field) => typeof field === "string" && field.trim().length > 0)
-          : null;
-        mcaSourceFieldsRef.current = sourceFields && sourceFields.length > 0 ? sourceFields : null;
+      if (isMcaEndpoint(request.url) && request.body) {
+        const parsedBody = typeof request.body === "string" ? JSON.parse(request.body) : { ...request.body };
+        const defaultStudySelection = normalizeStudySelection(defaultStudy);
+        const selectedStudy = normalizeStudySelection(parsedBody.study);
+        parsedBody.study = selectedStudy.length > 0 ? selectedStudy : defaultStudySelection;
+        request.body = JSON.stringify(parsedBody);
       }
-    } catch (error) {
-      mcaSourceFieldsRef.current = null;
-    }
+    } catch (error) {}
     return request;
   };
   const responseInterceptor = (response) => {
-    if (!response?.url || !response.url.includes("/api/opensearch/mca")) return response;
-    const sourceFields = mcaSourceFieldsRef.current;
-    if (!sourceFields || sourceFields.length === 0) return response;
-    if (!response.obj || !Array.isArray(response.obj.merged)) return response;
-    const filteredRows = response.obj.merged.map((row) => {
+    if (!isMcaEndpoint(response?.url)) return response;
+    let payload = response.obj;
+
+    if (!payload && response.data && typeof response.data === "object") {
+      payload = response.data;
+    }
+
+    if (!payload && typeof response.data === "string") {
+      try {
+        payload = JSON.parse(response.data);
+      } catch (error) {
+        return response;
+      }
+    }
+
+    if (!payload || !Array.isArray(payload.merged)) return response;
+
+    const filteredRows = payload.merged.map((row) => {
       const filtered = {};
-      sourceFields.forEach((field) => {
+      mcaResponseFields.forEach((field) => {
         if (Object.prototype.hasOwnProperty.call(row, field)) {
-          
           filtered[field] = row[field];
         }
       });
       return filtered;
     });
-    response.obj = { ...response.obj, merged: filteredRows };
-    if (typeof response.data === "string") {
-      response.data = JSON.stringify(response.obj, null, 2);
-    }
+
+    const filteredPayload = { merged: filteredRows };
+    const filteredText = JSON.stringify(filteredPayload, null, 2);
+    response.obj = filteredPayload;
+    response.data = filteredText;
+    response.text = filteredText;
+    response.body = filteredText;
     return response;
   };
   return (

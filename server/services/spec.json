@@ -62,48 +62,6 @@
         }
       }
     },
-    "/api/opensearch/denominator": {
-      "post": {
-        "tags": ["Denominator"],
-        "summary": "Finds the total number of samples matching the query criteria",
-        "produces": ["application/json"],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/definitions/DenominatorRequest"
-              },
-              "example": {
-                "sex": "male",
-                "ancestry": "EUR",
-                "smoking": "yes",
-                "approach": "array_A",
-                "minAge": 40,
-                "maxAge": 60,
-                "study": "plco"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation returning total count of matching samples",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/definitions/DenominatorResponse"
-                },
-                "example": 2500
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid parameters supplied"
-          }
-        }
-      }
-    },
     "/api/opensearch/snpchip": {
       "post": {
         "tags": ["SNP Chip"],
@@ -205,26 +163,6 @@
     "SummaryRequest":{
       "type":"object",
       "properties":{
-        "study":{
-          "type": "array",
-          "items":{
-            "type":"object",
-            "properties":{
-              "value":{
-              "type":"string",
-               "description": "Specifies the study plco or ukbb"
-            },
-            "label":{
-              "type":"string"}
-            }
-          },
-          "example":[
-             {
-            "value":"plco",
-            "label":"PLCO"
-          }
-          ]
-        },  
         "ancestry":{
           "type": "array",
           "items":{
@@ -340,26 +278,6 @@
           "type":"string",
           "default":"2"
         },
-        "study":{
-          "type": "array",
-          "items":{
-            "type":"object",
-            "properties":{
-              "value":{
-              "type":"string",
-               "description": "Specifies the study plco or ukbb"
-            },
-            "label":{
-              "type":"string"}
-            }
-          },
-          "example":[
-             {
-            "value":"plco",
-            "label":"PLCO"
-          }
-          ]
-        },         
         "ancestry":{
           "type": "array",
           "items":{
@@ -373,25 +291,16 @@
             }
             }
           },
-          "example":[
-            {
-            "value":"ADMIXED_EUR"
-          },
-          {
-            "value":"AFR"
-          },
-          {
-            "value":"AFR_EUR"
-          },
-          {
-            "value":"ASN"
-          },
-          {
-            "value":"ASN_EUR"
-          },
-          {
-            "value":"EUR"
-          }
+            "example":[
+              { "value": "1", "label": "European" },
+              { "value": "2", "label": "African" },
+              { "value": "4", "label": "African American" },
+              { "value": "5", "label": "Latin American 1" },
+              { "value": "3", "label": "East Asian" },
+              { "value": "6", "label": "Latin American 2" },
+              { "value": "7", "label": "Asian-Pacific Islander" },
+              { "value": "8", "label": "South Asian" },
+              { "value": "9", "label": "Other" }
         ]},
         "maxcf":{
           "type":"string",
@@ -417,8 +326,9 @@
             }
             }
           },
-          "example":[
-            {"value":"male"}
+        "example":[
+            {"value":"1","label" :"Male"},
+            {"value":"2","label" :"Female"}
           ]
         },
           "types":{
@@ -455,55 +365,6 @@
           ]
         }
       }
-    },
-    "DenominatorRequest": {
-      "type": "object",
-      "properties": {
-        "sex": {
-          "type": "string",
-          "description": "Specifies the sex, e.g., male or female"
-        },
-        "ancestry": {
-          "type": "string",
-          "description": "Specifies the ancestry value"
-        },
-        "smoking": {
-          "type": "string",
-          "description": "Specifies smoking status"
-        },
-        "approach": {
-          "type": "string",
-          "description": "Specifies the platform/approach used"
-        },
-        "minAge": {
-          "type": "integer",
-          "description": "Specifies the minimum age",
-          "default": 0
-        },
-        "maxAge": {
-          "type": "integer",
-          "description": "Specifies the maximum age",
-          "default": 100
-        },
-        "study": {
-          "type": "string",
-          "description": "Specifies the study name, e.g., plco, ukbb"
-        }
-      },
-      "example": {
-        "sex": "male",
-        "ancestry": "EUR",
-        "smoking": "yes",
-        "approach": "array_A",
-        "minAge": 40,
-        "maxAge": 60,
-        "study": "plco"
-      }
-    },
-    "DenominatorResponse": {
-      "type": "integer",
-      "description": "The total number of samples matching the query criteria",
-      "example": 2500
     },
     "SnpChipRequest": {
       "type": "object",
