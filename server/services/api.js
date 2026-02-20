@@ -149,7 +149,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   // console.log(qmincf, qmaxcf);
   const qancestry = request.body.ancestry;
   const qtype = request.body.types;
-  const qchromosomes = request.body.chromosomes;
+  const qchromosomes = request.body.chromosomes || null;
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
   const qsmokeNFC = request.body.smoking;
