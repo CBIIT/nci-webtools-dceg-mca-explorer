@@ -49,6 +49,7 @@ function SingleChromosome(props) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [pvalue, setPvalue] = useState(0);
+  const lastEmittedZoomRef = useRef({ backtoprev: "", rangeLable: "" });
 
   //update sizeRef when width changes
   useEffect(() => {
@@ -68,6 +69,7 @@ function SingleChromosome(props) {
       setXMax(currentView["xaxis.range[1]"]);
       setXMin(currentView["xaxis.range[0]"]);
     }
+    console.log("zoomHistory changed:", zoomHistory);
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
@@ -326,7 +328,7 @@ function SingleChromosome(props) {
   if (zoomHistory.length == 0) {
     backtoprev = "";
   }
-  let rangeLable = xMin
+  let rangeLable = xMin !== undefined && xMax !== undefined
     ? "Chr" +
       props.chromesomeId +
       ":" +
@@ -336,7 +338,13 @@ function SingleChromosome(props) {
     : "";
 
   if (zoomHistory.length == 0) rangeLable = "";
-  props.zoomHistory([backtoprev, rangeLable]);
+  if (
+    lastEmittedZoomRef.current.backtoprev !== backtoprev ||
+    lastEmittedZoomRef.current.rangeLable !== rangeLable
+  ) {
+    lastEmittedZoomRef.current = { backtoprev, rangeLable };
+    props.zoomHistory([backtoprev, rangeLable]);
+  }
   //console.log(zoomHistory);
 
   return (

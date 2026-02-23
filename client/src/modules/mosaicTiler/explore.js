@@ -48,21 +48,30 @@ export default function Explore() {
   }
 
   function handleFilter(event) {
-    console.log("filter:", form);
+    console.log("filter:", event);
     if (
-      form.plotType.value !== "static" ||
-      (form.plotType.value === "static" && (form.chrSingle !== "" || form.chrCompare !== ""))
+      event.plotType.value !== "static" ||
+      (event.plotType.value === "static" && (event.chrSingle !== "" || event.chrCompare !== ""))
     ) {
-      setForm({
-        ...form,
+      setForm((prev) => ({
+        ...prev,
+        ...event,
         compare: true,
         //   chrX: false,
         //    chrY: false,
-        counterCompare: form.counterCompare + 1,
+        counterCompare: (prev.counterCompare || 0) + 1,
+        initialStart:
+          event.initialStart !== undefined && event.initialStart !== null && event.initialStart !== ""
+            ? event.initialStart
+            : event.start,
+        initialEnd:
+          event.initialEnd !== undefined && event.initialEnd !== null && event.initialEnd !== ""
+            ? event.initialEnd
+            : event.end,
         groupA: { ...event.groupA },
         groupB: { ...event.groupB },
         //submitted: true,
-      });
+      }));
     }
   }
   function handleFilterClear(event) {

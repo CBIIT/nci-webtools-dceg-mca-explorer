@@ -194,7 +194,13 @@ function getRangeError(start, end) {
       return; // Stop form submission
     }
 
-    if (onSubmit) onSubmit(form);
+    const submittedForm = {
+      ...form,
+      initialStart: form.start,
+      initialEnd: form.end,
+    };
+    setForm(submittedForm);
+    if (onSubmit) onSubmit(submittedForm);
     //handleDisplayCompare();
   }
 

@@ -102,6 +102,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const tableRef = useRef(tableData);
   const circosCompareA = useRef(null);
   const circosCompareB = useRef(null);
+  const lastZoomLabelRef = useRef("");
+  const isResettingToInitialRef = useRef(false);
+  const resetInitialTimerRef = useRef(null);
   const [maxTitleheight, setMaxTitleheight] = useState(0);
   const [heightA, setHeightA] = useState(0);
   const [heightB, setHeightB] = useState(0);
@@ -113,6 +116,23 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [showTableTitle, setShowTableTitle] = useState(false);
   const [visibleTooltip, setVisibleTooltip] = useState(false);
   const [compareChr, setCompareChr] = useState(form.chrSingle && form.chrSingle.label);
+
+  const restoreInitialRangeToForm = () => {
+    setForm((prev) => {
+      if (prev.initialStart === "" || prev.initialStart === null || prev.initialStart === undefined) return prev;
+      if (prev.initialEnd === "" || prev.initialEnd === null || prev.initialEnd === undefined) return prev;
+      if (prev.start === prev.initialStart && prev.end === prev.initialEnd) return prev;
+      return { ...prev, start: prev.initialStart, end: prev.initialEnd };
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (resetInitialTimerRef.current) {
+        clearTimeout(resetInitialTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleDisplayTitle = () => {
     // Toggle display of circosTitle
@@ -1308,19 +1328,53 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   const handleZoomInitial = () => {
     //setIsinit(true);
+    isResettingToInitialRef.current = true;
+    if (resetInitialTimerRef.current) {
+      clearTimeout(resetInitialTimerRef.current);
+    }
+
     const resetBtnA = document.querySelectorAll('#A a[data-val*="auto"]')[0];
     const resetBtnB = document.querySelectorAll('#B a[data-val*="auto"]')[0];
     const resetBtnOne = document.querySelectorAll('#One a[data-val*="auto"]')[0];
     if (resetBtnA !== undefined) resetBtnA.click();
     if (resetBtnB !== undefined) resetBtnB.click();
     if (resetBtnOne !== undefined) resetBtnOne.click();
+
+    restoreInitialRangeToForm();
+    resetInitialTimerRef.current = setTimeout(() => {
+      isResettingToInitialRef.current = false;
+    }, 800);
+    alert("Zoomed out to initial range");
   };
 
   const handleZoomHistory = (zoomHistory) => {
     if (zoomHistory.length == 2) {
-      setZoomRange(zoomHistory[0]);
-      setRangeLabel(zoomHistory[1]);
-      props.onClickedChr({ rangeLable: zoomHistory[1] || "" });
+      const nextZoomRange = zoomHistory[0] || "";
+      const nextRangeLabel = zoomHistory[1] || "";
+      if (zoomRangeRef.current !== nextZoomRange) setZoomRange(nextZoomRange);
+      const emittedRangeLabel = isResettingToInitialRef.current ? "" : nextRangeLabel;
+      if (rangeLabel !== emittedRangeLabel) setRangeLabel(emittedRangeLabel);
+
+      if (isResettingToInitialRef.current) {
+        restoreInitialRangeToForm();
+        if (!nextRangeLabel) {
+          isResettingToInitialRef.current = false;
+        }
+      } else if (nextRangeLabel) {
+        const nextStart = Number(nextRangeLabel.split("-")[0].split(":")[1].replace(/,/g, ""));
+        const nextEnd = Number(nextRangeLabel.split("-")[1].replace(/,/g, ""));
+        setForm((prev) => {
+          if (prev.start === nextStart && prev.end === nextEnd) return prev;
+          return { ...prev, start: nextStart, end: nextEnd };
+        });
+      } else {
+        restoreInitialRangeToForm();
+      }
+
+      if (lastZoomLabelRef.current !== emittedRangeLabel) {
+        lastZoomLabelRef.current = emittedRangeLabel;
+        props.onClickedChr({ rangeLable: emittedRangeLabel });
+      }
       //update tableData based on zoom range
       //console.log(tableData);
     }

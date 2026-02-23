@@ -77,7 +77,25 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
   function handleSubmit(event) {
     event.preventDefault();
     setSubmitClicked(true);
-    if (onSubmit) onSubmit(form);
+    console.log("[compare-form][handleSubmit] before payload", {
+      start: form.start,
+      end: form.end,
+      initialStart: form.initialStart,
+      initialEnd: form.initialEnd,
+    });
+    const submittedForm = {
+      ...form,
+      initialStart: form.start,
+      initialEnd: form.end,
+    };
+    console.log("[compare-form][handleSubmit] submitted payload", {
+      start: submittedForm.start,
+      end: submittedForm.end,
+      initialStart: submittedForm.initialStart,
+      initialEnd: submittedForm.initialEnd,
+    });
+    setForm(submittedForm);
+    if (onSubmit) onSubmit(submittedForm);
     //handleDisplayCompare();
   }
 
@@ -192,7 +210,14 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
     //update the compare variable and run the filter function to do compare
 
     let isValid = true;
-    console.log(form);
+    console.log("[compare-form][handleFilter] before validation", {
+      start: form.start,
+      end: form.end,
+      initialStart: form.initialStart,
+      initialEnd: form.initialEnd,
+      plotType: form.plotType,
+      chrCompare: form.chrCompare,
+    });
     // Check for age limitation
     if (form.groupA.maxAge && form.groupA.minAge && parseInt(form.groupA.maxAge) <= parseInt(form.groupA.minAge)) {
       isValid = false;
@@ -224,9 +249,24 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
     }
 
     if (form.plotType.value !== "static" || (form.plotType.value === "static" && form.chrCompare !== "")) {
-      console.log("comparing...", form);
-      setForm({ ...form, compare: true, counterCompare: counter + 1 });
-      onFilter({ ...form });
+      console.log("[compare-form][handleFilter] comparing...", form);
+      const submittedForm = {
+        ...form,
+        initialStart: form.start,
+        initialEnd: form.end,
+        compare: true,
+        counterCompare: counter + 1,
+      };
+      console.log("[compare-form][handleFilter] submitted payload", {
+        start: submittedForm.start,
+        end: submittedForm.end,
+        initialStart: submittedForm.initialStart,
+        initialEnd: submittedForm.initialEnd,
+        compare: submittedForm.compare,
+        counterCompare: submittedForm.counterCompare,
+      });
+      setForm(submittedForm);
+      onFilter(submittedForm);
     }
     //onSubmit(form);
   }
