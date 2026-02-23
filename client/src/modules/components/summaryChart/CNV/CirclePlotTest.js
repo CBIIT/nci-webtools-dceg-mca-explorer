@@ -1344,7 +1344,6 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     resetInitialTimerRef.current = setTimeout(() => {
       isResettingToInitialRef.current = false;
     }, 800);
-    alert("Zoomed out to initial range");
   };
 
   const handleZoomHistory = (zoomHistory) => {
