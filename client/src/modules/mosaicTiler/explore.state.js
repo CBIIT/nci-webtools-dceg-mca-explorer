@@ -142,6 +142,8 @@ export const defaultFormState = {
   counterCompare: 0,
   start: "",
   end: "",
+  initialStart: "",
+  initialEnd: "",
   groupA: [],
   groupB: [],
   smoking: [],
@@ -185,7 +187,9 @@ export const resetFormState = {
   priorCancer:[],
   hemaCancer:[],
   lymCancer:[],
-  myeCancer:[]
+  myeCancer:[],
+  initialStart: "",
+  initialEnd: "",
 };
 export const formState = atom({
   key: "explore.formState",
