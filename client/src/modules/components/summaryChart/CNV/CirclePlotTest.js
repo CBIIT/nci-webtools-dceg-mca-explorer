@@ -410,6 +410,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     // console.log(form.counterCompare, form.groupA, form.groupB);
 
     if (form.compare) {
+      setRangeLabel("");
+      setZoomRange(null);
       //console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
       //if click back to Circos compare from single chromosome, do not clear circos data
@@ -1515,7 +1517,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         const zoomedTabledata = data.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
         console.log(zoomedTabledata.length);
         setSingleZoomLength(zoomedTabledata.length);
-        if (!form.compare) props.getData(zoomedTabledata);
+        if (!form.compare) props.getgiData(zoomedTabledata);
       } else {
         if (!form.compare) props.getData([]);
       }

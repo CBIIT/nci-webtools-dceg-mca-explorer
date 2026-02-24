@@ -13,7 +13,6 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
-  const [counter, setCounter] = useState(0);
   const [resetCounter, setResetCounter] = useState(0);
   // console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
@@ -255,7 +254,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
         initialStart: form.start,
         initialEnd: form.end,
         compare: true,
-        counterCompare: counter + 1,
+        counterCompare: (form.counterCompare || 0) + 1,
       };
       console.log("[compare-form][handleFilter] submitted payload", {
         start: submittedForm.start,
