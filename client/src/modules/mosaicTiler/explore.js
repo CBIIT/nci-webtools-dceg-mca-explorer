@@ -47,26 +47,27 @@ export default function Explore() {
   }
 
   function handleFilter(event) {
-    console.log("filter:", form);
+    console.log("filter:", event);
     if (
-      form.plotType.value !== "static" ||
-      (form.plotType.value === "static" && (form.chrSingle !== "" || form.chrCompare !== ""))
+      event.plotType.value !== "static" ||
+      (event.plotType.value === "static" && (event.chrSingle !== "" || event.chrCompare !== ""))
     ) {
-      setForm({
-        ...form,
+      setForm((prev) => ({
+        ...prev,
+        ...event,
         compare: true,
         //   chrX: false,
         //    chrY: false,
-        counterCompare: form.counterCompare + 1,
+        counterCompare: (prev.counterCompare || 0) + 1,
         groupA: { ...event.groupA },
         groupB: { ...event.groupB },
         //submitted: true,
-      });
+      }));
     }
   }
   function handleFilterClear(event) {
     setForm({ ...event });
-    setClear(clear + 1);
+    setClear((prev) => prev + 1);
 
     console.log("filterclear", event);
     //setForm({ ...event, submitted: false });
@@ -95,14 +96,13 @@ export default function Explore() {
     console.log("in explore", value, form);
   }
   function handleCheckboxChange() {
-    setIsOpenCompare(!isOpenCompare);
+    setIsOpenCompare((prev) => !prev);
+    setClear((prev) => prev + 1);
     //const tabs = document.querySelectorAll("[role=tabpanel");
     //console.log("click pair");
     // if (isOpenCompare) {
     //   console.log(tabs);
     // }
-    setForm({ ...form, compare: !isOpenCompare });
-    setForm(defaultFormState);
     // if (Array.isArray(form.groupA)) {
     //   const combtn = document.getElementById("compareSubmit");
     //   if (combtn !== null) combtn.click();

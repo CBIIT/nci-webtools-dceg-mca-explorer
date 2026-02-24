@@ -12,7 +12,6 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
-  const [counter, setCounter] = useState(0);
   const [resetCounter, setResetCounter] = useState(0);
   // console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
@@ -224,8 +223,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
 
     if (form.plotType.value !== "static" || (form.plotType.value === "static" && form.chrCompare !== "")) {
       console.log("comparing...", form);
-      setForm({ ...form, compare: true, counterCompare: counter + 1 });
-      onFilter({ ...form });
+      const submittedForm = { ...form, compare: true, counterCompare: (form.counterCompare || 0) + 1 };
+      setForm(submittedForm);
+      onFilter(submittedForm);
     }
     //onSubmit(form);
   }
