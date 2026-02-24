@@ -1517,7 +1517,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         const zoomedTabledata = data.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
         console.log(zoomedTabledata.length);
         setSingleZoomLength(zoomedTabledata.length);
-        if (!form.compare) props.getgiData(zoomedTabledata);
+        if (!form.compare) props.getData(zoomedTabledata);
       } else {
         if (!form.compare) props.getData([]);
       }
