@@ -1490,13 +1490,16 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   }, [circleB, form.plotType]);
 
   useEffect(() => {
-    if (groupA !== null || groupB !== null) {
-      setTableData([...groupA, ...groupB]);
+    if ((groupA !== null || groupB !== null) && form.compare && form.plotType.value === "static") {
+      const mergedCompareData = [...groupA, ...groupB];
+      setTableData(mergedCompareData);
+      if (!rangeLabel) {
+        props.getData(mergedCompareData);
+      }
       //setFisherB(fisherTest(groupB.length, 5, 3, 12));
     }
     //set tableData within range
-    props.getData(tableData);
-  }, [groupA, groupB, rangeLabel]);
+  }, [groupA, groupB, form.compare, form.plotType, rangeLabel]);
 
   useEffect(() => {
     if (form.plotType.value === "circos") {
@@ -1514,10 +1517,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         setSingleZoomLength(zoomedTabledata.length);
         if (!form.compare) props.getData(zoomedTabledata);
       } else {
-        props.getData([]);
-      }
-      if (form.compare) {
-        props.getData(tableRef.current);
+        if (!form.compare) props.getData([]);
       }
     }
   }, [tableData, form.plotType, circleTableData, rangeLabel]);
@@ -1535,13 +1535,22 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         //reset tableData and fisher number
         const rangeGroupA = groupA.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
         const rangeGroupB = groupB.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+        const zoomedCompareData = [...rangeGroupA, ...rangeGroupB];
 
-        setTableData([...rangeGroupA, ...rangeGroupB]);
+        setTableData(zoomedCompareData);
+        if (form.compare) {
+          props.getData(zoomedCompareData);
+        }
         setRangeA(rangeGroupA.length);
         setRangeB(rangeGroupB.length);
         // console.log(rangeA.length, rangeB.length);
         handleFisherTest(rangeGroupA.length, fisherA, rangeGroupB.length, fisherB);
-      } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
+      } else {
+        if (form.compare) {
+          props.getData([...groupA, ...groupB]);
+        }
+        handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
+      }
     }
   }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
 
