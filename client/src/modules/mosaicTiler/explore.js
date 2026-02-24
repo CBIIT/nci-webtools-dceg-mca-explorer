@@ -76,7 +76,7 @@ export default function Explore() {
   }
   function handleFilterClear(event) {
     setForm({ ...event });
-    setClear(clear + 1);
+    setClear((prev) => prev + 1);
 
     console.log("filterclear", event);
     //setForm({ ...event, submitted: false });

@@ -973,20 +973,20 @@ const fetchAllHitsPaged = async (client, index, query, _source = undefined, page
   }
 };
 
-// Helper to avoid reaching the index.max_terms_count limit by chunking large
-// `terms` queries for `sampleId.keyword` and paging each chunk with
-// `search_after` to avoid very large single responses.
+// Helper to avoid reaching the index.max_terms_count limit by chunking only
+// when needed. For lists within the max terms limit, this behaves like QA
+// with a single denominator query.
 const fetchDenominatorBySampleIds = async (client, resultsIds, baseMust = [], baseFilter = [], _source = undefined) => {
   if (!resultsIds || resultsIds.length === 0) return [];
 
-  const MAX_TERMS = getPositiveIntOrDefault(DENOMINATOR_MAX_TERMS, 10000);
-  const PAGE_SIZE = getPositiveIntOrDefault(DENOMINATOR_PAGE_SIZE, 5000);
+  const MAX_TERMS = getPositiveIntOrDefault(DENOMINATOR_MAX_TERMS, 65536);
+  const SAFE_CHUNK_SIZE = MAX_TERMS;
   const CHUNK_CONCURRENCY = getPositiveIntOrDefault(DENOMINATOR_CHUNK_CONCURRENCY, 2);
   const uniqueIds = [...new Set(resultsIds)];
   const dedupKey = [
     makeIdsSignature(uniqueIds),
     MAX_TERMS,
-    PAGE_SIZE,
+    SAFE_CHUNK_SIZE,
     CHUNK_CONCURRENCY,
     stableStringify(baseMust),
     stableStringify(baseFilter),
@@ -998,42 +998,23 @@ const fetchDenominatorBySampleIds = async (client, resultsIds, baseMust = [], ba
 
   const promise = (async () => {
     const idChunks = [];
-    for (let i = 0; i < uniqueIds.length; i += MAX_TERMS) {
-      idChunks.push(uniqueIds.slice(i, i + MAX_TERMS));
+    for (let i = 0; i < uniqueIds.length; i += SAFE_CHUNK_SIZE) {
+      idChunks.push(uniqueIds.slice(i, i + SAFE_CHUNK_SIZE));
     }
 
-    const fetchChunkPaged = async (sampleIdChunk) => {
-      const chunkHits = [];
-      let searchAfter = undefined;
-
-      while (true) {
-        const body = {
-          track_total_hits: false,
-          size: PAGE_SIZE,
-          sort: [{ _doc: "asc" }],
-          query: {
-            bool: {
-              filter: [{ terms: { "sampleId.keyword": sampleIdChunk } }, ...baseMust, ...baseFilter],
-            },
+    const fetchChunk = async (sampleIdChunk) => {
+      const body = {
+        track_total_hits: true,
+        size: 200000,
+        query: {
+          bool: {
+            filter: [{ terms: { "sampleId.keyword": sampleIdChunk } }, ...baseMust, ...baseFilter],
           },
-        };
-
-        if (_source) body._source = _source;
-        if (searchAfter) body.search_after = searchAfter;
-
-        const res = await client.search({ index: "denominator_age", body });
-        const pageHits = res?.body?.hits?.hits || [];
-        if (pageHits.length === 0) break;
-
-        chunkHits.push(...pageHits);
-        if (pageHits.length < PAGE_SIZE) break;
-
-        const lastSort = pageHits[pageHits.length - 1].sort;
-        if (!lastSort) break;
-        searchAfter = lastSort;
-      }
-
-      return chunkHits;
+        },
+      };
+      if (_source) body._source = _source;
+      const res = await client.search({ index: "denominator_age", body });
+      return res?.body?.hits?.hits || [];
     };
 
     if (idChunks.length > 1) {
@@ -1043,7 +1024,7 @@ const fetchDenominatorBySampleIds = async (client, resultsIds, baseMust = [], ba
     const hits = [];
     for (let i = 0; i < idChunks.length; i += CHUNK_CONCURRENCY) {
       const batch = idChunks.slice(i, i + CHUNK_CONCURRENCY);
-      const batchHits = await Promise.all(batch.map((chunk) => fetchChunkPaged(chunk)));
+      const batchHits = await Promise.all(batch.map((chunk) => fetchChunk(chunk)));
       batchHits.forEach((items) => hits.push(...items));
     }
 

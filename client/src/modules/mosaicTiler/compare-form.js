@@ -264,6 +264,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
         compare: submittedForm.compare,
         counterCompare: submittedForm.counterCompare,
       });
+      console.log("comparing...", form);
+      //const submittedForm = { ...form, compare: true, counterCompare: (form.counterCompare || 0) + 1 };
       setForm(submittedForm);
       onFilter(submittedForm);
     }
