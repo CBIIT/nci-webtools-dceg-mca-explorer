@@ -29,6 +29,7 @@ apiRouter.use(express.json());
 //const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
 const host = `https://${OPENSEARCH_ENDPOINT}`;
 const MCA_SOURCE_FIELDS = ["sampleId", "chromosome", "type", "cf", "dataset", "beginGrch38", "endGrch38", "length"];
+const QA_RESULT_CAP = 200000;
 const QUERY_TIMING_ENABLED = ENABLE_QUERY_TIMING === "1" || ENABLE_QUERY_TIMING === "true";
 const inflightPagedSearches = new Map();
 const inflightDenominatorFetches = new Map();
@@ -137,7 +138,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     logQueryTiming(logger, "/opensearch/mca", {
       stage: "cacheHit",
       ms: { elapsed: nowMs() - requestStartMs },
-      counts: { mergedRows: Array.isArray(cachedResponse.merged) ? cachedResponse.merged.length : 0 },
+      counts: {
+        nominatorRows: Array.isArray(cachedResponse.nominator) ? cachedResponse.nominator.length : 0,
+        denominatorRows: Array.isArray(cachedResponse.denominator) ? cachedResponse.denominator.length : 0,
+      },
     });
     response.json(cachedResponse);
     return;
@@ -255,19 +259,21 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
 
   try {
-    const mcaHits = await fetchAllHitsPaged(
-      client,
-      "mcaexplorer_index",
-      {
-        bool: {
-          must_not: [...searchExclude],
-          must: searchdataset,
-          filter: filterString,
+    const result = await client.search({
+      index: "mcaexplorer_index",
+      body: {
+        track_total_hits: true,
+        size: 200000,
+        query: {
+          bool: {
+            must_not: [...searchExclude],
+            must: searchdataset,
+            filter: filterString,
+          },
         },
       },
-      MCA_SOURCE_FIELDS,
-      MCA_PAGE_SIZE
-    );
+    });
+    const mcaHits = result.body.hits.hits;
     const afterMcaMs = nowMs();
     logQueryTiming(logger, "/opensearch/mca", {
       stage: "afterMcaFetch",
@@ -275,9 +281,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    console.log(mcaHits.length);
+    const nominatorHits = mcaHits;
+    console.log(nominatorHits.length);
 
-    const resultsIds = mcaHits.map((item) => item._source.sampleId);
+    const resultsIds = nominatorHits.map((item) => item._source.sampleId);
     console.log(platformarr);
     //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
     try {
@@ -312,38 +319,22 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         ms: { elapsed: afterDenominatorMs - requestStartMs, denominatorFetch: afterDenominatorMs - afterMcaMs },
       });
 
-      console.log(denomHits.length, mcaHits.length);
+      const denominatorHits = denomHits;
+      console.log(denominatorHits.length, nominatorHits.length);
 
-      const useDenominatorBase = hasActiveDenominatorFilters({
-        sex: qsex,
-        ancestry: qancestry,
-        smoking: qsmokeNFC,
-        approach: qplatform,
-        minAge,
-        maxAge,
-        priorCancer: qpriorCancer,
-        hemaCancer: qhemaCancer,
-        lymCancer: qlymCancer,
-        myeCancer: qmyeCancer,
-      });
-      const mergedRows = buildMergedRows(mcaHits, denomHits, useDenominatorBase);
-      const afterMergeMs = nowMs();
-
-      const payload = { merged: mergedRows };
+      const payload = { nominator: nominatorHits, denominator: denominatorHits };
       setCachedRouteResponse(cacheKey, payload);
       response.json(payload);
       const afterResponseMs = nowMs();
       logQueryTiming(logger, "/opensearch/mca", {
         counts: {
-          mcaHits: mcaHits.length,
-          denominatorHits: denomHits.length,
-          mergedRows: mergedRows.length,
+          mcaHits: nominatorHits.length,
+          denominatorHits: denominatorHits.length,
         },
         ms: {
           mcaFetch: afterMcaMs - requestStartMs,
           denominatorFetch: afterDenominatorMs - afterMcaMs,
-          merge: afterMergeMs - afterDenominatorMs,
-          responseWrite: afterResponseMs - afterMergeMs,
+          responseWrite: afterResponseMs - afterDenominatorMs,
           total: afterResponseMs - requestStartMs,
         },
       });
@@ -421,7 +412,10 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     logQueryTiming(logger, "/opensearch/chromosome", {
       stage: "cacheHit",
       ms: { elapsed: nowMs() - requestStartMs },
-      counts: { mergedRows: Array.isArray(cachedResponse.merged) ? cachedResponse.merged.length : 0 },
+      counts: {
+        nominatorRows: Array.isArray(cachedResponse.nominator) ? cachedResponse.nominator.length : 0,
+        denominatorRows: Array.isArray(cachedResponse.denominator) ? cachedResponse.denominator.length : 0,
+      },
     });
     response.json(cachedResponse);
     return;
@@ -499,33 +493,35 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     }
     console.log(queryString);
     try {
-      const mcaHits = await fetchAllHitsPaged(
-        client,
-        "mcaexplorer_index",
-        {
-          bool: {
-            filter: [
-              {
-                range: {
-                  beginGrch38: {
-                    gte: start,
+      const result = await client.search({
+        index: "mcaexplorer_index", //this index change beginGrch38 and endGrch38 as long type
+        body: {
+          track_total_hits: true,
+          size: 200000,
+          query: {
+            bool: {
+              filter: [
+                {
+                  range: {
+                    beginGrch38: {
+                      gte: start,
+                    },
                   },
                 },
-              },
-              {
-                range: {
-                  endGrch38: {
-                    lte: end,
+                {
+                  range: {
+                    endGrch38: {
+                      lte: end,
+                    },
                   },
                 },
-              },
-            ],
-            must: queryString,
+              ],
+              must: queryString,
+            },
           },
         },
-        MCA_SOURCE_FIELDS,
-        MCA_PAGE_SIZE
-      );
+      });
+      const mcaHits = result.body.hits.hits;
       const afterMcaMs = nowMs();
       logQueryTiming(logger, "/opensearch/chromosome", {
         stage: "afterMcaFetch",
@@ -533,7 +529,8 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         ms: { elapsed: afterMcaMs - requestStartMs },
       });
       //  console.log(queryString);
-      const resultsIds = mcaHits.map((item) => item._source.sampleId);
+      const nominatorHits = mcaHits;
+      const resultsIds = nominatorHits.map((item) => item._source.sampleId);
       console.log("line 468:", resultsIds.length);
       try {
         const baseMust = [
@@ -567,38 +564,22 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           ms: { elapsed: afterDenominatorMs - requestStartMs, denominatorFetch: afterDenominatorMs - afterMcaMs },
         });
 
-        console.log("denominator", denomHits.length, "nominator:", mcaHits.length);
+        const denominatorHits = denomHits;
+        console.log("denominator", denominatorHits.length, "nominator:", nominatorHits.length);
 
-        const useDenominatorBase = hasActiveDenominatorFilters({
-          sex,
-          ancestry,
-          smoking: smokeNFC,
-          approach: platfomrarray,
-          minAge,
-          maxAge,
-          priorCancer,
-          hemaCancer,
-          lymCancer,
-          myeCancer,
-        });
-        const mergedRows = buildMergedRows(mcaHits, denomHits, useDenominatorBase);
-        const afterMergeMs = nowMs();
-
-        const payload = { merged: mergedRows };
+        const payload = { nominator: nominatorHits, denominator: denominatorHits };
         setCachedRouteResponse(cacheKey, payload);
         response.json(payload);
         const afterResponseMs = nowMs();
         logQueryTiming(logger, "/opensearch/chromosome", {
           counts: {
-            mcaHits: mcaHits.length,
-            denominatorHits: denomHits.length,
-            mergedRows: mergedRows.length,
+            mcaHits: nominatorHits.length,
+            denominatorHits: denominatorHits.length,
           },
           ms: {
             mcaFetch: afterMcaMs - requestStartMs,
             denominatorFetch: afterDenominatorMs - afterMcaMs,
-            merge: afterMergeMs - afterDenominatorMs,
-            responseWrite: afterResponseMs - afterMergeMs,
+            responseWrite: afterResponseMs - afterDenominatorMs,
             total: afterResponseMs - requestStartMs,
           },
         });
