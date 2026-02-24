@@ -110,14 +110,14 @@ export default function Explore() {
     }
   }
   function handleCheckboxChange() {
-    setIsOpenCompare(!isOpenCompare);
+    setIsOpenCompare((prev) => !prev);
+    setRangeLable("");
+    setClear((prev) => prev + 1);
     //const tabs = document.querySelectorAll("[role=tabpanel");
     //console.log("click pair");
     // if (isOpenCompare) {
     //   console.log(tabs);
     // }
-    setForm({ ...form, compare: !isOpenCompare });
-    setForm(defaultFormState);
     // if (Array.isArray(form.groupA)) {
     //   const combtn = document.getElementById("compareSubmit");
     //   if (combtn !== null) combtn.click();
