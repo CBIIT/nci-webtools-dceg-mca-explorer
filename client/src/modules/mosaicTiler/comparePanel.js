@@ -393,7 +393,7 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
               <Form.Label style={{ color: "red" }}>
-                {maxAge && minAge && parseInt(maxAge) <= parseInt(minAge)
+                {maxAge !== "" && minAge !== "" && parseInt(maxAge, 10) <= parseInt(minAge, 10)
                   ? "Upper age limit must be greater than lower age limit"
                   : ""}
               </Form.Label>
