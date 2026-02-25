@@ -10,7 +10,7 @@ const defaultStudy = [
   "",
 ];
 
-const mcaResponseFields = ["chromosome", "sex", "type", "cf", "beginGrch38", "endGrch38", "array"];
+const mcaResponseFields = ["chromosome", "type", "cf", "beginGrch38", "endGrch38", "array"];
 const isMcaEndpoint =
   (url) => typeof url === "string" && (url.includes("/api/opensearch/mca") || url.includes("/api/opensearch/chromosome"));
 
@@ -50,19 +50,54 @@ export default function ApiAccess() {
       }
     }
 
-    if (!payload || !Array.isArray(payload.merged)) return response;
+    if (!payload || typeof payload !== "object") return response;
 
-    const filteredRows = payload.merged.map((row) => {
-      const filtered = {};
-      mcaResponseFields.forEach((field) => {
-        if (Object.prototype.hasOwnProperty.call(row, field)) {
-          filtered[field] = row[field];
+    const toSource = (row) =>
+      row && typeof row === "object" && row._source && typeof row._source === "object" ? row._source : row;
+
+    const filterRows = (rows) => {
+      if (!Array.isArray(rows)) return rows;
+      return rows.map((row) => {
+        const source = toSource(row);
+        const filtered = {};
+        mcaResponseFields.forEach((field) => {
+          if (source && Object.prototype.hasOwnProperty.call(source, field)) {
+            filtered[field] = source[field];
+          }
+        });
+        return filtered;
+      });
+    };
+
+    const hasMerged = Array.isArray(payload.merged);
+    const hasNominator = Array.isArray(payload.nominator);
+    const hasDenominator = Array.isArray(payload.denominator);
+
+    if (!hasMerged && !hasNominator && !hasDenominator) return response;
+
+    let filteredPayload = { ...payload };
+
+    if (hasMerged) {
+      filteredPayload = { merged: filterRows(payload.merged) };
+    } else {
+      const nominatorRows = hasNominator ? payload.nominator.map((row) => toSource(row)) : [];
+      const denominatorRows = hasDenominator ? payload.denominator.map((row) => toSource(row)) : [];
+
+      const denominatorBySampleId = new Map();
+      denominatorRows.forEach((row) => {
+        if (row && row.sampleId !== undefined && !denominatorBySampleId.has(row.sampleId)) {
+          denominatorBySampleId.set(row.sampleId, row);
         }
       });
-      return filtered;
-    });
 
-    const filteredPayload = { merged: filteredRows };
+      const mergedRows = nominatorRows.map((row) => {
+        if (!row || row.sampleId === undefined) return row;
+        const denominator = denominatorBySampleId.get(row.sampleId);
+        return denominator ? { ...row, ...denominator } : row;
+      });
+
+      filteredPayload = { merged: filterRows(mergedRows) };
+    }
     const filteredText = JSON.stringify(filteredPayload, null, 2);
     response.obj = filteredPayload;
     response.data = filteredText;
