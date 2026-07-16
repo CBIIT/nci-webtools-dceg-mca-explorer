@@ -185,8 +185,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let qfilter = [];
   if (qtype !== undefined) {
     qtype.forEach((qt) => {
-      if (qt.value != "all") {
-        qfilter.push(qt.label);
+      const value = getSelectionValue(qt);
+      if (value != "all") {
+        const label = getSelectionLabel(qt);
+        if (label !== undefined && label !== null && label !== "") qfilter.push(label);
       }
     });
   }
@@ -475,8 +477,11 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     //add query for types
     if (types !== undefined) {
       types.forEach((t) => {
-        if (t.value !== "all") atemp.push(t.label);
-        else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
+        const value = getSelectionValue(t);
+        if (value !== "all") {
+          const label = getSelectionLabel(t);
+          if (label !== undefined && label !== null && label !== "") atemp.push(label);
+        } else if (value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
       });
     }
     if (chromesome !== "X" && chromesome !== "Y") {
@@ -631,8 +636,9 @@ const getMcaStudyDatasets = (study) => {
   };
   const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(mcaDatasetsByStudy).map((value) => ({ value }));
   const datasets = selectedStudies.flatMap((item) => {
-    if (!item || item.value === "all" || item.value === "X" || item.value === "Y") return [];
-    return mcaDatasetsByStudy[item.value] || [item.value];
+    const value = getSelectionValue(item);
+    if (!value || value === "all" || value === "X" || value === "Y") return [];
+    return mcaDatasetsByStudy[value] || [value];
   });
 
   return datasets.length > 0 ? datasets : Object.values(mcaDatasetsByStudy).flat();
@@ -649,8 +655,9 @@ const getDenominatorStudyDatasets = (study) => {
   };
   const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(denominatorDatasetsByStudy).map((value) => ({ value }));
   const datasets = selectedStudies
-    .filter((item) => item && item.value !== "all")
-    .map((item) => denominatorDatasetsByStudy[item.value] || item.value)
+    .map((item) => getSelectionValue(item))
+    .filter((value) => value && value !== "all")
+    .map((value) => denominatorDatasetsByStudy[value] || value)
     .filter(Boolean);
 
   return datasets.length > 0 ? datasets : Object.values(denominatorDatasetsByStudy);
@@ -768,15 +775,19 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
   }
 });
 
+const getSelectionValue = (item) => (item && typeof item === "object" ? item.value : item);
+
+const getSelectionLabel = (item) => (item && typeof item === "object" ? item.label || item.value : item);
+
+const getSelectedAttributesArray = (atti) => {
+  if (!Array.isArray(atti)) return [];
+  return atti
+    .map((item) => getSelectionValue(item))
+    .filter((value) => value !== undefined && value !== null && value !== "" && value !== "all");
+};
+
 const getAttributesArray = (atti, name) => {
-  let attiarray = [];
-  if (atti !== undefined && atti !== null) {
-    atti.forEach((e) => {
-      if (e.value !== "all") {
-        attiarray.push(e.value);
-      }
-    });
-  }
+  let attiarray = getSelectedAttributesArray(atti);
   if (attiarray.length === 0) {
     switch (name) {
       case "sex":
@@ -803,18 +814,6 @@ const getAttributesArray = (atti, name) => {
       default:
         attiarray = ["0", "1"];
     }
-  }
-  return attiarray;
-};
-
-const getSelectedAttributesArray = (atti) => {
-  const attiarray = [];
-  if (atti !== undefined && atti !== null) {
-    atti.forEach((e) => {
-      if (e.value !== "all") {
-        attiarray.push(e.value);
-      }
-    });
   }
   return attiarray;
 };
@@ -887,8 +886,9 @@ const getStudy = (qdataset, qfilter) => {
   if (qdataset !== undefined) {
     qdataset.length
       ? qdataset.forEach((element) => {
-          element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
-          element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
+          const value = getSelectionValue(element);
+          value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
+          value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
           //element.label?searchdataset.push({match:{dataset:element.value}}):''
         })
       : "";
@@ -900,7 +900,7 @@ const getStudy = (qdataset, qfilter) => {
 
 const hasActiveSelectionFilter = (items) => {
   if (!Array.isArray(items) || items.length === 0) return false;
-  return items.some((item) => item && item.value !== "all");
+  return getSelectedAttributesArray(items).length > 0;
 };
 
 const hasActiveDenominatorFilters = ({ sex, ancestry, smoking, approach, minAge, maxAge, priorCancer, hemaCancer, lymCancer, myeCancer }) => {
@@ -1024,7 +1024,8 @@ const fetchDenominatorBySampleIds = async (client, resultsIds, baseMust = [], ba
   const MAX_TERMS = getPositiveIntOrDefault(DENOMINATOR_MAX_TERMS, 65536);
   const SAFE_CHUNK_SIZE = MAX_TERMS;
   const CHUNK_CONCURRENCY = getPositiveIntOrDefault(DENOMINATOR_CHUNK_CONCURRENCY, 2);
-  const uniqueIds = [...new Set(resultsIds)];
+  const uniqueIds = [...new Set(resultsIds.filter((id) => id !== undefined && id !== null && id !== ""))];
+  if (uniqueIds.length === 0) return [];
   const dedupKey = [
     makeIdsSignature(uniqueIds),
     MAX_TERMS,
