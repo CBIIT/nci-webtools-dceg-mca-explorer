@@ -157,9 +157,9 @@ function getIndexName(filename) {
   return /denom|denominator/i.test(filename) ? "denominator" : "mcaexplorer";
 }
 
-function appendBulkJson(fd, filename, records, startId) {
+function appendBulkJson(fd, filename, records, nextIds) {
   const indexName = getIndexName(filename);
-  let id = startId;
+  let id = nextIds[indexName] || 1;
 
   records.map((record) => {
     fs.appendFileSync(
@@ -178,8 +178,8 @@ function appendBulkJson(fd, filename, records, startId) {
     id++;
   });
 
+  nextIds[indexName] = id;
   console.log(`Finish ${filename} import: ${records.length} rows`);
-  return id;
 }
 
 function removeNewlines(obj) {
@@ -197,7 +197,10 @@ function removeNewlines(obj) {
 }
 
 (async function main() {
-  let id = 1;
+  const nextIds = {
+    mcaexplorer: 1,
+    denominator: 1,
+  };
   let totalRows = 0;
   const sourceFiles = getSourceFiles();
   const outputJsonName = "all.json";
@@ -207,7 +210,7 @@ function removeNewlines(obj) {
     for (const sourceFile of sourceFiles) {
       try {
         const records = await parseSourceFile(sourceFile);
-        id = appendBulkJson(fd, sourceFile, records, id);
+        appendBulkJson(fd, sourceFile, records, nextIds);
         totalRows += records.length;
       } catch (err) {
         console.log(`${sourceFile}: ${err}`);
