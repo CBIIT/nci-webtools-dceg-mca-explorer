@@ -130,7 +130,7 @@ export default function Explore() {
       <SidebarContainer
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
-        <SidebarPanel className="col-xl-3">
+        <SidebarPanel className="col-xl-3 ps-4">
           <Card>
             <label
               style={{
