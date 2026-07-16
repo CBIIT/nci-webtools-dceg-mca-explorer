@@ -125,12 +125,12 @@ export default function Explore() {
   }
 
   return (
-    <Container className="my-3">
+    <Container fluid className="my-3">
       <Loader fullscreen show={loading} />
       <SidebarContainer
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
-        <SidebarPanel>
+        <SidebarPanel className="col-xl-3">
           <Card>
             <label
               style={{
@@ -173,7 +173,7 @@ export default function Explore() {
             )}
           </Card>
         </SidebarPanel>
-        <MainPanel>
+        <MainPanel className="col-xl-9">
           <div className="h-100 mb-5 align-self-center">
             <Card.Body className="p-0">
               <ErrorBoundary
