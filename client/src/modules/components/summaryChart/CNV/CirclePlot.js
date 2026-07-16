@@ -10,7 +10,7 @@ export default function CircosPlot(props) {
   const dataXY = props.dataXY;
   const isX = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "X");
   const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
-  const size = props.size*1.2;
+  const size = props.size;
   const thicknessloss = props.thicknessloss;
   const thicknessgain = props.thicknessgain;
   const thicknessundermined = props.thicknessundermined;

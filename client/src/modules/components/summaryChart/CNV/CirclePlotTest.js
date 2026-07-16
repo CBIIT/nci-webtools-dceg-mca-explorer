@@ -185,6 +185,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   else adjustWidth = 0.7;
 
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
+  const circleSize = (size > 1000 ? 1000 : size) * 1.2;
   const compareCircleSize = minFigSize;
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;
@@ -2006,14 +2007,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               xs={12}
               md={12}
               lg={12}
-              style={{ width: size > 1000 ? 1000 : size, height: size > 1000 ? 1000 : size + 15 }}>
+              style={{ width: circleSize, height: circleSize + 15 }}>
               <CircosPlot
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
-                size={size > 1000 ? 1000 : size}
+                size={circleSize}
                 // thicknessloss={thicknessloss}
                 // thicknessgain={thicknessgain}
                 // thicknessundermined={thicknessundermined}
