@@ -48,6 +48,7 @@ export const StudyOptions = [
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
   { value: "biovu", label: "BioVU" },
+  { value: "iorra", label: "IORRA" },
 ];
 
 export const SexOptions = [
@@ -81,6 +82,7 @@ export const platformArray = [
   { value: "ONCO Array", label: "ONCO Array" },
   { value: "OMNI 2.5 Million", label: "OMNI 2.5 Million" },
   { value: "OMNI Express", label: "OMNI Express" },
+  { value: "Human OmniExpress Exome v1.2", label: "Human OmniExpress Exome" },
   { value: "Axiom", label: "Axiom" },
   { value: "BiLEVE", label: "BiLEVE" },
   { value: "Illumina MEGAEX array", label: "Illumina MEGAEX array" },

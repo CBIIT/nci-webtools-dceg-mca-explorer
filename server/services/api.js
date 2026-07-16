@@ -201,7 +201,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   //if there is more studies, queryString is an array, if there is only one, study is json object
   if (qdataset !== undefined) {
     const { datasets, filterlist } = getStudy(qdataset, qfilter);
-    searchdataset.push({ terms: { dataset: datasets } });
+    searchdataset.push({ terms: { "dataset.keyword": datasets } });
     qfilter = filterlist;
   }
 
@@ -289,16 +289,16 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
     try {
       const baseMust = [
-        { terms: { "sex.keyword": sexarr } },
-        { terms: { PopID: ancestryarr } },
-        { terms: { smokeNFC: smokearr } },
-        { terms: { "array.keyword": platformarr } },
-        { terms: { priorCancer: priorCancerarr } },
-        { terms: { incidentCancerHem: hemaCancerarr } },
-        { terms: { incidentCancerLymphoid: lymCancerarr } },
-        { terms: { incidentCancerMyeloid: myeCancerarr } },
+        ...buildOptionalTermsFilter("sex.keyword", qsex),
+        ...buildOptionalTermsFilter("PopID", qancestry),
+        ...buildOptionalTermsFilter("smokeNFC", qsmokeNFC),
+        ...buildOptionalTermsFilter("array.keyword", qplatform),
+        ...buildOptionalTermsFilter("priorCancer", qpriorCancer),
+        ...buildOptionalTermsFilter("incidentCancerHem", qhemaCancer),
+        ...buildOptionalTermsFilter("incidentCancerLymphoid", qlymCancer),
+        ...buildOptionalTermsFilter("incidentCancerMyeloid", qmyeCancer),
       ];
-      const baseFilter = [{ range: { age: { gte: minAge, lte: maxAge } } }];
+      const baseFilter = [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }];
 
       const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
         "sampleId",
@@ -456,7 +456,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     } else queryString.push({ match: { chromosome: "chr" + chromesome } });
 
     if (study !== undefined && study.length > 0)
-      queryString.push({ terms: { dataset: parseQueryStr("study", study) } });
+      queryString.push({ terms: { "dataset.keyword": getMcaStudyDatasets(study) } });
 
     let sexarr = getAttributesArray(sex, "sex");
     // console.log(sexarr);
@@ -534,16 +534,16 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       console.log("line 468:", resultsIds.length);
       try {
         const baseMust = [
-          { terms: { "sex.keyword": sexarr } },
-          { terms: { PopID: ancestryarry } },
-          { terms: { smokeNFC: smokearr } },
-          { terms: { "array.keyword": platformarr } },
-          { terms: { priorCancer: priorCancerarr } },
-          { terms: { incidentCancerHem: hemaCancerarr } },
-          { terms: { incidentCancerLymphoid: lymCancerarr } },
-          { terms: { incidentCancerMyeloid: myeCancerarr } },
+          ...buildOptionalTermsFilter("sex.keyword", sex),
+          ...buildOptionalTermsFilter("PopID", ancestry),
+          ...buildOptionalTermsFilter("smokeNFC", smokeNFC),
+          ...buildOptionalTermsFilter("array.keyword", platfomrarray),
+          ...buildOptionalTermsFilter("priorCancer", priorCancer),
+          ...buildOptionalTermsFilter("incidentCancerHem", hemaCancer),
+          ...buildOptionalTermsFilter("incidentCancerLymphoid", lymCancer),
+          ...buildOptionalTermsFilter("incidentCancerMyeloid", myeCancer),
         ];
-        const baseFilter = [{ range: { age: { gte: minAge, lte: maxAge } } }];
+        const baseFilter = [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }];
 
         const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
           "sampleId",
@@ -619,6 +619,43 @@ const parseQueryStr = (name, query) => {
   return values;
 };
 
+const getMcaStudyDatasets = (study) => {
+  const mcaDatasetsByStudy = {
+    plco: ["PLCO_GSA_blood_autosomal_mCAs", "PLCO_GSA_blood_mLOX", "PLCO_GSA_blood_mLOY"],
+    ukbb: ["UKBB_blood_autosomal_mCAs", "UKBB_blood_mLOX", "UKBB_blood_mLOY"],
+    biovu: ["BioVU_blood_autosomal_mCAs", "BioVU_blood_mLOX", "BioVU_blood_mLOY"],
+    jap: ["JAP_BBJ_autosomal_mCAs"],
+    bbj: ["JAP_BBJ_autosomal_mCAs"],
+    iorra: ["IORRA_autosomal_mCAs", "IORRA_mLOX", "IORRA_mLOY"],
+    estbb: ["EstBB_autosomal_mCAs", "EstBB_mCA_Explorer_events"],
+  };
+  const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(mcaDatasetsByStudy).map((value) => ({ value }));
+  const datasets = selectedStudies.flatMap((item) => {
+    if (!item || item.value === "all" || item.value === "X" || item.value === "Y") return [];
+    return mcaDatasetsByStudy[item.value] || [item.value];
+  });
+
+  return datasets.length > 0 ? datasets : Object.values(mcaDatasetsByStudy).flat();
+};
+
+const getDenominatorStudyDatasets = (study) => {
+  const denominatorDatasetsByStudy = {
+    plco: "PLCO_denominator",
+    ukbb: "UKBB_denominator",
+    biovu: "BioVU_denominator",
+    jap: "JAP_BBJ_denominator",
+    bbj: "JAP_BBJ_denominator",
+    iorra: "IORRA_denominator",
+  };
+  const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(denominatorDatasetsByStudy).map((value) => ({ value }));
+  const datasets = selectedStudies
+    .filter((item) => item && item.value !== "all")
+    .map((item) => denominatorDatasetsByStudy[item.value] || item.value)
+    .filter(Boolean);
+
+  return datasets.length > 0 ? datasets : Object.values(denominatorDatasetsByStudy);
+};
+
 apiRouter.post("/opensearch/snpchip", async (request, response) => {
   const { logger } = request.app.locals;
   const search = request.body.search;
@@ -692,13 +729,16 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
   const study = query.study;
   const numsize = 0; //only return the denominator total counts, that is used for fisher_test
 
-  let sexarr = getAttributesArray(sex, "sex"),
-    ancestryarry = getAttributesArray(ancestry, "ancestry"),
-    smokearr = getAttributesArray(smoking, "smoking"),
-    platformarr = getAttributesArray(approach, "array"),
-    { datasets } = getStudy(study, []);
+  const datasets = getDenominatorStudyDatasets(study);
+  const denominatorMust = [
+    { terms: { "dataset.keyword": datasets } },
+    ...buildOptionalTermsFilter("sex.keyword", sex),
+    ...buildOptionalTermsFilter("PopID", ancestry),
+    ...buildOptionalTermsFilter("smokeNFC", smoking),
+    ...buildOptionalTermsFilter("array.keyword", approach),
+  ];
 
-  console.log(datasets, sexarr, ancestryarry, smokearr, platformarr, minAge, maxAge);
+  console.log(datasets, denominatorMust, minAge, maxAge);
   try {
     const result = await client.search({
       index: "denominator_age",
@@ -708,36 +748,13 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
         size: numsize,
         query: {
           bool: {
-            must: [
-              {
-                terms: {
-                  dataset: datasets,
-                },
-              },
-              {
-                terms: {
-                  "sex.keyword": sexarr,
-                },
-              },
-              {
-                terms: {
-                  PopID: ancestryarry,
-                },
-              },
-              {
-                terms: {
-                  smokeNFC: smokearr,
-                },
-              },
-              {
-                terms: {
-                  "array.keyword": platformarr,
-                },
-              },
-            ],
+            must: denominatorMust,
             filter: [
               {
-                range: { age: { gte: minAge, lte: maxAge } },
+                range: { ageMin: { lte: maxAge } },
+              },
+              {
+                range: { ageMax: { gte: minAge } },
               },
             ],
           },
@@ -769,7 +786,16 @@ const getAttributesArray = (atti, name) => {
         AncestryOptions.forEach((a) => (a.value !== "all" ? attiarray.push(a.value) : ""));
         break;
       case "array":
-        attiarray = ["Axiom", "BiLEVE", "Global Screening Array", "OMNI 2.5 Million", "OMNI Express", "ONCO Array", "Illumina MEGAEX array"];
+        attiarray = [
+          "Axiom",
+          "BiLEVE",
+          "Global Screening Array",
+          "OMNI 2.5 Million",
+          "OMNI Express",
+          "Human OmniExpress Exome v1.2",
+          "ONCO Array",
+          "Illumina MEGAEX array",
+        ];
         break;
       case "smoking":
         attiarray = ["0", "1", "2", "9"];
@@ -779,6 +805,23 @@ const getAttributesArray = (atti, name) => {
     }
   }
   return attiarray;
+};
+
+const getSelectedAttributesArray = (atti) => {
+  const attiarray = [];
+  if (atti !== undefined && atti !== null) {
+    atti.forEach((e) => {
+      if (e.value !== "all") {
+        attiarray.push(e.value);
+      }
+    });
+  }
+  return attiarray;
+};
+
+const buildOptionalTermsFilter = (field, atti) => {
+  const values = getSelectedAttributesArray(atti);
+  return values.length > 0 ? [{ terms: { [field]: values } }] : [];
 };
 /*
 const getSex = (sex) => {
@@ -838,7 +881,7 @@ const getSmoking = (smokeNFC) => {
 };*/
 
 const getStudy = (qdataset, qfilter) => {
-  const datasets = [];
+  const datasets = getMcaStudyDatasets(qdataset);
   //if there is more studies, queryString is an array, if there is only one, study is json object
 
   if (qdataset !== undefined) {
@@ -846,10 +889,9 @@ const getStudy = (qdataset, qfilter) => {
       ? qdataset.forEach((element) => {
           element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
           element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
-          element.label ? datasets.push(element.value) : "";
           //element.label?searchdataset.push({match:{dataset:element.value}}):''
         })
-      : datasets.push(qdataset.value);
+      : "";
   }
   const filterlist = qfilter;
   console.log(filterlist);

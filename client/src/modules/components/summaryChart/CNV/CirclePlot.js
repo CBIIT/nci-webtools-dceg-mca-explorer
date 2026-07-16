@@ -10,7 +10,7 @@ export default function CircosPlot(props) {
   const dataXY = props.dataXY;
   const isX = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "X");
   const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
-  const size = props.size;
+  const size = props.size*1.2;
   const thicknessloss = props.thicknessloss;
   const thicknessgain = props.thicknessgain;
   const thicknessundermined = props.thicknessundermined;
@@ -88,9 +88,9 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.05,
                   outerRadius: 0.25,
-                  thickness: circle.undetermined.length < 2000 ? (circle.undetermined.length < 500 ? 2 : 1) : -1,
+                  thickness:  -1.8,
                   margin: 0,
-                  strokeWidth: circle.undetermined.length < 1500 ? 0.5 : 0.2,
+                  strokeWidth: 0,
                   strokeColor: "grey",
                   direction: "out",
                   // logScale: true,
@@ -126,9 +126,9 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.25,
                   outerRadius: 0.5,
-                  thickness: circle.loss.length < 1500 ? (circle.loss.length < 500 ? 2 : 1) : -1,
+                  thickness: -1.8,
                   margin: 0,
-                  strokeWidth: circle.loss.length < 1500 ? 0.5 : 0.2,
+                  strokeWidth: 0,
                   strokeColor: "red",
                   direction: "out",
                   // logScale: true,
@@ -161,9 +161,9 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.5,
                   outerRadius: 0.75,
-                  thickness: circle.loh.length < 1500 ? (circle.loh.length < 500 ? 2 : 1) : -1,
+                  thickness: -1.9,
                   margin: 0,
-                  strokeWidth: circle.loh.length < 1500 ? 0.5 : 0.2,
+                  strokeWidth: 0,
                   strokeColor: "blue",
                   direction: "out",
                   //logScale: true,
@@ -187,9 +187,9 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.75,
                   outerRadius: 1,
-                  thickness: circle.gain.length < 1500 ? (circle.gain.length < 500 ? 2 : 1) : -1,
+                  thickness: -1.85,
                   margin: 0,
-                  strokeWidth: circle.gain.length < 1500 ? 0.5 : 0.2,
+                  strokeWidth: 0,
                   strokeColor: "green",
                   direction: "out",
                   // logScale: true,
