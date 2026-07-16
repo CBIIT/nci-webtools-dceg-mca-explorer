@@ -48,7 +48,9 @@ export const StudyOptions = [
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
   { value: "biovu", label: "BioVU" },
+  { value: "jap", label: "JAP" },
   { value: "iorra", label: "IORRA" },
+  { value: "estbb", label: "EstBB" },
 ];
 
 export const SexOptions = [

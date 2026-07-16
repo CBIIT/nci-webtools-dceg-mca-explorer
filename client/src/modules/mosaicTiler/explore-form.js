@@ -256,7 +256,9 @@ function getRangeError(start, end) {
         { value: "plco", label: "PLCO" },
         { value: "ukbb", label: "UK Biobank" },
         { value: "biovu", label: "BioVU" },
+        { value: "jap", label: "JAP" },
         { value: "iorra", label: "IORRA" },
+        { value: "estbb", label: "EstBB" },
       ];
     }
 
@@ -270,6 +272,8 @@ function getRangeError(start, end) {
           newApproach = platformArray.slice(4, 6);
         } else if (selection[0].value === "biovu") {
           newApproach = platformArray.slice(6, 7);
+        } else if (selection[0].value === "jap") {
+          newApproach = platformArray.slice(3, 4);
         }
       }
       mergeForm({ approach: [] }); // Clear previous selection

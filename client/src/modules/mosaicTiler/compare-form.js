@@ -154,6 +154,9 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
         { value: "plco", label: "PLCO" },
         { value: "ukbb", label: "UK Bio Bank" },
         { value: "biovu", label: "BioVU" },
+        { value: "jap", label: "JAP" },
+        { value: "iorra", label: "IORRA" },
+        { value: "estbb", label: "EstBB" },
       ];
     }
     if (name === "plotType") {
