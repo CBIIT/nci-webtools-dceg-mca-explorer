@@ -462,7 +462,7 @@ export const sources = [
     ],
   },
   {
-    sourcePath: "data/jap/BBJ_autosomalevents.csv",
+    sourcePath: "data/jap/BBJ_autosomalevents_v2.csv",
     table: "sample",
     description: "JAP BBJ autosomal mCAs",
     columns: [

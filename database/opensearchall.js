@@ -3,6 +3,21 @@ import path from "path";
 
 import { sources } from "./sources_v4.js";
 
+const chromosomeLayoutPath = path.resolve("..", "client", "src", "modules", "components", "summaryChart", "CNV", "layout2.json");
+const chromosomeLengths = loadChromosomeLengths(chromosomeLayoutPath);
+
+function loadChromosomeLengths(layoutPath) {
+  const layout = JSON.parse(fs.readFileSync(layoutPath).toString());
+  return layout.reduce((lengths, chromosome) => {
+    lengths[String(chromosome.id)] = Number(chromosome.len);
+    return lengths;
+  }, {});
+}
+
+function normalizeChromosomeId(chromosome) {
+  return String(chromosome || "").replace(/^chr/i, "");
+}
+
 function getSource(filename) {
   return sources.find((e) => e.sourcePath === filename || e.sourcePath.includes(filename));
 }
@@ -157,6 +172,36 @@ function getIndexName(filename) {
   return /denom|denominator/i.test(filename) ? "denominator" : "mcaexplorer";
 }
 
+function validateChromosomeBoundaries(filename, records) {
+  const invalidRecords = records.reduce((invalid, record, index) => {
+    if (record.endGrch38 === undefined) return invalid;
+
+    const chromosome = normalizeChromosomeId(record.chromosome);
+    const chromosomeLength = chromosomeLengths[chromosome];
+    const end = Number(record.endGrch38);
+
+    if (!Number.isFinite(chromosomeLength) || !Number.isFinite(end) || end > chromosomeLength) {
+      invalid.push({
+        row: index + 2,
+        sampleId: record.sampleId,
+        chromosome: record.chromosome,
+        endGrch38: record.endGrch38,
+        chromosomeLength,
+      });
+    }
+
+    return invalid;
+  }, []);
+
+  if (invalidRecords.length === 0) return;
+
+  const examples = invalidRecords
+    .slice(0, 10)
+    .map((record) => JSON.stringify(record))
+    .join("\n");
+  throw new Error(`${filename}: ${invalidRecords.length} rows have endGrch38 outside layout2.json chromosome boundaries\n${examples}`);
+}
+
 function appendBulkJson(fd, filename, records, nextIds) {
   const indexName = getIndexName(filename);
   let id = nextIds[indexName] || 1;
@@ -210,6 +255,7 @@ function removeNewlines(obj) {
     for (const sourceFile of sourceFiles) {
       try {
         const records = await parseSourceFile(sourceFile);
+        validateChromosomeBoundaries(sourceFile, records);
         appendBulkJson(fd, sourceFile, records, nextIds);
         totalRows += records.length;
       } catch (err) {

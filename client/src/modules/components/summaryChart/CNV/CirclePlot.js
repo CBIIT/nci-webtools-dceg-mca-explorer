@@ -23,6 +23,9 @@ export default function CircosPlot(props) {
   const layoutxy = props.layoutxy;
   //const checkMaxLines = props.checkMaxLines;
   const [plotLoaded, setPlotLoaded] = useState(false);
+  const innerRadius = size / 2 - 50
+  const outerRadius = size / 2 - 30;
+  const thickness = -1.9352;
 
   const [plotgain, setPlotgain] = useState(
     circle.gain
@@ -57,8 +60,8 @@ export default function CircosPlot(props) {
           <Circos
             layout={layoutAll}
             config={{
-              innerRadius: size / 2 - 50,
-              outerRadius: size / 2 - 30,
+              innerRadius: innerRadius,
+              outerRadius: outerRadius,
               ticks: {
                 display: true,
                 color: "black",
@@ -88,7 +91,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.05,
                   outerRadius: 0.25,
-                  thickness:  -1.8,
+                  thickness: thickness,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "grey",
@@ -126,7 +129,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.25,
                   outerRadius: 0.5,
-                  thickness: -1.8,
+                  thickness: thickness,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "red",
@@ -161,7 +164,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.5,
                   outerRadius: 0.75,
-                  thickness: -1.9,
+                  thickness: thickness,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "blue",
@@ -187,7 +190,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.75,
                   outerRadius: 1,
-                  thickness: -1.85,
+                  thickness: thickness,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "green",
@@ -211,8 +214,8 @@ export default function CircosPlot(props) {
                 type: HIGHLIGHT,
                 data: band,
                 config: {
-                  innerRadius: size / 2 - 50,
-                  outerRadius: size / 2 - 35,
+                  innerRadius: innerRadius,
+                  outerRadius: outerRadius,
                   opacity: 0.5,
                   color: (d) => d.color,
 
