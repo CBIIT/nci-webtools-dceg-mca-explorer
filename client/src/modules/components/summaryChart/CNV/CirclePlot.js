@@ -25,7 +25,7 @@ export default function CircosPlot(props) {
   const [plotLoaded, setPlotLoaded] = useState(false);
   const innerRadius = size / 2 - 50
   const outerRadius = size / 2 - 30;
-  const thickness = -1.9352;
+  const thickness = -1.936;
 
   const [plotgain, setPlotgain] = useState(
     circle.gain

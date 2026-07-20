@@ -768,7 +768,7 @@ export default function RangeView(props) {
             </Row>
             <Row>{loaded ? checkMaxLines() : ""}</Row>
             <Row>
-              <div className="m-3">
+              <div className="">
                 <div className="d-flex " style={{ justifyContent: "flex-end" }}>
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
