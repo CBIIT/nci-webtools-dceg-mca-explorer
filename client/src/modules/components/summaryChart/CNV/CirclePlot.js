@@ -25,7 +25,8 @@ export default function CircosPlot(props) {
   const [plotLoaded, setPlotLoaded] = useState(false);
   const innerRadius = size / 2 - 50
   const outerRadius = size / 2 - 30;
-  const thickness = -1.936;
+  let thickness = -1.94;
+
 
   const [plotgain, setPlotgain] = useState(
     circle.gain
@@ -51,6 +52,10 @@ export default function CircosPlot(props) {
       .concat(isX ? initialChrX : [])
       .concat(isY ? initialChrY : [])
   );
+
+  if (plotloss.length + plotgain.length + plotloh.length + plotunder.length <10000) {
+    thickness = -1;
+  }
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">

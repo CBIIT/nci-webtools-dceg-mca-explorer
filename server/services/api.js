@@ -300,7 +300,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         ...buildOptionalTermsFilter("incidentCancerLymphoid", qlymCancer),
         ...buildOptionalTermsFilter("incidentCancerMyeloid", qmyeCancer),
       ];
-      const baseFilter = [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }];
+      const baseFilter = [buildAgeOverlapFilter(minAge, maxAge)];
 
       const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
         "sampleId",
@@ -548,7 +548,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
           ...buildOptionalTermsFilter("incidentCancerLymphoid", lymCancer),
           ...buildOptionalTermsFilter("incidentCancerMyeloid", myeCancer),
         ];
-        const baseFilter = [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }];
+        const baseFilter = [buildAgeOverlapFilter(minAge, maxAge)];
 
         const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
           "sampleId",
@@ -756,14 +756,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
         query: {
           bool: {
             must: denominatorMust,
-            filter: [
-              {
-                range: { ageMin: { lte: maxAge } },
-              },
-              {
-                range: { ageMax: { gte: minAge } },
-              },
-            ],
+            filter: [buildAgeOverlapFilter(minAge, maxAge)],
           },
         },
       },
@@ -822,6 +815,33 @@ const buildOptionalTermsFilter = (field, atti) => {
   const values = getSelectedAttributesArray(atti);
   return values.length > 0 ? [{ terms: { [field]: values } }] : [];
 };
+
+const getOverlappingAgeRanges = (minAge, maxAge) => {
+  const ranges = [];
+  const start = Math.floor(minAge / 10) * 10;
+  const end = Math.floor(maxAge / 10) * 10;
+
+  for (let ageStart = start; ageStart <= end; ageStart += 10) {
+    ranges.push(`${ageStart}-${ageStart + 9}`);
+  }
+
+  return ranges;
+};
+
+const buildAgeOverlapFilter = (minAge, maxAge) => ({
+  bool: {
+    should: [
+      {
+        bool: {
+          filter: [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }],
+        },
+      },
+      { terms: { ageRange: getOverlappingAgeRanges(minAge, maxAge) } },
+      { terms: { "ageRange.keyword": getOverlappingAgeRanges(minAge, maxAge) } },
+    ],
+    minimum_should_match: 1,
+  },
+});
 /*
 const getSex = (sex) => {
   let sexarr = [];

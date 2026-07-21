@@ -565,7 +565,9 @@ function getRangeError(start, end) {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Age</Form.Label>
+              <Form.Label>
+                Age
+              </Form.Label>
               <Form.Label style={{ color: "red" }}>
                 {(form.maxAge !== null && form.maxAge !== "" && form.minAge !== null && form.minAge !== "" && parseInt(form.maxAge) <= parseInt(form.minAge))
                   ? "Upper age limit must be greater than lower age limit"
@@ -603,6 +605,13 @@ function getRangeError(start, end) {
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <span style={{ display: "block", fontSize: "0.8rem", fontWeight: 400 }}>
+                    Age bins are included when individual ages are not present and may extend beyond the specified age range
+                  </span>
                 </Col>
               </Row>
             </Form.Group>
