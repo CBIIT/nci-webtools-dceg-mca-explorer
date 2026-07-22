@@ -503,7 +503,7 @@ export const sources = [
       { sourceName: "chrom", name: "chromosome", formatter: chromosomeFormatter() },
       { sourceName: "beg_GRCh38", name: "beginGrch38" },
       { sourceName: "end_GRCh38", name: "endGrch38" },
-      { sourceName: null, name: "type", defaultValue: "Loss" },
+      { sourceName: "type", name: "type" },
       { sourceName: "cf", name: "cf" },
     ],
   },

@@ -457,7 +457,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     setCommonTitle(
       checkGroupTitleForDup()
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -746,7 +746,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setTitleA(
       tempA
         .slice(1)
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -756,7 +756,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setTitleB(
       tempB
         .slice(1)
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -811,7 +811,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
     title = title
-      .replace("Approach", "Array Platform")
+      .replace("Approach", "Detection Approach")
       .replace("Types:", "Copy Number State:")
       .replace("Prior", "Prior ")
       .replace("Hema", "Incident Hematological ")
@@ -1418,7 +1418,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   //console.log(data,dataCompared)
   //only disply 200 events for X and Y
-  const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];
+  const numberOfEvents = Math.min(props.chrx.length, props.chry.length, 2000);
+  const dataXY = [...props.chrx.slice(0, numberOfEvents), ...props.chry.slice(0, numberOfEvents)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   // const linethickness = 0;

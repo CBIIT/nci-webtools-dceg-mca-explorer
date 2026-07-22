@@ -781,8 +781,13 @@ const getSelectedAttributesArray = (atti) => {
     .filter((value) => value !== undefined && value !== null && value !== "" && value !== "all");
 };
 
+const expandSmokingAttributesArray = (values) => {
+  return values.includes("3") ? Array.from(new Set([...values, "1", "2"])) : values;
+};
+
 const getAttributesArray = (atti, name) => {
   let attiarray = getSelectedAttributesArray(atti);
+  if (name === "smoking") attiarray = expandSmokingAttributesArray(attiarray);
   if (attiarray.length === 0) {
     switch (name) {
       case "sex":
@@ -814,7 +819,7 @@ const getAttributesArray = (atti, name) => {
 };
 
 const buildOptionalTermsFilter = (field, atti) => {
-  const values = getSelectedAttributesArray(atti);
+  const values = field === "smokeNFC" ? expandSmokingAttributesArray(getSelectedAttributesArray(atti)) : getSelectedAttributesArray(atti);
   return values.length > 0 ? [{ terms: { [field]: values } }] : [];
 };
 

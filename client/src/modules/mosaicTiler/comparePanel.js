@@ -234,7 +234,7 @@ export default function ComparePanel(props) {
         if (!element.isChecked) {
           if (element.label === " Study") {
             setStudy([]);
-          } else if (element.label === " Array Platform") {
+          } else if (element.label === " Detection Approach") {
             setApproach([]);
           } else if (element.label === " Genotype Sex") {
             setSex([]);
@@ -342,7 +342,7 @@ export default function ComparePanel(props) {
           )}
           {props.compareItem[0].isChecked ? (
             <Form.Group className="mb-3">
-              <Form.Label>Array Platform</Form.Label>
+              <Form.Label>Detection Approach</Form.Label>
               <Select
                 id={props.name + "approach"}
                 aria-label={props.name + "approach"}

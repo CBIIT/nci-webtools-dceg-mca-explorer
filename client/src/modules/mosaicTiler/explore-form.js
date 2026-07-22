@@ -107,15 +107,15 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     } else if (name === "maxAge") {
       if (value === "" || value === null) {
         mergeForm({ [name]: null });
-      } else if (value <= 150) {
+      } else if (value <= 120) {
         mergeForm({ [name]: Number(value) });
       } else {
-        mergeForm({ [name]: 150 });
+        mergeForm({ [name]: 120 });
       }
     } else if (name === "minAge") {
       if (value === "" || value === null) {
         mergeForm({ [name]: null });
-      } else if (value <= 150) {
+      } else if (value <= 120) {
         mergeForm({ [name]: Number(value) });
       } else {
         mergeForm({ [name]: 0 });
@@ -263,21 +263,21 @@ function getRangeError(start, end) {
     }
 
     // When study changes, reset platformArray selection
-    if (name === "study") {
-      let newApproach = [];
-      if (selection.length === 1) {
-        if (selection[0].value === "plco") {
-          newApproach = platformArray.slice(0, 4);
-        } else if (selection[0].value === "ukbb") {
-          newApproach = platformArray.slice(4, 6);
-        } else if (selection[0].value === "biovu") {
-          newApproach = platformArray.slice(6, 7);
-        } else if (selection[0].value === "jap") {
-          newApproach = platformArray.slice(3, 4);
-        }
-      }
-      mergeForm({ approach: [] }); // Clear previous selection
-    }
+    // if (name === "study") {
+    //   let newApproach = [];
+    //   if (selection.length === 1) {
+    //     if (selection[0].value === "plco") {
+    //       newApproach = platformArray.slice(0, 4);
+    //     } else if (selection[0].value === "ukbb") {
+    //       newApproach = platformArray.slice(4, 6);
+    //     } else if (selection[0].value === "biovu") {
+    //       newApproach = platformArray.slice(6, 7);
+    //     } else if (selection[0].value === "jap") {
+    //       newApproach = platformArray.slice(3, 4);
+    //     }
+    //   }
+    //   mergeForm({ approach: [] }); // Clear previous selection
+    // }
 
     if (name === "chrSingle") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
@@ -515,7 +515,7 @@ function getRangeError(start, end) {
               padding: "10px",
             }}>
             <Form.Group className="mb-3" controlId="approach">
-              <Form.Label>Array Platform</Form.Label>
+              <Form.Label>Detection Approach</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="approach"
