@@ -633,6 +633,7 @@ const getMcaStudyDatasets = (study) => {
     bbj: ["JAP_BBJ_autosomal_mCAs"],
     iorra: ["IORRA_autosomal_mCAs", "IORRA_mLOX", "IORRA_mLOY"],
     estbb: ["EstBB_autosomal_mCAs", "EstBB_mCA_Explorer_events"],
+    topmed: ["TOPMed_autosomal_mCAs", "TOPMed_mLOX", "TOPMed_mLOY"],
   };
   const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(mcaDatasetsByStudy).map((value) => ({ value }));
   const datasets = selectedStudies.flatMap((item) => {
@@ -652,6 +653,7 @@ const getDenominatorStudyDatasets = (study) => {
     jap: "JAP_BBJ_denominator",
     bbj: "JAP_BBJ_denominator",
     iorra: "IORRA_denominator",
+    topmed: "TOPMed_denominator",
   };
   const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(denominatorDatasetsByStudy).map((value) => ({ value }));
   const datasets = selectedStudies

@@ -51,6 +51,7 @@ export const StudyOptions = [
   { value: "jap", label: "JAP" },
   { value: "iorra", label: "IORRA" },
   { value: "estbb", label: "EstBB" },
+  { value: "topmed", label: "TOPMed" },
 ];
 
 export const SexOptions = [

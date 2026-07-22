@@ -41,6 +41,8 @@ in data folder: it has
 5. EST
 6. IORRA
 
+7. TOPMED - 0206-07-22
+
 source.js define the columns of files
 opensearch3.js will convert data as json by loading source.js: node convertJsonBiovu.js
 import-opensearch2.js import json into opensearch db, 
