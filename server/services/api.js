@@ -203,7 +203,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   //if there is more studies, queryString is an array, if there is only one, study is json object
   if (qdataset !== undefined) {
     const { datasets, filterlist } = getStudy(qdataset, qfilter);
-    searchdataset.push({ terms: { "dataset.keyword": datasets } });
+    searchdataset.push({ terms: { dataset: datasets } });
     qfilter = filterlist;
   }
 
@@ -213,7 +213,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     let chrarr = [];
     chrarr.push(qchromosomes.value);
     if (qchromosomes.value !== "chrX" && qchromosomes.value !== "chrY")
-      searchdataset.push({ terms: { "chromosome.keyword": chrarr } });
+      searchdataset.push({ terms: { chromosome: chrarr } });
     else {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
@@ -257,12 +257,28 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     });
   }
   // ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
-  filterString.push({ terms: { "type.keyword": qfilter } });
+  filterString.push({ terms: { type: qfilter } });
+  filterString.push(
+    ...buildMergedDenominatorFilters({
+      sex: qsex,
+      ancestry: qancestry,
+      smoking: qsmokeNFC,
+      array: qplatform,
+      priorCancer: qpriorCancer,
+      hemaCancer: qhemaCancer,
+      lymCancer: qlymCancer,
+      myeCancer: qmyeCancer,
+      minAge,
+      maxAge,
+      rawMinAge: request.body.minAge,
+      rawMaxAge: request.body.maxAge,
+    })
+  );
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
 
   try {
     const result = await client.search({
-      index: "mcaexplorer_index",
+      index: "merged",
       body: {
         track_total_hits: true,
         size: 200000,
@@ -275,75 +291,27 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         },
       },
     });
-    const mcaHits = result.body.hits.hits;
+    const mcaHits = result.body.hits.hits.map((item) => item._source);
     const afterMcaMs = nowMs();
     logQueryTiming(logger, "/opensearch/mca", {
-      stage: "afterMcaFetch",
-      counts: { mcaHits: mcaHits.length },
+      stage: "afterMergedFetch",
+      counts: { mergedHits: mcaHits.length },
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    const nominatorHits = mcaHits;
-    console.log(nominatorHits.length);
-
-    const resultsIds = nominatorHits.map((item) => item._source.sampleId);
-    console.log(platformarr);
-    //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
-    try {
-      const baseMust = [
-        ...buildOptionalTermsFilter("sex.keyword", qsex),
-        ...buildOptionalTermsFilter("PopID", qancestry),
-        ...buildOptionalTermsFilter("smokeNFC", qsmokeNFC),
-        ...buildOptionalTermsFilter("array.keyword", qplatform),
-        ...buildOptionalTermsFilter("priorCancer", qpriorCancer),
-        ...buildOptionalTermsFilter("incidentCancerHem", qhemaCancer),
-        ...buildOptionalTermsFilter("incidentCancerLymphoid", qlymCancer),
-        ...buildOptionalTermsFilter("incidentCancerMyeloid", qmyeCancer),
-      ];
-      const baseFilter = [buildAgeOverlapFilter(minAge, maxAge)];
-
-      const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
-        "sampleId",
-        "age",
-        "sex",
-        "smokeNFC",
-        "PopID",
-        "array",
-        "priorCancer",
-        "incidentCancerHem",
-        "incidentCancerLymphoid",
-        "incidentCancerMyeloid",
-      ]);
-      const afterDenominatorMs = nowMs();
-      logQueryTiming(logger, "/opensearch/mca", {
-        stage: "afterDenominatorFetch",
-        counts: { mcaHits: mcaHits.length, denominatorHits: denomHits.length },
-        ms: { elapsed: afterDenominatorMs - requestStartMs, denominatorFetch: afterDenominatorMs - afterMcaMs },
-      });
-
-      const denominatorHits = denomHits;
-      console.log(denominatorHits.length, nominatorHits.length);
-
-      const payload = { nominator: nominatorHits, denominator: denominatorHits };
-      setCachedRouteResponse(cacheKey, payload);
-      response.json(payload);
-      const afterResponseMs = nowMs();
-      logQueryTiming(logger, "/opensearch/mca", {
-        counts: {
-          mcaHits: nominatorHits.length,
-          denominatorHits: denominatorHits.length,
-        },
-        ms: {
-          mcaFetch: afterMcaMs - requestStartMs,
-          denominatorFetch: afterDenominatorMs - afterMcaMs,
-          responseWrite: afterResponseMs - afterDenominatorMs,
-          total: afterResponseMs - requestStartMs,
-        },
-      });
-      //response.json(result.body.hits.hits);
-    } catch (error) {
-      console.error(error);
-    }
+    console.log(mcaHits.length, platformarr);
+    const payload = { merged: mcaHits };
+    setCachedRouteResponse(cacheKey, payload);
+    response.json(payload);
+    const afterResponseMs = nowMs();
+    logQueryTiming(logger, "/opensearch/mca", {
+      counts: { mergedHits: mcaHits.length },
+      ms: {
+        mergedFetch: afterMcaMs - requestStartMs,
+        responseWrite: afterResponseMs - afterMcaMs,
+        total: afterResponseMs - requestStartMs,
+      },
+    });
     ////
   } catch (error) {
     console.error(error);
@@ -414,215 +382,128 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     logQueryTiming(logger, "/opensearch/chromosome", {
       stage: "cacheHit",
       ms: { elapsed: nowMs() - requestStartMs },
-      counts: {
-        nominatorRows: Array.isArray(cachedResponse.nominator) ? cachedResponse.nominator.length : 0,
-        denominatorRows: Array.isArray(cachedResponse.denominator) ? cachedResponse.denominator.length : 0,
-      },
+      counts: { mergedRows: Array.isArray(cachedResponse.merged) ? cachedResponse.merged.length : 0 },
     });
     response.json(cachedResponse);
     return;
   }
+
   const group = request.body;
-  if (group != undefined) {
-    //console.log("query group:", group.maxAge);
-    const study = group.study;
-    const platfomrarray = group.array;
-    const chromesome = group.chr;
-    const sex = group.sex;
-    const ancestry = group.ancestry;
-    const maxAge = group.maxAge !== undefined ? Number(group.maxAge) : 100;
-    const minAge = group.minAge !== undefined ? Number(group.minAge) : 0;
-    let maxcf = Number(group.maxcf) / 100.0;
-    let mincf = Number(group.mincf) / 100.0;
-    const types = group.types;
-    const start = group.start ? Number(group.start) : 0;
-    const end = group.end ? Number(group.end) : 9999999999;
-    const smokeNFC = group.smoking;
-    const priorCancer = group.priorCancer;
-    const hemaCancer = group.hemaCancer;
-    const lymCancer = group.lymCancer;
-    const myeCancer = group.myeCancer;
+  if (group === undefined) {
+    response.json({ merged: [] });
+    return;
+  }
 
-    console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
-    const dataset = [];
-    const queryString = [];
-    let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
-    //serach only rows which has chromosome, this will exclude plcoDenominator
-    //queryString.push({ terms: { "type.keyword": qfilter } });
-    if (chromesome === "Y") {
-      queryString.push({ terms: { "type.keyword": ["mLOY"] } });
-      queryString.push({ match: { "chromosome.keyword": "chrX" } });
-    } else if (chromesome === "X") {
-      queryString.push({ match: { "chromosome.keyword": "chrX" } });
-      queryString.push({ terms: { "type.keyword": ["mLOX"] } });
-    } else queryString.push({ match: { chromosome: "chr" + chromesome } });
+  const study = group.study;
+  const platfomrarray = group.array;
+  const chromesome = group.chr;
+  const sex = group.sex;
+  const ancestry = group.ancestry;
+  const maxAge = group.maxAge !== undefined ? Number(group.maxAge) : 100;
+  const minAge = group.minAge !== undefined ? Number(group.minAge) : 0;
+  let maxcf = group.maxcf ? Number(group.maxcf) / 100.0 : NaN;
+  let mincf = group.mincf ? Number(group.mincf) / 100.0 : NaN;
+  const types = group.types;
+  const start = group.start ? Number(group.start) : 0;
+  const end = group.end ? Number(group.end) : 9999999999;
+  const smokeNFC = group.smoking;
+  const priorCancer = group.priorCancer;
+  const hemaCancer = group.hemaCancer;
+  const lymCancer = group.lymCancer;
+  const myeCancer = group.myeCancer;
 
-    if (study !== undefined && study.length > 0)
-      queryString.push({ terms: { "dataset.keyword": getMcaStudyDatasets(study) } });
+  console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+  const queryString = [];
+  if (chromesome === "Y") {
+    queryString.push({ terms: { type: ["mLOY"] } });
+    queryString.push({ match: { chromosome: "chrX" } });
+  } else if (chromesome === "X") {
+    queryString.push({ match: { chromosome: "chrX" } });
+    queryString.push({ terms: { type: ["mLOX"] } });
+  } else {
+    queryString.push({ match: { chromosome: "chr" + chromesome } });
+  }
 
-    let sexarr = getAttributesArray(sex, "sex");
-    // console.log(sexarr);
-    //add query for ancestry
-    let ancestryarry = getAttributesArray(ancestry, "ancestry");
-    //console.log(ancestryarry);
-    let smokearr = getAttributesArray(smokeNFC, "smoking");
-    let platformarr = getAttributesArray(platfomrarray, "array");
-    let priorCancerarr = getAttributesArray(priorCancer, "priorcancer");
-    let hemaCancerarr = getAttributesArray(hemaCancer, "hemacancer");
-    let lymCancerarr = getAttributesArray(lymCancer, "lymcancer");
-    let myeCancerarr = getAttributesArray(myeCancer, "myecancer");
+  if (study !== undefined && study.length > 0) {
+    queryString.push({ terms: { dataset: getMcaStudyDatasets(study) } });
+  }
 
-    // console.log(myeCancerarr,priorCancerarr)
-    let atemp = [];
-    //add query for types
-    if (types !== undefined) {
-      types.forEach((t) => {
-        const value = getSelectionValue(t);
-        if (value !== "all") {
-          const label = getSelectionLabel(t);
-          if (label !== undefined && label !== null && label !== "") atemp.push(label);
-        } else if (value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
-      });
-    }
-    if (chromesome !== "X" && chromesome !== "Y") {
-      if (atemp.length > 0) queryString.push({ terms: { "type.keyword": atemp } });
-      else atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
-    }
+  let atemp = [];
+  if (types !== undefined) {
+    types.forEach((type) => {
+      const value = getSelectionValue(type);
+      if (value !== "all") {
+        const label = getSelectionLabel(type);
+        if (label !== undefined && label !== null && label !== "") atemp.push(label);
+      } else if (value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
+    });
+  }
+  if (chromesome !== "X" && chromesome !== "Y" && atemp.length > 0) {
+    queryString.push({ terms: { type: atemp } });
+  }
 
-    //add query for cf
-    //query cf within the range, add query range in filter
-    if (!Number.isNaN(mincf) || !Number.isNaN(maxcf)) {
-      if (Number.isNaN(mincf)) mincf = "0";
-      if (Number.isNaN(maxcf)) maxcf = "1";
-      queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
-    }
-    console.log(queryString);
-    try {
-      const result = await client.search({
-        index: "mcaexplorer_index", //this index change beginGrch38 and endGrch38 as long type
-        body: {
-          track_total_hits: true,
-          size: 200000,
-          query: {
-            bool: {
-              filter: [
-                {
-                  range: {
-                    beginGrch38: {
-                      gte: start,
-                    },
-                  },
-                },
-                {
-                  range: {
-                    endGrch38: {
-                      lte: end,
-                    },
-                  },
-                },
-              ],
-              must: queryString,
-            },
+  if (!Number.isNaN(mincf) || !Number.isNaN(maxcf)) {
+    if (Number.isNaN(mincf)) mincf = "0";
+    if (Number.isNaN(maxcf)) maxcf = "1";
+    queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
+  }
+
+  try {
+    const result = await client.search({
+      index: "merged",
+      body: {
+        track_total_hits: true,
+        size: 200000,
+        query: {
+          bool: {
+            filter: [
+              { range: { beginGrch38: { gte: start } } },
+              { range: { endGrch38: { lte: end } } },
+              ...buildMergedDenominatorFilters({
+                sex,
+                ancestry,
+                smoking: smokeNFC,
+                array: platfomrarray,
+                priorCancer,
+                hemaCancer,
+                lymCancer,
+                myeCancer,
+                minAge,
+                maxAge,
+                rawMinAge: group.minAge,
+                rawMaxAge: group.maxAge,
+              }),
+            ],
+            must: queryString,
           },
         },
-      });
-      const mcaHits = result.body.hits.hits;
-      const afterMcaMs = nowMs();
-      logQueryTiming(logger, "/opensearch/chromosome", {
-        stage: "afterMcaFetch",
-        counts: { mcaHits: mcaHits.length },
-        ms: { elapsed: afterMcaMs - requestStartMs },
-      });
-      //  console.log(queryString);
-      const nominatorHits = mcaHits;
-      const resultsIds = nominatorHits.map((item) => item._source.sampleId);
-      console.log("line 468:", resultsIds.length);
-      try {
-        const baseMust = [
-          ...buildOptionalTermsFilter("sex.keyword", sex),
-          ...buildOptionalTermsFilter("PopID", ancestry),
-          ...buildOptionalTermsFilter("smokeNFC", smokeNFC),
-          ...buildOptionalTermsFilter("array.keyword", platfomrarray),
-          ...buildOptionalTermsFilter("priorCancer", priorCancer),
-          ...buildOptionalTermsFilter("incidentCancerHem", hemaCancer),
-          ...buildOptionalTermsFilter("incidentCancerLymphoid", lymCancer),
-          ...buildOptionalTermsFilter("incidentCancerMyeloid", myeCancer),
-        ];
-        const baseFilter = [buildAgeOverlapFilter(minAge, maxAge)];
+      },
+    });
+    const mcaHits = result.body.hits.hits.map((item) => item._source);
+    const afterMcaMs = nowMs();
+    logQueryTiming(logger, "/opensearch/chromosome", {
+      stage: "afterMergedFetch",
+      counts: { mergedHits: mcaHits.length },
+      ms: { elapsed: afterMcaMs - requestStartMs },
+    });
 
-        const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
-          "sampleId",
-          "age",
-          "sex",
-          "smokeNFC",
-          "PopID",
-          "array",
-          "priorCancer",
-          "incidentCancerHem",
-          "incidentCancerLymphoid",
-          "incidentCancerMyeloid",
-        ]);
-        const afterDenominatorMs = nowMs();
-        logQueryTiming(logger, "/opensearch/chromosome", {
-          stage: "afterDenominatorFetch",
-          counts: { mcaHits: mcaHits.length, denominatorHits: denomHits.length },
-          ms: { elapsed: afterDenominatorMs - requestStartMs, denominatorFetch: afterDenominatorMs - afterMcaMs },
-        });
-
-        const denominatorHits = denomHits;
-        console.log("denominator", denominatorHits.length, "nominator:", nominatorHits.length);
-
-        const payload = { nominator: nominatorHits, denominator: denominatorHits };
-        setCachedRouteResponse(cacheKey, payload);
-        response.json(payload);
-        const afterResponseMs = nowMs();
-        logQueryTiming(logger, "/opensearch/chromosome", {
-          counts: {
-            mcaHits: nominatorHits.length,
-            denominatorHits: denominatorHits.length,
-          },
-          ms: {
-            mcaFetch: afterMcaMs - requestStartMs,
-            denominatorFetch: afterDenominatorMs - afterMcaMs,
-            responseWrite: afterResponseMs - afterDenominatorMs,
-            total: afterResponseMs - requestStartMs,
-          },
-        });
-        //response.json(result.body.hits.hits);
-      } catch (error) {
-        console.error(error);
-      }
-
-      //console.log(result.body.hits.hits.length);
-      //response.json(result.body.hits.hits);
-    } catch (error) {
-      console.error(error);
-    }
+    const payload = { merged: mcaHits };
+    setCachedRouteResponse(cacheKey, payload);
+    response.json(payload);
+    const afterResponseMs = nowMs();
+    logQueryTiming(logger, "/opensearch/chromosome", {
+      counts: { mergedHits: mcaHits.length },
+      ms: {
+        mergedFetch: afterMcaMs - requestStartMs,
+        responseWrite: afterResponseMs - afterMcaMs,
+        total: afterResponseMs - requestStartMs,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "OpenSearch chromosome query failed" });
   }
 });
-
-const parseQueryStr = (name, query) => {
-  // query.forEach((e) => {
-  //   e.value === "male" ? sexarr.push("M") : "";
-  //   e.value === "female" ? sexarr.push("F") : "";
-  // });
-  const values = [];
-  query.forEach((e) => {
-    if (e.value === "male" || e.value === "female") {
-      values.push(e.value.substring(0, 1).toUpperCase());
-    } else values.push(e.value);
-    if (e.value === "all") {
-      if (name === "sex") {
-        values.push("M");
-        values.push("F");
-      } else if (name === "ancestry") {
-        values.push();
-      }
-    }
-  });
-  //console.log(values);
-  return values;
-};
 
 const getMcaStudyDatasets = (study) => {
   const mcaDatasetsByStudy = {
@@ -823,6 +704,8 @@ const buildOptionalTermsFilter = (field, atti) => {
   return values.length > 0 ? [{ terms: { [field]: values } }] : [];
 };
 
+const hasProvidedFilterValue = (value) => value !== undefined && value !== null && value !== "";
+
 const getOverlappingAgeRanges = (minAge, maxAge) => {
   const ranges = [];
   const start = Math.floor(minAge / 10) * 10;
@@ -849,6 +732,38 @@ const buildAgeOverlapFilter = (minAge, maxAge) => ({
     minimum_should_match: 1,
   },
 });
+
+const buildMergedDenominatorFilters = ({
+  sex,
+  ancestry,
+  smoking,
+  array,
+  priorCancer,
+  hemaCancer,
+  lymCancer,
+  myeCancer,
+  minAge,
+  maxAge,
+  rawMinAge,
+  rawMaxAge,
+}) => {
+  const filters = [
+    ...buildOptionalTermsFilter("sex", sex),
+    ...buildOptionalTermsFilter("PopID", ancestry),
+    ...buildOptionalTermsFilter("smokeNFC", smoking),
+    ...buildOptionalTermsFilter("array", array),
+    ...buildOptionalTermsFilter("priorCancer", priorCancer),
+    ...buildOptionalTermsFilter("incidentCancerHem", hemaCancer),
+    ...buildOptionalTermsFilter("incidentCancerLymphoid", lymCancer),
+    ...buildOptionalTermsFilter("incidentCancerMyeloid", myeCancer),
+  ];
+
+  if (hasProvidedFilterValue(rawMinAge) || hasProvidedFilterValue(rawMaxAge)) {
+    filters.push(buildAgeOverlapFilter(minAge, maxAge));
+  }
+
+  return filters;
+};
 /*
 const getSex = (sex) => {
   let sexarr = [];

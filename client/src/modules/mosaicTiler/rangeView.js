@@ -51,6 +51,7 @@ export default function RangeView(props) {
   const [allDenominator, setAllDenominator] = useState(0);
   const [violinData, setViolinData] = useState([]);
   const circleRef = useRef(null);
+  const latestQueryTimingRef = useRef(null);
 
   const study_value = form.study;
   let query_value = [];
@@ -73,6 +74,14 @@ export default function RangeView(props) {
   ]);
 
   async function handleSubmit(qdataset, qform) {
+    const totalStartMs = performance.now();
+    const timing = {
+      route: "rangeView",
+      previousBaselineMs: {
+        originalApprox: 120000,
+        preMergedApiExample: 9674,
+      },
+    };
     setGain([]);
     setLoh([]);
     setLoss([]);
@@ -103,10 +112,19 @@ export default function RangeView(props) {
       myeCancer: qform.myeCancer,
     };
 
-    const [response, allresponseDenominator] = await Promise.all([
-      axios.post("api/opensearch/mca", query),
-      axios.post("api/opensearch/denominator", query),
-    ]);
+    const apiStartMs = performance.now();
+    const mcaStartMs = performance.now();
+    const mcaRequest = axios.post("api/opensearch/mca", query).finally(() => {
+      timing.mcaApiMs = Math.round(performance.now() - mcaStartMs);
+    });
+    const denominatorStartMs = performance.now();
+    const denominatorRequest = axios.post("api/opensearch/denominator", query).finally(() => {
+      timing.denominatorApiMs = Math.round(performance.now() - denominatorStartMs);
+    });
+    const [response, allresponseDenominator] = await Promise.all([mcaRequest, denominatorRequest]);
+    timing.apiMs = Math.round(performance.now() - apiStartMs);
+
+    const transformStartMs = performance.now();
     let gainTemp = [];
     let lossTemp = [];
     let lohTemp = [];
@@ -162,6 +180,9 @@ export default function RangeView(props) {
               };
           });
         })();
+    timing.responseShape = Array.isArray(response.data.merged) ? "merged" : "legacy";
+    timing.mergedRows = mergedResult.length;
+    timing.allDenominator = allresponseDenominator.data;
     //console.log(mergedResult.length);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
     // console.log(form);
@@ -224,9 +245,18 @@ export default function RangeView(props) {
       if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
     }
     console.log(gain.length);
+    timing.transformMs = Math.round(performance.now() - transformStartMs);
+    const stateStartMs = performance.now();
     setChrX(chrXTemp);
     setChrY(chrYTemp);
     setLoaded(true);
+    timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
+    timing.totalMs = Math.round(performance.now() - totalStartMs);
+    timing.improvementVsOriginalApprox = `${(timing.previousBaselineMs.originalApprox / Math.max(timing.totalMs, 1)).toFixed(1)}x faster`;
+    timing.improvementVsPreMergedApiExample = `${(timing.previousBaselineMs.preMergedApiExample / Math.max(timing.apiMs, 1)).toFixed(1)}x API faster`;
+    latestQueryTimingRef.current = timing;
+    console.log(`[rangeView timing summary]\n${JSON.stringify(timing, null, 2)}`);
+    console.table({ rangeViewTiming: timing });
   }
 
   useEffect(() => {
@@ -546,7 +576,13 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    console.log(data.length);
+    const handoffTiming = latestQueryTimingRef.current;
+    console.log(`[rangeView table handoff]\n${JSON.stringify({
+      rows: data.length,
+      queryTotalMs: handoffTiming?.totalMs,
+      apiMs: handoffTiming?.apiMs,
+      responseShape: handoffTiming?.responseShape,
+    }, null, 2)}`);
     setTableData(data);
     getViolinData(data);
   };

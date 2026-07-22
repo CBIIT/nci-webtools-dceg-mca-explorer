@@ -157,6 +157,7 @@ delete_index() {
   echo "Failed to delete $index_name with HTTP $status_code."
   if [[ "$status_code" == "401" || "$status_code" == "403" ]]; then
     echo "The OpenSearch user '${OS_USER:-<none>}' does not have delete permission for $index_name."
+    echo "Run again with --admin, or set OPENSEARCH_USERNAME/OPENSEARCH_PASSWORD to a user that can delete and create indexes."
   fi
   printf '%s\n' "$response" | tail -n +2
   exit 1
@@ -164,7 +165,7 @@ delete_index() {
 
 echo "OpenSearch endpoint: $OS"
 echo "OpenSearch user: ${OS_USER:-<none>}"
-echo "This will delete and recreate: mcaexplorer, denominator, mcaexplorer_index, denominator_age"
+echo "This will delete and recreate: mcaexplorer, denominator, merged, mcaexplorer_index, denominator_age"
 
 if [[ "$YES" != "1" ]]; then
   read -r -p "Continue? Type 'yes' to proceed: " answer
@@ -198,11 +199,58 @@ delete_index "mcaexplorer_index"
 echo
 delete_index "denominator_age"
 echo
+delete_index "merged"
+echo
 
 echo "Creating raw indexes..."
 curl_os -X PUT "$OS/mcaexplorer"
 echo
 curl_os -X PUT "$OS/denominator"
+echo
+curl_os -X PUT "$OS/merged" -d '{
+  "mappings": {
+    "properties": {
+      "sampleId": { "type": "keyword" },
+      "dataset": { "type": "keyword" },
+      "denominatorDataset": { "type": "keyword" },
+      "chromosome": { "type": "keyword" },
+      "type": { "type": "keyword" },
+      "beginGrch38": {
+        "type": "long",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "endGrch38": {
+        "type": "long",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "age": { "type": "integer" },
+      "ageMin": { "type": "integer" },
+      "ageMax": { "type": "integer" },
+      "ageRange": { "type": "keyword" },
+      "sex": { "type": "keyword" },
+      "smokeNFC": { "type": "keyword" },
+      "PopID": { "type": "keyword" },
+      "dnaSource": { "type": "keyword" },
+      "array": { "type": "keyword" },
+      "priorCancer": { "type": "keyword" },
+      "incidentCancerHem": { "type": "keyword" },
+      "incidentCancerMyeloid": { "type": "keyword" },
+      "incidentCancerLymphoid": { "type": "keyword" },
+      "callRate": { "type": "keyword" },
+      "bafAuto": { "type": "keyword" }
+    }
+  }
+}'
 echo
 
 echo "Importing data/all.json into raw indexes..."
@@ -214,6 +262,9 @@ curl_os "$OS/mcaexplorer/_count"
 echo
 echo "denominator:"
 curl_os "$OS/denominator/_count"
+echo
+echo "merged:"
+curl_os "$OS/merged/_count"
 echo
 
 echo "Setting mcaexplorer max_result_window..."
@@ -300,6 +351,12 @@ curl_os -X PUT "$OS/denominator_age/_settings" -d '{
 }'
 echo
 
+echo "Setting merged max_result_window..."
+curl_os -X PUT "$OS/merged/_settings" -d '{
+  "index.max_result_window": 200000
+}'
+echo
+
 echo "Final counts:"
 echo "mcaexplorer:"
 curl_os "$OS/mcaexplorer/_count"
@@ -312,6 +369,9 @@ curl_os "$OS/mcaexplorer_index/_count"
 echo
 echo "denominator_age:"
 curl_os "$OS/denominator_age/_count"
+echo
+echo "merged:"
+curl_os "$OS/merged/_count"
 echo
 
 echo "Index list:"
