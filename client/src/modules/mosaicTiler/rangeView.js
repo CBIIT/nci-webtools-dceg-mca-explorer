@@ -11,6 +11,20 @@ import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
 
+const emptyPlotData = {
+  gain: [],
+  loss: [],
+  loh: [],
+  undetermined: [],
+  chrX: [],
+  chrY: [],
+  allValues: [],
+};
+
+const ancestryLabelByValue = new Map(AncestryOptions.map((item) => [item.value, item.label]));
+const smokeLabelByValue = new Map(smokeNFC.map((item) => [item.value, item.label]));
+const sexLabelByValue = new Map(SexOptions.map((item) => [item.value, item.label]));
+
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
   const [tab, setTab] = useState("summary");
@@ -40,12 +54,7 @@ export default function RangeView(props) {
 
   const [figureHeight, setFigureHeight] = useState(chartHeight);
 
-  const [gain, setGain] = useState([]);
-  const [loss, setLoss] = useState([]);
-  const [loh, setLoh] = useState([]);
-  const [undetermined, setUndetermined] = useState([]);
-  const [chrX, setChrX] = useState([]);
-  const [chrY, setChrY] = useState([]);
+  const [plotData, setPlotData] = useState(emptyPlotData);
   const [tableData, setTableData] = useState([]); //for compare data
   const [loaded, setLoaded] = useState(false);
   const [allDenominator, setAllDenominator] = useState(0);
@@ -82,12 +91,7 @@ export default function RangeView(props) {
         preMergedApiExample: 9674,
       },
     };
-    setGain([]);
-    setLoh([]);
-    setLoss([]);
-    setUndetermined([]);
-    setChrX([]);
-    setChrY([]);
+    setPlotData(emptyPlotData);
     setLoaded(false);
     // setForm({ ...form, chrX: false, chrY: false });
     //setLoading(true)
@@ -125,14 +129,23 @@ export default function RangeView(props) {
     timing.apiMs = Math.round(performance.now() - apiStartMs);
 
     const transformStartMs = performance.now();
-    let gainTemp = [];
-    let lossTemp = [];
-    let lohTemp = [];
-    let undeterTemp = [];
+    const nextPlotData = {
+      gain: [],
+      loss: [],
+      loh: [],
+      undetermined: [],
+      chrX: [],
+      chrY: [],
+      allValues: [],
+    };
+    const allBuckets = {
+      gain: [],
+      loss: [],
+      loh: [],
+      undetermined: [],
+    };
     //console.log(response.data.denominator.length, allresponseDenominator.data);
     setAllDenominator(allresponseDenominator.data);
-    const chrXTemp = [];
-    const chrYTemp = [];
     const mergedResult = Array.isArray(response.data.merged)
       ? response.data.merged
       : (() => {
@@ -188,67 +201,68 @@ export default function RangeView(props) {
     // console.log(form);
     mergedResult.forEach((r) => {
       //if (r._source !== null) {
-      const d = r;
-      if (d.cf != "nan") {
+      if (r.cf != "nan") {
+        const d = { ...r };
         d.block_id = d.chromosome.substring(3);
         d.value = d.cf === "NA" ? "" : d.cf;
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
         if (d.PopID !== undefined) {
-          const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
-          d.PopID = dancestry !== undefined ? dancestry[0].label : "";
+          d.PopID = ancestryLabelByValue.get(d.PopID) || "";
         }
         if (d.smokeNFC !== undefined) {
-          const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
-          d.smokeNFC = dsmoking !== undefined && dsmoking.length > 0 ? dsmoking[0].label : "NA";
+          d.smokeNFC = smokeLabelByValue.get(d.smokeNFC) || "NA";
         }
         if (d.sex !== undefined) {
-          const dsex = SexOptions.filter((a) => a.value === d.sex);
-          d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
+          d.sex = sexLabelByValue.get(d.sex) || "NA";
         }
 
         //d.sex = d.sex === 0?"F":"M"
         //console.log(d)
         if (d.chromosome != "chrX") {
-          if (d.type === "Gain") gainTemp.push(d);
-          else if (d.type === "CN-LOH") lohTemp.push(d);
-          else if (d.type === "Loss") lossTemp.push(d);
-          else if (d.type === "Undetermined") undeterTemp.push(d);
+          if (d.type === "Gain") allBuckets.gain.push(d);
+          else if (d.type === "CN-LOH") allBuckets.loh.push(d);
+          else if (d.type === "Loss") allBuckets.loss.push(d);
+          else if (d.type === "Undetermined") allBuckets.undetermined.push(d);
         }
         //for whole, and select X or Y
         else {
           if (d.type === "mLOX") {
-            chrXTemp.push(d);
             d.block_id = "X";
+            nextPlotData.chrX.push(d);
             //lossTemp.push(d);
           }
           if (d.type === "mLOY") {
-            chrYTemp.push(d);
             d.block_id = "Y";
+            nextPlotData.chrY.push(d);
             //lossTemp.push(d);
           }
         }
       }
       //}
     });
-    // setLoading(false)
     if (form.types.find((e) => e.value === "all")) {
-      setGain(gainTemp);
-      setLoss(lossTemp);
-      setLoh(lohTemp);
-      setUndetermined(undeterTemp);
+      nextPlotData.gain = allBuckets.gain;
+      nextPlotData.loss = allBuckets.loss;
+      nextPlotData.loh = allBuckets.loh;
+      nextPlotData.undetermined = allBuckets.undetermined;
     } else {
-      if (form.types.find((e) => e.value === "gain")) setGain(gainTemp);
-      if (form.types.find((e) => e.value === "loss")) setLoss(lossTemp);
-      if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
-      if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
+      if (form.types.find((e) => e.value === "gain")) nextPlotData.gain = allBuckets.gain;
+      if (form.types.find((e) => e.value === "loss")) nextPlotData.loss = allBuckets.loss;
+      if (form.types.find((e) => e.value === "loh")) nextPlotData.loh = allBuckets.loh;
+      if (form.types.find((e) => e.value === "undetermined")) nextPlotData.undetermined = allBuckets.undetermined;
     }
-    console.log(gain.length);
+    nextPlotData.allValues = nextPlotData.gain
+      .concat(nextPlotData.loss)
+      .concat(nextPlotData.loh)
+      .concat(nextPlotData.undetermined)
+      .concat(nextPlotData.chrX)
+      .concat(nextPlotData.chrY);
+    console.log(nextPlotData.gain.length);
     timing.transformMs = Math.round(performance.now() - transformStartMs);
     const stateStartMs = performance.now();
-    setChrX(chrXTemp);
-    setChrY(chrYTemp);
+    setPlotData(nextPlotData);
     setLoaded(true);
     timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
     timing.totalMs = Math.round(performance.now() - totalStartMs);
@@ -263,10 +277,10 @@ export default function RangeView(props) {
     setClickedCounter(clickedCounter + 1);
     //console.log(chrX);
     if (form.plotType.value === "static") {
-      setAllValue([...allValues]);
+      setAllValue(plotData.allValues);
     }
-    handleDataChange(allValues);
-  }, [gain, loss, loh, undetermined, chrX, chrY]);
+    handleDataChange(plotData.allValues);
+  }, [plotData]);
 
   //const chromosomes = form.chromosome.map((e) => e.label);
   //const chromosomes = form.chromosome;
@@ -286,7 +300,7 @@ export default function RangeView(props) {
   // const sortX = chrX.filter((e) => chromosomes.includes("X")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
   // const sortY = chrY.filter((e) => chromosomes.includes("Y")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
   // const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
-  const allValues = gain.concat(loss).concat(loh).concat(undetermined).concat(chrX).concat(chrY);
+  const { gain, loss, loh, undetermined, chrX, chrY, allValues } = plotData;
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     var chromoIdString = chromoId + "";
