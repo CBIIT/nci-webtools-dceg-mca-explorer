@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { flushSync } from "react-dom";
 import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
@@ -96,10 +95,8 @@ export default function RangeView(props) {
       },
     };
     queryInFlightRef.current = true;
-    flushSync(() => {
-      setPlotData(emptyPlotData);
-      setLoaded(false);
-    });
+    setPlotData(emptyPlotData);
+    setLoaded(false);
     await waitForNextPaint();
     // setForm({ ...form, chrX: false, chrY: false });
     //setLoading(true)

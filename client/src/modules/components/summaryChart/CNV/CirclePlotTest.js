@@ -45,6 +45,7 @@ function changeBackground(track, chromesomeId, opacity) {
     if (svgDoc.nodeName === "g") {
       if (svgDoc.__data__.key === chromesomeId) {
         var s = svgDoc.querySelector(".background");
+        if (!s) continue;
         //s.setAttribute("fill","white")
         s.setAttribute("opacity", opacity);
       }
@@ -276,6 +277,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
+          if (!bck) return;
 
           bck.addEventListener("mouseover", () => {
             // console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id

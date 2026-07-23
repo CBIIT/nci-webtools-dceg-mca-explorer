@@ -1,8 +1,14 @@
-import { useEffect, useRef, useState } from "react";
 import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { Container } from "react-bootstrap";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
+
+const ringBackgrounds = [
+  { innerRadius: 0.05, outerRadius: 0.25, color: "#808080" },
+  { innerRadius: 0.25, outerRadius: 0.5, color: "#f8787b" },
+  { innerRadius: 0.5, outerRadius: 0.75, color: "#0095ff" },
+  { innerRadius: 0.75, outerRadius: 1, color: "#2fc405" },
+];
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -12,42 +18,19 @@ export default function CircosPlot(props) {
   const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
 
   const size = props.size;
-  const thicknessloss = -1.95;
-  const thicknessgain = -1.95;
-  const thicknessundermined = -1.95;
-  const thicknessloh = -1.95;
+  const thickness = -1.94;
   const circle = props.circle;
   const circleRef = props.circleRef;
   const handleEnter = props.handleEnter;
   const hovertip = props.hovertip;
-  const classCircle = props.circleClass;
-  const layoutxy = props.layoutxy;
   const titleHeight = props.maxtitleHeight;
+  const innerRadius = size / 2 - 50;
+  const outerRadius = size / 2 - 30;
 
-  const [plotgain, setPlotgain] = useState(
-    circle.gain
-      .concat(initialData)
-      .concat(isX ? initialChrX : [])
-      .concat(isY ? initialChrY : [])
-  );
-  const [plotloh, setPlotloh] = useState(
-    circle.loh
-      .concat(initialData)
-      .concat(isX ? initialChrX : [])
-      .concat(isY ? initialChrY : [])
-  );
-  const [plotloss, setPlotloss] = useState(
-    circle.loss
-      .concat(initialData)
-      .concat(isX ? initialChrX : [])
-      .concat(isY ? initialChrY : [])
-  );
-  const [plotunder, setPlotunder] = useState(
-    circle.undetermined
-      .concat(initialData)
-      .concat(isX ? initialChrX : [])
-      .concat(isY ? initialChrY : [])
-  );
+  const plotgain = circle.gain.concat(initialData).concat(isX ? initialChrX : []).concat(isY ? initialChrY : []);
+  const plotloh = circle.loh.concat(initialData).concat(isX ? initialChrX : []).concat(isY ? initialChrY : []);
+  const plotloss = circle.loss.concat(initialData).concat(isX ? initialChrX : []).concat(isY ? initialChrY : []);
+  const plotunder = circle.undetermined.concat(initialData).concat(isX ? initialChrX : []).concat(isY ? initialChrY : []);
 
   return (
     <>
@@ -90,8 +73,8 @@ export default function CircosPlot(props) {
             <Circos
               layout={layoutAll}
               config={{
-                innerRadius: size / 2 - 50,
-                outerRadius: size / 2 - 30,
+                innerRadius: innerRadius,
+                outerRadius: outerRadius,
                 ticks: {
                   display: true,
                   color: "black",
@@ -115,24 +98,33 @@ export default function CircosPlot(props) {
                 },
               }}
               tracks={[
+                ...ringBackgrounds.map((background) => ({
+                  type: HIGHLIGHT,
+                  data: band,
+                  config: {
+                    innerRadius: background.innerRadius,
+                    outerRadius: background.outerRadius,
+                    opacity: 0.5,
+                    color: background.color,
+                  },
+                })),
                 {
                   type: STACK,
                   data: plotunder,
                   config: {
                     innerRadius: 0.05,
                     outerRadius: 0.25,
-                    thickness: thicknessundermined,
+                    thickness: thickness,
                     margin: 0,
-                    strokeWidth: 1,
+                    strokeWidth: 0,
                     strokeColor: "grey",
                     direction: "out",
-                    logScale: true,
-                    color: "grey",
+                    color: "#585858",
                     backgrounds: [
                       {
                         start: 0,
                         end: 1,
-                        color: "grey",
+                        color: "#808080",
                         opacity: 0.5,
                       },
                     ],
@@ -159,9 +151,9 @@ export default function CircosPlot(props) {
                   config: {
                     innerRadius: 0.25,
                     outerRadius: 0.5,
-                    thickness: thicknessloss,
+                    thickness: thickness,
                     margin: 0,
-                    strokeWidth: 1,
+                    strokeWidth: 0,
                     strokeColor: "red",
                     direction: "out",
                     //logScale: true,
@@ -194,9 +186,9 @@ export default function CircosPlot(props) {
                   config: {
                     innerRadius: 0.5,
                     outerRadius: 0.75,
-                    thickness: thicknessloh,
+                    thickness: thickness,
                     margin: 0,
-                    strokeWidth: 1,
+                    strokeWidth: 0,
                     strokeColor: "blue",
                     direction: "out",
                     // logScale: true,
@@ -220,9 +212,9 @@ export default function CircosPlot(props) {
                   config: {
                     innerRadius: 0.75,
                     outerRadius: 1,
-                    thickness: thicknessgain,
+                    thickness: thickness,
                     margin: 0,
-                    strokeWidth: 1,
+                    strokeWidth: 0,
                     strokeColor: "green",
                     direction: "out",
                     // logScale: true,
@@ -244,8 +236,8 @@ export default function CircosPlot(props) {
                   type: HIGHLIGHT,
                   data: band,
                   config: {
-                    innerRadius: size / 2 - 50,
-                    outerRadius: size / 2 - 35,
+                    innerRadius: innerRadius,
+                    outerRadius: outerRadius,
                     opacity: 0.5,
                     color: (d) => d.color,
 
