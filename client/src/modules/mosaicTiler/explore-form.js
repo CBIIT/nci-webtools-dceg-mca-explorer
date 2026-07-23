@@ -381,17 +381,19 @@ function getRangeError(start, end) {
               All chromosomes displays all chromosomes, select chromosome level plot to visualize a single chromosome
             </Tooltip>
           }>
-          <Select
-            aria-label="plotType"
-            placeholder="- Select -"
-            name="plotType"
-            value={form.plotType}
-            onChange={(ev) => handleSelectChange("plotType", ev)}
-            options={[
-              { value: "circos", label: "All chromosomes" },
-              { value: "static", label: "Chromosome level" },
-            ]}
-          />
+          <span className="d-block">
+            <Select
+              aria-label="plotType"
+              placeholder="- Select -"
+              name="plotType"
+              value={form.plotType}
+              onChange={(ev) => handleSelectChange("plotType", ev)}
+              options={[
+                { value: "circos", label: "All chromosomes" },
+                { value: "static", label: "Chromosome level" },
+              ]}
+            />
+          </span>
           {/* {isCircos?<Button></Button>} */}
         </OverlayTrigger>
       </Form.Group>
@@ -504,7 +506,7 @@ function getRangeError(start, end) {
         {/* <Accordion.Item eventKey="0"> */}
 
         <Accordion.Item eventKey="0">
-          <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+          <Accordion.Header style={{ textAlign: "right" }}>
             Advanced settings
           </Accordion.Header>
           <Accordion.Body

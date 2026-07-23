@@ -464,7 +464,7 @@ function getRangeError(start, end) {
         <hr></hr>
         <Accordion style={{ paddingTop: "5px" }}>
           <Accordion.Item eventKey="0">
-            <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+            <Accordion.Header style={{ textAlign: "right" }}>
               Choose more attributes
             </Accordion.Header>
             <Accordion.Body

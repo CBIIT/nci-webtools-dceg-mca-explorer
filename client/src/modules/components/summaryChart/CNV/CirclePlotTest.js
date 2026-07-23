@@ -105,6 +105,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const lastZoomLabelRef = useRef("");
   const isResettingToInitialRef = useRef(false);
   const resetInitialTimerRef = useRef(null);
+  const plotReadyTimerRef = useRef(null);
   const [maxTitleheight, setMaxTitleheight] = useState(0);
   const [heightA, setHeightA] = useState(0);
   const [heightB, setHeightB] = useState(0);
@@ -130,6 +131,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     return () => {
       if (resetInitialTimerRef.current) {
         clearTimeout(resetInitialTimerRef.current);
+      }
+      if (plotReadyTimerRef.current) {
+        clearTimeout(plotReadyTimerRef.current);
       }
     };
   }, []);
@@ -472,6 +476,39 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     //console.log(form, isLoadedA, isLoadedB);
   }, [isLoadedA, isLoadedB]);
+
+  useEffect(() => {
+    if (form.compare || form.plotType.value !== "circos") return;
+    if (typeof props.onLoading !== "function") return;
+
+    props.onLoading(false);
+    if (plotReadyTimerRef.current) clearTimeout(plotReadyTimerRef.current);
+
+    const expectedBlocks =
+      props.gain.length +
+      props.loss.length +
+      props.loh.length +
+      props.undetermined.length +
+      props.chrx.length +
+      props.chry.length;
+
+    if (expectedBlocks === 0) {
+      props.onLoading(true);
+      return;
+    }
+
+    const waitForBlocks = (attempt = 0) => {
+      const renderedBlocks = circleRef.current ? circleRef.current.querySelectorAll(".track-0 .block, .track-1 .block, .track-2 .block, .track-3 .block").length : 0;
+      if (renderedBlocks >= expectedBlocks || attempt >= 80) {
+        props.onLoading(true);
+        return;
+      }
+
+      plotReadyTimerRef.current = setTimeout(() => waitForBlocks(attempt + 1), 100);
+    };
+
+    plotReadyTimerRef.current = setTimeout(() => waitForBlocks(), 100);
+  }, [form.compare, form.plotType.value, props.gain, props.loss, props.loh, props.undetermined, props.chrx, props.chry, props.onLoading]);
   var chromesomeIdString = chromesomeId + "";
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeIdString),

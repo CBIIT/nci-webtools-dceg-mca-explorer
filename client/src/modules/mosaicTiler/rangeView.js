@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { flushSync } from "react-dom";
 import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
@@ -24,6 +25,8 @@ const emptyPlotData = {
 const ancestryLabelByValue = new Map(AncestryOptions.map((item) => [item.value, item.label]));
 const smokeLabelByValue = new Map(smokeNFC.map((item) => [item.value, item.label]));
 const sexLabelByValue = new Map(SexOptions.map((item) => [item.value, item.label]));
+
+const waitForNextPaint = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -61,6 +64,7 @@ export default function RangeView(props) {
   const [violinData, setViolinData] = useState([]);
   const circleRef = useRef(null);
   const latestQueryTimingRef = useRef(null);
+  const queryInFlightRef = useRef(false);
 
   const study_value = form.study;
   let query_value = [];
@@ -91,8 +95,12 @@ export default function RangeView(props) {
         preMergedApiExample: 9674,
       },
     };
-    setPlotData(emptyPlotData);
-    setLoaded(false);
+    queryInFlightRef.current = true;
+    flushSync(() => {
+      setPlotData(emptyPlotData);
+      setLoaded(false);
+    });
+    await waitForNextPaint();
     // setForm({ ...form, chrX: false, chrY: false });
     //setLoading(true)
     console.log(qform);
@@ -262,8 +270,9 @@ export default function RangeView(props) {
     console.log(nextPlotData.gain.length);
     timing.transformMs = Math.round(performance.now() - transformStartMs);
     const stateStartMs = performance.now();
+    queryInFlightRef.current = false;
     setPlotData(nextPlotData);
-    setLoaded(true);
+    setLoaded(nextPlotData.allValues.length === 0);
     timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
     timing.totalMs = Math.round(performance.now() - totalStartMs);
     timing.improvementVsOriginalApprox = `${(timing.previousBaselineMs.originalApprox / Math.max(timing.totalMs, 1)).toFixed(1)}x faster`;
@@ -604,9 +613,10 @@ export default function RangeView(props) {
     props.onPair();
   };
 
-  const handleSetLoading = (val) => {
+  const handleSetLoading = useCallback((val) => {
+    if (queryInFlightRef.current && val) return;
     setLoaded(val);
-  };
+  }, []);
   const checkMaxLines = () => {
     let totalLines = 0;
     const linesSummary = {};
@@ -822,7 +832,7 @@ export default function RangeView(props) {
                 <div className="d-flex " style={{ justifyContent: "flex-end" }}>
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                    element={<a href="javascript:void(0)">Export Data</a>}>
+                    element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                     <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
                 </div>
@@ -899,7 +909,7 @@ export default function RangeView(props) {
               <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                   <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
               </div>

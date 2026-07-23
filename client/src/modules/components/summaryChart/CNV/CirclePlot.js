@@ -53,9 +53,9 @@ export default function CircosPlot(props) {
       .concat(isY ? initialChrY : [])
   );
 
-  if (plotloss.length + plotgain.length + plotloh.length + plotunder.length <10000) {
-    thickness = -1;
-  }
+  // if (plotloss.length + plotgain.length + plotloh.length + plotunder.length <10000) {
+  //   thickness = -1;
+  // }
 
   return (
     <div style={{ justifyContent: "center" }} id="summaryCircle">
