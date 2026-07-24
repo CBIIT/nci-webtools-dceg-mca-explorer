@@ -1987,6 +1987,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 )}
               </Col>
             </Row>
+            <div className="table-responsive" style={{ fontSize: "14px" }}>
+              Participants with missing data for the selected variable(s) are excluded from this view.
+            </div>
             {/* <Row>
               <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgA}</div></Col>
               <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgB}</div></Col>
@@ -2067,8 +2070,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
-          <br></br>
+
           <div id="circosTable" className="table-responsive" style={{ fontSize: "14px" }}>
+            Participants with missing data for the selected variable(s) are excluded from this view.
+            <br></br>
+            <br></br>
             Total number of events displayed
             {form.chrX || form.chrY ? (
               <>

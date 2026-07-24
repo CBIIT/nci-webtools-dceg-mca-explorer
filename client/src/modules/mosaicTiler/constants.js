@@ -90,7 +90,7 @@ export const platformArray = [
   { value: "OMNI 2.5 Million", label: "OMNI 2.5 Million" },
   { value: "OMNI Express", label: "OMNI Express" },
   { value: "ONCO Array", label: "ONCO Array" },
-  { value: "WGS", label: "Whole Genome Sequencing" }
+  { value: "WGS", label: "WGS" }
 ];
 
 export const ifCancer = [
