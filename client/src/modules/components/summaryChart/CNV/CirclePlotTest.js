@@ -121,10 +121,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   const restoreInitialRangeToForm = () => {
     setForm((prev) => {
-      if (prev.initialStart === "" || prev.initialStart === null || prev.initialStart === undefined) return prev;
-      if (prev.initialEnd === "" || prev.initialEnd === null || prev.initialEnd === undefined) return prev;
-      if (prev.start === prev.initialStart && prev.end === prev.initialEnd) return prev;
-      return { ...prev, start: prev.initialStart, end: prev.initialEnd };
+      const chrOption = prev.chrSingle || prev.chrCompare;
+      const selectedChromosome = chrOption ? layout.find((item) => item.id === chrOption.label + "") : null;
+      const nextStart = prev.initialStart !== "" && prev.initialStart !== null && prev.initialStart !== undefined
+        ? prev.initialStart
+        : selectedChromosome
+          ? 0
+          : prev.start;
+      const nextEnd = prev.initialEnd !== "" && prev.initialEnd !== null && prev.initialEnd !== undefined
+        ? prev.initialEnd
+        : selectedChromosome
+          ? selectedChromosome.len + ""
+          : prev.end;
+
+      if (prev.start === nextStart && prev.end === nextEnd) return prev;
+      return { ...prev, start: nextStart, end: nextEnd };
     });
   };
 
@@ -511,6 +522,20 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
     plotReadyTimerRef.current = setTimeout(() => waitForBlocks(), 100);
   }, [form.compare, form.plotType.value, props.gain, props.loss, props.loh, props.undetermined, props.chrx, props.chry, props.onLoading]);
+
+  useEffect(() => {
+    if (form.compare || form.plotType.value === "circos") return;
+    if (typeof props.onLoading !== "function") return;
+
+    props.onLoading(false);
+  }, [form.compare, form.plotType.value, chromesomeId, props.gain, props.loss, props.loh, props.undetermined, props.chrx, props.chry, props.onLoading]);
+
+  const handleSingleChromosomeReady = () => {
+    if (!form.compare && form.plotType.value !== "circos" && typeof props.onLoading === "function") {
+      props.onLoading(true);
+    }
+  };
+
   var chromesomeIdString = chromesomeId + "";
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeIdString),
@@ -1845,7 +1870,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     toggleVisibility={toggleVisibility}
                     onHeightChange={props.onHeightChange}
                     fisherP={props.allDenominator}
-                    type={form.types}></SingleChromosome>
+                    type={form.types}
+                    onReady={handleSingleChromosomeReady}></SingleChromosome>
                 </Col>
                 <Col>
                   <Table responsive bordered hover className="table fisherTable">

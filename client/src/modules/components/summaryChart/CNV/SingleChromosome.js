@@ -374,6 +374,9 @@ function SingleChromosome(props) {
             useResizeHandler={true}
             style={{ width: "100%", height: height > 450 ? 450 : height, position: "relative" }}
             ref={ref}
+            onAfterPlot={() => {
+              if (typeof props.onReady === "function") props.onReady();
+            }}
             onRelayout={handleRelayout}
             // onInitialized={() => {
             //   if (initX.length === 0) {
@@ -416,6 +419,7 @@ function SingleChromosome(props) {
         ) : (
           !props.title && (
             <p style={{ fontSize: "14px" }}>
+              Participants with missing data for the selected variable(s) are excluded from this view.<br></br>
               Gene and SNP plot are not available at the current zoom level.<br></br>
               Please zoom in to a 5MB range to see genes and SNPs.
             </p>
