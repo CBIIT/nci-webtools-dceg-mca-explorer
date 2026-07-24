@@ -9,13 +9,14 @@ export const CollapseButton = ({ collapsed, toggleCollapse }) => (
     className={classNames("bi", collapsed ? " bi-caret-right-fill" : " bi-caret-left-fill")}
     style={{
       position: "absolute",
-      left: "-10px",
+      left: collapsed ? "16px" : "-10px",
       background: "transparent",
       border: "none",
       outline: "none",
       color: "rgb(0, 126, 167)",
       cursor: "pointer",
       fontSize: "20px",
+      zIndex: 1,
     }}
     data-toggle="tooltip"
     title={collapsed ? "Show Configuration Panel" : "Hide Configuration Panel"}

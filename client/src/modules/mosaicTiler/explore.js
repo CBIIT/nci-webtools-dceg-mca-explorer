@@ -175,7 +175,7 @@ export default function Explore() {
         </SidebarPanel>
         <MainPanel className="col-xl-9">
           <div className="h-100 mb-5 align-self-center">
-            <Card.Body className="p-0">
+            <Card.Body className="p-0" style={{ marginLeft: _openSidebar ? 0 : "1.5rem" }}>
               <ErrorBoundary
                 fallback={
                   <div style={{ color: "red" }}>
