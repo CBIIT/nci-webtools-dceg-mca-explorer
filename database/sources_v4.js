@@ -466,6 +466,7 @@ export const sources = [
     ],
   },
   {
+<<<<<<< HEAD
     sourcePath: "data/topmed/topmed_automca_06112026.csv",
     table: "sample",
     description: "TOPMed autosomal mCAs",
@@ -527,6 +528,9 @@ export const sources = [
   },
   {
     sourcePath: "data/jap/BBJ_autosomalevents_v2.csv",
+=======
+    sourcePath: "data/jap/BBJ_autosomalevents.csv",
+>>>>>>> dev
     table: "sample",
     description: "JAP BBJ autosomal mCAs",
     columns: [
@@ -675,6 +679,23 @@ export const sources = [
     ],
   },
   {
+<<<<<<< HEAD
+=======
+    sourcePath: "data/estBB/EstBB_autosomal_events_clean.csv",
+    table: "sample",
+    description: "EstBB autosomal mCAs",
+    columns: [
+      { sourceName: null, name: "dataset", defaultValue: "EstBB_autosomal_mCAs" },
+      { sourceName: "chrom", name: "chromosome", formatter: chromosomeFormatter() },
+      { sourceName: "beg_GRCh38", name: "beginGrch38" },
+      { sourceName: "end_GRCh38", name: "endGrch38" },
+      { sourceName: "length", name: "length" },
+      { sourceName: "type", name: "type" },
+      { sourceName: "cf", name: "cf" },
+    ],
+  },
+  {
+>>>>>>> dev
     sourcePath: "data/estBB/mCA_events_EstBB_for_mCA_Explorer.txt",
     table: "sample",
     description: "EstBB mCA Explorer events",
