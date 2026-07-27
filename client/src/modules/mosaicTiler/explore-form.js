@@ -4,7 +4,6 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import { Toast } from "react-bootstrap";
-
 import {
   AncestryOptions,
   CompareArray,
@@ -13,6 +12,7 @@ import {
   smokeNFC,
   platformArray,
   ifCancer,
+  StudyOptions,
 } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 import { parseRangeLable } from "./range-utils";
@@ -252,15 +252,7 @@ function getRangeError(start, end) {
     }
 
     if (name === "study" && selection.find((option) => option.value === "all")) {
-      selection = [
-        { value: "plco", label: "PLCO" },
-        { value: "ukbb", label: "UK Biobank" },
-        { value: "biovu", label: "BioVU" },
-        { value: "jap", label: "JAP" },
-        { value: "iorra", label: "IORRA" },
-        { value: "estbb", label: "EstBB" },
-        { value: "topmed", label: "TOPMed" }
-      ];
+      selection = StudyOptions.filter((option) => option.value !== "all");
     }
 
     // When study changes, reset platformArray selection
