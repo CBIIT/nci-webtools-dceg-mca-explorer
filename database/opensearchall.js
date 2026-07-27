@@ -172,7 +172,6 @@ function getIndexName(filename) {
   return /denom|denominator/i.test(filename) ? "denominator" : "mcaexplorer";
 }
 
-<<<<<<< HEAD
 function isDenominatorFile(filename) {
   return getIndexName(filename) === "denominator";
 }
@@ -255,13 +254,6 @@ function appendRecordsForIndex(fd, indexName, records, nextIds) {
   let id = nextIds[indexName] || 1;
 
   records.forEach((record) => {
-=======
-function appendBulkJson(fd, filename, records, startId) {
-  const indexName = getIndexName(filename);
-  let id = startId;
-
-  records.map((record) => {
->>>>>>> dev
     fs.appendFileSync(
       fd,
       JSON.stringify({
@@ -278,7 +270,6 @@ function appendBulkJson(fd, filename, records, startId) {
     id++;
   });
 
-<<<<<<< HEAD
   nextIds[indexName] = id;
 }
 
@@ -325,10 +316,6 @@ function appendMergedBulkJson(fd, filename, records, denominatorBySampleId, next
   appendRecordsForIndex(fd, "merged", mergedRecords, nextIds);
   console.log(`Finish ${filename} merged import: ${mergedRecords.length} rows`);
   return mergedRecords.length;
-=======
-  console.log(`Finish ${filename} import: ${records.length} rows`);
-  return id;
->>>>>>> dev
 }
 
 function removeNewlines(obj) {
@@ -346,7 +333,6 @@ function removeNewlines(obj) {
 }
 
 (async function main() {
-<<<<<<< HEAD
   const nextIds = {
     mcaexplorer: 1,
     denominator: 1,
@@ -354,16 +340,11 @@ function removeNewlines(obj) {
   };
   let totalRows = 0;
   let totalMergedRows = 0;
-=======
-  let id = 1;
-  let totalRows = 0;
->>>>>>> dev
   const sourceFiles = getSourceFiles();
   const outputJsonName = "all.json";
   const fd = fs.openSync(path.resolve("data", outputJsonName), "w");
 
   try {
-<<<<<<< HEAD
     const denominatorRecords = [];
     for (const sourceFile of sourceFiles.filter(isDenominatorFile)) {
       try {
@@ -382,12 +363,6 @@ function removeNewlines(obj) {
         validateChromosomeBoundaries(sourceFile, records);
         appendBulkJson(fd, sourceFile, records, nextIds);
         totalMergedRows += appendMergedBulkJson(fd, sourceFile, records, denominatorBySampleId, nextIds);
-=======
-    for (const sourceFile of sourceFiles) {
-      try {
-        const records = await parseSourceFile(sourceFile);
-        id = appendBulkJson(fd, sourceFile, records, id);
->>>>>>> dev
         totalRows += records.length;
       } catch (err) {
         console.log(`${sourceFile}: ${err}`);
@@ -399,8 +374,5 @@ function removeNewlines(obj) {
 
   console.log(`Finish all imports to ${outputJsonName}`);
   console.log(`Total rows: ${totalRows}`);
-<<<<<<< HEAD
   console.log(`Total merged rows: ${totalMergedRows}`);
-=======
->>>>>>> dev
 })();
