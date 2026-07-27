@@ -256,6 +256,7 @@ function getRangeError(start, end) {
         { value: "plco", label: "PLCO" },
         { value: "ukbb", label: "UK Biobank" },
         { value: "biovu", label: "BioVU" },
+        { value: "iorra", label: "IORRA" },
       ];
     }
 
