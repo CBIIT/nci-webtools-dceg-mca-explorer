@@ -157,6 +157,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
         { value: "jap", label: "JAP" },
         { value: "iorra", label: "IORRA" },
         { value: "estbb", label: "EstBB" },
+        { value: "topmed", label: "TOPMed" }
       ];
     }
     if (name === "plotType") {

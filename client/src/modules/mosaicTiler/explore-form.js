@@ -259,6 +259,7 @@ function getRangeError(start, end) {
         { value: "jap", label: "JAP" },
         { value: "iorra", label: "IORRA" },
         { value: "estbb", label: "EstBB" },
+        { value: "topmed", label: "TOPMed" }
       ];
     }
 
