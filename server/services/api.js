@@ -203,7 +203,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   //if there is more studies, queryString is an array, if there is only one, study is json object
   if (qdataset !== undefined) {
     const { datasets, filterlist } = getStudy(qdataset, qfilter);
-    searchdataset.push({ terms: { "dataset.keyword": datasets } });
+    searchdataset.push({ terms: { dataset: datasets } });
     qfilter = filterlist;
   }
 
@@ -593,43 +593,6 @@ const getDenominatorStudyDatasets = (study) => {
     .map((item) => getSelectionValue(item))
     .filter((value) => value && value !== "all")
     .map((value) => denominatorDatasetsByStudy[value] || value)
-    .filter(Boolean);
-
-  return datasets.length > 0 ? datasets : Object.values(denominatorDatasetsByStudy);
-};
-
-const getMcaStudyDatasets = (study) => {
-  const mcaDatasetsByStudy = {
-    plco: ["PLCO_GSA_blood_autosomal_mCAs", "PLCO_GSA_blood_mLOX", "PLCO_GSA_blood_mLOY"],
-    ukbb: ["UKBB_blood_autosomal_mCAs", "UKBB_blood_mLOX", "UKBB_blood_mLOY"],
-    biovu: ["BioVU_blood_autosomal_mCAs", "BioVU_blood_mLOX", "BioVU_blood_mLOY"],
-    jap: ["JAP_BBJ_autosomal_mCAs"],
-    bbj: ["JAP_BBJ_autosomal_mCAs"],
-    iorra: ["IORRA_autosomal_mCAs", "IORRA_mLOX", "IORRA_mLOY"],
-    estbb: ["EstBB_autosomal_mCAs", "EstBB_mCA_Explorer_events"],
-  };
-  const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(mcaDatasetsByStudy).map((value) => ({ value }));
-  const datasets = selectedStudies.flatMap((item) => {
-    if (!item || item.value === "all" || item.value === "X" || item.value === "Y") return [];
-    return mcaDatasetsByStudy[item.value] || [item.value];
-  });
-
-  return datasets.length > 0 ? datasets : Object.values(mcaDatasetsByStudy).flat();
-};
-
-const getDenominatorStudyDatasets = (study) => {
-  const denominatorDatasetsByStudy = {
-    plco: "PLCO_denominator",
-    ukbb: "UKBB_denominator",
-    biovu: "BioVU_denominator",
-    jap: "JAP_BBJ_denominator",
-    bbj: "JAP_BBJ_denominator",
-    iorra: "IORRA_denominator",
-  };
-  const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(denominatorDatasetsByStudy).map((value) => ({ value }));
-  const datasets = selectedStudies
-    .filter((item) => item && item.value !== "all")
-    .map((item) => denominatorDatasetsByStudy[item.value] || item.value)
     .filter(Boolean);
 
   return datasets.length > 0 ? datasets : Object.values(denominatorDatasetsByStudy);
