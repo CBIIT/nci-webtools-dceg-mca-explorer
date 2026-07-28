@@ -923,33 +923,33 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     //and give a notes for this study
     let errorMessage = "";
     // console.log(group.approach);
-    group.study !== undefined &&
-      group.approach !== undefined &&
-      group.study.forEach((s) => {
-        //console.log(s.value, group.approach.length);
-        if (s.value === "plco" && group.approach.length > 0) {
-          const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
-          console.log(plcoArray);
-          if (plcoArray.length === 0) {
-            //title = title.replace("PLCO,", "").replace("PLCO", "");
-            errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
-          }
-        }
-        if (s.value === "ukbb" && group.approach.length > 0) {
-          const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
-          if (ukArray.length === 0) {
-            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
-            errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
-          }
-        }
-        if (s.value === "biovu" && group.approach.length > 0) {
-          const biovuArray = group.approach.filter((a) => a.value === "Illumina MEGAEX array" );
-          if (biovuArray.length === 0) {
-            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
-            errorMessage = "Note: BioVU does not contain " + group.approach.map((obj) => obj.label);
-          }
-        }
-      });
+    // group.study !== undefined &&
+    //   group.approach !== undefined &&
+    //   group.study.forEach((s) => {
+    //     //console.log(s.value, group.approach.length);
+    //     if (s.value === "plco" && group.approach.length > 0) {
+    //       const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
+    //       console.log(plcoArray);
+    //       if (plcoArray.length === 0) {
+    //         //title = title.replace("PLCO,", "").replace("PLCO", "");
+    //         errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
+    //       }
+    //     }
+    //     if (s.value === "ukbb" && group.approach.length > 0) {
+    //       const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
+    //       if (ukArray.length === 0) {
+    //         // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+    //         errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
+    //       }
+    //     }
+    //     if (s.value === "biovu" && group.approach.length > 0) {
+    //       const biovuArray = group.approach.filter((a) => a.value === "Illumina MEGAEX array" );
+    //       if (biovuArray.length === 0) {
+    //         // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+    //         errorMessage = "Note: BioVU does not contain " + group.approach.map((obj) => obj.label);
+    //       }
+    //     }
+    //   });
     //  console.log(group.approach, errorMessage, title);
     return [title, errorMessage];
   };

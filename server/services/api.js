@@ -171,7 +171,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qstart = request.body.start ? Number(request.body.start) : 0;
   const qend = request.body.end ? Number(request.body.end) : 9999999999;
   const qsmokeNFC = request.body.smoking;
-  const qplatform = request.body.array;
+  const qplatform = request.body.array || request.body.approach;
   const minAge = request.body.minAge ? Number(request.body.minAge) : 0;
   const maxAge = request.body.maxAge ? Number(request.body.maxAge) : 100;
 
@@ -436,7 +436,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   }
 
   const study = group.study;
-  const platfomrarray = group.array;
+  const platfomrarray = group.array || group.approach;
   const chromesome = group.chr;
   const sex = group.sex;
   const ancestry = group.ancestry;
@@ -489,64 +489,65 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
   }
 
+  const hasDenominatorFilter = hasActiveDenominatorFilter({
+    sex,
+    ancestry,
+    smoking: smokeNFC,
+    array: platfomrarray,
+    priorCancer,
+    hemaCancer,
+    lymCancer,
+    myeCancer,
+    rawMinAge: group.minAge,
+    rawMaxAge: group.maxAge,
+  });
+  const mcaRangeFilters = [{ range: { beginGrch38: { gte: start } } }, { range: { endGrch38: { lte: end } } }];
+  const denominatorFilters = buildMergedDenominatorFilters({
+    sex,
+    ancestry,
+    smoking: smokeNFC,
+    array: platfomrarray,
+    priorCancer,
+    hemaCancer,
+    lymCancer,
+    myeCancer,
+    minAge,
+    maxAge,
+    rawMinAge: group.minAge,
+    rawMaxAge: group.maxAge,
+    forceAgeFilter: hasDenominatorFilter,
+  });
+
   try {
     const result = await client.search({
       index: "merged",
       body: {
         track_total_hits: true,
         size: 200000,
-        ...(hasActiveDenominatorFilter({
-          sex,
-          ancestry,
-          smoking: smokeNFC,
-          array: platfomrarray,
-          priorCancer,
-          hemaCancer,
-          lymCancer,
-          myeCancer,
-          rawMinAge: group.minAge,
-          rawMaxAge: group.maxAge,
-        })
-          ? { collapse: { field: "sampleId" } }
-          : {}),
         query: {
           bool: {
-            filter: [
-              { range: { beginGrch38: { gte: start } } },
-              { range: { endGrch38: { lte: end } } },
-              ...buildMergedDenominatorFilters({
-                sex,
-                ancestry,
-                smoking: smokeNFC,
-                array: platfomrarray,
-                priorCancer,
-                hemaCancer,
-                lymCancer,
-                myeCancer,
-                minAge,
-                maxAge,
-                rawMinAge: group.minAge,
-                rawMaxAge: group.maxAge,
-                forceAgeFilter: hasActiveDenominatorFilter({
-                  sex,
-                  ancestry,
-                  smoking: smokeNFC,
-                  array: platfomrarray,
-                  priorCancer,
-                  hemaCancer,
-                  lymCancer,
-                  myeCancer,
-                  rawMinAge: group.minAge,
-                  rawMaxAge: group.maxAge,
-                }),
-              }),
-            ],
+            filter: hasDenominatorFilter ? mcaRangeFilters : [...mcaRangeFilters, ...denominatorFilters],
             must: queryString,
           },
         },
       },
     });
-    const mcaHits = addDerivedMcaLengths(result.body.hits.hits.map((item) => item._source));
+    let mcaHits = result.body.hits.hits.map((item) => item._source);
+    if (hasDenominatorFilter) {
+      mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
+        sex,
+        ancestry,
+        smoking: smokeNFC,
+        array: platfomrarray,
+        priorCancer,
+        hemaCancer,
+        lymCancer,
+        myeCancer,
+        minAge,
+        maxAge,
+      });
+    }
+    mcaHits = addDerivedMcaLengths(mcaHits);
     const afterMcaMs = nowMs();
     logQueryTiming(logger, "/opensearch/chromosome", {
       stage: "afterMergedFetch",
@@ -680,7 +681,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
   const sex = query.sex;
   const ancestry = query.ancestry;
   const smoking = query.smoking;
-  const approach = query.approach;
+  const approach = query.approach || query.array;
   const minAge = query.minAge !== undefined ? Number(query.minAge) : 0;
   const maxAge = query.maxAge !== undefined && query.maxAge !== "" ? Number(query.maxAge) : 100;
   const study = query.study;
