@@ -4,6 +4,10 @@ const platformMap = {
   "Illumina OmniExpress / OmniExpress Exome family (sample batch unspecified)": "OMNI Express",
 };
 
+const topmedSmokeMap = {
+  1: "3",
+};
+
 export const sources = [
   {
     sourcePath: "data/raw_v3_20240916/PLCO_GSA_blood_autosomal_mCAs.txt",
@@ -462,7 +466,67 @@ export const sources = [
     ],
   },
   {
-    sourcePath: "data/jap/BBJ_autosomalevents.csv",
+    sourcePath: "data/topmed/topmed_automca_06112026.csv",
+    table: "sample",
+    description: "TOPMed autosomal mCAs",
+    columns: [
+      { sourceName: null, name: "dataset", defaultValue: "TOPMed_autosomal_mCAs" },
+      { sourceName: "NWDID", name: "sampleId" },
+      { sourceName: "chrom", name: "chromosome", formatter: chromosomeFormatter() },
+      { sourceName: "beg_GRCh38", name: "beginGrch38" },
+      { sourceName: "end_GRCh38", name: "endGrch38" },
+      { sourceName: "type", name: "type" },
+      { sourceName: "cf", name: "cf" },
+    ],
+  },
+  {
+    sourcePath: "data/topmed/topmed_mlox_06112026.csv",
+    table: "sample",
+    description: "TOPMed mLOX",
+    columns: [
+      { sourceName: null, name: "dataset", defaultValue: "TOPMed_mLOX" },
+      { sourceName: "NWDID", name: "sampleId" },
+      { sourceName: "chrom", name: "chromosome", formatter: chromosomeFormatter() },
+      { sourceName: "beg_GRCh38", name: "beginGrch38" },
+      { sourceName: "end_GRCh38", name: "endGrch38" },
+      { sourceName: "type", name: "type" },
+      { sourceName: "cf", name: "cf" },
+    ],
+  },
+  {
+    sourcePath: "data/topmed/topmed_mloy_06112026.csv",
+    table: "sample",
+    description: "TOPMed mLOY",
+    columns: [
+      { sourceName: null, name: "dataset", defaultValue: "TOPMed_mLOY" },
+      { sourceName: "NWDID", name: "sampleId" },
+      { sourceName: "chrom", name: "chromosome", formatter: chromosomeFormatter() },
+      { sourceName: "beg_GRCh38", name: "beginGrch38" },
+      { sourceName: "end_GRCh38", name: "endGrch38" },
+      { sourceName: "type", name: "type" },
+      { sourceName: "cf", name: "cf" },
+    ],
+  },
+  {
+    sourcePath: "data/topmed/topmed_denom_0721026.csv",
+    table: "sample",
+    description: "TOPMed denominator",
+    columns: [
+      { sourceName: null, name: "dataset", defaultValue: "TOPMed_denominator" },
+      { sourceName: "sample_id", name: "sampleId" },
+      { sourceName: "age", name: "age" },
+      { sourceName: "sex", name: "sex" },
+      { sourceName: "dna_source", name: "dnaSource" },
+      { sourceName: "Percent_f", name: "PercentF" },
+      { sourceName: "Percent_e", name: "PercentE" },
+      { sourceName: "Percent_a", name: "PercentA" },
+      { sourceName: "PopID", name: "PopID" },
+      { sourceName: "array", name: "array" },
+      { sourceName: "Smoke", name: "smokeNFC", formatter: platformFormatter(topmedSmokeMap) },
+    ],
+  },
+  {
+    sourcePath: "data/jap/BBJ_autosomalevents_v2.csv",
     table: "sample",
     description: "JAP BBJ autosomal mCAs",
     columns: [
@@ -608,20 +672,6 @@ export const sources = [
       { sourceName: "lod_baf_conc", name: "lodBafConc" },
       { sourceName: "type_FINAL", name: "type" },
       { sourceName: "cf_FINAL", name: "cf" },
-    ],
-  },
-  {
-    sourcePath: "data/estBB/EstBB_autosomal_events_clean.csv",
-    table: "sample",
-    description: "EstBB autosomal mCAs",
-    columns: [
-      { sourceName: null, name: "dataset", defaultValue: "EstBB_autosomal_mCAs" },
-      { sourceName: "chrom", name: "chromosome", formatter: chromosomeFormatter() },
-      { sourceName: "beg_GRCh38", name: "beginGrch38" },
-      { sourceName: "end_GRCh38", name: "endGrch38" },
-      { sourceName: "length", name: "length" },
-      { sourceName: "type", name: "type" },
-      { sourceName: "cf", name: "cf" },
     ],
   },
   {

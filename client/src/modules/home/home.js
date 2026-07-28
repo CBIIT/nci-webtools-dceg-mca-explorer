@@ -59,7 +59,7 @@ export default function Home({ links }) {
         <div className="bg-egg ">
           <div className="container text-dark usa-summary-box__body">
             <h2 className="h4 usa-summary-box__heading">Credits</h2>
-            <div class="usa-summary-box__text py-2">
+            <div className="usa-summary-box__text py-2">
                 <div className="ps-3 py-1">
                   Mitchell Machiela, Aubrey Hubbard, Lesley Chapman Hannah and colleagues at the{" "}
                   <a href="https://dceg.cancer.gov/" target="_blank">

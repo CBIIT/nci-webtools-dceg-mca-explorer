@@ -73,7 +73,7 @@ export const Columns = [
     accessor: "array",
     id: "array",
     label: "Array",
-    Header: <b>Array</b>,
+    Header: <b>Detection Approach</b>,
   },
   // {
   //   accessor: "smokeNFC",

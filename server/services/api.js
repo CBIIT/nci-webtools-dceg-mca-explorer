@@ -185,8 +185,10 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   let qfilter = [];
   if (qtype !== undefined) {
     qtype.forEach((qt) => {
-      if (qt.value != "all") {
-        qfilter.push(qt.label);
+      const value = getSelectionValue(qt);
+      if (value != "all") {
+        const label = getSelectionLabel(qt);
+        if (label !== undefined && label !== null && label !== "") qfilter.push(label);
       }
     });
   }
@@ -211,7 +213,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     let chrarr = [];
     chrarr.push(qchromosomes.value);
     if (qchromosomes.value !== "chrX" && qchromosomes.value !== "chrY")
-      searchdataset.push({ terms: { "chromosome.keyword": chrarr } });
+      searchdataset.push({ terms: { chromosome: chrarr } });
     else {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
@@ -255,12 +257,40 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     });
   }
   // ancestryarr.length > 0 ? filterString.push({ terms: { "ancestry.keyword": ancestryarr } }) : "";
-  filterString.push({ terms: { "type.keyword": qfilter } });
+  filterString.push({ terms: { type: qfilter } });
+  const hasDenominatorFilter = hasActiveDenominatorFilter({
+    sex: qsex,
+    ancestry: qancestry,
+    smoking: qsmokeNFC,
+    array: qplatform,
+    priorCancer: qpriorCancer,
+    hemaCancer: qhemaCancer,
+    lymCancer: qlymCancer,
+    myeCancer: qmyeCancer,
+    rawMinAge: request.body.minAge,
+    rawMaxAge: request.body.maxAge,
+  });
+  const denominatorFilters = buildMergedDenominatorFilters({
+    sex: qsex,
+    ancestry: qancestry,
+    smoking: qsmokeNFC,
+    array: qplatform,
+    priorCancer: qpriorCancer,
+    hemaCancer: qhemaCancer,
+    lymCancer: qlymCancer,
+    myeCancer: qmyeCancer,
+    minAge,
+    maxAge,
+    rawMinAge: request.body.minAge,
+    rawMaxAge: request.body.maxAge,
+    forceAgeFilter: hasDenominatorFilter,
+  });
+  if (!hasDenominatorFilter) filterString.push(...denominatorFilters);
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
 
   try {
     const result = await client.search({
-      index: "mcaexplorer_index",
+      index: "merged",
       body: {
         track_total_hits: true,
         size: 200000,
@@ -273,75 +303,41 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         },
       },
     });
-    const mcaHits = result.body.hits.hits;
+    let mcaHits = result.body.hits.hits.map((item) => item._source);
+    if (hasDenominatorFilter) {
+      mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
+        sex: qsex,
+        ancestry: qancestry,
+        smoking: qsmokeNFC,
+        array: qplatform,
+        priorCancer: qpriorCancer,
+        hemaCancer: qhemaCancer,
+        lymCancer: qlymCancer,
+        myeCancer: qmyeCancer,
+        minAge,
+        maxAge,
+      });
+    }
     const afterMcaMs = nowMs();
     logQueryTiming(logger, "/opensearch/mca", {
-      stage: "afterMcaFetch",
-      counts: { mcaHits: mcaHits.length },
+      stage: "afterMergedFetch",
+      counts: { mergedHits: mcaHits.length },
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    const nominatorHits = mcaHits;
-    console.log(nominatorHits.length);
-
-    const resultsIds = nominatorHits.map((item) => item._source.sampleId);
-    console.log(platformarr);
-    //console.log(resultsIds.length, sexarr, ancestryarr, smokearr, platformarr,minAge,maxAge,priorCancerarr);
-    try {
-      const baseMust = [
-        ...buildOptionalTermsFilter("sex.keyword", qsex),
-        ...buildOptionalTermsFilter("PopID", qancestry),
-        ...buildOptionalTermsFilter("smokeNFC", qsmokeNFC),
-        ...buildOptionalTermsFilter("array.keyword", qplatform),
-        ...buildOptionalTermsFilter("priorCancer", qpriorCancer),
-        ...buildOptionalTermsFilter("incidentCancerHem", qhemaCancer),
-        ...buildOptionalTermsFilter("incidentCancerLymphoid", qlymCancer),
-        ...buildOptionalTermsFilter("incidentCancerMyeloid", qmyeCancer),
-      ];
-      const baseFilter = [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }];
-
-      const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
-        "sampleId",
-        "age",
-        "sex",
-        "smokeNFC",
-        "PopID",
-        "array",
-        "priorCancer",
-        "incidentCancerHem",
-        "incidentCancerLymphoid",
-        "incidentCancerMyeloid",
-      ]);
-      const afterDenominatorMs = nowMs();
-      logQueryTiming(logger, "/opensearch/mca", {
-        stage: "afterDenominatorFetch",
-        counts: { mcaHits: mcaHits.length, denominatorHits: denomHits.length },
-        ms: { elapsed: afterDenominatorMs - requestStartMs, denominatorFetch: afterDenominatorMs - afterMcaMs },
-      });
-
-      const denominatorHits = denomHits;
-      console.log(denominatorHits.length, nominatorHits.length);
-
-      const payload = { nominator: nominatorHits, denominator: denominatorHits };
-      setCachedRouteResponse(cacheKey, payload);
-      response.json(payload);
-      const afterResponseMs = nowMs();
-      logQueryTiming(logger, "/opensearch/mca", {
-        counts: {
-          mcaHits: nominatorHits.length,
-          denominatorHits: denominatorHits.length,
-        },
-        ms: {
-          mcaFetch: afterMcaMs - requestStartMs,
-          denominatorFetch: afterDenominatorMs - afterMcaMs,
-          responseWrite: afterResponseMs - afterDenominatorMs,
-          total: afterResponseMs - requestStartMs,
-        },
-      });
-      //response.json(result.body.hits.hits);
-    } catch (error) {
-      console.error(error);
-    }
+    console.log(mcaHits.length, platformarr);
+    const payload = { merged: mcaHits };
+    setCachedRouteResponse(cacheKey, payload);
+    response.json(payload);
+    const afterResponseMs = nowMs();
+    logQueryTiming(logger, "/opensearch/mca", {
+      counts: { mergedHits: mcaHits.length },
+      ms: {
+        mergedFetch: afterMcaMs - requestStartMs,
+        responseWrite: afterResponseMs - afterMcaMs,
+        total: afterResponseMs - requestStartMs,
+      },
+    });
     ////
   } catch (error) {
     console.error(error);
@@ -412,211 +408,194 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
     logQueryTiming(logger, "/opensearch/chromosome", {
       stage: "cacheHit",
       ms: { elapsed: nowMs() - requestStartMs },
-      counts: {
-        nominatorRows: Array.isArray(cachedResponse.nominator) ? cachedResponse.nominator.length : 0,
-        denominatorRows: Array.isArray(cachedResponse.denominator) ? cachedResponse.denominator.length : 0,
-      },
+      counts: { mergedRows: Array.isArray(cachedResponse.merged) ? cachedResponse.merged.length : 0 },
     });
     response.json(cachedResponse);
     return;
   }
+
   const group = request.body;
-  if (group != undefined) {
-    //console.log("query group:", group.maxAge);
-    const study = group.study;
-    const platfomrarray = group.array;
-    const chromesome = group.chr;
-    const sex = group.sex;
-    const ancestry = group.ancestry;
-    const maxAge = group.maxAge !== undefined ? Number(group.maxAge) : 100;
-    const minAge = group.minAge !== undefined ? Number(group.minAge) : 0;
-    let maxcf = Number(group.maxcf) / 100.0;
-    let mincf = Number(group.mincf) / 100.0;
-    const types = group.types;
-    const start = group.start ? Number(group.start) : 0;
-    const end = group.end ? Number(group.end) : 9999999999;
-    const smokeNFC = group.smoking;
-    const priorCancer = group.priorCancer;
-    const hemaCancer = group.hemaCancer;
-    const lymCancer = group.lymCancer;
-    const myeCancer = group.myeCancer;
+  if (group === undefined) {
+    response.json({ merged: [] });
+    return;
+  }
 
-    console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
-    const dataset = [];
-    const queryString = [];
-    let qfilter = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
-    //serach only rows which has chromosome, this will exclude plcoDenominator
-    //queryString.push({ terms: { "type.keyword": qfilter } });
-    if (chromesome === "Y") {
-      queryString.push({ terms: { "type.keyword": ["mLOY"] } });
-      queryString.push({ match: { "chromosome.keyword": "chrX" } });
-    } else if (chromesome === "X") {
-      queryString.push({ match: { "chromosome.keyword": "chrX" } });
-      queryString.push({ terms: { "type.keyword": ["mLOX"] } });
-    } else queryString.push({ match: { chromosome: "chr" + chromesome } });
+  const study = group.study;
+  const platfomrarray = group.array;
+  const chromesome = group.chr;
+  const sex = group.sex;
+  const ancestry = group.ancestry;
+  const maxAge = group.maxAge !== undefined ? Number(group.maxAge) : 100;
+  const minAge = group.minAge !== undefined ? Number(group.minAge) : 0;
+  let maxcf = group.maxcf ? Number(group.maxcf) / 100.0 : NaN;
+  let mincf = group.mincf ? Number(group.mincf) / 100.0 : NaN;
+  const types = group.types;
+  const start = group.start ? Number(group.start) : 0;
+  const end = group.end ? Number(group.end) : 9999999999;
+  const smokeNFC = group.smoking;
+  const priorCancer = group.priorCancer;
+  const hemaCancer = group.hemaCancer;
+  const lymCancer = group.lymCancer;
+  const myeCancer = group.myeCancer;
 
-    if (study !== undefined && study.length > 0)
-      queryString.push({ terms: { "dataset.keyword": getMcaStudyDatasets(study) } });
+  console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+  const queryString = [];
+  if (chromesome === "Y") {
+    queryString.push({ terms: { type: ["mLOY"] } });
+    queryString.push({ match: { chromosome: "chrX" } });
+  } else if (chromesome === "X") {
+    queryString.push({ match: { chromosome: "chrX" } });
+    queryString.push({ terms: { type: ["mLOX"] } });
+  } else {
+    queryString.push({ match: { chromosome: "chr" + chromesome } });
+  }
 
-    let sexarr = getAttributesArray(sex, "sex");
-    // console.log(sexarr);
-    //add query for ancestry
-    let ancestryarry = getAttributesArray(ancestry, "ancestry");
-    //console.log(ancestryarry);
-    let smokearr = getAttributesArray(smokeNFC, "smoking");
-    let platformarr = getAttributesArray(platfomrarray, "array");
-    let priorCancerarr = getAttributesArray(priorCancer, "priorcancer");
-    let hemaCancerarr = getAttributesArray(hemaCancer, "hemacancer");
-    let lymCancerarr = getAttributesArray(lymCancer, "lymcancer");
-    let myeCancerarr = getAttributesArray(myeCancer, "myecancer");
+  if (study !== undefined && study.length > 0) {
+    queryString.push({ terms: { dataset: getMcaStudyDatasets(study) } });
+  }
 
-    // console.log(myeCancerarr,priorCancerarr)
-    let atemp = [];
-    //add query for types
-    if (types !== undefined) {
-      types.forEach((t) => {
-        if (t.value !== "all") atemp.push(t.label);
-        else if (t.value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
-      });
-    }
-    if (chromesome !== "X" && chromesome !== "Y") {
-      if (atemp.length > 0) queryString.push({ terms: { "type.keyword": atemp } });
-      else atemp = ["Gain", "Loss", "CN-LOH", "Undetermined"];
-    }
+  let atemp = [];
+  if (types !== undefined) {
+    types.forEach((type) => {
+      const value = getSelectionValue(type);
+      if (value !== "all") {
+        const label = getSelectionLabel(type);
+        if (label !== undefined && label !== null && label !== "") atemp.push(label);
+      } else if (value === "all") atemp = ["Gain", "Loss", "CN-LOH", "Undetermined", "mLOX", "mLOY"];
+    });
+  }
+  if (chromesome !== "X" && chromesome !== "Y" && atemp.length > 0) {
+    queryString.push({ terms: { type: atemp } });
+  }
 
-    //add query for cf
-    //query cf within the range, add query range in filter
-    if (!Number.isNaN(mincf) || !Number.isNaN(maxcf)) {
-      if (Number.isNaN(mincf)) mincf = "0";
-      if (Number.isNaN(maxcf)) maxcf = "1";
-      queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
-    }
-    console.log(queryString);
-    try {
-      const result = await client.search({
-        index: "mcaexplorer_index", //this index change beginGrch38 and endGrch38 as long type
-        body: {
-          track_total_hits: true,
-          size: 200000,
-          query: {
-            bool: {
-              filter: [
-                {
-                  range: {
-                    beginGrch38: {
-                      gte: start,
-                    },
-                  },
-                },
-                {
-                  range: {
-                    endGrch38: {
-                      lte: end,
-                    },
-                  },
-                },
-              ],
-              must: queryString,
-            },
+  if (!Number.isNaN(mincf) || !Number.isNaN(maxcf)) {
+    if (Number.isNaN(mincf)) mincf = "0";
+    if (Number.isNaN(maxcf)) maxcf = "1";
+    queryString.push({ range: { cf: { gte: mincf, lte: maxcf } } });
+  }
+
+  try {
+    const result = await client.search({
+      index: "merged",
+      body: {
+        track_total_hits: true,
+        size: 200000,
+        ...(hasActiveDenominatorFilter({
+          sex,
+          ancestry,
+          smoking: smokeNFC,
+          array: platfomrarray,
+          priorCancer,
+          hemaCancer,
+          lymCancer,
+          myeCancer,
+          rawMinAge: group.minAge,
+          rawMaxAge: group.maxAge,
+        })
+          ? { collapse: { field: "sampleId" } }
+          : {}),
+        query: {
+          bool: {
+            filter: [
+              { range: { beginGrch38: { gte: start } } },
+              { range: { endGrch38: { lte: end } } },
+              ...buildMergedDenominatorFilters({
+                sex,
+                ancestry,
+                smoking: smokeNFC,
+                array: platfomrarray,
+                priorCancer,
+                hemaCancer,
+                lymCancer,
+                myeCancer,
+                minAge,
+                maxAge,
+                rawMinAge: group.minAge,
+                rawMaxAge: group.maxAge,
+                forceAgeFilter: hasActiveDenominatorFilter({
+                  sex,
+                  ancestry,
+                  smoking: smokeNFC,
+                  array: platfomrarray,
+                  priorCancer,
+                  hemaCancer,
+                  lymCancer,
+                  myeCancer,
+                  rawMinAge: group.minAge,
+                  rawMaxAge: group.maxAge,
+                }),
+              }),
+            ],
+            must: queryString,
           },
         },
-      });
-      const mcaHits = result.body.hits.hits;
-      const afterMcaMs = nowMs();
-      logQueryTiming(logger, "/opensearch/chromosome", {
-        stage: "afterMcaFetch",
-        counts: { mcaHits: mcaHits.length },
-        ms: { elapsed: afterMcaMs - requestStartMs },
-      });
-      //  console.log(queryString);
-      const nominatorHits = mcaHits;
-      const resultsIds = nominatorHits.map((item) => item._source.sampleId);
-      console.log("line 468:", resultsIds.length);
-      try {
-        const baseMust = [
-          ...buildOptionalTermsFilter("sex.keyword", sex),
-          ...buildOptionalTermsFilter("PopID", ancestry),
-          ...buildOptionalTermsFilter("smokeNFC", smokeNFC),
-          ...buildOptionalTermsFilter("array.keyword", platfomrarray),
-          ...buildOptionalTermsFilter("priorCancer", priorCancer),
-          ...buildOptionalTermsFilter("incidentCancerHem", hemaCancer),
-          ...buildOptionalTermsFilter("incidentCancerLymphoid", lymCancer),
-          ...buildOptionalTermsFilter("incidentCancerMyeloid", myeCancer),
-        ];
-        const baseFilter = [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }];
+      },
+    });
+    const mcaHits = result.body.hits.hits.map((item) => item._source);
+    const afterMcaMs = nowMs();
+    logQueryTiming(logger, "/opensearch/chromosome", {
+      stage: "afterMergedFetch",
+      counts: { mergedHits: mcaHits.length },
+      ms: { elapsed: afterMcaMs - requestStartMs },
+    });
 
-        const denomHits = await fetchDenominatorBySampleIds(client, resultsIds, baseMust, baseFilter, [
-          "sampleId",
-          "age",
-          "sex",
-          "smokeNFC",
-          "PopID",
-          "array",
-          "priorCancer",
-          "incidentCancerHem",
-          "incidentCancerLymphoid",
-          "incidentCancerMyeloid",
-        ]);
-        const afterDenominatorMs = nowMs();
-        logQueryTiming(logger, "/opensearch/chromosome", {
-          stage: "afterDenominatorFetch",
-          counts: { mcaHits: mcaHits.length, denominatorHits: denomHits.length },
-          ms: { elapsed: afterDenominatorMs - requestStartMs, denominatorFetch: afterDenominatorMs - afterMcaMs },
-        });
-
-        const denominatorHits = denomHits;
-        console.log("denominator", denominatorHits.length, "nominator:", nominatorHits.length);
-
-        const payload = { nominator: nominatorHits, denominator: denominatorHits };
-        setCachedRouteResponse(cacheKey, payload);
-        response.json(payload);
-        const afterResponseMs = nowMs();
-        logQueryTiming(logger, "/opensearch/chromosome", {
-          counts: {
-            mcaHits: nominatorHits.length,
-            denominatorHits: denominatorHits.length,
-          },
-          ms: {
-            mcaFetch: afterMcaMs - requestStartMs,
-            denominatorFetch: afterDenominatorMs - afterMcaMs,
-            responseWrite: afterResponseMs - afterDenominatorMs,
-            total: afterResponseMs - requestStartMs,
-          },
-        });
-        //response.json(result.body.hits.hits);
-      } catch (error) {
-        console.error(error);
-      }
-
-      //console.log(result.body.hits.hits.length);
-      //response.json(result.body.hits.hits);
-    } catch (error) {
-      console.error(error);
-    }
+    const payload = { merged: mcaHits };
+    setCachedRouteResponse(cacheKey, payload);
+    response.json(payload);
+    const afterResponseMs = nowMs();
+    logQueryTiming(logger, "/opensearch/chromosome", {
+      counts: { mergedHits: mcaHits.length },
+      ms: {
+        mergedFetch: afterMcaMs - requestStartMs,
+        responseWrite: afterResponseMs - afterMcaMs,
+        total: afterResponseMs - requestStartMs,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ error: "OpenSearch chromosome query failed" });
   }
 });
 
-const parseQueryStr = (name, query) => {
-  // query.forEach((e) => {
-  //   e.value === "male" ? sexarr.push("M") : "";
-  //   e.value === "female" ? sexarr.push("F") : "";
-  // });
-  const values = [];
-  query.forEach((e) => {
-    if (e.value === "male" || e.value === "female") {
-      values.push(e.value.substring(0, 1).toUpperCase());
-    } else values.push(e.value);
-    if (e.value === "all") {
-      if (name === "sex") {
-        values.push("M");
-        values.push("F");
-      } else if (name === "ancestry") {
-        values.push();
-      }
-    }
+const getMcaStudyDatasets = (study) => {
+  const mcaDatasetsByStudy = {
+    plco: ["PLCO_GSA_blood_autosomal_mCAs", "PLCO_GSA_blood_mLOX", "PLCO_GSA_blood_mLOY"],
+    ukbb: ["UKBB_blood_autosomal_mCAs", "UKBB_blood_mLOX", "UKBB_blood_mLOY"],
+    biovu: ["BioVU_blood_autosomal_mCAs", "BioVU_blood_mLOX", "BioVU_blood_mLOY"],
+    jap: ["JAP_BBJ_autosomal_mCAs"],
+    bbj: ["JAP_BBJ_autosomal_mCAs"],
+    iorra: ["IORRA_autosomal_mCAs", "IORRA_mLOX", "IORRA_mLOY"],
+    estbb: ["EstBB_autosomal_mCAs", "EstBB_mCA_Explorer_events"],
+    topmed: ["TOPMed_autosomal_mCAs", "TOPMed_mLOX", "TOPMed_mLOY"],
+  };
+  const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(mcaDatasetsByStudy).map((value) => ({ value }));
+  const datasets = selectedStudies.flatMap((item) => {
+    const value = getSelectionValue(item);
+    if (!value || value === "all" || value === "X" || value === "Y") return [];
+    return mcaDatasetsByStudy[value] || [value];
   });
-  //console.log(values);
-  return values;
+
+  return datasets.length > 0 ? datasets : Object.values(mcaDatasetsByStudy).flat();
+};
+
+const getDenominatorStudyDatasets = (study) => {
+  const denominatorDatasetsByStudy = {
+    plco: "PLCO_denominator",
+    ukbb: "UKBB_denominator",
+    biovu: "BioVU_denominator",
+    jap: "JAP_BBJ_denominator",
+    bbj: "JAP_BBJ_denominator",
+    iorra: "IORRA_denominator",
+    topmed: "TOPMed_denominator",
+  };
+  const selectedStudies = Array.isArray(study) && study.length > 0 ? study : Object.keys(denominatorDatasetsByStudy).map((value) => ({ value }));
+  const datasets = selectedStudies
+    .map((item) => getSelectionValue(item))
+    .filter((value) => value && value !== "all")
+    .map((value) => denominatorDatasetsByStudy[value] || value)
+    .filter(Boolean);
+
+  return datasets.length > 0 ? datasets : Object.values(denominatorDatasetsByStudy);
 };
 
 const getMcaStudyDatasets = (study) => {
@@ -749,14 +728,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
         query: {
           bool: {
             must: denominatorMust,
-            filter: [
-              {
-                range: { ageMin: { lte: maxAge } },
-              },
-              {
-                range: { ageMax: { gte: minAge } },
-              },
-            ],
+            filter: [buildAgeOverlapFilter(minAge, maxAge)],
           },
         },
       },
@@ -768,15 +740,24 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
   }
 });
 
+const getSelectionValue = (item) => (item && typeof item === "object" ? item.value : item);
+
+const getSelectionLabel = (item) => (item && typeof item === "object" ? item.label || item.value : item);
+
+const getSelectedAttributesArray = (atti) => {
+  if (!Array.isArray(atti)) return [];
+  return atti
+    .map((item) => getSelectionValue(item))
+    .filter((value) => value !== undefined && value !== null && value !== "" && value !== "all");
+};
+
+const expandSmokingAttributesArray = (values) => {
+  return values.includes("3") ? Array.from(new Set([...values, "1", "2"])) : values;
+};
+
 const getAttributesArray = (atti, name) => {
-  let attiarray = [];
-  if (atti !== undefined && atti !== null) {
-    atti.forEach((e) => {
-      if (e.value !== "all") {
-        attiarray.push(e.value);
-      }
-    });
-  }
+  let attiarray = getSelectedAttributesArray(atti);
+  if (name === "smoking") attiarray = expandSmokingAttributesArray(attiarray);
   if (attiarray.length === 0) {
     switch (name) {
       case "sex":
@@ -807,21 +788,145 @@ const getAttributesArray = (atti, name) => {
   return attiarray;
 };
 
-const getSelectedAttributesArray = (atti) => {
-  const attiarray = [];
-  if (atti !== undefined && atti !== null) {
-    atti.forEach((e) => {
-      if (e.value !== "all") {
-        attiarray.push(e.value);
-      }
-    });
-  }
-  return attiarray;
+const buildOptionalTermsFilter = (field, atti) => {
+  const values = field === "smokeNFC" ? expandSmokingAttributesArray(getSelectedAttributesArray(atti)) : getSelectedAttributesArray(atti);
+  return values.length > 0 ? [{ terms: { [field]: values } }] : [];
 };
 
-const buildOptionalTermsFilter = (field, atti) => {
-  const values = getSelectedAttributesArray(atti);
-  return values.length > 0 ? [{ terms: { [field]: values } }] : [];
+const hasActiveDenominatorFilter = ({
+  sex,
+  ancestry,
+  smoking,
+  array,
+  priorCancer,
+  hemaCancer,
+  lymCancer,
+  myeCancer,
+  rawMinAge,
+  rawMaxAge,
+}) => {
+  return (
+    getSelectedAttributesArray(sex).length > 0 ||
+    getSelectedAttributesArray(ancestry).length > 0 ||
+    getSelectedAttributesArray(smoking).length > 0 ||
+    getSelectedAttributesArray(array).length > 0 ||
+    getSelectedAttributesArray(priorCancer).length > 0 ||
+    getSelectedAttributesArray(hemaCancer).length > 0 ||
+    getSelectedAttributesArray(lymCancer).length > 0 ||
+    getSelectedAttributesArray(myeCancer).length > 0 ||
+    hasProvidedFilterValue(rawMinAge) ||
+    hasProvidedFilterValue(rawMaxAge)
+  );
+};
+
+const hasProvidedFilterValue = (value) => value !== undefined && value !== null && value !== "";
+
+const getOverlappingAgeRanges = (minAge, maxAge) => {
+  const ranges = [];
+  const start = Math.floor(minAge / 10) * 10;
+  const end = Math.floor(maxAge / 10) * 10;
+
+  for (let ageStart = start; ageStart <= end; ageStart += 10) {
+    ranges.push(`${ageStart}-${ageStart + 9}`);
+  }
+
+  return ranges;
+};
+
+const buildAgeOverlapFilter = (minAge, maxAge) => ({
+  bool: {
+    should: [
+      {
+        bool: {
+          filter: [{ range: { ageMin: { lte: maxAge } } }, { range: { ageMax: { gte: minAge } } }],
+        },
+      },
+      { terms: { ageRange: getOverlappingAgeRanges(minAge, maxAge) } },
+      { terms: { "ageRange.keyword": getOverlappingAgeRanges(minAge, maxAge) } },
+    ],
+    minimum_should_match: 1,
+  },
+});
+
+const buildMergedDenominatorFilters = ({
+  sex,
+  ancestry,
+  smoking,
+  array,
+  priorCancer,
+  hemaCancer,
+  lymCancer,
+  myeCancer,
+  minAge,
+  maxAge,
+  rawMinAge,
+  rawMaxAge,
+  forceAgeFilter = false,
+}) => {
+  const filters = [
+    ...buildOptionalTermsFilter("sex", sex),
+    ...buildOptionalTermsFilter("PopID", ancestry),
+    ...buildOptionalTermsFilter("smokeNFC", smoking),
+    ...buildOptionalTermsFilter("array", array),
+    ...buildOptionalTermsFilter("priorCancer", priorCancer),
+    ...buildOptionalTermsFilter("incidentCancerHem", hemaCancer),
+    ...buildOptionalTermsFilter("incidentCancerLymphoid", lymCancer),
+    ...buildOptionalTermsFilter("incidentCancerMyeloid", myeCancer),
+  ];
+
+  if (forceAgeFilter || hasProvidedFilterValue(rawMinAge) || hasProvidedFilterValue(rawMaxAge)) {
+    filters.push(buildAgeOverlapFilter(minAge, maxAge));
+  }
+
+  return filters;
+};
+
+const buildDenominatorAgeFilters = ({ sex, ancestry, smoking, array, priorCancer, hemaCancer, lymCancer, myeCancer }) => [
+  ...buildOptionalTermsFilter("sex.keyword", sex),
+  ...buildOptionalTermsFilter("PopID", ancestry),
+  ...buildOptionalTermsFilter("smokeNFC", smoking),
+  ...buildOptionalTermsFilter("array.keyword", array),
+  ...buildOptionalTermsFilter("priorCancer", priorCancer),
+  ...buildOptionalTermsFilter("incidentCancerHem", hemaCancer),
+  ...buildOptionalTermsFilter("incidentCancerLymphoid", lymCancer),
+  ...buildOptionalTermsFilter("incidentCancerMyeloid", myeCancer),
+];
+
+const mergeLegacyDenominatorRows = async (
+  client,
+  mcaRows,
+  { sex, ancestry, smoking, array, priorCancer, hemaCancer, lymCancer, myeCancer, minAge, maxAge }
+) => {
+  const mcaBySampleId = new Map();
+  mcaRows.forEach((row) => {
+    const sampleId = row?.sampleId;
+    if (sampleId !== undefined && sampleId !== null && !mcaBySampleId.has(sampleId)) mcaBySampleId.set(sampleId, row);
+  });
+
+  const denominatorHits = await fetchDenominatorBySampleIds(
+    client,
+    mcaRows.map((row) => row?.sampleId),
+    buildDenominatorAgeFilters({ sex, ancestry, smoking, array, priorCancer, hemaCancer, lymCancer, myeCancer }),
+    [buildAgeOverlapFilter(minAge, maxAge)],
+    [
+      "sampleId",
+      "age",
+      "sex",
+      "smokeNFC",
+      "PopID",
+      "array",
+      "priorCancer",
+      "incidentCancerHem",
+      "incidentCancerLymphoid",
+      "incidentCancerMyeloid",
+    ]
+  );
+
+  return denominatorHits.map((item) => {
+    const denominatorSource = item._source || {};
+    const mcaSource = mcaBySampleId.get(denominatorSource.sampleId);
+    return mcaSource !== undefined ? { ...denominatorSource, ...mcaSource } : denominatorSource;
+  });
 };
 /*
 const getSex = (sex) => {
@@ -887,8 +992,9 @@ const getStudy = (qdataset, qfilter) => {
   if (qdataset !== undefined) {
     qdataset.length
       ? qdataset.forEach((element) => {
-          element.value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
-          element.value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
+          const value = getSelectionValue(element);
+          value === "X" ? (qfilter = qfilter.concat("mLOX")) : "";
+          value === "Y" ? (qfilter = qfilter.concat("mLOY")) : "";
           //element.label?searchdataset.push({match:{dataset:element.value}}):''
         })
       : "";
@@ -900,7 +1006,7 @@ const getStudy = (qdataset, qfilter) => {
 
 const hasActiveSelectionFilter = (items) => {
   if (!Array.isArray(items) || items.length === 0) return false;
-  return items.some((item) => item && item.value !== "all");
+  return getSelectedAttributesArray(items).length > 0;
 };
 
 const hasActiveDenominatorFilters = ({ sex, ancestry, smoking, approach, minAge, maxAge, priorCancer, hemaCancer, lymCancer, myeCancer }) => {
@@ -1024,7 +1130,8 @@ const fetchDenominatorBySampleIds = async (client, resultsIds, baseMust = [], ba
   const MAX_TERMS = getPositiveIntOrDefault(DENOMINATOR_MAX_TERMS, 65536);
   const SAFE_CHUNK_SIZE = MAX_TERMS;
   const CHUNK_CONCURRENCY = getPositiveIntOrDefault(DENOMINATOR_CHUNK_CONCURRENCY, 2);
-  const uniqueIds = [...new Set(resultsIds)];
+  const uniqueIds = [...new Set(resultsIds.filter((id) => id !== undefined && id !== null && id !== ""))];
+  if (uniqueIds.length === 0) return [];
   const dedupKey = [
     makeIdsSignature(uniqueIds),
     MAX_TERMS,

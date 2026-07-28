@@ -45,6 +45,7 @@ function changeBackground(track, chromesomeId, opacity) {
     if (svgDoc.nodeName === "g") {
       if (svgDoc.__data__.key === chromesomeId) {
         var s = svgDoc.querySelector(".background");
+        if (!s) continue;
         //s.setAttribute("fill","white")
         s.setAttribute("opacity", opacity);
       }
@@ -105,6 +106,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const lastZoomLabelRef = useRef("");
   const isResettingToInitialRef = useRef(false);
   const resetInitialTimerRef = useRef(null);
+  const plotReadyTimerRef = useRef(null);
   const [maxTitleheight, setMaxTitleheight] = useState(0);
   const [heightA, setHeightA] = useState(0);
   const [heightB, setHeightB] = useState(0);
@@ -119,10 +121,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   const restoreInitialRangeToForm = () => {
     setForm((prev) => {
-      if (prev.initialStart === "" || prev.initialStart === null || prev.initialStart === undefined) return prev;
-      if (prev.initialEnd === "" || prev.initialEnd === null || prev.initialEnd === undefined) return prev;
-      if (prev.start === prev.initialStart && prev.end === prev.initialEnd) return prev;
-      return { ...prev, start: prev.initialStart, end: prev.initialEnd };
+      const chrOption = prev.chrSingle || prev.chrCompare;
+      const selectedChromosome = chrOption ? layout.find((item) => item.id === chrOption.label + "") : null;
+      const nextStart = prev.initialStart !== "" && prev.initialStart !== null && prev.initialStart !== undefined
+        ? prev.initialStart
+        : selectedChromosome
+          ? 0
+          : prev.start;
+      const nextEnd = prev.initialEnd !== "" && prev.initialEnd !== null && prev.initialEnd !== undefined
+        ? prev.initialEnd
+        : selectedChromosome
+          ? selectedChromosome.len + ""
+          : prev.end;
+
+      if (prev.start === nextStart && prev.end === nextEnd) return prev;
+      return { ...prev, start: nextStart, end: nextEnd };
     });
   };
 
@@ -130,6 +143,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     return () => {
       if (resetInitialTimerRef.current) {
         clearTimeout(resetInitialTimerRef.current);
+      }
+      if (plotReadyTimerRef.current) {
+        clearTimeout(plotReadyTimerRef.current);
       }
     };
   }, []);
@@ -272,6 +288,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
+          if (!bck) return;
 
           bck.addEventListener("mouseover", () => {
             // console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id
@@ -299,7 +316,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               plotType: { value: "static", label: "Chromosome level" },
               chrCompare: { value: "chr" + b.__data__.key, label: b.__data__.key },
               chrSingle: { value: "chr" + b.__data__.key, label: b.__data__.key },
-              end: layout.filter((c) => c.id === b.__data__.key + "")[0].len,
+              start: "0",
+              end: layout.filter((c) => c.id === b.__data__.key + "")[0].len + "",
             });
             if (form.compare) {
               document.getElementById("compareSubmit").click();
@@ -457,7 +475,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     setCommonTitle(
       checkGroupTitleForDup()
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -472,6 +490,53 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     //console.log(form, isLoadedA, isLoadedB);
   }, [isLoadedA, isLoadedB]);
+
+  useEffect(() => {
+    if (form.compare || form.plotType.value !== "circos") return;
+    if (typeof props.onLoading !== "function") return;
+
+    props.onLoading(false);
+    if (plotReadyTimerRef.current) clearTimeout(plotReadyTimerRef.current);
+
+    const expectedBlocks =
+      props.gain.length +
+      props.loss.length +
+      props.loh.length +
+      props.undetermined.length +
+      props.chrx.length +
+      props.chry.length;
+
+    if (expectedBlocks === 0) {
+      props.onLoading(true);
+      return;
+    }
+
+    const waitForBlocks = (attempt = 0) => {
+      const renderedBlocks = circleRef.current ? circleRef.current.querySelectorAll(".track-0 .block, .track-1 .block, .track-2 .block, .track-3 .block").length : 0;
+      if (renderedBlocks >= expectedBlocks || attempt >= 80) {
+        props.onLoading(true);
+        return;
+      }
+
+      plotReadyTimerRef.current = setTimeout(() => waitForBlocks(attempt + 1), 100);
+    };
+
+    plotReadyTimerRef.current = setTimeout(() => waitForBlocks(), 100);
+  }, [form.compare, form.plotType.value, props.gain, props.loss, props.loh, props.undetermined, props.chrx, props.chry, props.onLoading]);
+
+  useEffect(() => {
+    if (form.compare || form.plotType.value === "circos") return;
+    if (typeof props.onLoading !== "function") return;
+
+    props.onLoading(false);
+  }, [form.compare, form.plotType.value, chromesomeId, props.gain, props.loss, props.loh, props.undetermined, props.chrx, props.chry, props.onLoading]);
+
+  const handleSingleChromosomeReady = () => {
+    if (!form.compare && form.plotType.value !== "circos" && typeof props.onLoading === "function") {
+      props.onLoading(true);
+    }
+  };
+
   var chromesomeIdString = chromesomeId + "";
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeIdString),
@@ -623,7 +688,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       mergedResult.forEach((r) => {
         //if (r._source !== null) {
         const d = r;
-        if (!(group.hasOwnProperty("minFraction") && (d.cf === "" || d.cf === "NA"))) {
+        if (d.cf != "nan" && !(group.hasOwnProperty("minFraction") && (d.cf === "" || d.cf === "NA"))) {
           // console.log(d)
           d.block_id = d.chromosome.substring(3);
           d.value = d.cf === "NA" ? "" : d.cf;
@@ -746,7 +811,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setTitleA(
       tempA
         .slice(1)
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -756,7 +821,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setTitleB(
       tempB
         .slice(1)
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -811,7 +876,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
     title = title
-      .replace("Approach", "Array Platform")
+      .replace("Approach", "Detection Approach")
       .replace("Types:", "Copy Number State:")
       .replace("Prior", "Prior ")
       .replace("Hema", "Incident Hematological ")
@@ -1418,7 +1483,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   //console.log(data,dataCompared)
   //only disply 200 events for X and Y
-  const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];
+  const numberOfEvents = Math.min(props.chrx.length, props.chry.length, 2000);
+  const dataXY = [...props.chrx.slice(0, numberOfEvents), ...props.chry.slice(0, numberOfEvents)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   // const linethickness = 0;
@@ -1805,7 +1871,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     toggleVisibility={toggleVisibility}
                     onHeightChange={props.onHeightChange}
                     fisherP={props.allDenominator}
-                    type={form.types}></SingleChromosome>
+                    type={form.types}
+                    onReady={handleSingleChromosomeReady}></SingleChromosome>
                 </Col>
                 <Col>
                   <Table responsive bordered hover className="table fisherTable">
@@ -1947,6 +2014,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 )}
               </Col>
             </Row>
+            <div className="table-responsive" style={{ fontSize: "14px" }}>
+              Participants with missing data for the selected variable(s) are excluded from this view.
+            </div>
             {/* <Row>
               <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgA}</div></Col>
               <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgB}</div></Col>
@@ -2027,8 +2097,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
-          <br></br>
+
           <div id="circosTable" className="table-responsive" style={{ fontSize: "14px" }}>
+            Participants with missing data for the selected variable(s) are excluded from this view.
+            <br></br>
+            <br></br>
             Total number of events displayed
             {form.chrX || form.chrY ? (
               <>

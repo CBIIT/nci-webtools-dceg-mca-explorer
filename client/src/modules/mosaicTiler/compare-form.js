@@ -4,7 +4,7 @@ import { useRecoilState } from "recoil";
 import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
+import { AncestryOptions, CompareArray, TypeStateOptions, StudyOptions } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
 import { parseRangeLable } from "./range-utils";
 
@@ -150,11 +150,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
     }
 
     if (name === "study" && selection.find((option) => option.value === "all")) {
-      selection = [
-        { value: "plco", label: "PLCO" },
-        { value: "ukbb", label: "UK Bio Bank" },
-        { value: "biovu", label: "BioVU" },
-      ];
+      selection = StudyOptions.filter((option) => option.value !== "all");
     }
     if (name === "plotType") {
       //setDisabledType([]);
@@ -461,7 +457,7 @@ function getRangeError(start, end) {
         <hr></hr>
         <Accordion style={{ paddingTop: "5px" }}>
           <Accordion.Item eventKey="0">
-            <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+            <Accordion.Header style={{ textAlign: "right" }}>
               Choose more attributes
             </Accordion.Header>
             <Accordion.Body

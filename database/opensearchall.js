@@ -3,6 +3,21 @@ import path from "path";
 
 import { sources } from "./sources_v4.js";
 
+const chromosomeLayoutPath = path.resolve("..", "client", "src", "modules", "components", "summaryChart", "CNV", "layout2.json");
+const chromosomeLengths = loadChromosomeLengths(chromosomeLayoutPath);
+
+function loadChromosomeLengths(layoutPath) {
+  const layout = JSON.parse(fs.readFileSync(layoutPath).toString());
+  return layout.reduce((lengths, chromosome) => {
+    lengths[String(chromosome.id)] = Number(chromosome.len);
+    return lengths;
+  }, {});
+}
+
+function normalizeChromosomeId(chromosome) {
+  return String(chromosome || "").replace(/^chr/i, "");
+}
+
 function getSource(filename) {
   return sources.find((e) => e.sourcePath === filename || e.sourcePath.includes(filename));
 }
@@ -157,11 +172,88 @@ function getIndexName(filename) {
   return /denom|denominator/i.test(filename) ? "denominator" : "mcaexplorer";
 }
 
-function appendBulkJson(fd, filename, records, startId) {
-  const indexName = getIndexName(filename);
-  let id = startId;
+function isDenominatorFile(filename) {
+  return getIndexName(filename) === "denominator";
+}
 
-  records.map((record) => {
+const denominatorFieldsForMerge = [
+  "dataset",
+  "age",
+  "ageMin",
+  "ageMax",
+  "ageRange",
+  "sex",
+  "smokeNFC",
+  "PopID",
+  "dnaSource",
+  "array",
+  "priorCancer",
+  "incidentCancerHem",
+  "incidentCancerMyeloid",
+  "incidentCancerLymphoid",
+  "callRate",
+  "bafAuto",
+];
+
+function normalizeIntegerValue(value) {
+  if (value === undefined || value === null || value === "") return undefined;
+
+  const numericValue = Number.parseInt(String(value).trim(), 10);
+  return Number.isFinite(numericValue) ? numericValue : undefined;
+}
+
+function copyDenominatorFields(record, denominatorRecord) {
+  if (!denominatorRecord) return record;
+
+  const mergedRecord = { ...record };
+  denominatorFieldsForMerge.forEach((field) => {
+    if (denominatorRecord[field] === undefined || denominatorRecord[field] === "") return;
+
+    const targetField = field === "dataset" ? "denominatorDataset" : field;
+    mergedRecord[targetField] = denominatorRecord[field];
+  });
+
+  const normalizedAge = normalizeIntegerValue(mergedRecord.age);
+  const normalizedAgeMin = normalizeIntegerValue(mergedRecord.ageMin);
+  const normalizedAgeMax = normalizeIntegerValue(mergedRecord.ageMax);
+
+  if (normalizedAge !== undefined) mergedRecord.age = normalizedAge;
+  else delete mergedRecord.age;
+
+  if (normalizedAgeMin !== undefined) mergedRecord.ageMin = normalizedAgeMin;
+  else delete mergedRecord.ageMin;
+
+  if (normalizedAgeMax !== undefined) mergedRecord.ageMax = normalizedAgeMax;
+  else delete mergedRecord.ageMax;
+
+  return mergedRecord;
+}
+
+function buildDenominatorBySampleId(denominatorRecords) {
+  const denominatorBySampleId = new Map();
+  let duplicateSampleIds = 0;
+
+  denominatorRecords.forEach((record) => {
+    if (!record.sampleId) return;
+    if (denominatorBySampleId.has(record.sampleId)) {
+      duplicateSampleIds++;
+      return;
+    }
+
+    denominatorBySampleId.set(record.sampleId, record);
+  });
+
+  if (duplicateSampleIds > 0) {
+    console.log(`Skipped ${duplicateSampleIds} duplicate denominator sampleId rows while building merged index`);
+  }
+
+  return denominatorBySampleId;
+}
+
+function appendRecordsForIndex(fd, indexName, records, nextIds) {
+  let id = nextIds[indexName] || 1;
+
+  records.forEach((record) => {
     fs.appendFileSync(
       fd,
       JSON.stringify({
@@ -178,8 +270,52 @@ function appendBulkJson(fd, filename, records, startId) {
     id++;
   });
 
+  nextIds[indexName] = id;
+}
+
+function validateChromosomeBoundaries(filename, records) {
+  const invalidRecords = records.reduce((invalid, record, index) => {
+    if (record.endGrch38 === undefined) return invalid;
+
+    const chromosome = normalizeChromosomeId(record.chromosome);
+    const chromosomeLength = chromosomeLengths[chromosome];
+    const end = Number(record.endGrch38);
+
+    if (!Number.isFinite(chromosomeLength) || !Number.isFinite(end) || end > chromosomeLength) {
+      invalid.push({
+        row: index + 2,
+        sampleId: record.sampleId,
+        chromosome: record.chromosome,
+        endGrch38: record.endGrch38,
+        chromosomeLength,
+      });
+    }
+
+    return invalid;
+  }, []);
+
+  if (invalidRecords.length === 0) return;
+
+  const examples = invalidRecords
+    .slice(0, 10)
+    .map((record) => JSON.stringify(record))
+    .join("\n");
+  throw new Error(`${filename}: ${invalidRecords.length} rows have endGrch38 outside layout2.json chromosome boundaries\n${examples}`);
+}
+
+function appendBulkJson(fd, filename, records, nextIds) {
+  const indexName = getIndexName(filename);
+  appendRecordsForIndex(fd, indexName, records, nextIds);
   console.log(`Finish ${filename} import: ${records.length} rows`);
-  return id;
+}
+
+function appendMergedBulkJson(fd, filename, records, denominatorBySampleId, nextIds) {
+  if (isDenominatorFile(filename)) return 0;
+
+  const mergedRecords = records.map((record) => copyDenominatorFields(record, denominatorBySampleId.get(record.sampleId)));
+  appendRecordsForIndex(fd, "merged", mergedRecords, nextIds);
+  console.log(`Finish ${filename} merged import: ${mergedRecords.length} rows`);
+  return mergedRecords.length;
 }
 
 function removeNewlines(obj) {
@@ -197,17 +333,36 @@ function removeNewlines(obj) {
 }
 
 (async function main() {
-  let id = 1;
+  const nextIds = {
+    mcaexplorer: 1,
+    denominator: 1,
+    merged: 1,
+  };
   let totalRows = 0;
+  let totalMergedRows = 0;
   const sourceFiles = getSourceFiles();
   const outputJsonName = "all.json";
   const fd = fs.openSync(path.resolve("data", outputJsonName), "w");
 
   try {
+    const denominatorRecords = [];
+    for (const sourceFile of sourceFiles.filter(isDenominatorFile)) {
+      try {
+        const records = await parseSourceFile(sourceFile);
+        records.forEach((record) => denominatorRecords.push(record));
+      } catch (err) {
+        console.log(`${sourceFile}: ${err}`);
+      }
+    }
+    const denominatorBySampleId = buildDenominatorBySampleId(denominatorRecords);
+    console.log(`Prepared denominator lookup for merged index: ${denominatorBySampleId.size} sampleIds`);
+
     for (const sourceFile of sourceFiles) {
       try {
         const records = await parseSourceFile(sourceFile);
-        id = appendBulkJson(fd, sourceFile, records, id);
+        validateChromosomeBoundaries(sourceFile, records);
+        appendBulkJson(fd, sourceFile, records, nextIds);
+        totalMergedRows += appendMergedBulkJson(fd, sourceFile, records, denominatorBySampleId, nextIds);
         totalRows += records.length;
       } catch (err) {
         console.log(`${sourceFile}: ${err}`);
@@ -219,4 +374,5 @@ function removeNewlines(obj) {
 
   console.log(`Finish all imports to ${outputJsonName}`);
   console.log(`Total rows: ${totalRows}`);
+  console.log(`Total merged rows: ${totalMergedRows}`);
 })();

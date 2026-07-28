@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
@@ -10,6 +10,22 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
+
+const emptyPlotData = {
+  gain: [],
+  loss: [],
+  loh: [],
+  undetermined: [],
+  chrX: [],
+  chrY: [],
+  allValues: [],
+};
+
+const ancestryLabelByValue = new Map(AncestryOptions.map((item) => [item.value, item.label]));
+const smokeLabelByValue = new Map(smokeNFC.map((item) => [item.value, item.label]));
+const sexLabelByValue = new Map(SexOptions.map((item) => [item.value, item.label]));
+
+const waitForNextPaint = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -40,17 +56,14 @@ export default function RangeView(props) {
 
   const [figureHeight, setFigureHeight] = useState(chartHeight);
 
-  const [gain, setGain] = useState([]);
-  const [loss, setLoss] = useState([]);
-  const [loh, setLoh] = useState([]);
-  const [undetermined, setUndetermined] = useState([]);
-  const [chrX, setChrX] = useState([]);
-  const [chrY, setChrY] = useState([]);
+  const [plotData, setPlotData] = useState(emptyPlotData);
   const [tableData, setTableData] = useState([]); //for compare data
   const [loaded, setLoaded] = useState(false);
   const [allDenominator, setAllDenominator] = useState(0);
   const [violinData, setViolinData] = useState([]);
   const circleRef = useRef(null);
+  const latestQueryTimingRef = useRef(null);
+  const queryInFlightRef = useRef(false);
 
   const study_value = form.study;
   let query_value = [];
@@ -73,13 +86,18 @@ export default function RangeView(props) {
   ]);
 
   async function handleSubmit(qdataset, qform) {
-    setGain([]);
-    setLoh([]);
-    setLoss([]);
-    setUndetermined([]);
-    setChrX([]);
-    setChrY([]);
+    const totalStartMs = performance.now();
+    const timing = {
+      route: "rangeView",
+      previousBaselineMs: {
+        originalApprox: 120000,
+        preMergedApiExample: 9674,
+      },
+    };
+    queryInFlightRef.current = true;
+    setPlotData(emptyPlotData);
     setLoaded(false);
+    await waitForNextPaint();
     // setForm({ ...form, chrX: false, chrY: false });
     //setLoading(true)
     console.log(qform);
@@ -103,18 +121,36 @@ export default function RangeView(props) {
       myeCancer: qform.myeCancer,
     };
 
-    const [response, allresponseDenominator] = await Promise.all([
-      axios.post("api/opensearch/mca", query),
-      axios.post("api/opensearch/denominator", query),
-    ]);
-    let gainTemp = [];
-    let lossTemp = [];
-    let lohTemp = [];
-    let undeterTemp = [];
+    const apiStartMs = performance.now();
+    const mcaStartMs = performance.now();
+    const mcaRequest = axios.post("api/opensearch/mca", query).finally(() => {
+      timing.mcaApiMs = Math.round(performance.now() - mcaStartMs);
+    });
+    const denominatorStartMs = performance.now();
+    const denominatorRequest = axios.post("api/opensearch/denominator", query).finally(() => {
+      timing.denominatorApiMs = Math.round(performance.now() - denominatorStartMs);
+    });
+    const [response, allresponseDenominator] = await Promise.all([mcaRequest, denominatorRequest]);
+    timing.apiMs = Math.round(performance.now() - apiStartMs);
+
+    const transformStartMs = performance.now();
+    const nextPlotData = {
+      gain: [],
+      loss: [],
+      loh: [],
+      undetermined: [],
+      chrX: [],
+      chrY: [],
+      allValues: [],
+    };
+    const allBuckets = {
+      gain: [],
+      loss: [],
+      loh: [],
+      undetermined: [],
+    };
     //console.log(response.data.denominator.length, allresponseDenominator.data);
     setAllDenominator(allresponseDenominator.data);
-    const chrXTemp = [];
-    const chrYTemp = [];
     const mergedResult = Array.isArray(response.data.merged)
       ? response.data.merged
       : (() => {
@@ -162,81 +198,95 @@ export default function RangeView(props) {
               };
           });
         })();
+    timing.responseShape = Array.isArray(response.data.merged) ? "merged" : "legacy";
+    timing.mergedRows = mergedResult.length;
+    timing.allDenominator = allresponseDenominator.data;
     //console.log(mergedResult.length);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
     // console.log(form);
     mergedResult.forEach((r) => {
       //if (r._source !== null) {
-      const d = r;
-      if (d.cf != "nan") {
+      if (r.cf != "nan") {
+        const d = { ...r };
         d.block_id = d.chromosome.substring(3);
         d.value = d.cf === "NA" ? "" : d.cf;
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
         if (d.PopID !== undefined) {
-          const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
-          d.PopID = dancestry !== undefined ? dancestry[0].label : "";
+          d.PopID = ancestryLabelByValue.get(d.PopID) || "";
         }
         if (d.smokeNFC !== undefined) {
-          const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
-          d.smokeNFC = dsmoking !== undefined && dsmoking.length > 0 ? dsmoking[0].label : "NA";
+          d.smokeNFC = smokeLabelByValue.get(d.smokeNFC) || "NA";
         }
         if (d.sex !== undefined) {
-          const dsex = SexOptions.filter((a) => a.value === d.sex);
-          d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
+          d.sex = sexLabelByValue.get(d.sex) || "NA";
         }
 
         //d.sex = d.sex === 0?"F":"M"
         //console.log(d)
         if (d.chromosome != "chrX") {
-          if (d.type === "Gain") gainTemp.push(d);
-          else if (d.type === "CN-LOH") lohTemp.push(d);
-          else if (d.type === "Loss") lossTemp.push(d);
-          else if (d.type === "Undetermined") undeterTemp.push(d);
+          if (d.type === "Gain") allBuckets.gain.push(d);
+          else if (d.type === "CN-LOH") allBuckets.loh.push(d);
+          else if (d.type === "Loss") allBuckets.loss.push(d);
+          else if (d.type === "Undetermined") allBuckets.undetermined.push(d);
         }
         //for whole, and select X or Y
         else {
           if (d.type === "mLOX") {
-            chrXTemp.push(d);
             d.block_id = "X";
+            nextPlotData.chrX.push(d);
             //lossTemp.push(d);
           }
           if (d.type === "mLOY") {
-            chrYTemp.push(d);
             d.block_id = "Y";
+            nextPlotData.chrY.push(d);
             //lossTemp.push(d);
           }
         }
       }
       //}
     });
-    // setLoading(false)
     if (form.types.find((e) => e.value === "all")) {
-      setGain(gainTemp);
-      setLoss(lossTemp);
-      setLoh(lohTemp);
-      setUndetermined(undeterTemp);
+      nextPlotData.gain = allBuckets.gain;
+      nextPlotData.loss = allBuckets.loss;
+      nextPlotData.loh = allBuckets.loh;
+      nextPlotData.undetermined = allBuckets.undetermined;
     } else {
-      if (form.types.find((e) => e.value === "gain")) setGain(gainTemp);
-      if (form.types.find((e) => e.value === "loss")) setLoss(lossTemp);
-      if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
-      if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
+      if (form.types.find((e) => e.value === "gain")) nextPlotData.gain = allBuckets.gain;
+      if (form.types.find((e) => e.value === "loss")) nextPlotData.loss = allBuckets.loss;
+      if (form.types.find((e) => e.value === "loh")) nextPlotData.loh = allBuckets.loh;
+      if (form.types.find((e) => e.value === "undetermined")) nextPlotData.undetermined = allBuckets.undetermined;
     }
-    console.log(gain.length);
-    setChrX(chrXTemp);
-    setChrY(chrYTemp);
-    setLoaded(true);
+    nextPlotData.allValues = nextPlotData.gain
+      .concat(nextPlotData.loss)
+      .concat(nextPlotData.loh)
+      .concat(nextPlotData.undetermined)
+      .concat(nextPlotData.chrX)
+      .concat(nextPlotData.chrY);
+    console.log(nextPlotData.gain.length);
+    timing.transformMs = Math.round(performance.now() - transformStartMs);
+    const stateStartMs = performance.now();
+    queryInFlightRef.current = false;
+    setPlotData(nextPlotData);
+    setLoaded(nextPlotData.allValues.length === 0);
+    timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
+    timing.totalMs = Math.round(performance.now() - totalStartMs);
+    timing.improvementVsOriginalApprox = `${(timing.previousBaselineMs.originalApprox / Math.max(timing.totalMs, 1)).toFixed(1)}x faster`;
+    timing.improvementVsPreMergedApiExample = `${(timing.previousBaselineMs.preMergedApiExample / Math.max(timing.apiMs, 1)).toFixed(1)}x API faster`;
+    latestQueryTimingRef.current = timing;
+    console.log(`[rangeView timing summary]\n${JSON.stringify(timing, null, 2)}`);
+    console.table({ rangeViewTiming: timing });
   }
 
   useEffect(() => {
     setClickedCounter(clickedCounter + 1);
     //console.log(chrX);
     if (form.plotType.value === "static") {
-      setAllValue([...allValues]);
+      setAllValue(plotData.allValues);
     }
-    handleDataChange(allValues);
-  }, [gain, loss, loh, undetermined, chrX, chrY]);
+    handleDataChange(plotData.allValues);
+  }, [plotData]);
 
   //const chromosomes = form.chromosome.map((e) => e.label);
   //const chromosomes = form.chromosome;
@@ -256,7 +306,7 @@ export default function RangeView(props) {
   // const sortX = chrX.filter((e) => chromosomes.includes("X")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
   // const sortY = chrY.filter((e) => chromosomes.includes("Y")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
   // const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
-  const allValues = gain.concat(loss).concat(loh).concat(undetermined).concat(chrX).concat(chrY);
+  const { gain, loss, loh, undetermined, chrX, chrY, allValues } = plotData;
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     var chromoIdString = chromoId + "";
@@ -546,7 +596,13 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    console.log(data.length);
+    const handoffTiming = latestQueryTimingRef.current;
+    console.log(`[rangeView table handoff]\n${JSON.stringify({
+      rows: data.length,
+      queryTotalMs: handoffTiming?.totalMs,
+      apiMs: handoffTiming?.apiMs,
+      responseShape: handoffTiming?.responseShape,
+    }, null, 2)}`);
     setTableData(data);
     getViolinData(data);
   };
@@ -554,9 +610,10 @@ export default function RangeView(props) {
     props.onPair();
   };
 
-  const handleSetLoading = (val) => {
+  const handleSetLoading = useCallback((val) => {
+    if (queryInFlightRef.current && val) return;
     setLoaded(val);
-  };
+  }, []);
   const checkMaxLines = () => {
     let totalLines = 0;
     const linesSummary = {};
@@ -768,11 +825,11 @@ export default function RangeView(props) {
             </Row>
             <Row>{loaded ? checkMaxLines() : ""}</Row>
             <Row>
-              <div className="m-3">
+              <div className="">
                 <div className="d-flex " style={{ justifyContent: "flex-end" }}>
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                    element={<a href="javascript:void(0)">Export Data</a>}>
+                    element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                     <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
                 </div>
@@ -849,7 +906,7 @@ export default function RangeView(props) {
               <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                   <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
               </div>

@@ -59,7 +59,7 @@ runImport(client, sources)
   });
 
 async function runImport(client, sources, logger = console) {
-  await assertTargetIndexesExist(client, ["mcaexplorer", "denominator"], logger);
+  await assertTargetIndexesExist(client, ["mcaexplorer", "denominator", "merged"], logger);
 
   for (const source of sources) {
     logger.info(`Importing ${source.path}`);
