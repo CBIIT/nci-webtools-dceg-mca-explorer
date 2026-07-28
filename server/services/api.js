@@ -74,6 +74,20 @@ const setCachedRouteResponse = (key, payload) => {
   pruneRouteResponseCache();
 };
 
+const addDerivedMcaLength = (row) => {
+  if (!row) return row;
+  const hasLength = row.length !== undefined && row.length !== null && row.length !== "";
+  if (hasLength) return row;
+
+  const start = Number(row.beginGrch38);
+  const end = Number(row.endGrch38);
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return row;
+
+  return { ...row, length: Math.max(end - start, 0) };
+};
+
+const addDerivedMcaLengths = (rows) => rows.map((row) => addDerivedMcaLength(row));
+
 //console.log("opensearch host is:", host);
 
 // log requests
@@ -318,6 +332,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         maxAge,
       });
     }
+    mcaHits = addDerivedMcaLengths(mcaHits);
     const afterMcaMs = nowMs();
     logQueryTiming(logger, "/opensearch/mca", {
       stage: "afterMergedFetch",
@@ -531,7 +546,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         },
       },
     });
-    const mcaHits = result.body.hits.hits.map((item) => item._source);
+    const mcaHits = addDerivedMcaLengths(result.body.hits.hits.map((item) => item._source));
     const afterMcaMs = nowMs();
     logQueryTiming(logger, "/opensearch/chromosome", {
       stage: "afterMergedFetch",
