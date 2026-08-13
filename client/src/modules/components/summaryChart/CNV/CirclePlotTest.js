@@ -1482,9 +1482,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   }, [window.innerWidth]);
 
   //console.log(data,dataCompared)
-  //only disply 200 events for X and Y
-  const numberOfEvents = Math.min(props.chrx.length, props.chry.length, 2000);
-  const dataXY = [...props.chrx.slice(0, numberOfEvents), ...props.chry.slice(0, numberOfEvents)];
+  //only disply 2000 events for X and Y
+  const maxXYEvents = 2000;
+  const dataXY = [...props.chrx.slice(0, maxXYEvents), ...props.chry.slice(0, maxXYEvents)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   // const linethickness = 0;
