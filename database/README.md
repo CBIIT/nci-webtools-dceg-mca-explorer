@@ -43,6 +43,13 @@ in data folder: it has
 
 7. TOPMED - 0206-07-22
 
+Source	Dataset(s) in all.json	Record count
+estBB	EstBB_mCA_Explorer_events	116,866
+iorra	IORRA_autosomal_mCAs, IORRA_denominator, IORRA_mLOX, IORRA_mLOY	368 / 2,361 / 980 / 134
+jap	JAP_BBJ_autosomal_mCAs, JAP_BBJ_denominator	66,500 / 27,910
+topmed	TOPMed_autosomal_mCAs, TOPMed_denominator, TOPMed_mLOX, TOPMed_mLOY	5,094 / 45,231 / 5,538 / 5,740
+
+
 source.js define the columns of files
 opensearch3.js will convert data as json by loading source.js: node convertJsonBiovu.js
 import-opensearch2.js import json into opensearch db, 
