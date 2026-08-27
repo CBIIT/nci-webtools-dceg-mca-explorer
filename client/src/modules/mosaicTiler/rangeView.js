@@ -10,6 +10,7 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
+import { THINNEST_THICKNESS } from "../components/summaryChart/CNV/thickness";
 
 const emptyPlotData = {
   gain: [],
@@ -67,6 +68,17 @@ export default function RangeView(props) {
   const circleRef = useRef(null);
   const latestQueryTimingRef = useRef(null);
   const queryInFlightRef = useRef(false);
+  const [thickness, setThickness] = useState(THINNEST_THICKNESS);
+  // bumped after the bar-thickness slider changes, so checkMaxLines recomputes against the redrawn circle
+  const [, setTableRefreshTick] = useState(0);
+
+  const handleThicknessChange = async (value) => {
+    setThickness(value);
+    const existingTable = document.querySelector("#circosTable table");
+    if (existingTable) existingTable.remove();
+    await waitForNextPaint();
+    setTableRefreshTick((prev) => prev + 1);
+  };
 
   const study_value = form.study;
   let query_value = [];
@@ -859,6 +871,8 @@ export default function RangeView(props) {
                     onClickedChr={handleClickChr}
                     getData={handleDataChange}
                     onPair={handleCheckboxChange}
+                    thickness={thickness}
+                    onThicknessChange={handleThicknessChange}
                     onLoading={handleSetLoading}></CirclePlotTest>
                 ) : (
                   ""

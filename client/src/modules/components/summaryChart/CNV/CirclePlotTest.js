@@ -101,8 +101,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [rangeB, setRangeB] = useState(0);
   const [Pfisher, setPfisher] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-  // lets users thicken bars after the plot renders; starts at the thinnest, overlap-safe default
-  const [thickness, setThickness] = useState(THINNEST_THICKNESS);
+  // owned by RangeView so the chromosome summary table can recompute when thickness changes
+  const thickness = props.thickness ?? THINNEST_THICKNESS;
+  const handleThicknessChange = (value) => {
+    if (typeof props.onThicknessChange === "function") props.onThicknessChange(value);
+  };
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
@@ -1955,7 +1958,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 max={THICKEST_THICKNESS}
                 step={0.02}
                 value={thickness}
-                onChange={(e) => setThickness(Number(e.target.value))}
+                onChange={(e) => handleThicknessChange(Number(e.target.value))}
                 style={{ width: "100px" }}
               />
               <span style={{ fontSize: "12px", whiteSpace: "nowrap" }}>{thickness.toFixed(2)}</span>
@@ -2085,7 +2088,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 max={THICKEST_THICKNESS}
                 step={0.02}
                 value={thickness}
-                onChange={(e) => setThickness(Number(e.target.value))}
+                onChange={(e) => handleThicknessChange(Number(e.target.value))}
                 style={{ width: "100px" }}
               />
               <span style={{ fontSize: "12px", whiteSpace: "nowrap" }}>{thickness.toFixed(2)}</span>
