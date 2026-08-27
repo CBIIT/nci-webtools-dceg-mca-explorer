@@ -826,13 +826,13 @@ export default function RangeView(props) {
             <Row>{loaded ? checkMaxLines() : ""}</Row>
             <Row>
               <div className="">
-                <div className="d-flex " style={{ justifyContent: "flex-end" }}>
+                {/* <div className="d-flex " style={{ justifyContent: "flex-end" }}>
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                     element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                     <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
-                </div>
+                </div> */}
 
                 {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
                 {/* <Table
@@ -904,13 +904,13 @@ export default function RangeView(props) {
           </Row>
           <Row>
             <div className="m-3">
-              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+              {/* <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                   element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                   <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
-              </div>
+              </div> */}
               {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
               {/* <Table
                 columns={columns}
