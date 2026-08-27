@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useDeferredValue } from "react";
 import layout from "./layout2.json";
 import layoutxy from "./layoutxy.json";
 import "./css/circos.css";
@@ -103,6 +103,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [isVisible, setIsVisible] = useState(true);
   // owned by RangeView so the chromosome summary table can recompute when thickness changes
   const thickness = props.thickness ?? THINNEST_THICKNESS;
+  // keeps the number input responsive while the (expensive) circos remount lags behind
+  const deferredThickness = useDeferredValue(thickness);
   const handleThicknessChange = (value) => {
     if (typeof props.onThicknessChange === "function") props.onThicknessChange(value);
   };
@@ -211,8 +213,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   else adjustWidth = 0.7;
 
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
-  const circleSize = (size > 1000 ? 1000 : size) * 1.2;
-  const compareCircleSize = minFigSize;
+  // never shrink circle plots below this; smaller viewports scroll horizontally instead
+  const MIN_CIRCLE_SIZE = 450;
+  const circleSize = Math.max((size > 1000 ? 1000 : size) * 1.2, MIN_CIRCLE_SIZE);
+  const compareCircleSize = Math.max(minFigSize, MIN_CIRCLE_SIZE);
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;
 
@@ -1981,15 +1985,15 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             </Col>
           </Row>
           <div>
-            <Row className="justify-content-center g-0">
-              <Col xs={12} md={8} lg={6}>
+            <Row className="justify-content-center g-0" style={{ overflowX: "auto", flexWrap: "nowrap" }}>
+              <Col xs={12} md={8} lg={6} style={{ minWidth: compareCircleSize, maxWidth: "none", flex: "none" }}>
                 {circleA ? (
                   <>
                     <div ref={circosCompareA} style={{ marginBottom: "1rem", fontSize: "14px" }}>
                       {titleA}
                     </div>
                     <CircosPlotCompare
-                      key={`circleA-${thickness}`}
+                      key={`circleA-${deferredThickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       title={titleA}
@@ -1997,7 +2001,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       details="A"
                       msg={msgA}
                       size={compareCircleSize}
-                      thickness={thickness}
+                      thickness={deferredThickness}
                       circle={circleA}
                       circleRef={circleRef}
                       maxtitleHeight={maxTitleheight - heightA}
@@ -2009,21 +2013,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   ""
                 )}
               </Col>
-              <Col xs={12} md={8} lg={6}>
+              <Col xs={12} md={8} lg={6} style={{ minWidth: compareCircleSize, maxWidth: "none", flex: "none" }}>
                 {circleB ? (
                   <>
                     <div ref={circosCompareB} style={{ marginBottom: "1rem", fontSize: "14px" }}>
                       {titleB}
                     </div>
                     <CircosPlotCompare
-                      key={`circleB-${thickness}`}
+                      key={`circleB-${deferredThickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       dataXY={[]}
                       title={titleB}
                       details="B"
                       size={compareCircleSize}
-                      thickness={thickness}
+                      thickness={deferredThickness}
                       circle={circleB}
                       circleRef={circleRef}
                       handleEnter={handleEnter}
@@ -2112,21 +2116,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               )}
             </Col>
           </Row>
-          <Row className="justify-content-center">
+          <Row className="justify-content-center" style={{ overflowX: "auto" }}>
             <Col
               xs={12}
               md={12}
               lg={12}
-              style={{ width: circleSize, height: circleSize + 15 }}>
+              style={{ width: circleSize, minWidth: circleSize, maxWidth: "none", height: circleSize + 15, flex: "none" }}>
               <CircosPlot
-                key={`circle-${thickness}`}
+                key={`circle-${deferredThickness}`}
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
                 size={circleSize}
-                thickness={thickness}
+                thickness={deferredThickness}
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}

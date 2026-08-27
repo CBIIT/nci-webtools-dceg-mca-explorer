@@ -71,14 +71,25 @@ export default function RangeView(props) {
   const [thickness, setThickness] = useState(THINNEST_THICKNESS);
   // bumped after the bar-thickness slider changes, so checkMaxLines recomputes against the redrawn circle
   const [, setTableRefreshTick] = useState(0);
+  const thicknessRefreshTimeoutRef = useRef(null);
 
-  const handleThicknessChange = async (value) => {
+  const handleThicknessChange = (value) => {
     setThickness(value);
-    const existingTable = document.querySelector("#circosTable table");
-    if (existingTable) existingTable.remove();
-    await waitForNextPaint();
-    setTableRefreshTick((prev) => prev + 1);
+    // debounced: avoid clearing/rebuilding the heavy summary table on every keystroke/click
+    if (thicknessRefreshTimeoutRef.current) clearTimeout(thicknessRefreshTimeoutRef.current);
+    thicknessRefreshTimeoutRef.current = setTimeout(async () => {
+      const existingTable = document.querySelector("#circosTable table");
+      if (existingTable) existingTable.remove();
+      await waitForNextPaint();
+      setTableRefreshTick((prev) => prev + 1);
+    }, 400);
   };
+
+  useEffect(() => {
+    return () => {
+      if (thicknessRefreshTimeoutRef.current) clearTimeout(thicknessRefreshTimeoutRef.current);
+    };
+  }, []);
 
   const study_value = form.study;
   let query_value = [];
