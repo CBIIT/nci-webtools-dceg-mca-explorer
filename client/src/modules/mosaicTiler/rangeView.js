@@ -687,7 +687,14 @@ export default function RangeView(props) {
         //hearderCell.style.border='1px solid black';
       }
 
+      var totalHeaderCell = document.createElement("th");
+      totalHeaderCell.innerHTML = "Total";
+      totalHeaderCell.style.fontWeight = "bold";
+      hearderRow.appendChild(totalHeaderCell);
+
       var tbody = tableLines.createTBody();
+      const columnTotals = new Array(22).fill(0);
+      let grandTotal = 0;
 
       for (let l = 0; l < fourTracks; l++) {
         const trackData = linesSummary[l];
@@ -701,6 +708,7 @@ export default function RangeView(props) {
           cellLabel.style.fontWeight = "bold";
           // cellLabel.style.border='1px solid black';
           // cellLabel.style.size='12px';
+          let rowTotal = 0;
           trackData.forEach((item, index) => {
             const cell = row.insertCell(index + 1);
             if (item.outBlock > 0) {
@@ -713,10 +721,32 @@ export default function RangeView(props) {
             //cell.style.fontSize='12px';
 
             //cell.style.width="20px"
+            const displayedValue = Number(item.outBlock > 0 ? item.all - item.outBlock : item.all) || 0;
+            rowTotal += displayedValue;
+            columnTotals[index] += displayedValue;
           });
+          const rowTotalCell = row.insertCell(-1);
+          rowTotalCell.innerHTML = rowTotal;
+          rowTotalCell.style.fontWeight = "bold";
+          grandTotal += rowTotal;
           document.getElementById("circosTable").appendChild(tableLines);
         }
       }
+
+      const totalsRow = tbody.insertRow(-1);
+      const totalsLabelCell = totalsRow.insertCell(0);
+      totalsLabelCell.innerHTML = "Total";
+      totalsLabelCell.style.textAlign = "left";
+      totalsLabelCell.style.fontWeight = "bold";
+      columnTotals.forEach((columnTotal) => {
+        const cell = totalsRow.insertCell(-1);
+        cell.innerHTML = columnTotal;
+        cell.style.fontWeight = "bold";
+      });
+      const grandTotalCell = totalsRow.insertCell(-1);
+      grandTotalCell.innerHTML = grandTotal;
+      grandTotalCell.style.fontWeight = "bold";
+      document.getElementById("circosTable").appendChild(tableLines);
     }
   };
 
