@@ -839,6 +839,8 @@ export default function RangeView(props) {
         <div className="row justify-content-center">
           {!loaded ? (
             <LoadingOverlay active={!loaded} />
+          ) : form.compare ? (
+            ""
           ) : resultData.length === 0 ? (
             <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
               No Data Found
@@ -853,7 +855,7 @@ export default function RangeView(props) {
           <div className="">
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                {resultData.length >= MIN_EVENTS_FOR_PLOT ? (
+                {form.compare || resultData.length >= MIN_EVENTS_FOR_PLOT ? (
                   <CirclePlotTest
                     ref={circleRef}
                     clickedChromoId={handleClickedChromoId}
