@@ -1958,6 +1958,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 onChange={(e) => setThickness(Number(e.target.value))}
                 style={{ width: "100px" }}
               />
+              <span style={{ fontSize: "12px", whiteSpace: "nowrap" }}>{thickness.toFixed(2)}</span>
               {isLoaded ? (
                 <p className="mb-0">Downloading...</p>
               ) : circleA ? (
@@ -2087,6 +2088,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 onChange={(e) => setThickness(Number(e.target.value))}
                 style={{ width: "100px" }}
               />
+              <span style={{ fontSize: "12px", whiteSpace: "nowrap" }}>{thickness.toFixed(2)}</span>
               {isLoaded ? (
                 <p className="mb-0">Downloading...</p>
               ) : (

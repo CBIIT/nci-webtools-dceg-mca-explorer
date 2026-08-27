@@ -3,7 +3,7 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { useEffect, useState } from "react";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS } from "./thickness";
+import { THINNEST_THICKNESS, getStrokeWidth } from "./thickness";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -30,6 +30,10 @@ export default function CircosPlot(props) {
   const thicknessLoss = props.thickness ?? THINNEST_THICKNESS;
   const thicknessLoh = props.thickness ?? THINNEST_THICKNESS;
   const thicknessGain = props.thickness ?? THINNEST_THICKNESS;
+  const strokeWidthUndetermined = getStrokeWidth(thicknessUndetermined);
+  const strokeWidthLoss = getStrokeWidth(thicknessLoss);
+  const strokeWidthLoh = getStrokeWidth(thicknessLoh);
+  const strokeWidthGain = getStrokeWidth(thicknessGain);
 
 
   const [plotgain, setPlotgain] = useState(
@@ -102,8 +106,9 @@ export default function CircosPlot(props) {
                   outerRadius: 0.25,
                   thickness: thicknessUndetermined,
                   margin: 0,
-                  strokeWidth: 0,
-                  strokeColor: "grey",
+                 // radialMargin: 0,
+                  strokeWidth: strokeWidthUndetermined,
+                  strokeColor: "#585858",
                   direction: "out",
                   // logScale: true,
                   color: "#585858",
@@ -140,7 +145,8 @@ export default function CircosPlot(props) {
                   outerRadius: 0.5,
                   thickness: thicknessLoss,
                   margin: 0,
-                  strokeWidth: 0,
+                //  radialMargin: 0,
+                  strokeWidth: strokeWidthLoss,
                   strokeColor: "red",
                   direction: "out",
                   // logScale: true,
@@ -175,7 +181,8 @@ export default function CircosPlot(props) {
                   outerRadius: 0.75,
                   thickness: thicknessLoh,
                   margin: 0,
-                  strokeWidth: 0,
+                  //radialMargin: 0,
+                  strokeWidth: strokeWidthLoh,
                   strokeColor: "blue",
                   direction: "out",
                   //logScale: true,
@@ -201,7 +208,8 @@ export default function CircosPlot(props) {
                   outerRadius: 1,
                   thickness: thicknessGain,
                   margin: 0,
-                  strokeWidth: 0,
+                 // radialMargin: 0,
+                  strokeWidth: strokeWidthGain,
                   strokeColor: "green",
                   direction: "out",
                   // logScale: true,
