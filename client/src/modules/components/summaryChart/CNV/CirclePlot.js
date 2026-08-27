@@ -3,6 +3,7 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { useEffect, useState } from "react";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
+import { THINNEST_THICKNESS } from "./thickness";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -25,7 +26,10 @@ export default function CircosPlot(props) {
   const [plotLoaded, setPlotLoaded] = useState(false);
   const innerRadius = size / 2 - 50
   const outerRadius = size / 2 - 30;
-  let thickness = -1.94;
+  const thicknessUndetermined = props.thickness ?? THINNEST_THICKNESS;
+  const thicknessLoss = props.thickness ?? THINNEST_THICKNESS;
+  const thicknessLoh = props.thickness ?? THINNEST_THICKNESS;
+  const thicknessGain = props.thickness ?? THINNEST_THICKNESS;
 
 
   const [plotgain, setPlotgain] = useState(
@@ -96,7 +100,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.05,
                   outerRadius: 0.25,
-                  thickness: thickness,
+                  thickness: thicknessUndetermined,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "grey",
@@ -134,7 +138,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.25,
                   outerRadius: 0.5,
-                  thickness: thickness,
+                  thickness: thicknessLoss,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "red",
@@ -169,7 +173,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.5,
                   outerRadius: 0.75,
-                  thickness: thickness,
+                  thickness: thicknessLoh,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "blue",
@@ -195,7 +199,7 @@ export default function CircosPlot(props) {
                 config: {
                   innerRadius: 0.75,
                   outerRadius: 1,
-                  thickness: thickness,
+                  thickness: thicknessGain,
                   margin: 0,
                   strokeWidth: 0,
                   strokeColor: "green",

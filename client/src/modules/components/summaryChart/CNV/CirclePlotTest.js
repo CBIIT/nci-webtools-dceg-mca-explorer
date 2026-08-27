@@ -4,7 +4,7 @@ import layout from "./layout2.json";
 import layoutxy from "./layoutxy.json";
 import "./css/circos.css";
 import SingleChromosome from "./SingleChromosome";
-import { Row, Col, Button, Container, Table } from "react-bootstrap";
+import { Row, Col, Button, Container, Table, Form } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
 import Legend from "../../../components/legend";
@@ -14,6 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+import { THINNEST_THICKNESS, THICKEST_THICKNESS } from "./thickness";
 //import { fisherTest } from "../../utils";
 
 //import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -100,6 +101,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [rangeB, setRangeB] = useState(0);
   const [Pfisher, setPfisher] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  // lets users thicken bars after the plot renders; starts at the thinnest, overlap-safe default
+  const [thickness, setThickness] = useState(THINNEST_THICKNESS);
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
@@ -1942,9 +1945,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               md={12}
               lg={3}
               className="d-flex"
-              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+              style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
+              <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                Bar thickness
+              </Form.Label>
+              <Form.Range
+                id="circleThicknessCompare"
+                min={THINNEST_THICKNESS}
+                max={THICKEST_THICKNESS}
+                step={0.02}
+                value={thickness}
+                onChange={(e) => setThickness(Number(e.target.value))}
+                style={{ width: "100px" }}
+              />
               {isLoaded ? (
-                <p>Downloading...</p>
+                <p className="mb-0">Downloading...</p>
               ) : circleA ? (
                 <Button
                   variant="link"
@@ -1966,6 +1981,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       {titleA}
                     </div>
                     <CircosPlotCompare
+                      key={`circleA-${thickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       title={titleA}
@@ -1973,10 +1989,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       details="A"
                       msg={msgA}
                       size={compareCircleSize}
-                      // thicknessloss={0}
-                      // thicknessgain={0}
-                      // thicknessundermined={0}
-                      // thicknessloh={0}
+                      thickness={thickness}
                       circle={circleA}
                       circleRef={circleRef}
                       maxtitleHeight={maxTitleheight - heightA}
@@ -1995,16 +2008,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       {titleB}
                     </div>
                     <CircosPlotCompare
+                      key={`circleB-${thickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       dataXY={[]}
                       title={titleB}
                       details="B"
                       size={compareCircleSize}
-                      // thicknessloss={0}
-                      // thicknessgain={0}
-                      // thicknessundermined={0}
-                      // thicknessloh={0}
+                      thickness={thickness}
                       circle={circleB}
                       circleRef={circleRef}
                       handleEnter={handleEnter}
@@ -2063,9 +2074,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               md={12}
               lg={3}
               className="d-flex"
-              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+              style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
+              <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                Bar thickness
+              </Form.Label>
+              <Form.Range
+                id="circleThickness"
+                min={THINNEST_THICKNESS}
+                max={THICKEST_THICKNESS}
+                step={0.02}
+                value={thickness}
+                onChange={(e) => setThickness(Number(e.target.value))}
+                style={{ width: "100px" }}
+              />
               {isLoaded ? (
-                <p>Downloading...</p>
+                <p className="mb-0">Downloading...</p>
               ) : (
                 <Button
                   variant="link"
@@ -2083,16 +2106,14 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               lg={12}
               style={{ width: circleSize, height: circleSize + 15 }}>
               <CircosPlot
+                key={`circle-${thickness}`}
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
                 size={circleSize}
-                // thicknessloss={thicknessloss}
-                // thicknessgain={thicknessgain}
-                // thicknessundermined={thicknessundermined}
-                // thicknessloh={thicknessloh}
+                thickness={thickness}
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}
