@@ -834,7 +834,8 @@ export default function RangeView(props) {
                   </ExcelFile>
                 </div>
 
-                <Table
+                {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
+                {/* <Table
                   columns={columns}
                   defaultSort={[
                     { id: "chromosome", asc: true },
@@ -842,7 +843,7 @@ export default function RangeView(props) {
                     { id: "end", asc: true },
                   ]}
                   data={resultData}
-                />
+                /> */}
               </div>
             </Row>
           </div>
@@ -910,7 +911,8 @@ export default function RangeView(props) {
                   <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
               </div>
-              <Table
+              {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
+              {/* <Table
                 columns={columns}
                 defaultSort={[
                   { id: "chromosome", asc: true },
@@ -918,7 +920,7 @@ export default function RangeView(props) {
                   { id: "end", asc: true },
                 ]}
                 data={resultData}
-              />
+              /> */}
             </div>
           </Row>
         </Tab>

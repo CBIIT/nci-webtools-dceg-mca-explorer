@@ -605,7 +605,9 @@ function getRangeError(start, end) {
               <Row>
                 <Col>
                   <span style={{ display: "block", fontSize: "0.8rem", fontWeight: 400 }}>
-                    Age bins are included when individual ages are not present and may extend beyond the specified age range
+                    Age bins are included when individual ages are not available and may extend beyond the
+                    specified age range (e.g., max age of 88 will include 85-89 group for studies that report
+                    age groups).
                   </span>
                 </Col>
               </Row>
