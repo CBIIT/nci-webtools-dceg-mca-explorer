@@ -1963,6 +1963,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 max={1}
                 step={0.01}
                 value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                disabled={thickness !== deferredThickness}
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   if (Number.isNaN(value)) return;
@@ -2098,6 +2099,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 max={1}
                 step={0.01}
                 value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                disabled={thickness !== deferredThickness}
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   if (Number.isNaN(value)) return;
