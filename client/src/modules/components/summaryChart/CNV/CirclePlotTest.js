@@ -14,7 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, THICKEST_THICKNESS } from "./thickness";
+import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS } from "./thickness";
 //import { fisherTest } from "../../utils";
 
 //import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -102,7 +102,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [Pfisher, setPfisher] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   // owned by RangeView so the chromosome summary table can recompute when thickness changes
-  const thickness = props.thickness ?? THINNEST_THICKNESS;
+  const thickness = props.thickness ?? DEFAULT_THICKNESS;
   // keeps the number input responsive while the (expensive) circos remount lags behind
   const deferredThickness = useDeferredValue(thickness);
   const handleThicknessChange = (value) => {
@@ -215,7 +215,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
   // never shrink circle plots below this; smaller viewports scroll horizontally instead
   const MIN_CIRCLE_SIZE = 450;
-  const circleSize = Math.max((size > 1000 ? 1000 : size) * 1.2, MIN_CIRCLE_SIZE);
+  const circleSize = 850;
   const compareCircleSize = Math.max(minFigSize, MIN_CIRCLE_SIZE);
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;

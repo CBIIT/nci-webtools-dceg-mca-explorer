@@ -10,7 +10,7 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
-import { THINNEST_THICKNESS } from "../components/summaryChart/CNV/thickness";
+import { DEFAULT_THICKNESS } from "../components/summaryChart/CNV/thickness";
 
 const emptyPlotData = {
   gain: [],
@@ -68,7 +68,7 @@ export default function RangeView(props) {
   const circleRef = useRef(null);
   const latestQueryTimingRef = useRef(null);
   const queryInFlightRef = useRef(false);
-  const [thickness, setThickness] = useState(THINNEST_THICKNESS);
+  const [thickness, setThickness] = useState(DEFAULT_THICKNESS);
   // bumped after the bar-thickness slider changes, so checkMaxLines recomputes against the redrawn circle
   const [, setTableRefreshTick] = useState(0);
   const thicknessRefreshTimeoutRef = useRef(null);

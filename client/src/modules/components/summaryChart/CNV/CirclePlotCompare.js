@@ -2,7 +2,7 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { Container } from "react-bootstrap";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, getStrokeWidth } from "./thickness";
+import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth } from "./thickness";
 
 const ringBackgrounds = [
   { innerRadius: 0.05, outerRadius: 0.25, color: "#808080" },
@@ -20,10 +20,10 @@ export default function CircosPlot(props) {
 
   const size = props.size;
   const circle = props.circle;
-  const thicknessUndetermined = props.thickness ?? THINNEST_THICKNESS;
-  const thicknessLoss = props.thickness ?? THINNEST_THICKNESS;
-  const thicknessLoh = props.thickness ?? THINNEST_THICKNESS;
-  const thicknessGain = props.thickness ?? THINNEST_THICKNESS;
+  const thicknessUndetermined = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessLoss = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessLoh = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessGain = props.thickness ?? DEFAULT_THICKNESS;
   const strokeWidthUndetermined = getStrokeWidth(thicknessUndetermined);
   const strokeWidthLoss = getStrokeWidth(thicknessLoss);
   const strokeWidthLoh = getStrokeWidth(thicknessLoh);

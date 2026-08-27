@@ -3,7 +3,7 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { useEffect, useState } from "react";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, getStrokeWidth } from "./thickness";
+import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth } from "./thickness";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -26,10 +26,10 @@ export default function CircosPlot(props) {
   const [plotLoaded, setPlotLoaded] = useState(false);
   const innerRadius = size / 2 - 50
   const outerRadius = size / 2 - 30;
-  const thicknessUndetermined = props.thickness ?? THINNEST_THICKNESS;
-  const thicknessLoss = props.thickness ?? THINNEST_THICKNESS;
-  const thicknessLoh = props.thickness ?? THINNEST_THICKNESS;
-  const thicknessGain = props.thickness ?? THINNEST_THICKNESS;
+  const thicknessUndetermined = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessLoss = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessLoh = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessGain = props.thickness ?? DEFAULT_THICKNESS;
   const strokeWidthUndetermined = getStrokeWidth(thicknessUndetermined);
   const strokeWidthLoss = getStrokeWidth(thicknessLoss);
   const strokeWidthLoh = getStrokeWidth(thicknessLoh);
