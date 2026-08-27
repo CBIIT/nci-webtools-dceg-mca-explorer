@@ -246,19 +246,23 @@ function SingleChromosome(props) {
           }),
         },
         hovertext: props.data.map((e) => {
+          // coordinates/cellular fraction are rounded before display to protect participant privacy
           var text =
             // "Study: " +
             // e.dataset +
             // "<br>Sample ID: " +
             // e.sampleId +
             "Start: " +
-            e.start +
+            Math.round(Number(e.start) / 1000).toLocaleString() +
+            " Kb" +
             "<br>End: " +
-            e.end +
+            Math.round(Number(e.end) / 1000).toLocaleString() +
+            " Kb" +
             "<br>Type: " +
             e.type +
             "<br>Cellular Fraction:" +
-            e.value;
+            Math.round(Number(e.value) * 100) +
+            "%";
           // "<br> Smoke: " +
           // e.smokeNFC;
           return text;

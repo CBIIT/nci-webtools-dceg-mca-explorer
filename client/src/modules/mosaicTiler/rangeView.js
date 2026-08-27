@@ -21,6 +21,9 @@ const emptyPlotData = {
   allValues: [],
 };
 
+// plots are suppressed below this event count to avoid revealing individual-level data
+const MIN_EVENTS_FOR_PLOT = 10;
+
 const ancestryLabelByValue = new Map(AncestryOptions.map((item) => [item.value, item.label]));
 const smokeLabelByValue = new Map(smokeNFC.map((item) => [item.value, item.label]));
 const sexLabelByValue = new Map(SexOptions.map((item) => [item.value, item.label]));
@@ -269,7 +272,8 @@ export default function RangeView(props) {
     const stateStartMs = performance.now();
     queryInFlightRef.current = false;
     setPlotData(nextPlotData);
-    setLoaded(nextPlotData.allValues.length === 0);
+    // below the plot threshold, CirclePlotTest never renders/calls onLoading, so mark loaded here instead
+    setLoaded(nextPlotData.allValues.length < MIN_EVENTS_FOR_PLOT);
     timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
     timing.totalMs = Math.round(performance.now() - totalStartMs);
     timing.improvementVsOriginalApprox = `${(timing.previousBaselineMs.originalApprox / Math.max(timing.totalMs, 1)).toFixed(1)}x faster`;
@@ -797,30 +801,38 @@ export default function RangeView(props) {
             <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
               No Data Found
             </h6>
+          ) : resultData.length < MIN_EVENTS_FOR_PLOT ? (
+            <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
+              Fewer than 10 events exist for this set of filtering criteria. Plot cannot be generated.
+            </h6>
           ) : (
             ""
           )}
           <div className="">
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                <CirclePlotTest
-                  ref={circleRef}
-                  clickedChromoId={handleClickedChromoId}
-                  key={clickedCounter}
-                  loss={loss}
-                  loh={loh}
-                  gain={gain}
-                  undetermined={undetermined}
-                  allDenominator={allDenominator}
-                  chrx={chrX}
-                  chry={chrY}
-                  figureHeight={figureHeight}
-                  onHeightChange={handleheightChange}
-                  onResetHeight={resetHeight}
-                  onClickedChr={handleClickChr}
-                  getData={handleDataChange}
-                  onPair={handleCheckboxChange}
-                  onLoading={handleSetLoading}></CirclePlotTest>
+                {resultData.length >= MIN_EVENTS_FOR_PLOT ? (
+                  <CirclePlotTest
+                    ref={circleRef}
+                    clickedChromoId={handleClickedChromoId}
+                    key={clickedCounter}
+                    loss={loss}
+                    loh={loh}
+                    gain={gain}
+                    undetermined={undetermined}
+                    allDenominator={allDenominator}
+                    chrx={chrX}
+                    chry={chrY}
+                    figureHeight={figureHeight}
+                    onHeightChange={handleheightChange}
+                    onResetHeight={resetHeight}
+                    onClickedChr={handleClickChr}
+                    getData={handleDataChange}
+                    onPair={handleCheckboxChange}
+                    onLoading={handleSetLoading}></CirclePlotTest>
+                ) : (
+                  ""
+                )}
               </Col>
             </Row>
             <Row>{loaded ? checkMaxLines() : ""}</Row>

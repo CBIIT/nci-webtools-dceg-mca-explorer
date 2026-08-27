@@ -22,19 +22,23 @@ import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/cons
 //import ChromosomeCompare from "./ChromosomeCompare";
 //import { groupSort } from "d3";
 
+// coordinates/cellular fraction are rounded before display to protect participant privacy
+const formatKb = (bp) => Math.round(Number(bp) / 1000).toLocaleString() + " Kb";
+const formatCellFraction = (cf) => Math.round(Number(cf) * 100) + "%";
+
 const hovertip = (d) => {
   return (
     "<p style='text-align:left; margin:0; padding:0;'> " +
     // "<br> Sample ID: " +
     // d.sampleId +
     "Start: " +
-    d.start +
+    formatKb(d.start) +
     "<br> End: " +
-    d.end +
+    formatKb(d.end) +
     "<br> Type: " +
     d.type +
     "<br> Cellular Fraction: " +
-    d.value +
+    formatCellFraction(d.value) +
     "</p>"
   );
 };
