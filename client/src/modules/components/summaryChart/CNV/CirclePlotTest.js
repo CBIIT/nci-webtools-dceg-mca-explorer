@@ -14,7 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS } from "./thickness";
+import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS, normalizeThickness, denormalizeThickness } from "./thickness";
 //import { fisherTest } from "../../utils";
 
 //import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -1954,19 +1954,20 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               className="d-flex"
               style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
               <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
-                Bar thickness
+                Event thickness
               </Form.Label>
               <Form.Control
                 type="number"
                 id="circleThicknessCompare"
-                min={THINNEST_THICKNESS}
-                max={THICKEST_THICKNESS}
+                min={0}
+                max={1}
                 step={0.01}
-                value={thickness}
+                value={Math.round(normalizeThickness(thickness) * 100) / 100}
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   if (Number.isNaN(value)) return;
-                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, value)));
+                  const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
                 }}
                 style={{ width: "80px" }}
               />
@@ -2088,19 +2089,20 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               className="d-flex"
               style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
               <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
-                Bar thickness
+                Event thickness
               </Form.Label>
               <Form.Control
                 type="number"
                 id="circleThickness"
-                min={THINNEST_THICKNESS}
-                max={THICKEST_THICKNESS}
+                min={0}
+                max={1}
                 step={0.01}
-                value={thickness}
+                value={Math.round(normalizeThickness(thickness) * 100) / 100}
                 onChange={(e) => {
                   const value = Number(e.target.value);
                   if (Number.isNaN(value)) return;
-                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, value)));
+                  const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
                 }}
                 style={{ width: "80px" }}
               />

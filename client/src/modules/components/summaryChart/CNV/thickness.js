@@ -12,3 +12,13 @@ export function getStrokeWidth(thicknessValue) {
   return thicknessValue < -1 ? 0 : 2;
 }
 
+// maps the real [THINNEST_THICKNESS, THICKEST_THICKNESS] value to a [0, 1] value for display purposes only
+export function normalizeThickness(value) {
+  return (value - THINNEST_THICKNESS) / (THICKEST_THICKNESS - THINNEST_THICKNESS);
+}
+
+// inverse of normalizeThickness: converts a displayed [0, 1] value back to the real thickness value
+export function denormalizeThickness(value) {
+  return value * (THICKEST_THICKNESS - THINNEST_THICKNESS) + THINNEST_THICKNESS;
+}
+
