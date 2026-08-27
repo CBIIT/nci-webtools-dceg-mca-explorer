@@ -1952,16 +1952,20 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
                 Bar thickness
               </Form.Label>
-              <Form.Range
+              <Form.Control
+                type="number"
                 id="circleThicknessCompare"
                 min={THINNEST_THICKNESS}
                 max={THICKEST_THICKNESS}
-                step={0.02}
+                step={0.01}
                 value={thickness}
-                onChange={(e) => handleThicknessChange(Number(e.target.value))}
-                style={{ width: "100px" }}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (Number.isNaN(value)) return;
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, value)));
+                }}
+                style={{ width: "80px" }}
               />
-              <span style={{ fontSize: "12px", whiteSpace: "nowrap" }}>{thickness.toFixed(2)}</span>
               {isLoaded ? (
                 <p className="mb-0">Downloading...</p>
               ) : circleA ? (
@@ -2082,16 +2086,20 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
                 Bar thickness
               </Form.Label>
-              <Form.Range
+              <Form.Control
+                type="number"
                 id="circleThickness"
                 min={THINNEST_THICKNESS}
                 max={THICKEST_THICKNESS}
-                step={0.02}
+                step={0.01}
                 value={thickness}
-                onChange={(e) => handleThicknessChange(Number(e.target.value))}
-                style={{ width: "100px" }}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (Number.isNaN(value)) return;
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, value)));
+                }}
+                style={{ width: "80px" }}
               />
-              <span style={{ fontSize: "12px", whiteSpace: "nowrap" }}>{thickness.toFixed(2)}</span>
               {isLoaded ? (
                 <p className="mb-0">Downloading...</p>
               ) : (
