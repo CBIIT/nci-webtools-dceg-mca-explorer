@@ -1969,15 +1969,15 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
                   handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
                 }}
-                style={{ width: "80px" }}
+                style={{ width: "80px", fontSize: "12px" }}
               />
               {isLoaded ? (
-                <p className="mb-0">Downloading...</p>
+                <p className="mb-0" style={{ fontSize: "12px" }}>Downloading...</p>
               ) : circleA ? (
                 <Button
                   variant="link"
                   onClick={handlecircleDownload}
-                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
               ) : (
@@ -2104,15 +2104,15 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
                   handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
                 }}
-                style={{ width: "80px" }}
+                style={{ width: "80px", fontSize: "12px" }}
               />
               {isLoaded ? (
-                <p className="mb-0">Downloading...</p>
+                <p className="mb-0" style={{ fontSize: "12px" }}>Downloading...</p>
               ) : (
                 <Button
                   variant="link"
                   onClick={handleSummaryDownload}
-                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
               )}

@@ -847,7 +847,8 @@ export default function RangeView(props) {
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
-        <div className="row justify-content-center">
+        {/* minHeight keeps this row from collapsing before CirclePlotTest mounts, so the loading overlay centers against the plot's eventual size instead of an empty container */}
+        <div className="row justify-content-center" style={{ minHeight: !loaded ? 700 : undefined }}>
           {!loaded ? (
             <LoadingOverlay active={!loaded} />
           ) : form.compare ? (
