@@ -10,7 +10,7 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
-import { DEFAULT_THICKNESS } from "../components/summaryChart/CNV/thickness";
+import { DEFAULT_THICKNESS, computeAutoThickness } from "../components/summaryChart/CNV/thickness";
 
 const emptyPlotData = {
   gain: [],
@@ -295,6 +295,18 @@ export default function RangeView(props) {
     const stateStartMs = performance.now();
     queryInFlightRef.current = false;
     setPlotData(nextPlotData);
+    // pick the thinnest bar size that still fits every track's densest overlapping region, so the
+    // circle plot never overlaps/clamps by default; the thickness slider can still fine-tune it afterward
+    setThickness(
+      computeAutoThickness({
+        gain: nextPlotData.gain,
+        loss: nextPlotData.loss,
+        loh: nextPlotData.loh,
+        undetermined: nextPlotData.undetermined,
+        chrx: nextPlotData.chrX,
+        chry: nextPlotData.chrY,
+      })
+    );
     // below the plot threshold, CirclePlotTest never renders/calls onLoading, so mark loaded here instead
     setLoaded(nextPlotData.allValues.length < MIN_EVENTS_FOR_PLOT);
     timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
@@ -923,19 +935,25 @@ export default function RangeView(props) {
         <Tab eventKey="scatter" title="Cellular Fraction">
           <Row className="m-3">
             <Col xl={12}>
-              <Plot
-                data={violinData}
-                layout={layout}
-                config={{
-                  ...defaultConfig,
-                  toImageButtonOptions: {
-                    ...defaultConfig.toImageButtonOptions,
-                    filename: "Violin boxplot",
-                  },
-                  responsive: true,
-                }}
-                style={{ width: "100%", height: browserSize.height * 0.7 }}
-              />
+              {resultData.length < MIN_EVENTS_FOR_PLOT ? (
+                <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
+                  Fewer than 10 events exist for this set of filtering criteria. Plot cannot be generated.
+                </h6>
+              ) : (
+                <Plot
+                  data={violinData}
+                  layout={layout}
+                  config={{
+                    ...defaultConfig,
+                    toImageButtonOptions: {
+                      ...defaultConfig.toImageButtonOptions,
+                      filename: "Violin boxplot",
+                    },
+                    responsive: true,
+                  }}
+                  style={{ width: "100%", height: browserSize.height * 0.7 }}
+                />
+              )}
               {/* <Plot
                 data={getScatterData()}
                 layout={{
