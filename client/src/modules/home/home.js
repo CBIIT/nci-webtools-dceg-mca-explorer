@@ -22,9 +22,7 @@ export default function Home({ links }) {
                     <hr className="border-dark" />
                     <p className="lead text-dark">
                       An interactive mCA visualization and analysis tools that allows for aggregation, visualization,
-                      and analysis of mCAs in large populations.The tool will require a standard data input format
-                      including mCA location (e.g., chromosome and bp position), mCA type (e.g., loss, gain, neutral),
-                      and cell fraction (e.g., percentage of cells impacted by the event).
+                      and analysis of mosaic chromosomal alterations (mCAs) in large populations.
                     </p>
                     {/* <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none"> */}
                     
@@ -61,7 +59,11 @@ export default function Home({ links }) {
             <h2 className="h4 usa-summary-box__heading">Credits</h2>
             <div className="usa-summary-box__text py-2">
                 <div className="ps-3 py-1">
-                  Mitchell Machiela, Aubrey Hubbard, Lesley Chapman Hannah and colleagues at the{" "}
+                  Aubrey Hubbard, Kara Barnao, Zachary Song, Lesley Chapman Hannah, and{" "}
+                  <a href="https://dceg.cancer.gov/about/staff-directory/machiela-mitchell" target="_blank">
+                    Mitchell Machiela
+                  </a>{" "}
+                  at the{" "}
                   <a href="https://dceg.cancer.gov/" target="_blank">
                     Division of Cancer Epidemiology and Genetics (DCEG)
                   </a>
@@ -73,7 +75,7 @@ export default function Home({ links }) {
                   <a href="https://www.nih.gov/" target="_blank">
                     National Institutes of Health (NIH)
                   </a>
-                  , <a href="https://www.atcc.org/">American Type Culture Collection</a>; Xiaozheng Yao, Madhu Kanigicherla,
+                  ; Xiaozheng Yao, Madhu Kanigicherla,
                   Nguyen Thuong, Brian Park, Ben Chen, Kai-Ling Chen and staff at{" "}
                   <a href="https://www.essential-soft.com/" target="_blank">
                     Essential Software Inc.
@@ -84,7 +86,7 @@ export default function Home({ links }) {
                   </a>
                 </div>
                 <div className="ps-3">
-                Mosaic Explorer's{" "}
+                mCA Explorer's{" "}
                 <a href="https://github.com/CBIIT/nci-webtools-dceg-plco-atlas" target="_blank" alt="Link to open GitHub">
                   source code
                 </a>{" "}

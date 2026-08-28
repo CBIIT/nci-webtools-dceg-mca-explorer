@@ -2,6 +2,7 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { Container } from "react-bootstrap";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
+import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth } from "./thickness";
 
 const ringBackgrounds = [
   { innerRadius: 0.05, outerRadius: 0.25, color: "#808080" },
@@ -18,8 +19,15 @@ export default function CircosPlot(props) {
   const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
 
   const size = props.size;
-  const thickness = -1.94;
   const circle = props.circle;
+  const thicknessUndetermined = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessLoss = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessLoh = props.thickness ?? DEFAULT_THICKNESS;
+  const thicknessGain = props.thickness ?? DEFAULT_THICKNESS;
+  const strokeWidthUndetermined = getStrokeWidth(thicknessUndetermined);
+  const strokeWidthLoss = getStrokeWidth(thicknessLoss);
+  const strokeWidthLoh = getStrokeWidth(thicknessLoh);
+  const strokeWidthGain = getStrokeWidth(thicknessGain);
   const circleRef = props.circleRef;
   const handleEnter = props.handleEnter;
   const hovertip = props.hovertip;
@@ -114,10 +122,10 @@ export default function CircosPlot(props) {
                   config: {
                     innerRadius: 0.05,
                     outerRadius: 0.25,
-                    thickness: thickness,
+                    thickness: thicknessUndetermined,
                     margin: 0,
-                    strokeWidth: 0,
-                    strokeColor: "grey",
+                    strokeWidth: strokeWidthUndetermined,
+                    strokeColor: "# ",
                     direction: "out",
                     color: "#585858",
                     backgrounds: [
@@ -151,9 +159,9 @@ export default function CircosPlot(props) {
                   config: {
                     innerRadius: 0.25,
                     outerRadius: 0.5,
-                    thickness: thickness,
+                    thickness: thicknessLoss,
                     margin: 0,
-                    strokeWidth: 0,
+                    strokeWidth: strokeWidthLoss,
                     strokeColor: "red",
                     direction: "out",
                     //logScale: true,
@@ -186,9 +194,9 @@ export default function CircosPlot(props) {
                   config: {
                     innerRadius: 0.5,
                     outerRadius: 0.75,
-                    thickness: thickness,
+                    thickness: thicknessLoh,
                     margin: 0,
-                    strokeWidth: 0,
+                    strokeWidth: strokeWidthLoh,
                     strokeColor: "blue",
                     direction: "out",
                     // logScale: true,
@@ -212,9 +220,9 @@ export default function CircosPlot(props) {
                   config: {
                     innerRadius: 0.75,
                     outerRadius: 1,
-                    thickness: thickness,
+                    thickness: thicknessGain,
                     margin: 0,
-                    strokeWidth: 0,
+                    strokeWidth: strokeWidthGain,
                     strokeColor: "green",
                     direction: "out",
                     // logScale: true,

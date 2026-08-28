@@ -10,6 +10,7 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
+import { DEFAULT_THICKNESS } from "../components/summaryChart/CNV/thickness";
 
 const emptyPlotData = {
   gain: [],
@@ -20,6 +21,9 @@ const emptyPlotData = {
   chrY: [],
   allValues: [],
 };
+
+// plots are suppressed below this event count to avoid revealing individual-level data
+const MIN_EVENTS_FOR_PLOT = 10;
 
 const ancestryLabelByValue = new Map(AncestryOptions.map((item) => [item.value, item.label]));
 const smokeLabelByValue = new Map(smokeNFC.map((item) => [item.value, item.label]));
@@ -64,6 +68,28 @@ export default function RangeView(props) {
   const circleRef = useRef(null);
   const latestQueryTimingRef = useRef(null);
   const queryInFlightRef = useRef(false);
+  const [thickness, setThickness] = useState(DEFAULT_THICKNESS);
+  // bumped after the bar-thickness slider changes, so checkMaxLines recomputes against the redrawn circle
+  const [, setTableRefreshTick] = useState(0);
+  const thicknessRefreshTimeoutRef = useRef(null);
+
+  const handleThicknessChange = (value) => {
+    setThickness(value);
+    // debounced: avoid clearing/rebuilding the heavy summary table on every keystroke/click
+    if (thicknessRefreshTimeoutRef.current) clearTimeout(thicknessRefreshTimeoutRef.current);
+    thicknessRefreshTimeoutRef.current = setTimeout(async () => {
+      const existingTable = document.querySelector("#circosTable table");
+      if (existingTable) existingTable.remove();
+      await waitForNextPaint();
+      setTableRefreshTick((prev) => prev + 1);
+    }, 400);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (thicknessRefreshTimeoutRef.current) clearTimeout(thicknessRefreshTimeoutRef.current);
+    };
+  }, []);
 
   const study_value = form.study;
   let query_value = [];
@@ -269,7 +295,8 @@ export default function RangeView(props) {
     const stateStartMs = performance.now();
     queryInFlightRef.current = false;
     setPlotData(nextPlotData);
-    setLoaded(nextPlotData.allValues.length === 0);
+    // below the plot threshold, CirclePlotTest never renders/calls onLoading, so mark loaded here instead
+    setLoaded(nextPlotData.allValues.length < MIN_EVENTS_FOR_PLOT);
     timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
     timing.totalMs = Math.round(performance.now() - totalStartMs);
     timing.improvementVsOriginalApprox = `${(timing.previousBaselineMs.originalApprox / Math.max(timing.totalMs, 1)).toFixed(1)}x faster`;
@@ -683,7 +710,14 @@ export default function RangeView(props) {
         //hearderCell.style.border='1px solid black';
       }
 
+      var totalHeaderCell = document.createElement("th");
+      totalHeaderCell.innerHTML = "Total";
+      totalHeaderCell.style.fontWeight = "bold";
+      hearderRow.appendChild(totalHeaderCell);
+
       var tbody = tableLines.createTBody();
+      const columnTotals = new Array(22).fill(0);
+      let grandTotal = 0;
 
       for (let l = 0; l < fourTracks; l++) {
         const trackData = linesSummary[l];
@@ -697,6 +731,7 @@ export default function RangeView(props) {
           cellLabel.style.fontWeight = "bold";
           // cellLabel.style.border='1px solid black';
           // cellLabel.style.size='12px';
+          let rowTotal = 0;
           trackData.forEach((item, index) => {
             const cell = row.insertCell(index + 1);
             if (item.outBlock > 0) {
@@ -709,10 +744,32 @@ export default function RangeView(props) {
             //cell.style.fontSize='12px';
 
             //cell.style.width="20px"
+            const displayedValue = Number(item.outBlock > 0 ? item.all - item.outBlock : item.all) || 0;
+            rowTotal += displayedValue;
+            columnTotals[index] += displayedValue;
           });
+          const rowTotalCell = row.insertCell(-1);
+          rowTotalCell.innerHTML = rowTotal;
+          rowTotalCell.style.fontWeight = "bold";
+          grandTotal += rowTotal;
           document.getElementById("circosTable").appendChild(tableLines);
         }
       }
+
+      const totalsRow = tbody.insertRow(-1);
+      const totalsLabelCell = totalsRow.insertCell(0);
+      totalsLabelCell.innerHTML = "Total";
+      totalsLabelCell.style.textAlign = "left";
+      totalsLabelCell.style.fontWeight = "bold";
+      columnTotals.forEach((columnTotal) => {
+        const cell = totalsRow.insertCell(-1);
+        cell.innerHTML = columnTotal;
+        cell.style.fontWeight = "bold";
+      });
+      const grandTotalCell = totalsRow.insertCell(-1);
+      grandTotalCell.innerHTML = grandTotal;
+      grandTotalCell.style.fontWeight = "bold";
+      document.getElementById("circosTable").appendChild(tableLines);
     }
   };
 
@@ -790,12 +847,19 @@ export default function RangeView(props) {
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
-        <div className="row justify-content-center">
+        {/* minHeight keeps this row from collapsing before CirclePlotTest mounts, so the loading overlay centers against the plot's eventual size instead of an empty container */}
+        <div className="row justify-content-center" style={{ minHeight: !loaded ? 700 : undefined }}>
           {!loaded ? (
             <LoadingOverlay active={!loaded} />
+          ) : form.compare ? (
+            ""
           ) : resultData.length === 0 ? (
             <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
               No Data Found
+            </h6>
+          ) : resultData.length < MIN_EVENTS_FOR_PLOT ? (
+            <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
+              Fewer than 10 events exist for this set of filtering criteria. Plot cannot be generated.
             </h6>
           ) : (
             ""
@@ -803,38 +867,45 @@ export default function RangeView(props) {
           <div className="">
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                <CirclePlotTest
-                  ref={circleRef}
-                  clickedChromoId={handleClickedChromoId}
-                  key={clickedCounter}
-                  loss={loss}
-                  loh={loh}
-                  gain={gain}
-                  undetermined={undetermined}
-                  allDenominator={allDenominator}
-                  chrx={chrX}
-                  chry={chrY}
-                  figureHeight={figureHeight}
-                  onHeightChange={handleheightChange}
-                  onResetHeight={resetHeight}
-                  onClickedChr={handleClickChr}
-                  getData={handleDataChange}
-                  onPair={handleCheckboxChange}
-                  onLoading={handleSetLoading}></CirclePlotTest>
+                {form.compare || resultData.length >= MIN_EVENTS_FOR_PLOT ? (
+                  <CirclePlotTest
+                    ref={circleRef}
+                    clickedChromoId={handleClickedChromoId}
+                    key={clickedCounter}
+                    loss={loss}
+                    loh={loh}
+                    gain={gain}
+                    undetermined={undetermined}
+                    allDenominator={allDenominator}
+                    chrx={chrX}
+                    chry={chrY}
+                    figureHeight={figureHeight}
+                    onHeightChange={handleheightChange}
+                    onResetHeight={resetHeight}
+                    onClickedChr={handleClickChr}
+                    getData={handleDataChange}
+                    onPair={handleCheckboxChange}
+                    thickness={thickness}
+                    onThicknessChange={handleThicknessChange}
+                    onLoading={handleSetLoading}></CirclePlotTest>
+                ) : (
+                  ""
+                )}
               </Col>
             </Row>
             <Row>{loaded ? checkMaxLines() : ""}</Row>
             <Row>
               <div className="">
-                <div className="d-flex " style={{ justifyContent: "flex-end" }}>
+                {/* <div className="d-flex " style={{ justifyContent: "flex-end" }}>
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                     element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                     <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
-                </div>
+                </div> */}
 
-                <Table
+                {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
+                {/* <Table
                   columns={columns}
                   defaultSort={[
                     { id: "chromosome", asc: true },
@@ -842,7 +913,7 @@ export default function RangeView(props) {
                     { id: "end", asc: true },
                   ]}
                   data={resultData}
-                />
+                /> */}
               </div>
             </Row>
           </div>
@@ -903,14 +974,15 @@ export default function RangeView(props) {
           </Row>
           <Row>
             <div className="m-3">
-              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+              {/* <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
                   element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                   <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
-              </div>
-              <Table
+              </div> */}
+              {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
+              {/* <Table
                 columns={columns}
                 defaultSort={[
                   { id: "chromosome", asc: true },
@@ -918,7 +990,7 @@ export default function RangeView(props) {
                   { id: "end", asc: true },
                 ]}
                 data={resultData}
-              />
+              /> */}
             </div>
           </Row>
         </Tab>

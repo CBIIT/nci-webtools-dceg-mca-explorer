@@ -1,10 +1,10 @@
 import * as React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useDeferredValue } from "react";
 import layout from "./layout2.json";
 import layoutxy from "./layoutxy.json";
 import "./css/circos.css";
 import SingleChromosome from "./SingleChromosome";
-import { Row, Col, Button, Container, Table } from "react-bootstrap";
+import { Row, Col, Button, Container, Table, Form } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
 import Legend from "../../../components/legend";
@@ -14,6 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS, normalizeThickness, denormalizeThickness } from "./thickness";
 //import { fisherTest } from "../../utils";
 
 //import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -22,19 +23,23 @@ import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/cons
 //import ChromosomeCompare from "./ChromosomeCompare";
 //import { groupSort } from "d3";
 
+// coordinates/cellular fraction are rounded before display to protect participant privacy
+const formatKb = (bp) => Math.round(Number(bp) / 1000).toLocaleString() + " Kb";
+const formatCellFraction = (cf) => Math.round(Number(cf) * 100) + "%";
+
 const hovertip = (d) => {
   return (
     "<p style='text-align:left; margin:0; padding:0;'> " +
     // "<br> Sample ID: " +
     // d.sampleId +
     "Start: " +
-    d.start +
+    formatKb(d.start) +
     "<br> End: " +
-    d.end +
+    formatKb(d.end) +
     "<br> Type: " +
     d.type +
     "<br> Cellular Fraction: " +
-    d.value +
+    formatCellFraction(d.value) +
     "</p>"
   );
 };
@@ -96,6 +101,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [rangeB, setRangeB] = useState(0);
   const [Pfisher, setPfisher] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  // owned by RangeView so the chromosome summary table can recompute when thickness changes
+  const thickness = props.thickness ?? DEFAULT_THICKNESS;
+  // keeps the number input responsive while the (expensive) circos remount lags behind
+  const deferredThickness = useDeferredValue(thickness);
+  const handleThicknessChange = (value) => {
+    if (typeof props.onThicknessChange === "function") props.onThicknessChange(value);
+  };
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
@@ -201,8 +213,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   else adjustWidth = 0.7;
 
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
-  const circleSize = (size > 1000 ? 1000 : size) * 1.2;
-  const compareCircleSize = minFigSize;
+  // never shrink circle plots below this; smaller viewports scroll horizontally instead
+  const MIN_CIRCLE_SIZE = 450;
+  const circleSize = 850;
+  const compareCircleSize = Math.max(minFigSize, MIN_CIRCLE_SIZE);
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;
 
@@ -1938,14 +1952,33 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               md={12}
               lg={3}
               className="d-flex"
-              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+              style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
+              <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                Event thickness
+              </Form.Label>
+              <Form.Control
+                type="number"
+                id="circleThicknessCompare"
+                min={0}
+                max={1}
+                step={0.01}
+                value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                disabled={thickness !== deferredThickness}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (Number.isNaN(value)) return;
+                  const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
+                }}
+                style={{ width: "80px", fontSize: "12px" }}
+              />
               {isLoaded ? (
-                <p>Downloading...</p>
+                <p className="mb-0" style={{ fontSize: "12px" }}>Downloading...</p>
               ) : circleA ? (
                 <Button
                   variant="link"
                   onClick={handlecircleDownload}
-                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
               ) : (
@@ -1954,14 +1987,15 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             </Col>
           </Row>
           <div>
-            <Row className="justify-content-center g-0">
-              <Col xs={12} md={8} lg={6}>
+            <Row className="justify-content-center g-0" style={{ overflowX: "auto", flexWrap: "nowrap" }}>
+              <Col xs={12} md={8} lg={6} style={{ minWidth: compareCircleSize, maxWidth: "none", flex: "none" }}>
                 {circleA ? (
                   <>
                     <div ref={circosCompareA} style={{ marginBottom: "1rem", fontSize: "14px" }}>
                       {titleA}
                     </div>
                     <CircosPlotCompare
+                      key={`circleA-${deferredThickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       title={titleA}
@@ -1969,10 +2003,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       details="A"
                       msg={msgA}
                       size={compareCircleSize}
-                      // thicknessloss={0}
-                      // thicknessgain={0}
-                      // thicknessundermined={0}
-                      // thicknessloh={0}
+                      thickness={deferredThickness}
                       circle={circleA}
                       circleRef={circleRef}
                       maxtitleHeight={maxTitleheight - heightA}
@@ -1984,23 +2015,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   ""
                 )}
               </Col>
-              <Col xs={12} md={8} lg={6}>
+              <Col xs={12} md={8} lg={6} style={{ minWidth: compareCircleSize, maxWidth: "none", flex: "none" }}>
                 {circleB ? (
                   <>
                     <div ref={circosCompareB} style={{ marginBottom: "1rem", fontSize: "14px" }}>
                       {titleB}
                     </div>
                     <CircosPlotCompare
+                      key={`circleB-${deferredThickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       dataXY={[]}
                       title={titleB}
                       details="B"
                       size={compareCircleSize}
-                      // thicknessloss={0}
-                      // thicknessgain={0}
-                      // thicknessundermined={0}
-                      // thicknessloh={0}
+                      thickness={deferredThickness}
                       circle={circleB}
                       circleRef={circleRef}
                       handleEnter={handleEnter}
@@ -2059,36 +2088,53 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               md={12}
               lg={3}
               className="d-flex"
-              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+              style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
+              <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                Event thickness
+              </Form.Label>
+              <Form.Control
+                type="number"
+                id="circleThickness"
+                min={0}
+                max={1}
+                step={0.01}
+                value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                disabled={thickness !== deferredThickness}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (Number.isNaN(value)) return;
+                  const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
+                }}
+                style={{ width: "80px", fontSize: "12px" }}
+              />
               {isLoaded ? (
-                <p>Downloading...</p>
+                <p className="mb-0" style={{ fontSize: "12px" }}>Downloading...</p>
               ) : (
                 <Button
                   variant="link"
                   onClick={handleSummaryDownload}
-                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
               )}
             </Col>
           </Row>
-          <Row className="justify-content-center">
+          <Row className="justify-content-center" style={{ overflowX: "auto" }}>
             <Col
               xs={12}
               md={12}
               lg={12}
-              style={{ width: circleSize, height: circleSize + 15 }}>
+              style={{ width: circleSize, minWidth: circleSize, maxWidth: "none", height: circleSize + 15, flex: "none" }}>
               <CircosPlot
+                key={`circle-${deferredThickness}`}
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
                 size={circleSize}
-                // thicknessloss={thicknessloss}
-                // thicknessgain={thicknessgain}
-                // thicknessundermined={thicknessundermined}
-                // thicknessloh={thicknessloh}
+                thickness={deferredThickness}
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}
