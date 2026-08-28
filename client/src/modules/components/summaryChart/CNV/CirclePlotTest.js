@@ -14,7 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS, normalizeThickness, denormalizeThickness } from "./thickness";
+import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS, normalizeThickness, denormalizeThickness, SUMMARY_CIRCLE_SIZE } from "./thickness";
 //import { fisherTest } from "../../utils";
 
 //import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -215,7 +215,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
   // never shrink circle plots below this; smaller viewports scroll horizontally instead
   const MIN_CIRCLE_SIZE = 450;
-  const circleSize = 850;
+  const circleSize = SUMMARY_CIRCLE_SIZE;
   const compareCircleSize = Math.max(minFigSize, MIN_CIRCLE_SIZE);
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;

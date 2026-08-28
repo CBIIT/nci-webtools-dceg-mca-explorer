@@ -10,7 +10,7 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
-import { DEFAULT_THICKNESS } from "../components/summaryChart/CNV/thickness";
+import { DEFAULT_THICKNESS, computeAutoThickness } from "../components/summaryChart/CNV/thickness";
 
 const emptyPlotData = {
   gain: [],
@@ -295,6 +295,18 @@ export default function RangeView(props) {
     const stateStartMs = performance.now();
     queryInFlightRef.current = false;
     setPlotData(nextPlotData);
+    // pick the thinnest bar size that still fits every track's densest overlapping region, so the
+    // circle plot never overlaps/clamps by default; the thickness slider can still fine-tune it afterward
+    setThickness(
+      computeAutoThickness({
+        gain: nextPlotData.gain,
+        loss: nextPlotData.loss,
+        loh: nextPlotData.loh,
+        undetermined: nextPlotData.undetermined,
+        chrx: nextPlotData.chrX,
+        chry: nextPlotData.chrY,
+      })
+    );
     // below the plot threshold, CirclePlotTest never renders/calls onLoading, so mark loaded here instead
     setLoaded(nextPlotData.allValues.length < MIN_EVENTS_FOR_PLOT);
     timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
