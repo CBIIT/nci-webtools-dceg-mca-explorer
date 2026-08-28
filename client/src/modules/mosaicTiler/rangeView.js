@@ -923,19 +923,25 @@ export default function RangeView(props) {
         <Tab eventKey="scatter" title="Cellular Fraction">
           <Row className="m-3">
             <Col xl={12}>
-              <Plot
-                data={violinData}
-                layout={layout}
-                config={{
-                  ...defaultConfig,
-                  toImageButtonOptions: {
-                    ...defaultConfig.toImageButtonOptions,
-                    filename: "Violin boxplot",
-                  },
-                  responsive: true,
-                }}
-                style={{ width: "100%", height: browserSize.height * 0.7 }}
-              />
+              {resultData.length < MIN_EVENTS_FOR_PLOT ? (
+                <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
+                  Fewer than 10 events exist for this set of filtering criteria. Plot cannot be generated.
+                </h6>
+              ) : (
+                <Plot
+                  data={violinData}
+                  layout={layout}
+                  config={{
+                    ...defaultConfig,
+                    toImageButtonOptions: {
+                      ...defaultConfig.toImageButtonOptions,
+                      filename: "Violin boxplot",
+                    },
+                    responsive: true,
+                  }}
+                  style={{ width: "100%", height: browserSize.height * 0.7 }}
+                />
+              )}
               {/* <Plot
                 data={getScatterData()}
                 layout={{
