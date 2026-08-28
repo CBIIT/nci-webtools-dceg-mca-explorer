@@ -1,0 +1,12 @@
+diff --git a/node_modules/@swagger-api/apidom-core/src/identity/index.mjs b/node_modules/@swagger-api/apidom-core/src/identity/index.mjs
+index a4367c3..4558775 100644
+--- a/node_modules/@swagger-api/apidom-core/src/identity/index.mjs
++++ b/node_modules/@swagger-api/apidom-core/src/identity/index.mjs
+@@ -1,5 +1,6 @@
+ import { StringElement } from 'minim';
+-import ShortUniqueId from 'short-unique-id';
++import * as ShortUniqueIdModule from 'short-unique-id';
++const ShortUniqueId = ShortUniqueIdModule.default || ShortUniqueIdModule;
+ import ElementIdentityError from "./errors/ElementIdentityError.mjs";
+ import { isElement, isStringElement } from "../predicates/index.mjs";
+ /**

@@ -68,6 +68,7 @@
     "minimatch": "^9.0.6"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "start": "NODE_OPTIONS=\"--require ./scripts/webcrypto-polyfill.js\" react-scripts start",
     "build": "NODE_OPTIONS=\"--require ./scripts/webcrypto-polyfill.js\" react-scripts build",
     "test": "react-scripts test",
@@ -92,6 +93,7 @@
     ]
   },
   "devDependencies": {
+    "patch-package": "^8.0.1",
     "sass": "^1.57.0"
   },
   "homepage": "/",
