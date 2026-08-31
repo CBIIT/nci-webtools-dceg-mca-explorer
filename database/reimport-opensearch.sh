@@ -26,10 +26,10 @@ done
 
 cd "$(dirname "$0")"
 
+# optional: falls back to OPENSEARCH_*/ADMIN/PASSWORD env vars (e.g. injected by ECS) when absent
 ENV_FILE="../server/.env"
 if [[ ! -f "$ENV_FILE" ]]; then
-  echo "Missing $ENV_FILE"
-  exit 1
+  echo "Note: $ENV_FILE not found, relying on environment variables instead."
 fi
 
 read_env_value() {
