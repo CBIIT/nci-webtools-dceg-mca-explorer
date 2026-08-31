@@ -1235,9 +1235,12 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setIsLoaded(true);
     var images = document.getElementById("summaryCircle");
     var imageXY = images.querySelectorAll("svg")[0];
+    // skipFonts avoids fetching/base64-embedding @font-face resources, which is the most
+    // memory/CPU heavy part of html-to-image for a circle plot with many thousands of paths
     const imgconfig = {
       quality: 1,
       pixelRatio: 1,
+      skipFonts: true,
     };
     // const canvas = await htmlToImage.toCanvas(image);
     // const base64fDataUrl = canvas.toDataURL("image/png");
@@ -1266,6 +1269,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       })
       .catch(function (error) {
         console.error("oops, something went wrong!", error);
+        // without this the loading overlay stays stuck forever whenever the export fails/throws
+        setIsLoaded(false);
       });
   };
 
