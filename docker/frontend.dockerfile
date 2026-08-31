@@ -14,6 +14,7 @@ RUN mkdir /client
 WORKDIR /client
 
 COPY client/package*.json /client/
+COPY client/patches /client/patches
 
 RUN npm install --force
 
