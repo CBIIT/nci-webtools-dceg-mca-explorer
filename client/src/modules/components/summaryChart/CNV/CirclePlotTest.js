@@ -1255,8 +1255,12 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         pdf.setTextColor(0, 0, 0);
         pdf.setFontSize(12);
         const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20);
-        pdf.text(circosTitleLines, width * 0.5, 15, { align: "center" });
-        pdf.addImage(dataUrl, "PNG", 0, 30, width, width);
+        const titleStartY = 15;
+        pdf.text(circosTitleLines, width * 0.5, titleStartY, { align: "center" });
+        // place the image below the title regardless of how many lines it wrapped to, so long filter
+        // descriptions (like multi-select ancestry/approach lists) don't overlap the circle
+        const imageStartY = titleStartY + pdf.getTextDimensions(circosTitleLines).h + 5;
+        pdf.addImage(dataUrl, "PNG", 0, imageStartY, width, width);
         pdf.save(simpleTitle.slice(1) + ".pdf");
         setIsLoaded(false);
       })
