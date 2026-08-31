@@ -89,6 +89,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [figureHeight, setFigureHeight] = useState(0);
   //
   const [isLoaded, setIsLoaded] = useState(false);
+  // shown next to "Download image" when the export fails, so the user isn't left guessing why nothing downloaded
+  const [downloadError, setDownloadError] = useState("");
   const [zoomRange, setZoomRange] = useState(null);
   const [rangeLabel, setRangeLabel] = useState("");
   const [isinit, setIsinit] = useState(false);
@@ -1233,11 +1235,15 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   };
   const handleSummaryDownload = async () => {
     setIsLoaded(true);
+    setDownloadError("");
     var images = document.getElementById("summaryCircle");
     var imageXY = images.querySelectorAll("svg")[0];
+    // skipFonts avoids fetching/base64-embedding @font-face resources, which is the most
+    // memory/CPU heavy part of html-to-image for a circle plot with many thousands of paths
     const imgconfig = {
       quality: 1,
       pixelRatio: 1,
+      skipFonts: true,
     };
     // const canvas = await htmlToImage.toCanvas(image);
     // const base64fDataUrl = canvas.toDataURL("image/png");
@@ -1266,6 +1272,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       })
       .catch(function (error) {
         console.error("oops, something went wrong!", error);
+        // the export can silently fail (esp. on a long-running tab under memory pressure) with no other
+        // sign to the user that nothing was saved, so surface it next to the download link
+        setDownloadError("Download failed. Try again in a new browser tab/window if this keeps happening.");
+        setIsLoaded(false);
       });
   };
 
@@ -2121,6 +2131,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
+              )}
+              {downloadError ? (
+                <p className="mb-0 text-danger" style={{ fontSize: "12px" }}>
+                  {downloadError}
+                </p>
+              ) : (
+                ""
               )}
             </Col>
           </Row>
