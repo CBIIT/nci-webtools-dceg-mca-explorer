@@ -23,7 +23,7 @@
     "react-circos": "^1.0.0",
     "react-dom": "^18.2.0",
     "react-plotly.js": "^2.6.0",
-    "react-router-dom": "^6.30.2",
+    "react-router-dom": "^7.18.3",
     "react-scripts": "5.0.1",
     "react-select": "^5.7.0",
     "react-table": "^7.8.0",
@@ -52,9 +52,7 @@
     "launch-editor": "^2.9.0",
     "http-proxy-middleware": "^2.0.9",
     "ws": "^7.5.10",
-    "webpack-dev-server": {
-      "ws": "^8.20.1"
-    },
+    "webpack-dev-server": "^5.2.6",
     "make-dir": {
       "semver": "^6.3.1"
     },
