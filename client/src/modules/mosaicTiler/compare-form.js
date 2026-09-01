@@ -1,7 +1,7 @@
 import { Form, Button, Accordion, Card, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
+import { formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 import { AncestryOptions, CompareArray, TypeStateOptions, StudyOptions } from "./constants";

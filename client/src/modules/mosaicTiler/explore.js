@@ -1,7 +1,7 @@
-import { Suspense, useEffect, useState, Text } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loadingState } from "./explore.state";
-import { Container, Card, Tabs, Tab, FormCheck } from "react-bootstrap";
+import { Container, Card, Tabs, Tab } from "react-bootstrap";
 
 import ExploreForm from "./explore-form";
 import CompareForm from "./compare-form";
