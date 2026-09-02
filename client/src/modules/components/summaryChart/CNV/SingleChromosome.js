@@ -49,7 +49,7 @@ function SingleChromosome(props) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [pvalue, setPvalue] = useState(0);
-  const lastEmittedZoomRef = useRef({ backtoprev: "", rangeLable: "" });
+  const lastEmittedZoomRef = useRef({ backtoprev: "", rangeLabel: "" });
 
   //update sizeRef when width changes
   useEffect(() => {
@@ -332,7 +332,7 @@ function SingleChromosome(props) {
   if (zoomHistory.length == 0) {
     backtoprev = "";
   }
-  let rangeLable = xMin !== undefined && xMax !== undefined
+  let rangeLabel = xMin !== undefined && xMax !== undefined
     ? "Chr" +
       props.chromesomeId +
       ":" +
@@ -341,13 +341,13 @@ function SingleChromosome(props) {
       Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
     : "";
 
-  if (zoomHistory.length == 0) rangeLable = "";
+  if (zoomHistory.length == 0) rangeLabel = "";
   if (
     lastEmittedZoomRef.current.backtoprev !== backtoprev ||
-    lastEmittedZoomRef.current.rangeLable !== rangeLable
+    lastEmittedZoomRef.current.rangeLabel !== rangeLabel
   ) {
-    lastEmittedZoomRef.current = { backtoprev, rangeLable };
-    props.zoomHistory([backtoprev, rangeLable]);
+    lastEmittedZoomRef.current = { backtoprev, rangeLabel };
+    props.zoomHistory([backtoprev, rangeLabel]);
   }
   //console.log(zoomHistory);
 
@@ -429,7 +429,7 @@ function SingleChromosome(props) {
             </p>
           )
         )}
-        <div style={{ paddingTop: "1px" }}>{xMin ? rangeLable : ""}</div>
+        <div style={{ paddingTop: "1px" }}>{xMin ? rangeLabel : ""}</div>
         <div style={{ paddingTop: "2px" }}>
           {props.fisherP > 0
             ? props.type.map((t) => t.label).join(" ") +

@@ -1482,7 +1482,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
       if (lastZoomLabelRef.current !== emittedRangeLabel) {
         lastZoomLabelRef.current = emittedRangeLabel;
-        props.onClickedChr({ rangeLable: emittedRangeLabel });
+        props.onClickedChr({ rangeLabel: emittedRangeLabel });
       }
       //update tableData based on zoom range
       //console.log(tableData);
