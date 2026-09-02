@@ -1,4 +1,4 @@
-export function parseRangeLable(value) {
+export function parseRangeLabel(value) {
   if (!value || typeof value !== "string") return null;
 
   const match = value.trim().match(/^chr([0-9]{1,2}|x|y)\s*:\s*([\d,]+)\s*-\s*([\d,]+)$/i);

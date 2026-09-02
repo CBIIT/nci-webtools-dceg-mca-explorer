@@ -6,9 +6,9 @@ import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
 import { AncestryOptions, CompareArray, TypeStateOptions, StudyOptions } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
-import { parseRangeLable } from "./range-utils";
+import { parseRangeLabel } from "./range-utils";
 
-export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rangeLable }) {
+export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rangeLabel }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
@@ -321,7 +321,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
   };
 
   useEffect(() => {
-    const parsedRange = parseRangeLable(rangeLable);
+    const parsedRange = parseRangeLabel(rangeLabel);
     if (!parsedRange) return;
 
     setStart(parsedRange.start);
@@ -333,7 +333,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
       start: parsedRange.start,
       end: parsedRange.end,
     }));
-  }, [rangeLable, setForm]);
+  }, [rangeLabel, setForm]);
 
   // Validation for start/end
 function getRangeError(start, end) {

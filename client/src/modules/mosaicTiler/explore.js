@@ -21,7 +21,7 @@ export default function Explore() {
   const [counter, setCounter] = useState(0);
   const [isOpenCompare, setIsOpenCompare] = useState(false);
   const [clear, setClear] = useState(0);
-  const [rangeLable, setRangeLable] = useState("");
+  const [rangeLabel, setRangeLabel] = useState("");
 
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
@@ -104,14 +104,14 @@ export default function Explore() {
     //setIsOpenCompare(true);
     console.log("in explore", value, form);
     if (typeof value === "string") {
-      setRangeLable(value);
+      setRangeLabel(value);
     } else if (value && typeof value === "object") {
-      setRangeLable(value.rangeLable || value.rangeLabel || "");
+      setRangeLabel(value.rangeLabel || "");
     }
   }
   function handleCheckboxChange() {
     setIsOpenCompare((prev) => !prev);
-    setRangeLable("");
+    setRangeLabel("");
     setClear((prev) => prev + 1);
     //const tabs = document.querySelectorAll("[role=tabpanel");
     //console.log("click pair");
@@ -152,7 +152,7 @@ export default function Explore() {
                     onClear={handleFilterClear}
                     isOpen={isOpenCompare}
                     onReset={handleReset}
-                    rangeLable={rangeLable}
+                    rangeLabel={rangeLabel}
                     onFilterClear
                   />
                 </Card.Body>
@@ -166,7 +166,7 @@ export default function Explore() {
                     onClear={handleFilterClear}
                     onReset={handleReset}
                     isOpen={isOpenCompare}
-                    rangeLable={rangeLable}
+                    rangeLabel={rangeLabel}
                   />
                 </Card.Body>
               </Card>
