@@ -106,7 +106,7 @@ export default function Explore() {
     if (typeof value === "string") {
       setRangeLabel(value);
     } else if (value && typeof value === "object") {
-      setRangeLabel(value.rangeLabel || value.rangeLable || "");
+      setRangeLabel(value.rangeLabel || "");
     }
   }
   function handleCheckboxChange() {
