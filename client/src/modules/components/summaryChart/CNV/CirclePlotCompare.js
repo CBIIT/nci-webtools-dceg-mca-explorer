@@ -125,7 +125,7 @@ export default function CircosPlot(props) {
                     thickness: thicknessUndetermined,
                     margin: 0,
                     strokeWidth: strokeWidthUndetermined,
-                    strokeColor: "# ",
+                    strokeColor: "#585858",
                     direction: "out",
                     color: "#585858",
                     backgrounds: [
