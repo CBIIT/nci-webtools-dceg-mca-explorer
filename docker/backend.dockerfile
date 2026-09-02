@@ -9,6 +9,10 @@ RUN dnf -y update \
     R \
     && dnf clean all
 
+# AL2023's nodejs/npm RPM bundles vulnerable transitive deps (tar, brace-expansion, etc.);
+# replace npm in place with the latest release supporting this image's Node 18 runtime.
+RUN npm install -g npm@10.9.9
+
 RUN mkdir -p /deploy/server /deploy/logs
 
 WORKDIR /deploy/server
