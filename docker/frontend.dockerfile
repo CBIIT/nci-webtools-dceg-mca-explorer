@@ -5,13 +5,15 @@ RUN dnf -y update \
    gcc-c++ \
    httpd \
    make \
-   nodejs \
-   npm \
+   nodejs24 \
    && dnf clean all
 
-# AL2023's nodejs/npm RPM bundles vulnerable transitive deps (tar, brace-expansion, etc.);
-# replace npm in place with the latest release supporting this image's Node 18 runtime.
-RUN npm install -g npm@10.9.9
+# AL2023 ships versioned Node packages; nodejs24 provides Node 24.x and its own bundled npm.
+# That bundled npm still vendors vulnerable transitive deps (tar, brace-expansion, etc.);
+# replace it with the latest release compatible with this image's Node 24.14.0 (npm@latest
+# requires Node >=24.15.0, one minor newer than what nodejs24 currently provides).
+RUN node -v && npm -v
+RUN npm install -g npm@11.19.1
 
 RUN mkdir /client
 

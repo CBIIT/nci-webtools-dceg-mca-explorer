@@ -1,6 +1,6 @@
 import express, { response } from "express";
 import Router from "express-promise-router";
-import { getStatus, getSamples, AncestryOptions } from "./query.js";
+import { AncestryOptions } from "./query.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
 import { createRequire } from "module";
@@ -128,19 +128,6 @@ apiRouter.get("/", (request, response) => {
   spec.servers = [{ url: BASE_URL || "." }];
   //spec.servers = [{ url: "localhost" || "." }];
   response.json(spec);
-});
-
-apiRouter.get("/ping", async (request, response) => {
-  const { connection } = request.app.locals;
-  const status = await getStatus(connection);
-  response.json(status);
-});
-
-apiRouter.post("/query/samples", async (request, response) => {
-  const { connection } = request.app.locals;
-  const query = request.body;
-  const samples = await getSamples(connection, query);
-  response.json(samples);
 });
 
 apiRouter.post("/opensearch/mca", async (request, response) => {
