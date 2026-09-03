@@ -33,12 +33,15 @@ const BAND_START = 0.05;
 const BAND_END = 1;
 
 // Splits [BAND_START, BAND_END] evenly across only the track types that have data, packing them
-// consecutively in TRACK_ORDER so a type with no events collapses to a zero-width [0, 0] band.
+// consecutively in TRACK_ORDER so a type with no events collapses to a zero-width band.
+// Note: empty bands use [BAND_START, BAND_START], NOT [0, 0] - circos's computeRadius() special-cases
+// an exact (0, 0) pair to mean "auto-place this track" (see node_modules/circos/src/config-utils.js),
+// which pushed the empty track out near the outer edge instead of hiding it.
 export function computeTrackBands(hasDataByType) {
   const presentTypes = TRACK_ORDER.filter((name) => hasDataByType[name]);
   const bands = {};
   if (presentTypes.length === 0) {
-    TRACK_ORDER.forEach((name) => (bands[name] = [0, 0]));
+    TRACK_ORDER.forEach((name) => (bands[name] = [BAND_START, BAND_START]));
     return bands;
   }
 
@@ -46,7 +49,7 @@ export function computeTrackBands(hasDataByType) {
   let cursor = BAND_START;
   TRACK_ORDER.forEach((name) => {
     if (!hasDataByType[name]) {
-      bands[name] = [0, 0];
+      bands[name] = [BAND_START, BAND_START];
       return;
     }
     bands[name] = [cursor, cursor + width];

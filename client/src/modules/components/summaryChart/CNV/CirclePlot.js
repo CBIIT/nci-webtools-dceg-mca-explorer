@@ -12,10 +12,6 @@ export default function CircosPlot(props) {
   const isX = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "X");
   const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
   const size = props.size;
-  const thicknessloss = props.thicknessloss;
-  const thicknessgain = props.thicknessgain;
-  const thicknessundermined = props.thicknessundermined;
-  const thicknessloh = props.thicknessloh;
   const circle = props.circle;
   const circleRef = props.circleRef;
   const handleEnter = props.handleEnter;
@@ -23,7 +19,6 @@ export default function CircosPlot(props) {
   const classCircle = props.circleClass;
   const layoutxy = props.layoutxy;
   //const checkMaxLines = props.checkMaxLines;
-  const [plotLoaded, setPlotLoaded] = useState(false);
   const innerRadius = size / 2 - 50
   const outerRadius = size / 2 - 30;
   const thicknessUndetermined = props.thickness ?? DEFAULT_THICKNESS;
