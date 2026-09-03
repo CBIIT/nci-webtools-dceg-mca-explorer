@@ -61,6 +61,12 @@ export function computeTrackBands(hasDataByType) {
 // matches the circos Stack track's default radialMargin (CirclePlot.js doesn't override it)
 const RADIAL_MARGIN = 2;
 
+// Beyond this many stacked layers, individual arcs are sub-pixel thin and visually indistinguishable
+// from each other whether they overlap or not - so there's no benefit to shrinking thickness further
+// to guarantee zero overlap for cohort-scale tracks with tens of thousands of events. Value picked
+// empirically: users report ~2200-2300 stacked layers already render as one solid band.
+const MAX_LAYERS_FOR_THICKNESS = 2200;
+
 // Reimplements circos's Stack track layering (see node_modules/circos/src/tracks/Stack.js#buildLayers):
 // events for the same chromosome are sorted by start and greedily packed into the first layer whose
 // last event ends before the new one starts; anything that doesn't fit opens a new layer.
@@ -86,16 +92,16 @@ function getMaxLayers(events) {
   return maxLayers;
 }
 
-// thinnest thickness that still lets `maxLayers` stacked events fit inside `bandPx` without
+// thinnest thickness that still lets `layers` stacked events fit inside `bandPx` without
 // clamping to the track's outer radius (inverse of circos Stack's radial position formula)
-function thicknessForLayers(maxLayers, bandPx) {
-  if (maxLayers <= 1) return THICKEST_THICKNESS;
-  const value = (bandPx - RADIAL_MARGIN * (maxLayers - 1)) / maxLayers;
+function thicknessForLayers(layers, bandPx) {
+  if (layers <= 1) return THICKEST_THICKNESS;
+  const value = (bandPx - RADIAL_MARGIN * (layers - 1)) / layers;
   return Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, value));
 }
 
 // Picks one shared thickness (used by all 4 stacked tracks) that fits the densest track's
-// worst-case overlap, based on the actual event counts/positions rather than a fixed default.
+// overlap (capped at MAX_LAYERS_FOR_THICKNESS), based on actual event positions rather than a fixed default.
 export function computeAutoThickness({ gain = [], loss = [], loh = [], undetermined = [], chrx = [], chry = [] }, circleSize = SUMMARY_CIRCLE_SIZE) {
   const layoutInnerRadius = circleSize / 2 - 50;
   const tracks = { undetermined, loss: loss.concat(chrx, chry), loh, gain };
@@ -107,8 +113,8 @@ export function computeAutoThickness({ gain = [], loss = [], loh = [], undetermi
     const [innerFraction, outerFraction] = bands[name];
     if (outerFraction <= innerFraction) continue; // empty track has no band to fit into
     const bandPx = (outerFraction - innerFraction) * layoutInnerRadius;
-    const maxLayers = getMaxLayers(tracks[name]);
-    thickness = Math.min(thickness, thicknessForLayers(maxLayers, bandPx));
+    const layers = Math.min(getMaxLayers(tracks[name]), MAX_LAYERS_FOR_THICKNESS);
+    thickness = Math.min(thickness, thicknessForLayers(layers, bandPx));
   }
   return thickness;
 }

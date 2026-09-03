@@ -1989,8 +1989,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 id="circleThicknessCompare"
                 min={0}
                 max={1}
-                step={0.01}
-                value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                step={0.001}
+                value={Math.round(normalizeThickness(thickness) * 1000) / 1000}
                 disabled={thickness !== deferredThickness}
                 onChange={(e) => {
                   const value = Number(e.target.value);
@@ -2125,8 +2125,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 id="circleThickness"
                 min={0}
                 max={1}
-                step={0.01}
-                value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                step={0.001}
+                value={Math.round(normalizeThickness(thickness) * 1000) / 1000}
                 disabled={thickness !== deferredThickness}
                 onChange={(e) => {
                   const value = Number(e.target.value);
