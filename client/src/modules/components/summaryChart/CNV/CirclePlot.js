@@ -3,7 +3,7 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { useEffect, useState } from "react";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth } from "./thickness";
+import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth, computeTrackBands } from "./thickness";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -35,6 +35,13 @@ export default function CircosPlot(props) {
   const strokeWidthLoh = getStrokeWidth(thicknessLoh);
   const strokeWidthGain = getStrokeWidth(thicknessGain);
 
+  // empty types collapse to a [0, 0] band; present types split the radial space evenly between them
+  const trackBands = computeTrackBands({
+    undetermined: circle.undetermined.length > 0,
+    loss: circle.loss.length > 0 || dataXY.length > 0,
+    loh: circle.loh.length > 0,
+    gain: circle.gain.length > 0,
+  });
 
   const [plotgain, setPlotgain] = useState(
     circle.gain
@@ -102,8 +109,8 @@ export default function CircosPlot(props) {
                 type: STACK,
                 data: plotunder,
                 config: {
-                  innerRadius: 0.05,
-                  outerRadius: 0.25,
+                  innerRadius: trackBands.undetermined[0],
+                  outerRadius: trackBands.undetermined[1],
                   thickness: thicknessUndetermined,
                   margin: 0,
                  // radialMargin: 0,
@@ -141,8 +148,8 @@ export default function CircosPlot(props) {
                 type: STACK,
                 data: plotloss.concat(dataXY),
                 config: {
-                  innerRadius: 0.25,
-                  outerRadius: 0.5,
+                  innerRadius: trackBands.loss[0],
+                  outerRadius: trackBands.loss[1],
                   thickness: thicknessLoss,
                   margin: 0,
                 //  radialMargin: 0,
@@ -177,8 +184,8 @@ export default function CircosPlot(props) {
                 type: STACK,
                 data: plotloh,
                 config: {
-                  innerRadius: 0.5,
-                  outerRadius: 0.75,
+                  innerRadius: trackBands.loh[0],
+                  outerRadius: trackBands.loh[1],
                   thickness: thicknessLoh,
                   margin: 0,
                   //radialMargin: 0,
@@ -204,8 +211,8 @@ export default function CircosPlot(props) {
                 type: STACK,
                 data: plotgain,
                 config: {
-                  innerRadius: 0.75,
-                  outerRadius: 1,
+                  innerRadius: trackBands.gain[0],
+                  outerRadius: trackBands.gain[1],
                   thickness: thicknessGain,
                   margin: 0,
                  // radialMargin: 0,

@@ -25,13 +25,35 @@ export function denormalizeThickness(value) {
 // fixed pixel size the summary CircosPlot is always rendered at (see CirclePlotTest.js's circleSize)
 export const SUMMARY_CIRCLE_SIZE = 850;
 
-// fractional [innerRadius, outerRadius] of each STACK track, as configured in CirclePlot.js
-const TRACK_BANDS = {
-  undetermined: [0.05, 0.25],
-  loss: [0.25, 0.5],
-  loh: [0.5, 0.75],
-  gain: [0.75, 1],
-};
+// render order of the STACK tracks, innermost to outermost (must match CirclePlot.js's track array)
+const TRACK_ORDER = ["undetermined", "loss", "loh", "gain"];
+
+// full radial range ([0.05, 0.25, 0.5, 0.75, 1] originally) shared out across the present track types
+const BAND_START = 0.05;
+const BAND_END = 1;
+
+// Splits [BAND_START, BAND_END] evenly across only the track types that have data, packing them
+// consecutively in TRACK_ORDER so a type with no events collapses to a zero-width [0, 0] band.
+export function computeTrackBands(hasDataByType) {
+  const presentTypes = TRACK_ORDER.filter((name) => hasDataByType[name]);
+  const bands = {};
+  if (presentTypes.length === 0) {
+    TRACK_ORDER.forEach((name) => (bands[name] = [0, 0]));
+    return bands;
+  }
+
+  const width = (BAND_END - BAND_START) / presentTypes.length;
+  let cursor = BAND_START;
+  TRACK_ORDER.forEach((name) => {
+    if (!hasDataByType[name]) {
+      bands[name] = [0, 0];
+      return;
+    }
+    bands[name] = [cursor, cursor + width];
+    cursor += width;
+  });
+  return bands;
+}
 
 // matches the circos Stack track's default radialMargin (CirclePlot.js doesn't override it)
 const RADIAL_MARGIN = 2;
@@ -74,9 +96,13 @@ function thicknessForLayers(maxLayers, bandPx) {
 export function computeAutoThickness({ gain = [], loss = [], loh = [], undetermined = [], chrx = [], chry = [] }, circleSize = SUMMARY_CIRCLE_SIZE) {
   const layoutInnerRadius = circleSize / 2 - 50;
   const tracks = { undetermined, loss: loss.concat(chrx, chry), loh, gain };
+  const hasData = Object.fromEntries(TRACK_ORDER.map((name) => [name, tracks[name].length > 0]));
+  const bands = computeTrackBands(hasData);
 
   let thickness = THICKEST_THICKNESS;
-  for (const [name, [innerFraction, outerFraction]] of Object.entries(TRACK_BANDS)) {
+  for (const name of TRACK_ORDER) {
+    const [innerFraction, outerFraction] = bands[name];
+    if (outerFraction <= innerFraction) continue; // empty track has no band to fit into
     const bandPx = (outerFraction - innerFraction) * layoutInnerRadius;
     const maxLayers = getMaxLayers(tracks[name]);
     thickness = Math.min(thickness, thicknessForLayers(maxLayers, bandPx));
