@@ -131,6 +131,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [showTitle, setShowTitle] = useState(false);
   const [showTableTitle, setShowTableTitle] = useState(false);
   const [visibleTooltip, setVisibleTooltip] = useState(false);
+  const [visibleThicknessTooltip, setVisibleThicknessTooltip] = useState(false);
+  const thicknessTooltipText =
+    "Radial thickness of each event band in the circle plot. Smaller (thinner) values let more overlapping events display without clamping; this is auto-calculated from the densest track but can be fine-tuned here.";
   const [compareChr, setCompareChr] = useState(form.chrSingle && form.chrSingle.label);
 
   const restoreInitialRangeToForm = () => {
@@ -1981,9 +1984,19 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               lg={3}
               className="d-flex"
               style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
-              <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
-                Event thickness
-              </Form.Label>
+              <div className="tooltip-container">
+                <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                  Event thickness{" "}
+                  <span
+                    onMouseOver={() => setVisibleThicknessTooltip(true)}
+                    onMouseOut={() => setVisibleThicknessTooltip(false)}
+                    className="tooltip-trigger"
+                    style={{ position: "relative", top: "-0.2em" }}>
+                    &#9432;
+                  </span>
+                </Form.Label>
+                {visibleThicknessTooltip && <div className="tooltip-box">{thicknessTooltipText}</div>}
+              </div>
               <Form.Control
                 type="number"
                 id="circleThicknessCompare"
@@ -2117,9 +2130,19 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               lg={3}
               className="d-flex"
               style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
-              <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
-                Event thickness
-              </Form.Label>
+              <div className="tooltip-container">
+                <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                  Event thickness{" "}
+                  <span
+                    onMouseOver={() => setVisibleThicknessTooltip(true)}
+                    onMouseOut={() => setVisibleThicknessTooltip(false)}
+                    className="tooltip-trigger"
+                    style={{ position: "relative", top: "-0.2em" }}>
+                    &#9432;
+                  </span>
+                </Form.Label>
+                {visibleThicknessTooltip && <div className="tooltip-box">{thicknessTooltipText}</div>}
+              </div>
               <Form.Control
                 type="number"
                 id="circleThickness"

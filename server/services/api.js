@@ -290,21 +290,15 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
 
   try {
-    const result = await client.search({
-      index: "merged",
-      body: {
-        track_total_hits: true,
-        size: 200000,
-        query: {
-          bool: {
-            must_not: [...searchExclude],
-            must: searchdataset,
-            filter: filterString,
-          },
-        },
+    const mcaQuery = {
+      bool: {
+        must_not: [...searchExclude],
+        must: searchdataset,
+        filter: filterString,
       },
-    });
-    let mcaHits = result.body.hits.hits.map((item) => item._source);
+    };
+    const hits = await fetchAllHitsPaged(client, "merged", mcaQuery, undefined, MCA_PAGE_SIZE);
+    let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
         sex: qsex,
@@ -506,20 +500,14 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   });
 
   try {
-    const result = await client.search({
-      index: "merged",
-      body: {
-        track_total_hits: true,
-        size: 200000,
-        query: {
-          bool: {
-            filter: hasDenominatorFilter ? mcaRangeFilters : [...mcaRangeFilters, ...denominatorFilters],
-            must: queryString,
-          },
-        },
+    const chromosomeQuery = {
+      bool: {
+        filter: hasDenominatorFilter ? mcaRangeFilters : [...mcaRangeFilters, ...denominatorFilters],
+        must: queryString,
       },
-    });
-    let mcaHits = result.body.hits.hits.map((item) => item._source);
+    };
+    const hits = await fetchAllHitsPaged(client, "merged", chromosomeQuery, undefined, MCA_PAGE_SIZE);
+    let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
         sex,

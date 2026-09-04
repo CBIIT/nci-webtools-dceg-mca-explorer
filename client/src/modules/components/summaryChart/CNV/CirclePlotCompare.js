@@ -2,14 +2,7 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { Container } from "react-bootstrap";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth } from "./thickness";
-
-const ringBackgrounds = [
-  { innerRadius: 0.05, outerRadius: 0.25, color: "#808080" },
-  { innerRadius: 0.25, outerRadius: 0.5, color: "#f8787b" },
-  { innerRadius: 0.5, outerRadius: 0.75, color: "#0095ff" },
-  { innerRadius: 0.75, outerRadius: 1, color: "#2fc405" },
-];
+import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth, computeTrackBands } from "./thickness";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
@@ -34,6 +27,14 @@ export default function CircosPlot(props) {
   const titleHeight = props.maxtitleHeight;
   const innerRadius = size / 2 - 50;
   const outerRadius = size / 2 - 30;
+
+  // empty types collapse to a zero-width band; present types split the radial space evenly between them
+  const trackBands = computeTrackBands({
+    undetermined: circle.undetermined.length > 0,
+    loss: circle.loss.length > 0 || dataXY.length > 0,
+    loh: circle.loh.length > 0,
+    gain: circle.gain.length > 0,
+  });
 
   const plotgain = circle.gain.concat(initialData).concat(isX ? initialChrX : []).concat(isY ? initialChrY : []);
   const plotloh = circle.loh.concat(initialData).concat(isX ? initialChrX : []).concat(isY ? initialChrY : []);
@@ -106,22 +107,12 @@ export default function CircosPlot(props) {
                 },
               }}
               tracks={[
-                ...ringBackgrounds.map((background) => ({
-                  type: HIGHLIGHT,
-                  data: band,
-                  config: {
-                    innerRadius: background.innerRadius,
-                    outerRadius: background.outerRadius,
-                    opacity: 0.5,
-                    color: background.color,
-                  },
-                })),
                 {
                   type: STACK,
                   data: plotunder,
                   config: {
-                    innerRadius: 0.05,
-                    outerRadius: 0.25,
+                    innerRadius: trackBands.undetermined[0],
+                    outerRadius: trackBands.undetermined[1],
                     thickness: thicknessUndetermined,
                     margin: 0,
                     strokeWidth: strokeWidthUndetermined,
@@ -157,8 +148,8 @@ export default function CircosPlot(props) {
                   type: STACK,
                   data: plotloss.concat(dataXY),
                   config: {
-                    innerRadius: 0.25,
-                    outerRadius: 0.5,
+                    innerRadius: trackBands.loss[0],
+                    outerRadius: trackBands.loss[1],
                     thickness: thicknessLoss,
                     margin: 0,
                     strokeWidth: strokeWidthLoss,
@@ -192,8 +183,8 @@ export default function CircosPlot(props) {
                   type: STACK,
                   data: plotloh,
                   config: {
-                    innerRadius: 0.5,
-                    outerRadius: 0.75,
+                    innerRadius: trackBands.loh[0],
+                    outerRadius: trackBands.loh[1],
                     thickness: thicknessLoh,
                     margin: 0,
                     strokeWidth: strokeWidthLoh,
@@ -218,8 +209,8 @@ export default function CircosPlot(props) {
                   type: STACK,
                   data: plotgain,
                   config: {
-                    innerRadius: 0.75,
-                    outerRadius: 1,
+                    innerRadius: trackBands.gain[0],
+                    outerRadius: trackBands.gain[1],
                     thickness: thicknessGain,
                     margin: 0,
                     strokeWidth: strokeWidthGain,

@@ -36,11 +36,12 @@ export default function About() {
              such as cellular fraction, mCA type (loss, gain, CNLOH), and genomic location, are available for data stratification, visualization, 
              and statistical enrichment testing. </p>
 
-          <p>Presently, mCA Explorer includes data from 690,019 participants across three studies: UK Biobank<sup>1</sup>, 
+          <p>Presently, mCA Explorer includes data from 765,521 participants across seven studies: UK Biobank<sup>1</sup>, 
             the Prostate, Lung, Colorectal, Ovarian Cancer Screening Trial (
             <a target="_blank" href="https://exploregwas.cancer.gov/plco-atlas/#/" style={{ fontWeight: "bold" }}>
               PLCO)
-            </a><sup>2</sup>, and BioVU<sup>3</sup>. </p>
+            </a><sup>2</sup>, and BioVU<sup>3</sup>,  Estonian Biobank, BioBank Japan, IORRA (Institute of Rheumatology, Rheumatoid Arthritis), 
+              and Trans-Omics for Precision Medicine (TOPMed) </p>
 
            <p>
            Please submit any questions or comments regarding mCA Explorer to{" "}
