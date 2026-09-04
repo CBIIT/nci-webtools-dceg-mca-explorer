@@ -96,7 +96,11 @@ function getMaxLayers(events) {
 // clamping to the track's outer radius (inverse of circos Stack's radial position formula)
 function thicknessForLayers(layers, bandPx) {
   if (layers <= 1) return THICKEST_THICKNESS;
-  const value = (bandPx - RADIAL_MARGIN * (layers - 1)) / layers;
+  const raw = (bandPx - RADIAL_MARGIN * (layers - 1)) / layers;
+  // once thickness >= -1, getStrokeWidth adds a 2px stroke that isn't budgeted for above and
+  // extends each arc slightly past its computed radial footprint - reserve room for it
+  const strokeBudget = raw >= -1 ? getStrokeWidth(raw) : 0;
+  const value = (bandPx - strokeBudget - RADIAL_MARGIN * (layers - 1)) / layers;
   return Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, value));
 }
 
