@@ -130,6 +130,11 @@ apiRouter.get("/", (request, response) => {
   response.json(spec);
 });
 
+// lightweight health check for ECS/ALB - no OpenSearch/DB dependency
+apiRouter.get("/ping", (request, response) => {
+  response.status(200).send("OK");
+});
+
 apiRouter.post("/opensearch/mca", async (request, response) => {
   const { logger } = request.app.locals;
   const requestStartMs = nowMs();

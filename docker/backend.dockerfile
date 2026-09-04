@@ -27,7 +27,4 @@ RUN npm install
 # copy the rest of the application
 COPY . /deploy/
 
-# run node directly (not via "npm start") so SIGTERM reaches the process as PID 1 -
-# npm wraps the child process and reports a SIGTERM shutdown as a non-zero exit,
-# which misleadingly looks like an application crash in ECS/CloudWatch
-CMD ["node", "-r", "dotenv/config", "server.js"]
+CMD npm start
