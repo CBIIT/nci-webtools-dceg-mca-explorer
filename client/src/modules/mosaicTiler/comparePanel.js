@@ -1,7 +1,7 @@
 import { Form, Button, Accordion, OverlayTrigger, Tooltip, InputGroup, Row, Col, Container } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
+import { formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import {
   AncestryOptions,
@@ -15,7 +15,7 @@ import {
 
 export default function ComparePanel(props) {
   const [form, setForm] = useRecoilState(formState);
-  const [study, setStudy] = useState([StudyOptions[0]]);
+  const [study, setStudy] = useState(StudyOptions);
   const [approach, setApproach] = useState([]);
   const [sex, setSex] = useState([]);
   const [ancestry, setAncestry] = useState([]);
@@ -25,7 +25,7 @@ export default function ComparePanel(props) {
   const [types, setTypes] = useState([TypeStateOptions[0]]);
   const [minFraction, setMinFraction] = useState("");
   const [maxFraction, setMaxFraction] = useState("");
-  const [compareform, setCompareForm] = useState({ study: [StudyOptions[0]], types: [TypeStateOptions[0]] });
+  const [compareform, setCompareForm] = useState({ study: StudyOptions, types: [TypeStateOptions[0]] });
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const compareRef = useRef(compareform);
@@ -38,7 +38,7 @@ export default function ComparePanel(props) {
   // console.log(study);
   //reset
   useEffect(() => {
-    handleSelectChange("study", [StudyOptions[0]]);
+    handleSelectChange("study", StudyOptions);
     handleSelectChange("types", [TypeStateOptions[0]]);
     // setCompareForm((prevForm) => ({ ...prevForm, study: [StudyOptions[0]] }));
     // console.log("&&&&", StudyOptions[0], compareform, form.chrCompare);
@@ -77,7 +77,7 @@ export default function ComparePanel(props) {
 
   useEffect(() => {
     console.log("this is compareform:",compareform);
-    setCompareForm({ study: [StudyOptions[0]], types: [TypeStateOptions[0]] });
+    setCompareForm({ study: StudyOptions, types: [TypeStateOptions[0]] });
     setResetpanel(true);
   }, [props.onReset]);
 
@@ -208,7 +208,7 @@ export default function ComparePanel(props) {
     console.log("this is compare filter", compareform, resetpanel);
     const updatedcompareform = resetpanel
       ? {
-          study: [StudyOptions[0]],
+          study: StudyOptions,
           types: [TypeStateOptions[0]],
           // minAge: 0,
           // maxAge: 100,
@@ -234,7 +234,7 @@ export default function ComparePanel(props) {
         if (!element.isChecked) {
           if (element.label === " Study") {
             setStudy([]);
-          } else if (element.label === " Array Platform") {
+          } else if (element.label === " Detection Approach") {
             setApproach([]);
           } else if (element.label === " Genotype Sex") {
             setSex([]);
@@ -299,9 +299,9 @@ export default function ComparePanel(props) {
       </Form.Group> */}
           {props.compareItem[4].isChecked ? (
             <Form.Group className="mb-3">
-              <Form.Label className="required">Study</Form.Label>
-              <Form.Label style={{ color: "red" }}>{study.length === 0 ? "Study field is required" : ""}</Form.Label>
-              <Select
+              {/* <Form.Label className="required">Study</Form.Label>
+              <Form.Label style={{ color: "red" }}>{study.length === 0 ? "Study field is required" : ""}</Form.Label> */}
+              {/* <Select
                 placeholder="- Select -"
                 name="study"
                 aria-label={props.name + "study"}
@@ -315,7 +315,7 @@ export default function ComparePanel(props) {
                   { value: "biovu", label: "BioVU" },
                 ]}
                 classNamePrefix="select"
-              />
+              /> */}
             </Form.Group>
           ) : (
             ""
@@ -342,7 +342,7 @@ export default function ComparePanel(props) {
           )}
           {props.compareItem[0].isChecked ? (
             <Form.Group className="mb-3">
-              <Form.Label>Array Platform</Form.Label>
+              <Form.Label>Detection Approach</Form.Label>
               <Select
                 id={props.name + "approach"}
                 aria-label={props.name + "approach"}
@@ -352,17 +352,17 @@ export default function ComparePanel(props) {
                 value={approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
                 options={(() => {
-                  if (study.length > 0) {
-                    let indices = [];
-                    study.forEach((s) => {
-                      if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
-                      if (s.value === "ukbb") indices = indices.concat([4, 5]);
-                      if (s.value === "biovu") indices = indices.concat([6]);
-                    });
-                    // Remove duplicates and sort
-                    indices = Array.from(new Set(indices)).sort((a, b) => a - b);
-                    return indices.map((i) => platformArray[i]);
-                  }
+                  // if (study.length > 0) {
+                  //   let indices = [];
+                  //   study.forEach((s) => {
+                  //     if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
+                  //     if (s.value === "ukbb") indices = indices.concat([4, 5]);
+                  //     if (s.value === "biovu") indices = indices.concat([6]);
+                  //   });
+                  //   // Remove duplicates and sort
+                  //   indices = Array.from(new Set(indices)).sort((a, b) => a - b);
+                  //   return indices.map((i) => platformArray[i]);
+                  // }
                   return platformArray;
                 })()}
                 classNamePrefix="select"
@@ -393,7 +393,7 @@ export default function ComparePanel(props) {
             <Form.Group className="mb-3">
               <Form.Label>Age</Form.Label>
               <Form.Label style={{ color: "red" }}>
-                {maxAge && minAge && parseInt(maxAge) <= parseInt(minAge)
+                {maxAge !== "" && minAge !== "" && parseInt(maxAge, 10) <= parseInt(minAge, 10)
                   ? "Upper age limit must be greater than lower age limit"
                   : ""}
               </Form.Label>

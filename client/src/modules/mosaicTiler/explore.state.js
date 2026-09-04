@@ -1,6 +1,6 @@
 import { atom, selector, selectorFamily } from "recoil";
 import { query, post } from "../../services/query";
-import { initialX, initialY } from "./constants";
+import { initialX, initialY, StudyOptions } from "./constants";
 export const loadingState = atom({
   key: "analysis.loadingState",
   default: false,
@@ -73,36 +73,41 @@ export async function getData(params) {
     myeCancer:params.myeCancer
   });
 
-  const results = response.data.nominator;
+  const mergedRows = Array.isArray(response.data.merged)
+    ? response.data.merged
+    : (() => {
+        const results = response.data.nominator || [];
+        const responseDenominator = response.data.denominator || [];
+        const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
+        return results
+          .filter((r) => r && r._source)
+          .map((r) => {
+            const base = r._source;
+            const deno = denominatorMap.get(base.sampleId) || {};
+            return { ...base, ...deno };
+          });
+      })();
 
-  const responseDenominator = response.data.denominator;
+  mergedRows.forEach((d) => {
+    if (d && d.cf !== "nan") {
+      d.block_id = d.chromosome.substring(3);
+      d.value = d.cf;
+      d.dataset = d.dataset.toUpperCase();
+      d.start = d.beginGrch38;
+      d.end = d.endGrch38;
 
-  const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
-
-  results.forEach((r) => {
-    if (r._source !== null) {
-      const d = r._source;
-      if (d.cf !== "nan") {
-        d.block_id = d.chromosome.substring(3);
-        d.value = d.cf;
-        d.dataset = d.dataset.toUpperCase();
-        d.start = d.beginGrch38;
-        d.end = d.endGrch38;
-        d.age = denominatorMap.get(d.sampleId) !== undefined ? denominatorMap.get(d.sampleId).age : "";
-
-        if (d.chromosome !== "chrX") {
-          if (d.type === "Gain") gainTemp.push(d);
-          else if (d.type === "CN-LOH") lohTemp.push(d);
-          else if (d.type === "Loss") lossTemp.push(d);
-          else if (d.type === "Undetermined") undeterTemp.push(d);
-        }
-        if (params.chrX && d.type === "mLOX") {
-          chrXTemp.push(d);
-        }
-        if (params.chrY && d.type === "mLOY") {
-          chrYTemp.push(d);
-          d.block_id = "Y";
-        }
+      if (d.chromosome !== "chrX") {
+        if (d.type === "Gain") gainTemp.push(d);
+        else if (d.type === "CN-LOH") lohTemp.push(d);
+        else if (d.type === "Loss") lossTemp.push(d);
+        else if (d.type === "Undetermined") undeterTemp.push(d);
+      }
+      if (params.chrX && d.type === "mLOX") {
+        chrXTemp.push(d);
+      }
+      if (params.chrY && d.type === "mLOY") {
+        chrYTemp.push(d);
+        d.block_id = "Y";
       }
     }
   });
@@ -110,7 +115,7 @@ export async function getData(params) {
 }
 export const defaultFormState = {
   openSidebar: true,
-  study: [{ value: "plco", label: "PLCO" }],
+  study: StudyOptions,
   approach: [],
   chrSingle: "",
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
@@ -137,6 +142,8 @@ export const defaultFormState = {
   counterCompare: 0,
   start: "",
   end: "",
+  initialStart: "",
+  initialEnd: "",
   groupA: [],
   groupB: [],
   smoking: [],
@@ -147,7 +154,7 @@ export const defaultFormState = {
 };
 export const resetFormState = {
   openSidebar: true,
-  study: [{ value: "plco", label: "PLCO" }],
+  study: StudyOptions,
   approach: [],
   chromosome: Array.from({ length: 22 }, (_, i) => i + 1)
     .map((i) => {
@@ -180,7 +187,9 @@ export const resetFormState = {
   priorCancer:[],
   hemaCancer:[],
   lymCancer:[],
-  myeCancer:[]
+  myeCancer:[],
+  initialStart: "",
+  initialEnd: "",
 };
 export const formState = atom({
   key: "explore.formState",

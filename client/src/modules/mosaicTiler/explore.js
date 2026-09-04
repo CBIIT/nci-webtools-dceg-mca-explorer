@@ -1,7 +1,7 @@
-import { Suspense, useEffect, useState, Text } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { loadingState } from "./explore.state";
-import { Container, Card, Tabs, Tab, FormCheck } from "react-bootstrap";
+import { Container, Card, Tabs, Tab } from "react-bootstrap";
 
 import ExploreForm from "./explore-form";
 import CompareForm from "./compare-form";
@@ -21,6 +21,7 @@ export default function Explore() {
   const [counter, setCounter] = useState(0);
   const [isOpenCompare, setIsOpenCompare] = useState(false);
   const [clear, setClear] = useState(0);
+  const [rangeLabel, setRangeLabel] = useState("");
 
   useEffect(() => {
     _setOpenSidebar(form.openSidebar);
@@ -47,26 +48,35 @@ export default function Explore() {
   }
 
   function handleFilter(event) {
-    console.log("filter:", form);
+    console.log("filter:", event);
     if (
-      form.plotType.value !== "static" ||
-      (form.plotType.value === "static" && (form.chrSingle !== "" || form.chrCompare !== ""))
+      event.plotType.value !== "static" ||
+      (event.plotType.value === "static" && (event.chrSingle !== "" || event.chrCompare !== ""))
     ) {
-      setForm({
-        ...form,
+      setForm((prev) => ({
+        ...prev,
+        ...event,
         compare: true,
         //   chrX: false,
         //    chrY: false,
-        counterCompare: form.counterCompare + 1,
+        counterCompare: (prev.counterCompare || 0) + 1,
+        initialStart:
+          event.initialStart !== undefined && event.initialStart !== null && event.initialStart !== ""
+            ? event.initialStart
+            : event.start,
+        initialEnd:
+          event.initialEnd !== undefined && event.initialEnd !== null && event.initialEnd !== ""
+            ? event.initialEnd
+            : event.end,
         groupA: { ...event.groupA },
         groupB: { ...event.groupB },
         //submitted: true,
-      });
+      }));
     }
   }
   function handleFilterClear(event) {
     setForm({ ...event });
-    setClear(clear + 1);
+    setClear((prev) => prev + 1);
 
     console.log("filterclear", event);
     //setForm({ ...event, submitted: false });
@@ -93,16 +103,21 @@ export default function Explore() {
   function handleClick(value) {
     //setIsOpenCompare(true);
     console.log("in explore", value, form);
+    if (typeof value === "string") {
+      setRangeLabel(value);
+    } else if (value && typeof value === "object") {
+      setRangeLabel(value.rangeLabel || "");
+    }
   }
   function handleCheckboxChange() {
-    setIsOpenCompare(!isOpenCompare);
+    setIsOpenCompare((prev) => !prev);
+    setRangeLabel("");
+    setClear((prev) => prev + 1);
     //const tabs = document.querySelectorAll("[role=tabpanel");
     //console.log("click pair");
     // if (isOpenCompare) {
     //   console.log(tabs);
     // }
-    setForm({ ...form, compare: !isOpenCompare });
-    setForm(defaultFormState);
     // if (Array.isArray(form.groupA)) {
     //   const combtn = document.getElementById("compareSubmit");
     //   if (combtn !== null) combtn.click();
@@ -110,12 +125,12 @@ export default function Explore() {
   }
 
   return (
-    <Container className="my-3">
+    <Container fluid className="my-3">
       <Loader fullscreen show={loading} />
       <SidebarContainer
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
-        <SidebarPanel>
+        <SidebarPanel className="col-xl-3 ps-4">
           <Card>
             <label
               style={{
@@ -137,6 +152,7 @@ export default function Explore() {
                     onClear={handleFilterClear}
                     isOpen={isOpenCompare}
                     onReset={handleReset}
+                    rangeLabel={rangeLabel}
                     onFilterClear
                   />
                 </Card.Body>
@@ -150,15 +166,16 @@ export default function Explore() {
                     onClear={handleFilterClear}
                     onReset={handleReset}
                     isOpen={isOpenCompare}
+                    rangeLabel={rangeLabel}
                   />
                 </Card.Body>
               </Card>
             )}
           </Card>
         </SidebarPanel>
-        <MainPanel>
+        <MainPanel className="col-xl-9">
           <div className="h-100 mb-5 align-self-center">
-            <Card.Body className="p-0">
+            <Card.Body className="p-0" style={{ marginLeft: _openSidebar ? 0 : "1.5rem" }}>
               <ErrorBoundary
                 fallback={
                   <div style={{ color: "red" }}>

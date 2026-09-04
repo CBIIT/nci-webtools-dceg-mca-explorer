@@ -12,7 +12,7 @@ export const AncestryOptions = [
 ];
 
 export const CompareArray = [
-  { id: 1, value: "approach", label: " Array Platform", isChecked: false, order: 3 },
+  { id: 1, value: "approach", label: " Detection Approach", isChecked: false, order: 3 },
   { id: 2, value: "sex", label: " Genotype Sex", isChecked: false, order: 4 },
   { id: 3, value: "age", label: " Age", isChecked: false, order: 5 },
   { id: 4, value: "ancestry", label: " Ancestry", isChecked: false, order: 6 },
@@ -35,11 +35,23 @@ export const TypeStateOptions = [
   { value: "undetermined", label: "Undetermined" },
 ];
 
+// export const StudyOptions = [
+// //   { value: "all", label: "All Studies" },
+//   { value: "plco", label: "PLCO" },
+//   { value: "ukbb", label: "UK Biobank" },
+//   { value: "biovu", label: "BioVU" },
+// ];
+
+
 export const StudyOptions = [
-  // { value: "all", label: "All Studies" },
+//   { value: "all", label: "All Studies" },
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
   { value: "biovu", label: "BioVU" },
+  { value: "jap", label: "JAP" },
+  { value: "iorra", label: "IORRA" },
+  { value: "estbb", label: "EstBB" },
+  { value: "topmed", label: "TOPMed" },
 ];
 
 export const SexOptions = [
@@ -66,16 +78,19 @@ export const smokeNFC = [
   { value: "0", label: "Never" },
   { value: "1", label: "Former" },
   { value: "2", label: "Current" },
+  { value: "3", label: "Ever" },
 ];
 
 export const platformArray = [
-  { value: "Global Screening Array", label: "Global Screening Array" },
-  { value: "ONCO Array", label: "ONCO Array" },
-  { value: "OMNI 2.5 Million", label: "OMNI 2.5 Million" },
-  { value: "OMNI Express", label: "OMNI Express" },
   { value: "Axiom", label: "Axiom" },
   { value: "BiLEVE", label: "BiLEVE" },
+  { value: "Global Screening Array", label: "Global Screening Array" },
+  { value: "Human OmniExpress Exome v1.2", label: "Human OmniExpress Exome" },
   { value: "Illumina MEGAEX array", label: "Illumina MEGAEX array" },
+  { value: "OMNI 2.5 Million", label: "OMNI 2.5 Million" },
+  { value: "OMNI Express", label: "OMNI Express" },
+  { value: "ONCO Array", label: "ONCO Array" },
+  { value: "WGS", label: "WGS" }
 ];
 
 export const ifCancer = [

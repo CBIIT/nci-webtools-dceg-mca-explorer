@@ -49,6 +49,7 @@ function SingleChromosome(props) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [pvalue, setPvalue] = useState(0);
+  const lastEmittedZoomRef = useRef({ backtoprev: "", rangeLabel: "" });
 
   //update sizeRef when width changes
   useEffect(() => {
@@ -68,6 +69,7 @@ function SingleChromosome(props) {
       setXMax(currentView["xaxis.range[1]"]);
       setXMin(currentView["xaxis.range[0]"]);
     }
+    console.log("zoomHistory changed:", zoomHistory);
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
@@ -244,19 +246,23 @@ function SingleChromosome(props) {
           }),
         },
         hovertext: props.data.map((e) => {
+          // coordinates/cellular fraction are rounded before display to protect participant privacy
           var text =
-            "Study: " +
-            e.dataset +
-            "<br>Sample ID: " +
-            e.sampleId +
-            "<br>Start: " +
-            e.start +
+            // "Study: " +
+            // e.dataset +
+            // "<br>Sample ID: " +
+            // e.sampleId +
+            "Start: " +
+            Math.round(Number(e.start) / 1000).toLocaleString() +
+            " Kb" +
             "<br>End: " +
-            e.end +
+            Math.round(Number(e.end) / 1000).toLocaleString() +
+            " Kb" +
             "<br>Type: " +
             e.type +
             "<br>Cellular Fraction:" +
-            e.value;
+            Math.round(Number(e.value) * 100) +
+            "%";
           // "<br> Smoke: " +
           // e.smokeNFC;
           return text;
@@ -326,7 +332,7 @@ function SingleChromosome(props) {
   if (zoomHistory.length == 0) {
     backtoprev = "";
   }
-  let rangeLable = xMin
+  let rangeLabel = xMin !== undefined && xMax !== undefined
     ? "Chr" +
       props.chromesomeId +
       ":" +
@@ -335,8 +341,14 @@ function SingleChromosome(props) {
       Math.trunc(xMax).toLocaleString("en-US", { style: "decimal" })
     : "";
 
-  if (zoomHistory.length == 0) rangeLable = "";
-  props.zoomHistory([backtoprev, rangeLable]);
+  if (zoomHistory.length == 0) rangeLabel = "";
+  if (
+    lastEmittedZoomRef.current.backtoprev !== backtoprev ||
+    lastEmittedZoomRef.current.rangeLabel !== rangeLabel
+  ) {
+    lastEmittedZoomRef.current = { backtoprev, rangeLabel };
+    props.zoomHistory([backtoprev, rangeLabel]);
+  }
   //console.log(zoomHistory);
 
   return (
@@ -366,6 +378,9 @@ function SingleChromosome(props) {
             useResizeHandler={true}
             style={{ width: "100%", height: height > 450 ? 450 : height, position: "relative" }}
             ref={ref}
+            onAfterPlot={() => {
+              if (typeof props.onReady === "function") props.onReady();
+            }}
             onRelayout={handleRelayout}
             // onInitialized={() => {
             //   if (initX.length === 0) {
@@ -408,12 +423,13 @@ function SingleChromosome(props) {
         ) : (
           !props.title && (
             <p style={{ fontSize: "14px" }}>
+              Participants with missing data for the selected variable(s) are excluded from this view.<br></br>
               Gene and SNP plot are not available at the current zoom level.<br></br>
               Please zoom in to a 5MB range to see genes and SNPs.
             </p>
           )
         )}
-        <div style={{ paddingTop: "1px" }}>{xMin ? rangeLable : ""}</div>
+        <div style={{ paddingTop: "1px" }}>{xMin ? rangeLabel : ""}</div>
         <div style={{ paddingTop: "2px" }}>
           {props.fisherP > 0
             ? props.type.map((t) => t.label).join(" ") +

@@ -1,18 +1,18 @@
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 export const Columns = [
-  {
-    accessor: "sampleId",
-    id: "sampleId",
-    label: "sampleId",
-    Header: <b>Sample ID</b>,
-  },
-  {
-    accessor: "dataset",
-    id: "dataset",
-    label: "Dataset",
-    Header: <b>Dataset</b>,
-  },
+  // {
+  //   accessor: "sampleId",
+  //   id: "sampleId",
+  //   label: "sampleId",
+  //   Header: <b>Sample ID</b>,
+  // },
+  // {
+  //   accessor: "dataset",
+  //   id: "dataset",
+  //   label: "Dataset",
+  //   Header: <b>Dataset</b>,
+  // },
   {
     accessor: "block_id",
     id: "chromosome",
@@ -73,7 +73,7 @@ export const Columns = [
     accessor: "array",
     id: "array",
     label: "Array",
-    Header: <b>Array</b>,
+    Header: <b>Detection Approach</b>,
   },
   // {
   //   accessor: "smokeNFC",
@@ -124,8 +124,8 @@ export function exportTable(tableData) {
       }),
       data: tableData.map((e) => {
         return [
-          { value: e.sampleId },
-          { value: e.dataset },
+          // { value: e.sampleId },
+          // { value: e.dataset },
           { value: e.block_id },
           { value: e.type },
           { value: e.value },

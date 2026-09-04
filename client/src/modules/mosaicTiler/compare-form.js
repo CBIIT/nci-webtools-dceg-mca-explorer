@@ -1,18 +1,18 @@
 import { Form, Button, Accordion, Card, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
+import { formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
 import ComparePanel from "./comparePanel";
-import { AncestryOptions, CompareArray, TypeStateOptions } from "./constants";
+import { AncestryOptions, CompareArray, TypeStateOptions, StudyOptions } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
+import { parseRangeLabel } from "./range-utils";
 
-export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
+export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rangeLabel }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
   const [loading, setLoading] = useRecoilState(loadingState);
-  const [counter, setCounter] = useState(0);
   const [resetCounter, setResetCounter] = useState(0);
   // console.log("compareForm:", form);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
@@ -76,7 +76,25 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   function handleSubmit(event) {
     event.preventDefault();
     setSubmitClicked(true);
-    if (onSubmit) onSubmit(form);
+    console.log("[compare-form][handleSubmit] before payload", {
+      start: form.start,
+      end: form.end,
+      initialStart: form.initialStart,
+      initialEnd: form.initialEnd,
+    });
+    const submittedForm = {
+      ...form,
+      initialStart: form.start,
+      initialEnd: form.end,
+    };
+    console.log("[compare-form][handleSubmit] submitted payload", {
+      start: submittedForm.start,
+      end: submittedForm.end,
+      initialStart: submittedForm.initialStart,
+      initialEnd: submittedForm.initialEnd,
+    });
+    setForm(submittedForm);
+    if (onSubmit) onSubmit(submittedForm);
     //handleDisplayCompare();
   }
 
@@ -132,11 +150,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     }
 
     if (name === "study" && selection.find((option) => option.value === "all")) {
-      selection = [
-        { value: "plco", label: "PLCO" },
-        { value: "ukbb", label: "UK Bio Bank" },
-        { value: "biovu", label: "BioVU" },
-      ];
+      selection = StudyOptions.filter((option) => option.value !== "all");
     }
     if (name === "plotType") {
       //setDisabledType([]);
@@ -191,7 +205,14 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     //update the compare variable and run the filter function to do compare
 
     let isValid = true;
-    console.log(form);
+    console.log("[compare-form][handleFilter] before validation", {
+      start: form.start,
+      end: form.end,
+      initialStart: form.initialStart,
+      initialEnd: form.initialEnd,
+      plotType: form.plotType,
+      chrCompare: form.chrCompare,
+    });
     // Check for age limitation
     if (form.groupA.maxAge && form.groupA.minAge && parseInt(form.groupA.maxAge) <= parseInt(form.groupA.minAge)) {
       isValid = false;
@@ -223,9 +244,26 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
     }
 
     if (form.plotType.value !== "static" || (form.plotType.value === "static" && form.chrCompare !== "")) {
+      console.log("[compare-form][handleFilter] comparing...", form);
+      const submittedForm = {
+        ...form,
+        initialStart: form.start,
+        initialEnd: form.end,
+        compare: true,
+        counterCompare: (form.counterCompare || 0) + 1,
+      };
+      console.log("[compare-form][handleFilter] submitted payload", {
+        start: submittedForm.start,
+        end: submittedForm.end,
+        initialStart: submittedForm.initialStart,
+        initialEnd: submittedForm.initialEnd,
+        compare: submittedForm.compare,
+        counterCompare: submittedForm.counterCompare,
+      });
       console.log("comparing...", form);
-      setForm({ ...form, compare: true, counterCompare: counter + 1 });
-      onFilter({ ...form });
+      //const submittedForm = { ...form, compare: true, counterCompare: (form.counterCompare || 0) + 1 };
+      setForm(submittedForm);
+      onFilter(submittedForm);
     }
     //onSubmit(form);
   }
@@ -281,6 +319,22 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter }) {
   const handleShowXY = (val) => {
     setShowXY(val);
   };
+
+  useEffect(() => {
+    const parsedRange = parseRangeLabel(rangeLabel);
+    if (!parsedRange) return;
+
+    setStart(parsedRange.start);
+    setEnd(parsedRange.end);
+    setForm((prev) => ({
+      ...prev,
+      plotType: { value: "static", label: "Chromosome level" },
+      chrCompare: parsedRange.chrOption,
+      start: parsedRange.start,
+      end: parsedRange.end,
+    }));
+  }, [rangeLabel, setForm]);
+
   // Validation for start/end
 function getRangeError(start, end) {
   if (!/^\d+$/.test(start)) return "Start must be an integer.";
@@ -403,7 +457,7 @@ function getRangeError(start, end) {
         <hr></hr>
         <Accordion style={{ paddingTop: "5px" }}>
           <Accordion.Item eventKey="0">
-            <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+            <Accordion.Header style={{ textAlign: "right" }}>
               Choose more attributes
             </Accordion.Header>
             <Accordion.Body

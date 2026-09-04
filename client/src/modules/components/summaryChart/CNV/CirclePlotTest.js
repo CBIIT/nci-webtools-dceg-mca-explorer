@@ -1,10 +1,10 @@
 import * as React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useDeferredValue } from "react";
 import layout from "./layout2.json";
 import layoutxy from "./layoutxy.json";
 import "./css/circos.css";
 import SingleChromosome from "./SingleChromosome";
-import { Row, Col, Button, Container, Table } from "react-bootstrap";
+import { Row, Col, Button, Container, Table, Form } from "react-bootstrap";
 import { formState } from "../../../mosaicTiler/explore.state";
 import { useRecoilState } from "recoil";
 import Legend from "../../../components/legend";
@@ -14,6 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
+import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS, normalizeThickness, denormalizeThickness, SUMMARY_CIRCLE_SIZE } from "./thickness";
 //import { fisherTest } from "../../utils";
 
 //import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -22,20 +23,23 @@ import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/cons
 //import ChromosomeCompare from "./ChromosomeCompare";
 //import { groupSort } from "d3";
 
+// coordinates/cellular fraction are rounded before display to protect participant privacy
+const formatKb = (bp) => Math.round(Number(bp) / 1000).toLocaleString() + " Kb";
+const formatCellFraction = (cf) => Math.round(Number(cf) * 100) + "%";
+
 const hovertip = (d) => {
   return (
-    "<p style='text-align:left; margin:0; padding:0;'>Study: " +
-    d.dataset +
-    "<br> Sample ID: " +
-    d.sampleId +
-    "<br> Start: " +
-    d.start +
+    "<p style='text-align:left; margin:0; padding:0;'> " +
+    // "<br> Sample ID: " +
+    // d.sampleId +
+    "Start: " +
+    formatKb(d.start) +
     "<br> End: " +
-    d.end +
+    formatKb(d.end) +
     "<br> Type: " +
     d.type +
     "<br> Cellular Fraction: " +
-    d.value +
+    formatCellFraction(d.value) +
     "</p>"
   );
 };
@@ -46,6 +50,7 @@ function changeBackground(track, chromesomeId, opacity) {
     if (svgDoc.nodeName === "g") {
       if (svgDoc.__data__.key === chromesomeId) {
         var s = svgDoc.querySelector(".background");
+        if (!s) continue;
         //s.setAttribute("fill","white")
         s.setAttribute("opacity", opacity);
       }
@@ -84,6 +89,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [figureHeight, setFigureHeight] = useState(0);
   //
   const [isLoaded, setIsLoaded] = useState(false);
+  // shown next to "Download image" when the export fails, so the user isn't left guessing why nothing downloaded
+  const [downloadError, setDownloadError] = useState("");
   const [zoomRange, setZoomRange] = useState(null);
   const [rangeLabel, setRangeLabel] = useState("");
   const [isinit, setIsinit] = useState(false);
@@ -96,6 +103,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [rangeB, setRangeB] = useState(0);
   const [Pfisher, setPfisher] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  // owned by RangeView so the chromosome summary table can recompute when thickness changes
+  const thickness = props.thickness ?? DEFAULT_THICKNESS;
+  // keeps the number input responsive while the (expensive) circos remount lags behind
+  const deferredThickness = useDeferredValue(thickness);
+  const handleThicknessChange = (value) => {
+    if (typeof props.onThicknessChange === "function") props.onThicknessChange(value);
+  };
 
   const compareRef = useRef(isCompare);
   const showChartRef = useRef(showChart);
@@ -103,6 +117,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const tableRef = useRef(tableData);
   const circosCompareA = useRef(null);
   const circosCompareB = useRef(null);
+  const lastZoomLabelRef = useRef("");
+  const isResettingToInitialRef = useRef(false);
+  const resetInitialTimerRef = useRef(null);
+  const plotReadyTimerRef = useRef(null);
   const [maxTitleheight, setMaxTitleheight] = useState(0);
   const [heightA, setHeightA] = useState(0);
   const [heightB, setHeightB] = useState(0);
@@ -113,7 +131,41 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [showTitle, setShowTitle] = useState(false);
   const [showTableTitle, setShowTableTitle] = useState(false);
   const [visibleTooltip, setVisibleTooltip] = useState(false);
+  const [visibleThicknessTooltip, setVisibleThicknessTooltip] = useState(false);
+  const thicknessTooltipText =
+    "Radial thickness of each event band in the circle plot. Smaller (thinner) values let more overlapping events display without clamping; this is auto-calculated from the densest track but can be fine-tuned here.";
   const [compareChr, setCompareChr] = useState(form.chrSingle && form.chrSingle.label);
+
+  const restoreInitialRangeToForm = () => {
+    setForm((prev) => {
+      const chrOption = prev.chrSingle || prev.chrCompare;
+      const selectedChromosome = chrOption ? layout.find((item) => item.id === chrOption.label + "") : null;
+      const nextStart = prev.initialStart !== "" && prev.initialStart !== null && prev.initialStart !== undefined
+        ? prev.initialStart
+        : selectedChromosome
+          ? 0
+          : prev.start;
+      const nextEnd = prev.initialEnd !== "" && prev.initialEnd !== null && prev.initialEnd !== undefined
+        ? prev.initialEnd
+        : selectedChromosome
+          ? selectedChromosome.len + ""
+          : prev.end;
+
+      if (prev.start === nextStart && prev.end === nextEnd) return prev;
+      return { ...prev, start: nextStart, end: nextEnd };
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (resetInitialTimerRef.current) {
+        clearTimeout(resetInitialTimerRef.current);
+      }
+      if (plotReadyTimerRef.current) {
+        clearTimeout(plotReadyTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleDisplayTitle = () => {
     // Toggle display of circosTitle
@@ -166,7 +218,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   else adjustWidth = 0.7;
 
   const size = browserSize.width < 900 ? minFigSize : browserSize.width * adjustWidth;
-  const compareCircleSize = minFigSize;
+  // never shrink circle plots below this; smaller viewports scroll horizontally instead
+  const MIN_CIRCLE_SIZE = 450;
+  const circleSize = SUMMARY_CIRCLE_SIZE;
+  const compareCircleSize = Math.max(minFigSize, MIN_CIRCLE_SIZE);
   let singleChromeSize = size < 900 ? minFigSize - 100 : size * 0.8;
   let singleFigWidth = size < 900 ? minFigSize - 100 : size * 0.7;
 
@@ -252,6 +307,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
+          if (!bck) return;
 
           bck.addEventListener("mouseover", () => {
             // console.log("mouseover", bck, b.__data__.key); //b.__data__.key is the chromesome id
@@ -279,7 +335,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               plotType: { value: "static", label: "Chromosome level" },
               chrCompare: { value: "chr" + b.__data__.key, label: b.__data__.key },
               chrSingle: { value: "chr" + b.__data__.key, label: b.__data__.key },
-              end: layout.filter((c) => c.id === b.__data__.key + "")[0].len,
+              start: "0",
+              end: layout.filter((c) => c.id === b.__data__.key + "")[0].len + "",
             });
             if (form.compare) {
               document.getElementById("compareSubmit").click();
@@ -391,6 +448,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     // console.log(form.counterCompare, form.groupA, form.groupB);
 
     if (form.compare) {
+      setRangeLabel("");
+      setZoomRange(null);
       //console.log(showChart, form.groupA, form.groupB, compareRef);
       setIsCompare(true);
       //if click back to Circos compare from single chromosome, do not clear circos data
@@ -435,7 +494,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     setCommonTitle(
       checkGroupTitleForDup()
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -450,6 +509,53 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     }
     //console.log(form, isLoadedA, isLoadedB);
   }, [isLoadedA, isLoadedB]);
+
+  useEffect(() => {
+    if (form.compare || form.plotType.value !== "circos") return;
+    if (typeof props.onLoading !== "function") return;
+
+    props.onLoading(false);
+    if (plotReadyTimerRef.current) clearTimeout(plotReadyTimerRef.current);
+
+    const expectedBlocks =
+      props.gain.length +
+      props.loss.length +
+      props.loh.length +
+      props.undetermined.length +
+      props.chrx.length +
+      props.chry.length;
+
+    if (expectedBlocks === 0) {
+      props.onLoading(true);
+      return;
+    }
+
+    const waitForBlocks = (attempt = 0) => {
+      const renderedBlocks = circleRef.current ? circleRef.current.querySelectorAll(".track-0 .block, .track-1 .block, .track-2 .block, .track-3 .block").length : 0;
+      if (renderedBlocks >= expectedBlocks || attempt >= 80) {
+        props.onLoading(true);
+        return;
+      }
+
+      plotReadyTimerRef.current = setTimeout(() => waitForBlocks(attempt + 1), 100);
+    };
+
+    plotReadyTimerRef.current = setTimeout(() => waitForBlocks(), 100);
+  }, [form.compare, form.plotType.value, props.gain, props.loss, props.loh, props.undetermined, props.chrx, props.chry, props.onLoading]);
+
+  useEffect(() => {
+    if (form.compare || form.plotType.value === "circos") return;
+    if (typeof props.onLoading !== "function") return;
+
+    props.onLoading(false);
+  }, [form.compare, form.plotType.value, chromesomeId, props.gain, props.loss, props.loh, props.undetermined, props.chrx, props.chry, props.onLoading]);
+
+  const handleSingleChromosomeReady = () => {
+    if (!form.compare && form.plotType.value !== "circos" && typeof props.onLoading === "function") {
+      props.onLoading(true);
+    }
+  };
+
   var chromesomeIdString = chromesomeId + "";
   data = [
     ...props.gain.filter((chr) => chr.block_id === chromesomeIdString),
@@ -520,10 +626,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           myeCancer: group.myeCancer,
         };
         // console.log(query);
-        responseDeno = await axios.post("api/opensearch/denominator", query);
+        [responseDeno, response] = await Promise.all([
+          axios.post("api/opensearch/denominator", query),
+          axios.post("api/opensearch/chromosome", query),
+        ]);
         // console.log(responseDeno.data);
-
-        response = await axios.post("api/opensearch/chromosome", query);
       } else {
         console.log("do query...", form.counterCompare, group);
         //const dataset = group.study;
@@ -549,46 +656,58 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         });
       }
 
-      let results = null;
-      let responseDenominator = null;
-      // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
-      //if choose any of these filter, should use denominator returns since only denominator has these attribute values
-      if (
-        (group.smoking === undefined || group.smoking.length === 0) &&
-        (group.approach === undefined || group.approach.length === 0) &&
-        (group.ancestry === undefined || group.ancestry.length === 0) &&
-        (group.sex === undefined || group.sex.length === 0) &&
-        !group.hasOwnProperty("minAge") &&
-        !group.hasOwnProperty("priorCancer") &&
-        !group.hasOwnProperty("hemaCancer") &&
-        !group.hasOwnProperty("lymCancer") &&
-        !group.hasOwnProperty("myeCancer")
-      ) {
-        results = response.data.denominator;
-        responseDenominator = response.data.nominator;
-      } else {
-        results = response.data.nominator;
-        responseDenominator = response.data.denominator;
-      }
-      //console.log(results, responseDenominator);
-      const mergedResult = responseDenominator.map((itemA) => {
-        let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
-        // const { age, sex, ancestry, ...restItems } = nominatorItem;
-        if (nominatorItem !== undefined)
-          return {
-            ...itemA._source,
-            ...nominatorItem._source,
-          };
-        else
-          return {
-            ...itemA._source,
-          };
-      });
+      const mergedResult = Array.isArray(response.data.merged)
+        ? response.data.merged
+        : (() => {
+            let results = null;
+            let responseDenominator = null;
+            // console.log(group.smoking.length, group.approach.length, group.ancestry.length, group.sex.length);
+            //if choose any of these filter, should use denominator returns since only denominator has these attribute values
+            if (
+              (group.smoking === undefined || group.smoking.length === 0) &&
+              (group.approach === undefined || group.approach.length === 0) &&
+              (group.ancestry === undefined || group.ancestry.length === 0) &&
+              (group.sex === undefined || group.sex.length === 0) &&
+              !group.hasOwnProperty("minAge") &&
+              !group.hasOwnProperty("priorCancer") &&
+              !group.hasOwnProperty("hemaCancer") &&
+              !group.hasOwnProperty("lymCancer") &&
+              !group.hasOwnProperty("myeCancer")
+            ) {
+              results = response.data.denominator || [];
+              responseDenominator = response.data.nominator || [];
+            } else {
+              results = response.data.nominator || [];
+              responseDenominator = response.data.denominator || [];
+            }
+            //console.log(results, responseDenominator);
+            const resultBySampleId = new Map();
+            results.forEach((item) => {
+              const sampleId = item?._source?.sampleId;
+              if (sampleId !== undefined && !resultBySampleId.has(sampleId)) {
+                resultBySampleId.set(sampleId, item._source);
+              }
+            });
+
+            return responseDenominator.map((itemA) => {
+              const sampleId = itemA?._source?.sampleId;
+              const nominatorSource = sampleId !== undefined ? resultBySampleId.get(sampleId) : undefined;
+              if (nominatorSource !== undefined)
+                return {
+                  ...itemA._source,
+                  ...nominatorSource,
+                };
+              else
+                return {
+                  ...itemA._source,
+                };
+            });
+          })();
 
       mergedResult.forEach((r) => {
         //if (r._source !== null) {
         const d = r;
-        if (!(group.hasOwnProperty("minFraction") && (d.cf === "" || d.cf === "NA"))) {
+        if (d.cf != "nan" && !(group.hasOwnProperty("minFraction") && (d.cf === "" || d.cf === "NA"))) {
           // console.log(d)
           d.block_id = d.chromosome.substring(3);
           d.value = d.cf === "NA" ? "" : d.cf;
@@ -658,7 +777,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       let itemB = form.groupB[key];
       let itemTitle = "";
 
-      if (Array.isArray(itemA)) {
+      if (Array.isArray(itemA) && key !=="study") {
         if (itemA.length === itemB.length) {
           itemTitle = "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           if (itemA.length > 0) {
@@ -711,7 +830,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setTitleA(
       tempA
         .slice(1)
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -721,7 +840,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setTitleB(
       tempB
         .slice(1)
-        .replace("Approach", "Array Platform")
+        .replace("Approach", "Detection Approach")
         .replace("Types:", "Copy Number State:")
         .replace("Prior", "Prior ")
         .replace("Hema", "Incident Hematological ")
@@ -759,9 +878,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const singleTitle = (group) => {
     let title = "";
     //console.log(group);
-    for (let key in group) {
+    for (let key in group ) {
       const values = group[key];
-      if (values !== undefined) {
+      if (values !== undefined && key !=="study") {
         if (typeof values === "object" && Array.isArray(values) && values.length > 0) {
           title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           values.forEach((s) => {
@@ -776,7 +895,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     title += groupAgeTitle(group);
     title += groupCfTitle(group);
     title = title
-      .replace("Approach", "Array Platform")
+      .replace("Approach", "Detection Approach")
       .replace("Types:", "Copy Number State:")
       .replace("Prior", "Prior ")
       .replace("Hema", "Incident Hematological ")
@@ -823,33 +942,33 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     //and give a notes for this study
     let errorMessage = "";
     // console.log(group.approach);
-    group.study !== undefined &&
-      group.approach !== undefined &&
-      group.study.forEach((s) => {
-        //console.log(s.value, group.approach.length);
-        if (s.value === "plco" && group.approach.length > 0) {
-          const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
-          console.log(plcoArray);
-          if (plcoArray.length === 0) {
-            //title = title.replace("PLCO,", "").replace("PLCO", "");
-            errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
-          }
-        }
-        if (s.value === "ukbb" && group.approach.length > 0) {
-          const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
-          if (ukArray.length === 0) {
-            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
-            errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
-          }
-        }
-        if (s.value === "biovu" && group.approach.length > 0) {
-          const biovuArray = group.approach.filter((a) => a.value === "Illumina MEGAEX array" );
-          if (biovuArray.length === 0) {
-            // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
-            errorMessage = "Note: BioVU does not contain " + group.approach.map((obj) => obj.label);
-          }
-        }
-      });
+    // group.study !== undefined &&
+    //   group.approach !== undefined &&
+    //   group.study.forEach((s) => {
+    //     //console.log(s.value, group.approach.length);
+    //     if (s.value === "plco" && group.approach.length > 0) {
+    //       const plcoArray = group.approach.filter((a) => a.value === "gsa" || a.value === "oncoArray");
+    //       console.log(plcoArray);
+    //       if (plcoArray.length === 0) {
+    //         //title = title.replace("PLCO,", "").replace("PLCO", "");
+    //         errorMessage = "Note: PLCO does not contain " + group.approach.map((obj) => obj.label);
+    //       }
+    //     }
+    //     if (s.value === "ukbb" && group.approach.length > 0) {
+    //       const ukArray = group.approach.filter((a) => a.value === "Axiom" || a.value === "BiLEVE");
+    //       if (ukArray.length === 0) {
+    //         // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+    //         errorMessage = "Note: UKBB does not contain " + group.approach.map((obj) => obj.label);
+    //       }
+    //     }
+    //     if (s.value === "biovu" && group.approach.length > 0) {
+    //       const biovuArray = group.approach.filter((a) => a.value === "Illumina MEGAEX array" );
+    //       if (biovuArray.length === 0) {
+    //         // title = title.replace("UK Biobank,", "").replace("UK Biobank", "");
+    //         errorMessage = "Note: BioVU does not contain " + group.approach.map((obj) => obj.label);
+    //       }
+    //     }
+    //   });
     //  console.log(group.approach, errorMessage, title);
     return [title, errorMessage];
   };
@@ -859,7 +978,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       singleTitle({
         types: form.types,
         sex: form.sex,
-        study: form.study,
+        // study: form.study,
         ancestry: form.ancestry,
         approach: form.approach,
         smoking: form.smoking,
@@ -876,7 +995,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     setSimpleTitle(
       singleTitle({
         types: form.types,
-        study: form.study,
+        // study: form.study,
       })
     );
   }, [form.counterSubmitted]);
@@ -1119,36 +1238,62 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   };
   const handleSummaryDownload = async () => {
     setIsLoaded(true);
+    setDownloadError("");
     var images = document.getElementById("summaryCircle");
     var imageXY = images.querySelectorAll("svg")[0];
-    const imgconfig = {
-      quality: 1,
-      pixelRatio: 1,
-    };
-    // const canvas = await htmlToImage.toCanvas(image);
-    // const base64fDataUrl = canvas.toDataURL("image/png");
-    // const canvasxy = await htmlToImage.toCanvas(imageXY);
-    // const base64fDataUrlxy = canvas.toDataURL("image/png");
-    // console.log(base64fDataUrl);
 
-    htmlToImage
-      .toPng(imageXY, imgconfig)
-      .then((dataUrl) => {
-        const pdf = new jsPDF();
-        const width = pdf.internal.pageSize.getWidth();
-        //const height = pdf.internal.pageSize.getHeight();
-        //pdf.text("", width *0.5, 10, { align: "center" });
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFontSize(12);
-        const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20);
-        pdf.text(circosTitleLines, width * 0.5, 15, { align: "center" });
-        pdf.addImage(dataUrl, "PNG", 0, 30, width, width);
-        pdf.save(simpleTitle.slice(1) + ".pdf");
-        setIsLoaded(false);
-      })
-      .catch(function (error) {
-        console.error("oops, something went wrong!", error);
+    try {
+      // Serialize the live SVG natively (browser's own SVG decoder) instead of html-to-image, which
+      // clones the whole tree and runs getComputedStyle() on every node - for a circle plot with many
+      // thousands of stacked arc paths that blocks the main thread long enough to freeze the tab.
+      // circos.js sets fill/stroke as plain SVG attributes (not CSS classes), so this preserves colors.
+      const svgClone = imageXY.cloneNode(true);
+      svgClone.setAttribute("width", circleSize);
+      svgClone.setAttribute("height", circleSize);
+      svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      const svgString = new XMLSerializer().serializeToString(svgClone);
+      const svgUrl = URL.createObjectURL(new Blob([svgString], { type: "image/svg+xml;charset=utf-8" }));
+
+      const dataUrl = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = circleSize;
+          canvas.height = circleSize;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, circleSize, circleSize);
+          URL.revokeObjectURL(svgUrl);
+          resolve(canvas.toDataURL("image/png"));
+        };
+        img.onerror = (error) => {
+          URL.revokeObjectURL(svgUrl);
+          reject(error);
+        };
+        img.src = svgUrl;
       });
+
+      const pdf = new jsPDF();
+      const width = pdf.internal.pageSize.getWidth();
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(12);
+      const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20);
+      const titleStartY = 15;
+      pdf.text(circosTitleLines, width * 0.5, titleStartY, { align: "center" });
+      // place the image below the title regardless of how many lines it wrapped to, so long filter
+      // descriptions (like multi-select ancestry/approach lists) don't overlap the circle
+      const imageStartY = titleStartY + pdf.getTextDimensions(circosTitleLines).h + 5;
+      pdf.addImage(dataUrl, "PNG", 0, imageStartY, width, width);
+      pdf.save(simpleTitle.slice(1) + ".pdf");
+      setIsLoaded(false);
+    } catch (error) {
+      console.error("oops, something went wrong!", error);
+      // the export can silently fail (esp. on a long-running tab under memory pressure) with no other
+      // sign to the user that nothing was saved, so surface it next to the download link
+      setDownloadError("Download failed. Try again in a new browser tab/window if this keeps happening.");
+      setIsLoaded(false);
+    }
   };
 
   const handleSingleChrDownload = () => {
@@ -1296,18 +1441,52 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   const handleZoomInitial = () => {
     //setIsinit(true);
+    isResettingToInitialRef.current = true;
+    if (resetInitialTimerRef.current) {
+      clearTimeout(resetInitialTimerRef.current);
+    }
+
     const resetBtnA = document.querySelectorAll('#A a[data-val*="auto"]')[0];
     const resetBtnB = document.querySelectorAll('#B a[data-val*="auto"]')[0];
     const resetBtnOne = document.querySelectorAll('#One a[data-val*="auto"]')[0];
     if (resetBtnA !== undefined) resetBtnA.click();
     if (resetBtnB !== undefined) resetBtnB.click();
     if (resetBtnOne !== undefined) resetBtnOne.click();
+
+    restoreInitialRangeToForm();
+    resetInitialTimerRef.current = setTimeout(() => {
+      isResettingToInitialRef.current = false;
+    }, 800);
   };
 
   const handleZoomHistory = (zoomHistory) => {
     if (zoomHistory.length == 2) {
-      setZoomRange(zoomHistory[0]);
-      setRangeLabel(zoomHistory[1]);
+      const nextZoomRange = zoomHistory[0] || "";
+      const nextRangeLabel = zoomHistory[1] || "";
+      if (zoomRangeRef.current !== nextZoomRange) setZoomRange(nextZoomRange);
+      const emittedRangeLabel = isResettingToInitialRef.current ? "" : nextRangeLabel;
+      if (rangeLabel !== emittedRangeLabel) setRangeLabel(emittedRangeLabel);
+
+      if (isResettingToInitialRef.current) {
+        restoreInitialRangeToForm();
+        if (!nextRangeLabel) {
+          isResettingToInitialRef.current = false;
+        }
+      } else if (nextRangeLabel) {
+        const nextStart = Number(nextRangeLabel.split("-")[0].split(":")[1].replace(/,/g, ""));
+        const nextEnd = Number(nextRangeLabel.split("-")[1].replace(/,/g, ""));
+        setForm((prev) => {
+          if (prev.start === nextStart && prev.end === nextEnd) return prev;
+          return { ...prev, start: nextStart, end: nextEnd };
+        });
+      } else {
+        restoreInitialRangeToForm();
+      }
+
+      if (lastZoomLabelRef.current !== emittedRangeLabel) {
+        lastZoomLabelRef.current = emittedRangeLabel;
+        props.onClickedChr({ rangeLabel: emittedRangeLabel });
+      }
       //update tableData based on zoom range
       //console.log(tableData);
     }
@@ -1348,8 +1527,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   }, [window.innerWidth]);
 
   //console.log(data,dataCompared)
-  //only disply 200 events for X and Y
-  const dataXY = [...props.chrx.slice(0, 200), ...props.chry.slice(0, 200)];
+  //only disply 2000 events for X and Y
+  const maxXYEvents = 2000;
+  const dataXY = [...props.chrx.slice(0, maxXYEvents), ...props.chry.slice(0, maxXYEvents)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   // const linethickness = 0;
@@ -1424,13 +1604,16 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   }, [circleB, form.plotType]);
 
   useEffect(() => {
-    if (groupA !== null || groupB !== null) {
-      setTableData([...groupA, ...groupB]);
+    if ((groupA !== null || groupB !== null) && form.compare && form.plotType.value === "static") {
+      const mergedCompareData = [...groupA, ...groupB];
+      setTableData(mergedCompareData);
+      if (!rangeLabel) {
+        props.getData(mergedCompareData);
+      }
       //setFisherB(fisherTest(groupB.length, 5, 3, 12));
     }
     //set tableData within range
-    props.getData(tableData);
-  }, [groupA, groupB, rangeLabel]);
+  }, [groupA, groupB, form.compare, form.plotType, rangeLabel]);
 
   useEffect(() => {
     if (form.plotType.value === "circos") {
@@ -1448,10 +1631,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         setSingleZoomLength(zoomedTabledata.length);
         if (!form.compare) props.getData(zoomedTabledata);
       } else {
-        props.getData([]);
-      }
-      if (form.compare) {
-        props.getData(tableRef.current);
+        if (!form.compare) props.getData([]);
       }
     }
   }, [tableData, form.plotType, circleTableData, rangeLabel]);
@@ -1469,13 +1649,22 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         //reset tableData and fisher number
         const rangeGroupA = groupA.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
         const rangeGroupB = groupB.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
+        const zoomedCompareData = [...rangeGroupA, ...rangeGroupB];
 
-        setTableData([...rangeGroupA, ...rangeGroupB]);
+        setTableData(zoomedCompareData);
+        if (form.compare) {
+          props.getData(zoomedCompareData);
+        }
         setRangeA(rangeGroupA.length);
         setRangeB(rangeGroupB.length);
         // console.log(rangeA.length, rangeB.length);
         handleFisherTest(rangeGroupA.length, fisherA, rangeGroupB.length, fisherB);
-      } else handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
+      } else {
+        if (form.compare) {
+          props.getData([...groupA, ...groupB]);
+        }
+        handleFisherTest(groupA.length, fisherA, groupB.length, fisherB);
+      }
     }
   }, [fisherA, fisherB, groupA.length, groupB.length, rangeLabel]);
 
@@ -1727,7 +1916,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     toggleVisibility={toggleVisibility}
                     onHeightChange={props.onHeightChange}
                     fisherP={props.allDenominator}
-                    type={form.types}></SingleChromosome>
+                    type={form.types}
+                    onReady={handleSingleChromosomeReady}></SingleChromosome>
                 </Col>
                 <Col>
                   <Table responsive bordered hover className="table fisherTable">
@@ -1793,14 +1983,43 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               md={12}
               lg={3}
               className="d-flex"
-              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+              style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
+              <div className="tooltip-container">
+                <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                  Event thickness{" "}
+                  <span
+                    onMouseOver={() => setVisibleThicknessTooltip(true)}
+                    onMouseOut={() => setVisibleThicknessTooltip(false)}
+                    className="tooltip-trigger"
+                    style={{ position: "relative", top: "-0.2em" }}>
+                    &#9432;
+                  </span>
+                </Form.Label>
+                {visibleThicknessTooltip && <div className="tooltip-box">{thicknessTooltipText}</div>}
+              </div>
+              <Form.Control
+                type="number"
+                id="circleThicknessCompare"
+                min={0}
+                max={1}
+                step={0.001}
+                value={Math.round(normalizeThickness(thickness) * 1000) / 1000}
+                disabled={thickness !== deferredThickness}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (Number.isNaN(value)) return;
+                  const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
+                }}
+                style={{ width: "80px", fontSize: "12px" }}
+              />
               {isLoaded ? (
-                <p>Downloading...</p>
+                <p className="mb-0" style={{ fontSize: "12px" }}>Downloading...</p>
               ) : circleA ? (
                 <Button
                   variant="link"
                   onClick={handlecircleDownload}
-                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
               ) : (
@@ -1809,14 +2028,15 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             </Col>
           </Row>
           <div>
-            <Row className="justify-content-center g-0">
-              <Col xs={12} md={8} lg={6}>
+            <Row className="justify-content-center g-0" style={{ overflowX: "auto", flexWrap: "nowrap" }}>
+              <Col xs={12} md={8} lg={6} style={{ minWidth: compareCircleSize, maxWidth: "none", flex: "none" }}>
                 {circleA ? (
                   <>
                     <div ref={circosCompareA} style={{ marginBottom: "1rem", fontSize: "14px" }}>
                       {titleA}
                     </div>
                     <CircosPlotCompare
+                      key={`circleA-${deferredThickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       title={titleA}
@@ -1824,10 +2044,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       details="A"
                       msg={msgA}
                       size={compareCircleSize}
-                      // thicknessloss={0}
-                      // thicknessgain={0}
-                      // thicknessundermined={0}
-                      // thicknessloh={0}
+                      thickness={deferredThickness}
                       circle={circleA}
                       circleRef={circleRef}
                       maxtitleHeight={maxTitleheight - heightA}
@@ -1839,23 +2056,21 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   ""
                 )}
               </Col>
-              <Col xs={12} md={8} lg={6}>
+              <Col xs={12} md={8} lg={6} style={{ minWidth: compareCircleSize, maxWidth: "none", flex: "none" }}>
                 {circleB ? (
                   <>
                     <div ref={circosCompareB} style={{ marginBottom: "1rem", fontSize: "14px" }}>
                       {titleB}
                     </div>
                     <CircosPlotCompare
+                      key={`circleB-${deferredThickness}`}
                       layoutAll={layoutAll}
                       layoutxy={layout_xy}
                       dataXY={[]}
                       title={titleB}
                       details="B"
                       size={compareCircleSize}
-                      // thicknessloss={0}
-                      // thicknessgain={0}
-                      // thicknessundermined={0}
-                      // thicknessloh={0}
+                      thickness={deferredThickness}
                       circle={circleB}
                       circleRef={circleRef}
                       handleEnter={handleEnter}
@@ -1869,6 +2084,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 )}
               </Col>
             </Row>
+            <div className="table-responsive" style={{ fontSize: "14px" }}>
+              Participants with missing data for the selected variable(s) are excluded from this view.
+            </div>
             {/* <Row>
               <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgA}</div></Col>
               <Col xs={12} md={8} lg={6}><div style={{ fontSize: "14px",justifyContent: "center"}}>{msgB}</div></Col>
@@ -1911,36 +2129,70 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               md={12}
               lg={3}
               className="d-flex"
-              style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+              style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
+              <div className="tooltip-container">
+                <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                  Event thickness{" "}
+                  <span
+                    onMouseOver={() => setVisibleThicknessTooltip(true)}
+                    onMouseOut={() => setVisibleThicknessTooltip(false)}
+                    className="tooltip-trigger"
+                    style={{ position: "relative", top: "-0.2em" }}>
+                    &#9432;
+                  </span>
+                </Form.Label>
+                {visibleThicknessTooltip && <div className="tooltip-box">{thicknessTooltipText}</div>}
+              </div>
+              <Form.Control
+                type="number"
+                id="circleThickness"
+                min={0}
+                max={1}
+                step={0.001}
+                value={Math.round(normalizeThickness(thickness) * 1000) / 1000}
+                disabled={thickness !== deferredThickness}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  if (Number.isNaN(value)) return;
+                  const realValue = denormalizeThickness(Math.min(1, Math.max(0, value)));
+                  handleThicknessChange(Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, realValue)));
+                }}
+                style={{ width: "80px", fontSize: "12px" }}
+              />
               {isLoaded ? (
-                <p>Downloading...</p>
+                <p className="mb-0" style={{ fontSize: "12px" }}>Downloading...</p>
               ) : (
                 <Button
                   variant="link"
                   onClick={handleSummaryDownload}
-                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0 }}>
+                  style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
               )}
+              {downloadError ? (
+                <p className="mb-0 text-danger" style={{ fontSize: "12px" }}>
+                  {downloadError}
+                </p>
+              ) : (
+                ""
+              )}
             </Col>
           </Row>
-          <Row className="justify-content-center">
+          <Row className="justify-content-center" style={{ overflowX: "auto" }}>
             <Col
               xs={12}
               md={12}
               lg={12}
-              style={{ width: size > 1000 ? 1000 : size, height: size > 1000 ? 1000 : size + 15 }}>
+              style={{ width: circleSize, minWidth: circleSize, maxWidth: "none", height: circleSize + 15, flex: "none" }}>
               <CircosPlot
+                key={`circle-${deferredThickness}`}
                 layoutAll={layoutAll}
                 layoutxy={layout_xy}
                 dataXY={dataXY}
                 title={""}
                 msg={msg}
-                size={size > 1000 ? 1000 : size}
-                // thicknessloss={thicknessloss}
-                // thicknessgain={thicknessgain}
-                // thicknessundermined={thicknessundermined}
-                // thicknessloh={thicknessloh}
+                size={circleSize}
+                thickness={deferredThickness}
                 circle={circle}
                 circleRef={circleRef}
                 handleEnter={handleEnter}
@@ -1949,8 +2201,11 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 hovertip={hovertip}></CircosPlot>
             </Col>
           </Row>
-          <br></br>
+
           <div id="circosTable" className="table-responsive" style={{ fontSize: "14px" }}>
+            Participants with missing data for the selected variable(s) are excluded from this view.
+            <br></br>
+            <br></br>
             Total number of events displayed
             {form.chrX || form.chrY ? (
               <>

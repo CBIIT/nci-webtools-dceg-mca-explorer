@@ -12,6 +12,11 @@ on:
           - qa
           - stage
           - prod
+      no_cache:
+        description: "Force a clean image build (ignore Docker layer cache)"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   id-token: write
@@ -26,6 +31,8 @@ jobs:
       APP: mca-explorer
       TZ: America/New_York
       AWS_REGION: us-east-1
+      ECS_CPU_UNITS: 2048
+      ECS_MEMORY_UNITS: 4096
       TASK_DEFINITION_TEMPLATE_PATH: .github/aws
       FRONTEND_CONTAINER_PORT: 80
       BACKEND_CONTAINER_PORT: 9000
@@ -40,20 +47,21 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5.1.1
         with:
           role-to-assume: ${{ env.CICD_ROLE_ARN }}
-          role-session-name: ${{ env.TIER }}-${{ env.APP }}-deploy-${{ github.ref_name }}
+          role-session-name: ${{ env.TIER }}-${{ env.APP }}-deploy-${{ inputs.tier }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Set dynamic environment variables
         run: |
           echo "DATE=$(date +"%Y%m%d")" >> $GITHUB_ENV
+          echo "DEPLOY_DATE=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
 
           TIMESTAMP=$(date +"%Y%m%d%H%M%S")
           REPO=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$APP
           echo "IMAGE_REPOSITORY=$REPO" >> $GITHUB_ENV
-          echo "FRONTEND_IMAGE=$REPO:$IMAGE_TIER-frontend-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
-          echo "BACKEND_IMAGE=$REPO:$IMAGE_TIER-backend-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
-          echo "FRONTEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-frontend-${{ github.ref_name }}-latest" >> $GITHUB_ENV
-          echo "BACKEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-backend-${{ github.ref_name }}-latest" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE=$REPO:$IMAGE_TIER-frontend-${{ inputs.tier }}-$TIMESTAMP" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE=$REPO:$IMAGE_TIER-backend-${{ inputs.tier }}-$TIMESTAMP" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-frontend-${{ inputs.tier }}-latest" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-backend-${{ inputs.tier }}-latest" >> $GITHUB_ENV
           echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
 
           if [[ "$TIER" == "dev" ]]; then
@@ -72,6 +80,7 @@ jobs:
             ["ecs_web_task"]="ECS_WEB_TASK"
             ["ecs_web_service"]="ECS_WEB_SERVICE"
             ["role_arn"]="ROLE_ARN"
+            ["application_path"]="APPLICATION_PATH"
           )
 
           # Retrieve each parameter and export to environment
@@ -106,10 +115,11 @@ jobs:
           file: docker/backend.dockerfile
           pull: true
           push: true
+          no-cache: ${{ inputs.no_cache }}
           tags: |
             ${{ env.BACKEND_IMAGE }}
             ${{ env.BACKEND_IMAGE_LATEST }}
-          cache-from: type=registry,ref=${{ env.BACKEND_IMAGE_LATEST }}
+          cache-from: ${{ !inputs.no_cache && format('type=registry,ref={0}', env.BACKEND_IMAGE_LATEST) || '' }}
           cache-to: type=inline
 
       - name: Build and push frontend image
@@ -119,10 +129,15 @@ jobs:
           file: docker/frontend.dockerfile
           pull: true
           push: true
+          no-cache: ${{ inputs.no_cache }}
+          build-args: |
+            APPLICATION_PATH=${{ env.APPLICATION_PATH }}
+            REACT_APP_VERSION=${{ github.ref_name }}
+            REACT_APP_LAST_UPDATED=${{ env.DEPLOY_DATE }}
           tags: |
             ${{ env.FRONTEND_IMAGE }}
             ${{ env.FRONTEND_IMAGE_LATEST }}
-          cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE_LATEST }}
+          cache-from: ${{ !inputs.no_cache && format('type=registry,ref={0}', env.FRONTEND_IMAGE_LATEST) || '' }}
           cache-to: type=inline
 
       - name: Render web task definition
@@ -144,10 +159,45 @@ jobs:
               --force-new-deployment
 
       - name: Cleanup old task definitions
+        continue-on-error: true
+        env:
+          AWS_RETRY_MODE: adaptive
+          AWS_MAX_ATTEMPTS: 10
         run: |
+          set -euo pipefail
+
           family="$ECS_WEB_TASK"
           echo "Pruning old revisions for family: $family"
-          aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text \
-              | tr '\t' '\n' | while read -r arn; do
-                  [ -n "$arn" ] && aws ecs deregister-task-definition --task-definition "$arn" --no-cli-pager
-              done
+
+          arns=$(aws ecs list-task-definitions --family-prefix "$family" --sort DESC --query 'taskDefinitionArns[3:]' --output text)
+
+          if [[ -z "$arns" || "$arns" == "None" ]]; then
+            echo "No old task definitions to prune."
+            exit 0
+          fi
+
+          echo "$arns" | tr '\t' '\n' | while read -r arn; do
+            [[ -z "$arn" ]] && continue
+
+            echo "Deregistering $arn"
+            attempt=1
+            max_attempts=6
+            while true; do
+              if aws ecs deregister-task-definition --task-definition "$arn" --no-cli-pager; then
+                echo "✓ Deregistered $arn"
+                break
+              fi
+
+              if (( attempt >= max_attempts )); then
+                echo "⚠ Failed to deregister $arn after $attempt attempts; continuing."
+                break
+              fi
+
+              sleep_seconds=$(( attempt * 3 ))
+              echo "Throttled/failed on $arn, retrying in ${sleep_seconds}s (attempt $((attempt + 1))/$max_attempts)..."
+              sleep "$sleep_seconds"
+              attempt=$(( attempt + 1 ))
+            done
+
+            sleep 1
+          done
