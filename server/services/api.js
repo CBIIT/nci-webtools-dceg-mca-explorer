@@ -863,10 +863,15 @@ const mergeLegacyDenominatorRows = async (
   mcaRows,
   { sex, ancestry, smoking, array, priorCancer, hemaCancer, lymCancer, myeCancer, minAge, maxAge }
 ) => {
-  const mcaBySampleId = new Map();
+  // keep ALL mca rows per sample (a sample can have multiple mca events, e.g. an
+  // autosomal chr1-22 event and an mLOX/mLOY event once chrX/chrY is selected) -
+  // collapsing to a single row per sampleId here would silently drop events.
+  const mcaRowsBySampleId = new Map();
   mcaRows.forEach((row) => {
     const sampleId = row?.sampleId;
-    if (sampleId !== undefined && sampleId !== null && !mcaBySampleId.has(sampleId)) mcaBySampleId.set(sampleId, row);
+    if (sampleId === undefined || sampleId === null) return;
+    if (!mcaRowsBySampleId.has(sampleId)) mcaRowsBySampleId.set(sampleId, []);
+    mcaRowsBySampleId.get(sampleId).push(row);
   });
 
   const denominatorHits = await fetchDenominatorBySampleIds(
@@ -888,10 +893,11 @@ const mergeLegacyDenominatorRows = async (
     ]
   );
 
-  return denominatorHits.map((item) => {
+  return denominatorHits.flatMap((item) => {
     const denominatorSource = item._source || {};
-    const mcaSource = mcaBySampleId.get(denominatorSource.sampleId);
-    return mcaSource !== undefined ? { ...denominatorSource, ...mcaSource } : denominatorSource;
+    const mcaSources = mcaRowsBySampleId.get(denominatorSource.sampleId);
+    if (mcaSources === undefined || mcaSources.length === 0) return [denominatorSource];
+    return mcaSources.map((mcaSource) => ({ ...denominatorSource, ...mcaSource }));
   });
 };
 /*

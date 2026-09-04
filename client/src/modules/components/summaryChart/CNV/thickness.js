@@ -108,16 +108,22 @@ function thicknessForLayers(layers, bandPx) {
 // overlap (capped at MAX_LAYERS_FOR_THICKNESS), based on actual event positions rather than a fixed default.
 export function computeAutoThickness({ gain = [], loss = [], loh = [], undetermined = [], chrx = [], chry = [] }, circleSize = SUMMARY_CIRCLE_SIZE) {
   const layoutInnerRadius = circleSize / 2 - 50;
-  const tracks = { undetermined, loss: loss.concat(chrx, chry), loh, gain };
-  const hasData = Object.fromEntries(TRACK_ORDER.map((name) => [name, tracks[name].length > 0]));
+  // chrX/chrY (mLOX/mLOY) events are folded into the "loss" track for display, but there can be
+  // tens of thousands of them and they're all "loss" type - keep them in the band-presence/width
+  // calc (so the loss band still renders when only chrX/chrY data is present) but exclude them
+  // from the layer/thickness calc below, since they'd force the shared thickness far thinner than
+  // the actual gain/loss/loh/undetermined data needs.
+  const tracksForBands = { undetermined, loss: loss.concat(chrx, chry), loh, gain };
+  const hasData = Object.fromEntries(TRACK_ORDER.map((name) => [name, tracksForBands[name].length > 0]));
   const bands = computeTrackBands(hasData);
+  const tracksForLayers = { undetermined, loss, loh, gain };
 
   let thickness = THICKEST_THICKNESS;
   for (const name of TRACK_ORDER) {
     const [innerFraction, outerFraction] = bands[name];
     if (outerFraction <= innerFraction) continue; // empty track has no band to fit into
     const bandPx = (outerFraction - innerFraction) * layoutInnerRadius;
-    const layers = Math.min(getMaxLayers(tracks[name]), MAX_LAYERS_FOR_THICKNESS);
+    const layers = Math.min(getMaxLayers(tracksForLayers[name]), MAX_LAYERS_FOR_THICKNESS);
     thickness = Math.min(thickness, thicknessForLayers(layers, bandPx));
   }
   return thickness;
