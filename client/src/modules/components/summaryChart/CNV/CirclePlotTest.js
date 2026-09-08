@@ -133,7 +133,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [visibleTooltip, setVisibleTooltip] = useState(false);
   const [visibleThicknessTooltip, setVisibleThicknessTooltip] = useState(false);
   const thicknessTooltipText =
-    "Radial thickness of each event band in the circle plot. Smaller (thinner) values let more overlapping events display without clamping; this is auto-calculated from the densest track but can be fine-tuned here.";
+    "Adjust events lines thickness by manually increasing or decreasing dynamically generated value.";
   const [compareChr, setCompareChr] = useState(form.chrSingle && form.chrSingle.label);
 
   const restoreInitialRangeToForm = () => {
@@ -1991,7 +1991,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     onMouseOver={() => setVisibleThicknessTooltip(true)}
                     onMouseOut={() => setVisibleThicknessTooltip(false)}
                     className="tooltip-trigger"
-                    style={{ position: "relative", top: "-0.2em" }}>
+                    style={{ position: "relative", top: "-0.2em",right: "-0.2em" }}>
                     &#9432;
                   </span>
                 </Form.Label>
@@ -2137,7 +2137,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     onMouseOver={() => setVisibleThicknessTooltip(true)}
                     onMouseOut={() => setVisibleThicknessTooltip(false)}
                     className="tooltip-trigger"
-                    style={{ position: "relative", top: "-0.2em" }}>
+                    style={{ position: "relative", top: "-0.2em", right: "-0.2em" }}>
                     &#9432;
                   </span>
                 </Form.Label>
