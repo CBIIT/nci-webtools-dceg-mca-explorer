@@ -117,11 +117,19 @@ case "$OS_ENDPOINT" in
   *) OS="https://$OS_ENDPOINT" ;;
 esac
 
+CURL_INSECURE="${CURL_INSECURE:-0}"
+# plain string (not an array) - bash 3.2 (macOS's default /bin/bash) throws "unbound variable"
+# under set -u when expanding an empty array with "${arr[@]}"
+CURL_INSECURE_FLAG=""
+if [[ "$CURL_INSECURE" == "1" ]]; then
+  CURL_INSECURE_FLAG="-k"
+fi
+
 curl_os() {
   if [[ -n "$OS_USER" && -n "$OS_PASS" ]]; then
-    curl -sS -k -f -u "$OS_USER:$OS_PASS" -H "Content-Type: application/json" "$@"
+    curl -sS $CURL_INSECURE_FLAG -f -u "$OS_USER:$OS_PASS" -H "Content-Type: application/json" "$@"
   else
-    curl -sS -k -f -H "Content-Type: application/json" "$@"
+    curl -sS $CURL_INSECURE_FLAG -f -H "Content-Type: application/json" "$@"
   fi
 }
 
@@ -131,11 +139,10 @@ curl_os_status() {
   output_file=$(mktemp)
 
   if [[ -n "$OS_USER" && -n "$OS_PASS" ]]; then
-    status_code=$(curl -sS -k -u "$OS_USER:$OS_PASS" -H "Content-Type: application/json" -o "$output_file" -w "%{http_code}" "$@" || true)
+    status_code=$(curl -sS $CURL_INSECURE_FLAG -u "$OS_USER:$OS_PASS" -H "Content-Type: application/json" -o "$output_file" -w "%{http_code}" "$@" || true)
   else
-    status_code=$(curl -sS -k -H "Content-Type: application/json" -o "$output_file" -w "%{http_code}" "$@" || true)
+    status_code=$(curl -sS $CURL_INSECURE_FLAG -H "Content-Type: application/json" -o "$output_file" -w "%{http_code}" "$@" || true)
   fi
-
   printf '%s\n' "$status_code"
   cat "$output_file"
   rm -f "$output_file"

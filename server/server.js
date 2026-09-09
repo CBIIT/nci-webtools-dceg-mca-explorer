@@ -1,6 +1,5 @@
 import express from "express";
 import { apiRouter } from "./services/api.js";
-import { getConnection } from "./services/query.js";
 import { getLogger } from "./services/logger.js";
 import { logRequests, logErrors } from "./services/middleware.js";
 
@@ -14,7 +13,6 @@ function main(env = process.env) {
 function createApp(env) {
   const app = express();
   app.locals.logger = getLogger("mosaic-tiler", env.LOG_LEVEL);
-  app.locals.connection = getConnection(env.DATABASE_PATH);
 
   app.use(logRequests());
   app.use("/api", apiRouter);

@@ -1,9 +1,8 @@
 import { Form, Button, Accordion, Card, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
+import { formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { Toast } from "react-bootstrap";
 import {
   AncestryOptions,
   CompareArray,
@@ -15,10 +14,10 @@ import {
   StudyOptions,
 } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
-import { parseRangeLable } from "./range-utils";
+import { parseRangeLabel } from "./range-utils";
 
 const compareArray = CompareArray;
-export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen, rangeLable }) {
+export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen, rangeLabel }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
@@ -75,7 +74,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   }, [disabledType]);
 
   useEffect(() => {
-    const parsedRange = parseRangeLable(rangeLable);
+    const parsedRange = parseRangeLabel(rangeLabel);
     if (!parsedRange) return;
 
     setStart(parsedRange.start);
@@ -87,7 +86,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
       start: parsedRange.start,
       end: parsedRange.end,
     }));
-  }, [rangeLable, setForm]);
+  }, [rangeLabel, setForm]);
 
   function handleChange(event) {
     const { name, value } = event.target;

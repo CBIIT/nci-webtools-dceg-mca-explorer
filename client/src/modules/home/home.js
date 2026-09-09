@@ -21,7 +21,7 @@ export default function Home({ links }) {
                     <h2 className="font-title text-dark mb-3">Mosaic Chromosomal Alteration Explorer</h2>
                     <hr className="border-dark" />
                     <p className="lead text-dark">
-                      An interactive mCA visualization and analysis tools that allows for aggregation, visualization,
+                      An interactive mCA visualization and analysis tool that allows for aggregation, visualization,
                       and analysis of mosaic chromosomal alterations (mCAs) in large populations.
                     </p>
                     {/* <Link to="/mosaic" className="btn btn-outline-dark text-decoration-none"> */}
@@ -46,7 +46,7 @@ export default function Home({ links }) {
           <Row>
             <Col>
               <p>
-                An interactive mCA visualization and analysis tools that allows for aggregation, visualization, and
+                An interactive mCA visualization and analysis tool that allows for aggregation, visualization, and
                 analysis of mCAs in large populations.The tool will require a standard data input format including mCA
                 location (e.g., chromosome and bp position), mCA type (e.g., loss, gain, neutral), and cell fraction
                 (e.g., percentage of cells impacted by the event).

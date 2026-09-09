@@ -89,6 +89,8 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [figureHeight, setFigureHeight] = useState(0);
   //
   const [isLoaded, setIsLoaded] = useState(false);
+  // shown next to "Download image" when the export fails, so the user isn't left guessing why nothing downloaded
+  const [downloadError, setDownloadError] = useState("");
   const [zoomRange, setZoomRange] = useState(null);
   const [rangeLabel, setRangeLabel] = useState("");
   const [isinit, setIsinit] = useState(false);
@@ -129,6 +131,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const [showTitle, setShowTitle] = useState(false);
   const [showTableTitle, setShowTableTitle] = useState(false);
   const [visibleTooltip, setVisibleTooltip] = useState(false);
+  const [visibleThicknessTooltip, setVisibleThicknessTooltip] = useState(false);
+  const thicknessTooltipText =
+    "Adjust events lines thickness by manually increasing or decreasing dynamically generated value.";
   const [compareChr, setCompareChr] = useState(form.chrSingle && form.chrSingle.label);
 
   const restoreInitialRangeToForm = () => {
@@ -1233,36 +1238,62 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   };
   const handleSummaryDownload = async () => {
     setIsLoaded(true);
+    setDownloadError("");
     var images = document.getElementById("summaryCircle");
     var imageXY = images.querySelectorAll("svg")[0];
-    const imgconfig = {
-      quality: 1,
-      pixelRatio: 1,
-    };
-    // const canvas = await htmlToImage.toCanvas(image);
-    // const base64fDataUrl = canvas.toDataURL("image/png");
-    // const canvasxy = await htmlToImage.toCanvas(imageXY);
-    // const base64fDataUrlxy = canvas.toDataURL("image/png");
-    // console.log(base64fDataUrl);
 
-    htmlToImage
-      .toPng(imageXY, imgconfig)
-      .then((dataUrl) => {
-        const pdf = new jsPDF();
-        const width = pdf.internal.pageSize.getWidth();
-        //const height = pdf.internal.pageSize.getHeight();
-        //pdf.text("", width *0.5, 10, { align: "center" });
-        pdf.setTextColor(0, 0, 0);
-        pdf.setFontSize(12);
-        const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20);
-        pdf.text(circosTitleLines, width * 0.5, 15, { align: "center" });
-        pdf.addImage(dataUrl, "PNG", 0, 30, width, width);
-        pdf.save(simpleTitle.slice(1) + ".pdf");
-        setIsLoaded(false);
-      })
-      .catch(function (error) {
-        console.error("oops, something went wrong!", error);
+    try {
+      // Serialize the live SVG natively (browser's own SVG decoder) instead of html-to-image, which
+      // clones the whole tree and runs getComputedStyle() on every node - for a circle plot with many
+      // thousands of stacked arc paths that blocks the main thread long enough to freeze the tab.
+      // circos.js sets fill/stroke as plain SVG attributes (not CSS classes), so this preserves colors.
+      const svgClone = imageXY.cloneNode(true);
+      svgClone.setAttribute("width", circleSize);
+      svgClone.setAttribute("height", circleSize);
+      svgClone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+      const svgString = new XMLSerializer().serializeToString(svgClone);
+      const svgUrl = URL.createObjectURL(new Blob([svgString], { type: "image/svg+xml;charset=utf-8" }));
+
+      const dataUrl = await new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = circleSize;
+          canvas.height = circleSize;
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "white";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, circleSize, circleSize);
+          URL.revokeObjectURL(svgUrl);
+          resolve(canvas.toDataURL("image/png"));
+        };
+        img.onerror = (error) => {
+          URL.revokeObjectURL(svgUrl);
+          reject(error);
+        };
+        img.src = svgUrl;
       });
+
+      const pdf = new jsPDF();
+      const width = pdf.internal.pageSize.getWidth();
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFontSize(12);
+      const circosTitleLines = pdf.splitTextToSize(circosTitle.slice(1), width * 0.5 + 20);
+      const titleStartY = 15;
+      pdf.text(circosTitleLines, width * 0.5, titleStartY, { align: "center" });
+      // place the image below the title regardless of how many lines it wrapped to, so long filter
+      // descriptions (like multi-select ancestry/approach lists) don't overlap the circle
+      const imageStartY = titleStartY + pdf.getTextDimensions(circosTitleLines).h + 5;
+      pdf.addImage(dataUrl, "PNG", 0, imageStartY, width, width);
+      pdf.save(simpleTitle.slice(1) + ".pdf");
+      setIsLoaded(false);
+    } catch (error) {
+      console.error("oops, something went wrong!", error);
+      // the export can silently fail (esp. on a long-running tab under memory pressure) with no other
+      // sign to the user that nothing was saved, so surface it next to the download link
+      setDownloadError("Download failed. Try again in a new browser tab/window if this keeps happening.");
+      setIsLoaded(false);
+    }
   };
 
   const handleSingleChrDownload = () => {
@@ -1454,7 +1485,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
       if (lastZoomLabelRef.current !== emittedRangeLabel) {
         lastZoomLabelRef.current = emittedRangeLabel;
-        props.onClickedChr({ rangeLable: emittedRangeLabel });
+        props.onClickedChr({ rangeLabel: emittedRangeLabel });
       }
       //update tableData based on zoom range
       //console.log(tableData);
@@ -1953,16 +1984,26 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               lg={3}
               className="d-flex"
               style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
-              <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
-                Event thickness
-              </Form.Label>
+              <div className="tooltip-container">
+                <Form.Label htmlFor="circleThicknessCompare" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                  Event thickness{" "}
+                  <span
+                    onMouseOver={() => setVisibleThicknessTooltip(true)}
+                    onMouseOut={() => setVisibleThicknessTooltip(false)}
+                    className="tooltip-trigger"
+                    style={{ position: "relative", top: "-0.2em",right: "-0.2em" }}>
+                    &#9432;
+                  </span>
+                </Form.Label>
+                {visibleThicknessTooltip && <div className="tooltip-box">{thicknessTooltipText}</div>}
+              </div>
               <Form.Control
                 type="number"
                 id="circleThicknessCompare"
                 min={0}
                 max={1}
-                step={0.01}
-                value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                step={0.001}
+                value={Math.round(normalizeThickness(thickness) * 1000) / 1000}
                 disabled={thickness !== deferredThickness}
                 onChange={(e) => {
                   const value = Number(e.target.value);
@@ -2089,16 +2130,26 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
               lg={3}
               className="d-flex"
               style={{ justifyContent: "flex-end", alignItems: "center", gap: "0.5rem", paddingTop: 0, border: 0 }}>
-              <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
-                Event thickness
-              </Form.Label>
+              <div className="tooltip-container">
+                <Form.Label htmlFor="circleThickness" className="mb-0" style={{ fontSize: "12px", whiteSpace: "nowrap" }}>
+                  Event thickness{" "}
+                  <span
+                    onMouseOver={() => setVisibleThicknessTooltip(true)}
+                    onMouseOut={() => setVisibleThicknessTooltip(false)}
+                    className="tooltip-trigger"
+                    style={{ position: "relative", top: "-0.2em", right: "-0.2em" }}>
+                    &#9432;
+                  </span>
+                </Form.Label>
+                {visibleThicknessTooltip && <div className="tooltip-box">{thicknessTooltipText}</div>}
+              </div>
               <Form.Control
                 type="number"
                 id="circleThickness"
                 min={0}
                 max={1}
-                step={0.01}
-                value={Math.round(normalizeThickness(thickness) * 100) / 100}
+                step={0.001}
+                value={Math.round(normalizeThickness(thickness) * 1000) / 1000}
                 disabled={thickness !== deferredThickness}
                 onChange={(e) => {
                   const value = Number(e.target.value);
@@ -2117,6 +2168,13 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                   style={{ justifyContent: "flex-end", paddingTop: 0, border: 0, fontSize: "12px" }}>
                   Download image
                 </Button>
+              )}
+              {downloadError ? (
+                <p className="mb-0 text-danger" style={{ fontSize: "12px" }}>
+                  {downloadError}
+                </p>
+              ) : (
+                ""
               )}
             </Col>
           </Row>
