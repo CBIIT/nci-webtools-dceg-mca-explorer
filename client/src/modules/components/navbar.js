@@ -7,7 +7,7 @@ export default function Navbar({ links = [], className, children }) {
   return (
     <BootstrapNavbar expand="lg" bg="white" variant="light" className={className}>
       <BootstrapNavbar.Toggle aria-controls="responsive-navbar-nav" className="ml-3_5">
-        <span class="navbar-toggler-icon"></span>
+        <span className="navbar-toggler-icon"></span>
       </BootstrapNavbar.Toggle>
       <BootstrapNavbar.Collapse id="responsive-navbar-nav">
         <div className="ml-3_5">

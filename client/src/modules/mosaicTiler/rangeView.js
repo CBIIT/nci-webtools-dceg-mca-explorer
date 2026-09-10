@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRecoilState } from "recoil";
 import axios from "axios";
 import { formState } from "./explore.state";
@@ -10,6 +10,26 @@ import CirclePlotTest from "../components/summaryChart/CNV/CirclePlotTest";
 import { Columns, exportTable } from "./tableColumns";
 import { AncestryOptions, smokeNFC, SexOptions } from "./constants";
 import { LoadingOverlay } from "../components/controls/loading-overlay/loading-overlay";
+import { DEFAULT_THICKNESS, computeAutoThickness } from "../components/summaryChart/CNV/thickness";
+
+const emptyPlotData = {
+  gain: [],
+  loss: [],
+  loh: [],
+  undetermined: [],
+  chrX: [],
+  chrY: [],
+  allValues: [],
+};
+
+// plots are suppressed below this event count to avoid revealing individual-level data
+const MIN_EVENTS_FOR_PLOT = 10;
+
+const ancestryLabelByValue = new Map(AncestryOptions.map((item) => [item.value, item.label]));
+const smokeLabelByValue = new Map(smokeNFC.map((item) => [item.value, item.label]));
+const sexLabelByValue = new Map(SexOptions.map((item) => [item.value, item.label]));
+
+const waitForNextPaint = () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
 export default function RangeView(props) {
   const [form, setForm] = useRecoilState(formState);
@@ -40,17 +60,36 @@ export default function RangeView(props) {
 
   const [figureHeight, setFigureHeight] = useState(chartHeight);
 
-  const [gain, setGain] = useState([]);
-  const [loss, setLoss] = useState([]);
-  const [loh, setLoh] = useState([]);
-  const [undetermined, setUndetermined] = useState([]);
-  const [chrX, setChrX] = useState([]);
-  const [chrY, setChrY] = useState([]);
+  const [plotData, setPlotData] = useState(emptyPlotData);
   const [tableData, setTableData] = useState([]); //for compare data
   const [loaded, setLoaded] = useState(false);
   const [allDenominator, setAllDenominator] = useState(0);
   const [violinData, setViolinData] = useState([]);
   const circleRef = useRef(null);
+  const latestQueryTimingRef = useRef(null);
+  const queryInFlightRef = useRef(false);
+  const [thickness, setThickness] = useState(DEFAULT_THICKNESS);
+  // bumped after the bar-thickness slider changes, so checkMaxLines recomputes against the redrawn circle
+  const [, setTableRefreshTick] = useState(0);
+  const thicknessRefreshTimeoutRef = useRef(null);
+
+  const handleThicknessChange = (value) => {
+    setThickness(value);
+    // debounced: avoid clearing/rebuilding the heavy summary table on every keystroke/click
+    if (thicknessRefreshTimeoutRef.current) clearTimeout(thicknessRefreshTimeoutRef.current);
+    thicknessRefreshTimeoutRef.current = setTimeout(async () => {
+      const existingTable = document.querySelector("#circosTable table");
+      if (existingTable) existingTable.remove();
+      await waitForNextPaint();
+      setTableRefreshTick((prev) => prev + 1);
+    }, 400);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (thicknessRefreshTimeoutRef.current) clearTimeout(thicknessRefreshTimeoutRef.current);
+    };
+  }, []);
 
   const study_value = form.study;
   let query_value = [];
@@ -73,13 +112,18 @@ export default function RangeView(props) {
   ]);
 
   async function handleSubmit(qdataset, qform) {
-    setGain([]);
-    setLoh([]);
-    setLoss([]);
-    setUndetermined([]);
-    setChrX([]);
-    setChrY([]);
+    const totalStartMs = performance.now();
+    const timing = {
+      route: "rangeView",
+      previousBaselineMs: {
+        originalApprox: 120000,
+        preMergedApiExample: 9674,
+      },
+    };
+    queryInFlightRef.current = true;
+    setPlotData(emptyPlotData);
     setLoaded(false);
+    await waitForNextPaint();
     // setForm({ ...form, chrX: false, chrY: false });
     //setLoading(true)
     console.log(qform);
@@ -103,128 +147,185 @@ export default function RangeView(props) {
       myeCancer: qform.myeCancer,
     };
 
-    const response = await axios.post("api/opensearch/mca", query);
-    let gainTemp = [];
-    let lossTemp = [];
-    let lohTemp = [];
-    let undeterTemp = [];
-    //find the total number of denominator based on query
-    let allresponseDenominator = await axios.post("api/opensearch/denominator", query);
+    const apiStartMs = performance.now();
+    const mcaStartMs = performance.now();
+    const mcaRequest = axios.post("api/opensearch/mca", query).finally(() => {
+      timing.mcaApiMs = Math.round(performance.now() - mcaStartMs);
+    });
+    const denominatorStartMs = performance.now();
+    const denominatorRequest = axios.post("api/opensearch/denominator", query).finally(() => {
+      timing.denominatorApiMs = Math.round(performance.now() - denominatorStartMs);
+    });
+    const [response, allresponseDenominator] = await Promise.all([mcaRequest, denominatorRequest]);
+    timing.apiMs = Math.round(performance.now() - apiStartMs);
 
+    const transformStartMs = performance.now();
+    const nextPlotData = {
+      gain: [],
+      loss: [],
+      loh: [],
+      undetermined: [],
+      chrX: [],
+      chrY: [],
+      allValues: [],
+    };
+    const allBuckets = {
+      gain: [],
+      loss: [],
+      loh: [],
+      undetermined: [],
+    };
     //console.log(response.data.denominator.length, allresponseDenominator.data);
     setAllDenominator(allresponseDenominator.data);
-    const chrXTemp = [];
-    const chrYTemp = [];
-    let results = null;
-    let responseDenominator = null;
-    if (
-      //if any attribute filer is selected, then use the value as the filter, that means filter out no value
-      qform.smoking.length === 0 &&
-      qform.approach.length === 0 &&
-      (qform.ancestry[0] === undefined || (qform.ancestry[0] !== undefined && qform.ancestry[0].value === "all")) &&
-      (qform.sex[0] === undefined || (qform.sex[0] !== undefined && qform.sex[0].value === "all")) &&
-      qform.minAge === "" &&
-      qform.maxAge === "" &&
-      qform.priorCancer.length === 0 &&
-      qform.hemaCancer.length === 0 &&
-      qform.lymCancer.length === 0 &&
-      qform.myeCancer.length === 0
-    ) {
-      results = response.data.denominator;
-      responseDenominator = response.data.nominator;
-    } else {
-      results = response.data.nominator;
-      responseDenominator = response.data.denominator;
-    }
+    const mergedResult = Array.isArray(response.data.merged)
+      ? response.data.merged
+      : (() => {
+          let results = null;
+          let responseDenominator = null;
+          if (
+            //if any attribute filer is selected, then use the value as the filter, that means filter out no value
+            qform.smoking.length === 0 &&
+            qform.approach.length === 0 &&
+            (qform.ancestry[0] === undefined || (qform.ancestry[0] !== undefined && qform.ancestry[0].value === "all")) &&
+            (qform.sex[0] === undefined || (qform.sex[0] !== undefined && qform.sex[0].value === "all")) &&
+            qform.minAge === "" &&
+            qform.maxAge === "" &&
+            qform.priorCancer.length === 0 &&
+            qform.hemaCancer.length === 0 &&
+            qform.lymCancer.length === 0 &&
+            qform.myeCancer.length === 0
+          ) {
+            results = response.data.denominator || [];
+            responseDenominator = response.data.nominator || [];
+          } else {
+            results = response.data.nominator || [];
+            responseDenominator = response.data.denominator || [];
+          }
 
-    const mergedResult = responseDenominator.map((itemA) => {
-      let nominatorItem = results.find((itemB) => itemB._source.sampleId === itemA._source.sampleId);
-      // const { age, sex, ancestry, ...restItems } = nominatorItem;
-      if (nominatorItem !== undefined)
-        return {
-          ...itemA._source,
-          ...nominatorItem._source,
-        };
-      else
-        return {
-          ...itemA._source,
-        };
-    });
+          const resultBySampleId = new Map();
+          results.forEach((item) => {
+            const sampleId = item?._source?.sampleId;
+            if (sampleId !== undefined && !resultBySampleId.has(sampleId)) {
+              resultBySampleId.set(sampleId, item._source);
+            }
+          });
+
+          return responseDenominator.map((itemA) => {
+            const sampleId = itemA?._source?.sampleId;
+            const nominatorSource = sampleId !== undefined ? resultBySampleId.get(sampleId) : undefined;
+            if (nominatorSource !== undefined)
+              return {
+                ...itemA._source,
+                ...nominatorSource,
+              };
+            else
+              return {
+                ...itemA._source,
+              };
+          });
+        })();
+    timing.responseShape = Array.isArray(response.data.merged) ? "merged" : "legacy";
+    timing.mergedRows = mergedResult.length;
+    timing.allDenominator = allresponseDenominator.data;
     //console.log(mergedResult.length);
     // const denominatorMap = new Map(responseDenominator.map((item) => [item._source.sampleId, item._source]));
     // console.log(form);
     mergedResult.forEach((r) => {
       //if (r._source !== null) {
-      const d = r;
-      if (d.cf != "nan") {
+      if (r.cf != "nan") {
+        const d = { ...r };
         d.block_id = d.chromosome.substring(3);
         d.value = d.cf === "NA" ? "" : d.cf;
         d.dataset = d.dataset.toUpperCase();
         d.start = d.beginGrch38;
         d.end = d.endGrch38;
         if (d.PopID !== undefined) {
-          const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
-          d.PopID = dancestry !== undefined ? dancestry[0].label : "";
+          d.PopID = ancestryLabelByValue.get(d.PopID) || "";
         }
         if (d.smokeNFC !== undefined) {
-          const dsmoking = smokeNFC.filter((a) => a.value === d.smokeNFC);
-          d.smokeNFC = dsmoking !== undefined && dsmoking.length > 0 ? dsmoking[0].label : "NA";
+          d.smokeNFC = smokeLabelByValue.get(d.smokeNFC) || "NA";
         }
         if (d.sex !== undefined) {
-          const dsex = SexOptions.filter((a) => a.value === d.sex);
-          d.sex = dsex !== undefined && dsex.length > 0 ? dsex[0].label : "NA";
+          d.sex = sexLabelByValue.get(d.sex) || "NA";
         }
 
         //d.sex = d.sex === 0?"F":"M"
         //console.log(d)
         if (d.chromosome != "chrX") {
-          if (d.type === "Gain") gainTemp.push(d);
-          else if (d.type === "CN-LOH") lohTemp.push(d);
-          else if (d.type === "Loss") lossTemp.push(d);
-          else if (d.type === "Undetermined") undeterTemp.push(d);
+          if (d.type === "Gain") allBuckets.gain.push(d);
+          else if (d.type === "CN-LOH") allBuckets.loh.push(d);
+          else if (d.type === "Loss") allBuckets.loss.push(d);
+          else if (d.type === "Undetermined") allBuckets.undetermined.push(d);
         }
         //for whole, and select X or Y
         else {
           if (d.type === "mLOX") {
-            chrXTemp.push(d);
             d.block_id = "X";
+            nextPlotData.chrX.push(d);
             //lossTemp.push(d);
           }
           if (d.type === "mLOY") {
-            chrYTemp.push(d);
             d.block_id = "Y";
+            nextPlotData.chrY.push(d);
             //lossTemp.push(d);
           }
         }
       }
       //}
     });
-    // setLoading(false)
     if (form.types.find((e) => e.value === "all")) {
-      setGain(gainTemp);
-      setLoss(lossTemp);
-      setLoh(lohTemp);
-      setUndetermined(undeterTemp);
+      nextPlotData.gain = allBuckets.gain;
+      nextPlotData.loss = allBuckets.loss;
+      nextPlotData.loh = allBuckets.loh;
+      nextPlotData.undetermined = allBuckets.undetermined;
     } else {
-      if (form.types.find((e) => e.value === "gain")) setGain(gainTemp);
-      if (form.types.find((e) => e.value === "loss")) setLoss(lossTemp);
-      if (form.types.find((e) => e.value === "loh")) setLoh(lohTemp);
-      if (form.types.find((e) => e.value === "undetermined")) setUndetermined(undeterTemp);
+      if (form.types.find((e) => e.value === "gain")) nextPlotData.gain = allBuckets.gain;
+      if (form.types.find((e) => e.value === "loss")) nextPlotData.loss = allBuckets.loss;
+      if (form.types.find((e) => e.value === "loh")) nextPlotData.loh = allBuckets.loh;
+      if (form.types.find((e) => e.value === "undetermined")) nextPlotData.undetermined = allBuckets.undetermined;
     }
-    console.log(gain.length);
-    setChrX(chrXTemp);
-    setChrY(chrYTemp);
-    setLoaded(true);
+    nextPlotData.allValues = nextPlotData.gain
+      .concat(nextPlotData.loss)
+      .concat(nextPlotData.loh)
+      .concat(nextPlotData.undetermined)
+      .concat(nextPlotData.chrX)
+      .concat(nextPlotData.chrY);
+    console.log(nextPlotData.gain.length);
+    timing.transformMs = Math.round(performance.now() - transformStartMs);
+    const stateStartMs = performance.now();
+    queryInFlightRef.current = false;
+    setPlotData(nextPlotData);
+    // pick the thinnest bar size that still fits every track's densest overlapping region, so the
+    // circle plot never overlaps/clamps by default; the thickness slider can still fine-tune it afterward
+    setThickness(
+      computeAutoThickness({
+        gain: nextPlotData.gain,
+        loss: nextPlotData.loss,
+        loh: nextPlotData.loh,
+        undetermined: nextPlotData.undetermined,
+        chrx: nextPlotData.chrX,
+        chry: nextPlotData.chrY,
+      })
+    );
+    // below the plot threshold, CirclePlotTest never renders/calls onLoading, so mark loaded here instead
+    setLoaded(nextPlotData.allValues.length < MIN_EVENTS_FOR_PLOT);
+    timing.stateQueueMs = Math.round(performance.now() - stateStartMs);
+    timing.totalMs = Math.round(performance.now() - totalStartMs);
+    timing.improvementVsOriginalApprox = `${(timing.previousBaselineMs.originalApprox / Math.max(timing.totalMs, 1)).toFixed(1)}x faster`;
+    timing.improvementVsPreMergedApiExample = `${(timing.previousBaselineMs.preMergedApiExample / Math.max(timing.apiMs, 1)).toFixed(1)}x API faster`;
+    latestQueryTimingRef.current = timing;
+    console.log(`[rangeView timing summary]\n${JSON.stringify(timing, null, 2)}`);
+    console.table({ rangeViewTiming: timing });
   }
 
   useEffect(() => {
     setClickedCounter(clickedCounter + 1);
     //console.log(chrX);
     if (form.plotType.value === "static") {
-      setAllValue([...allValues]);
+      setAllValue(plotData.allValues);
     }
-    handleDataChange(allValues);
-  }, [gain, loss, loh, undetermined, chrX, chrY]);
+    handleDataChange(plotData.allValues);
+  }, [plotData]);
 
   //const chromosomes = form.chromosome.map((e) => e.label);
   //const chromosomes = form.chromosome;
@@ -244,7 +345,7 @@ export default function RangeView(props) {
   // const sortX = chrX.filter((e) => chromosomes.includes("X")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
   // const sortY = chrY.filter((e) => chromosomes.includes("Y")).sort((a, b) => Number(a.block_id) - Number(b.block_id));
   // const allValues = sortGain.concat(sortLoss).concat(sortLoh).concat(sortUndetermined).concat(sortX).concat(sortY);
-  const allValues = gain.concat(loss).concat(loh).concat(undetermined).concat(chrX).concat(chrY);
+  const { gain, loss, loh, undetermined, chrX, chrY, allValues } = plotData;
   //console.log(gain, sortGain, chromosomes);
   useEffect(() => {
     var chromoIdString = chromoId + "";
@@ -534,7 +635,13 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    console.log(data.length);
+    const handoffTiming = latestQueryTimingRef.current;
+    console.log(`[rangeView table handoff]\n${JSON.stringify({
+      rows: data.length,
+      queryTotalMs: handoffTiming?.totalMs,
+      apiMs: handoffTiming?.apiMs,
+      responseShape: handoffTiming?.responseShape,
+    }, null, 2)}`);
     setTableData(data);
     getViolinData(data);
   };
@@ -542,13 +649,17 @@ export default function RangeView(props) {
     props.onPair();
   };
 
-  const handleSetLoading = (val) => {
+  const handleSetLoading = useCallback((val) => {
+    if (queryInFlightRef.current && val) return;
     setLoaded(val);
-  };
+  }, []);
   const checkMaxLines = () => {
     let totalLines = 0;
     const linesSummary = {};
     const cellLabels = ["Undetermined", "Loss", "CN-LOH", "Gain"];
+    // matches cellLabels order (and track-0..3) - the DOM always has .block groups per chromosome
+    // even for a type with zero events, so presence has to be checked against the source data instead
+    const trackHasData = [undetermined, loss, loh, gain].map((arr) => arr.length > 0);
     // console.log(circleRef.current,document.getElementById('circosTable').rows.length)
     if (circleRef.current && loaded && document.getElementById("circosTable").getElementsByTagName("tr").length === 0) {
       [".track-0", ".track-1", ".track-2", ".track-3"].forEach((trackClass, index) => {
@@ -614,13 +725,20 @@ export default function RangeView(props) {
         //hearderCell.style.border='1px solid black';
       }
 
+      var totalHeaderCell = document.createElement("th");
+      totalHeaderCell.innerHTML = "Total";
+      totalHeaderCell.style.fontWeight = "bold";
+      hearderRow.appendChild(totalHeaderCell);
+
       var tbody = tableLines.createTBody();
+      const columnTotals = new Array(22).fill(0);
+      let grandTotal = 0;
 
       for (let l = 0; l < fourTracks; l++) {
         const trackData = linesSummary[l];
         //  console.log(trackData);
-        const row = tbody.insertRow(-1);
-        if (trackData !== undefined && trackData.length > 0) {
+        if (trackData !== undefined && trackData.length > 0 && trackHasData[l]) {
+          const row = tbody.insertRow(-1);
           trackData.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
           const cellLabel = row.insertCell(0);
           cellLabel.innerHTML = cellLabels[l];
@@ -628,6 +746,7 @@ export default function RangeView(props) {
           cellLabel.style.fontWeight = "bold";
           // cellLabel.style.border='1px solid black';
           // cellLabel.style.size='12px';
+          let rowTotal = 0;
           trackData.forEach((item, index) => {
             const cell = row.insertCell(index + 1);
             if (item.outBlock > 0) {
@@ -640,10 +759,32 @@ export default function RangeView(props) {
             //cell.style.fontSize='12px';
 
             //cell.style.width="20px"
+            const displayedValue = Number(item.outBlock > 0 ? item.all - item.outBlock : item.all) || 0;
+            rowTotal += displayedValue;
+            columnTotals[index] += displayedValue;
           });
+          const rowTotalCell = row.insertCell(-1);
+          rowTotalCell.innerHTML = rowTotal;
+          rowTotalCell.style.fontWeight = "bold";
+          grandTotal += rowTotal;
           document.getElementById("circosTable").appendChild(tableLines);
         }
       }
+
+      const totalsRow = tbody.insertRow(-1);
+      const totalsLabelCell = totalsRow.insertCell(0);
+      totalsLabelCell.innerHTML = "Total";
+      totalsLabelCell.style.textAlign = "left";
+      totalsLabelCell.style.fontWeight = "bold";
+      columnTotals.forEach((columnTotal) => {
+        const cell = totalsRow.insertCell(-1);
+        cell.innerHTML = columnTotal;
+        cell.style.fontWeight = "bold";
+      });
+      const grandTotalCell = totalsRow.insertCell(-1);
+      grandTotalCell.innerHTML = grandTotal;
+      grandTotalCell.style.fontWeight = "bold";
+      document.getElementById("circosTable").appendChild(tableLines);
     }
   };
 
@@ -721,12 +862,19 @@ export default function RangeView(props) {
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
-        <div className="row justify-content-center">
+        {/* minHeight keeps this row from collapsing before CirclePlotTest mounts, so the loading overlay centers against the plot's eventual size instead of an empty container */}
+        <div className="row justify-content-center" style={{ minHeight: !loaded ? 700 : undefined }}>
           {!loaded ? (
             <LoadingOverlay active={!loaded} />
+          ) : form.compare ? (
+            ""
           ) : resultData.length === 0 ? (
             <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
               No Data Found
+            </h6>
+          ) : resultData.length < MIN_EVENTS_FOR_PLOT ? (
+            <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
+              Fewer than 10 events exist for this set of filtering criteria. Plot cannot be generated.
             </h6>
           ) : (
             ""
@@ -734,38 +882,45 @@ export default function RangeView(props) {
           <div className="">
             <Row className="">
               <Col className="col col-xl-12 d-flex justify-content-center align-items-center">
-                <CirclePlotTest
-                  ref={circleRef}
-                  clickedChromoId={handleClickedChromoId}
-                  key={clickedCounter}
-                  loss={loss}
-                  loh={loh}
-                  gain={gain}
-                  undetermined={undetermined}
-                  allDenominator={allDenominator}
-                  chrx={chrX}
-                  chry={chrY}
-                  figureHeight={figureHeight}
-                  onHeightChange={handleheightChange}
-                  onResetHeight={resetHeight}
-                  onClickedChr={handleClickChr}
-                  getData={handleDataChange}
-                  onPair={handleCheckboxChange}
-                  onLoading={handleSetLoading}></CirclePlotTest>
+                {form.compare || resultData.length >= MIN_EVENTS_FOR_PLOT ? (
+                  <CirclePlotTest
+                    ref={circleRef}
+                    clickedChromoId={handleClickedChromoId}
+                    key={clickedCounter}
+                    loss={loss}
+                    loh={loh}
+                    gain={gain}
+                    undetermined={undetermined}
+                    allDenominator={allDenominator}
+                    chrx={chrX}
+                    chry={chrY}
+                    figureHeight={figureHeight}
+                    onHeightChange={handleheightChange}
+                    onResetHeight={resetHeight}
+                    onClickedChr={handleClickChr}
+                    getData={handleDataChange}
+                    onPair={handleCheckboxChange}
+                    thickness={thickness}
+                    onThicknessChange={handleThicknessChange}
+                    onLoading={handleSetLoading}></CirclePlotTest>
+                ) : (
+                  ""
+                )}
               </Col>
             </Row>
             <Row>{loaded ? checkMaxLines() : ""}</Row>
             <Row>
-              <div className="m-3">
-                <div className="d-flex " style={{ justifyContent: "flex-end" }}>
+              <div className="">
+                {/* <div className="d-flex " style={{ justifyContent: "flex-end" }}>
                   <ExcelFile
                     filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                    element={<a href="javascript:void(0)">Export Data</a>}>
+                    element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                     <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                   </ExcelFile>
-                </div>
+                </div> */}
 
-                <Table
+                {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
+                {/* <Table
                   columns={columns}
                   defaultSort={[
                     { id: "chromosome", asc: true },
@@ -773,7 +928,7 @@ export default function RangeView(props) {
                     { id: "end", asc: true },
                   ]}
                   data={resultData}
-                />
+                /> */}
               </div>
             </Row>
           </div>
@@ -783,19 +938,25 @@ export default function RangeView(props) {
         <Tab eventKey="scatter" title="Cellular Fraction">
           <Row className="m-3">
             <Col xl={12}>
-              <Plot
-                data={violinData}
-                layout={layout}
-                config={{
-                  ...defaultConfig,
-                  toImageButtonOptions: {
-                    ...defaultConfig.toImageButtonOptions,
-                    filename: "Violin boxplot",
-                  },
-                  responsive: true,
-                }}
-                style={{ width: "100%", height: browserSize.height * 0.7 }}
-              />
+              {resultData.length < MIN_EVENTS_FOR_PLOT ? (
+                <h6 className="d-flex mx-2" style={{ margin: "10px", justifyContent: "center" }}>
+                  Fewer than 10 events exist for this set of filtering criteria. Plot cannot be generated.
+                </h6>
+              ) : (
+                <Plot
+                  data={violinData}
+                  layout={layout}
+                  config={{
+                    ...defaultConfig,
+                    toImageButtonOptions: {
+                      ...defaultConfig.toImageButtonOptions,
+                      filename: "Violin boxplot",
+                    },
+                    responsive: true,
+                  }}
+                  style={{ width: "100%", height: browserSize.height * 0.7 }}
+                />
+              )}
               {/* <Plot
                 data={getScatterData()}
                 layout={{
@@ -834,14 +995,15 @@ export default function RangeView(props) {
           </Row>
           <Row>
             <div className="m-3">
-              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+              {/* <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
                   filename={"Mosaic_Tiler_Autosomal_mCA_Distribution"}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  element={<button type="button" className="btn btn-link p-0">Export Data</button>}>
                   <ExcelSheet dataSet={exportTable(sortedData)} name="Autosomal mCA Distribution" />
                 </ExcelFile>
-              </div>
-              <Table
+              </div> */}
+              {/* Table hidden: reporting individual-level mCA data (Chromosome, Type, Cellular Fraction, Start, End, Detection Approach) raised study data-sharing concerns */}
+              {/* <Table
                 columns={columns}
                 defaultSort={[
                   { id: "chromosome", asc: true },
@@ -849,7 +1011,7 @@ export default function RangeView(props) {
                   { id: "end", asc: true },
                 ]}
                 data={resultData}
-              />
+              /> */}
             </div>
           </Row>
         </Tab>

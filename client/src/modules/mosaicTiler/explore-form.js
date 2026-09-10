@@ -1,10 +1,8 @@
 import { Form, Button, Accordion, Card, OverlayTrigger, Tooltip, InputGroup, Row, Col } from "react-bootstrap";
 import Select from "react-select";
 import { useRecoilState } from "recoil";
-import { sampleState, formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
+import { formState, loadingState, defaultFormState, resetFormState } from "./explore.state";
 import { useState, useRef, useEffect } from "react";
-import { Toast } from "react-bootstrap";
-
 import {
   AncestryOptions,
   CompareArray,
@@ -13,11 +11,13 @@ import {
   smokeNFC,
   platformArray,
   ifCancer,
+  StudyOptions,
 } from "./constants";
 import chromolimit from "../components/summaryChart/CNV/layout2.json";
+import { parseRangeLabel } from "./range-utils";
 
 const compareArray = CompareArray;
-export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen }) {
+export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOpen, rangeLabel }) {
   const [selectedOption, setSelectedOption] = useState("none");
   //const sample = useRecoilValue(sampleState);
   const [form, setForm] = useRecoilState(formState);
@@ -73,6 +73,21 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     }
   }, [disabledType]);
 
+  useEffect(() => {
+    const parsedRange = parseRangeLabel(rangeLabel);
+    if (!parsedRange) return;
+
+    setStart(parsedRange.start);
+    setEnd(parsedRange.end);
+    setForm((prev) => ({
+      ...prev,
+      plotType: { value: "static", label: "Chromosome level" },
+      chrSingle: parsedRange.chrOption,
+      start: parsedRange.start,
+      end: parsedRange.end,
+    }));
+  }, [rangeLabel, setForm]);
+
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "chrX") {
@@ -91,15 +106,15 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
     } else if (name === "maxAge") {
       if (value === "" || value === null) {
         mergeForm({ [name]: null });
-      } else if (value <= 150) {
+      } else if (value <= 120) {
         mergeForm({ [name]: Number(value) });
       } else {
-        mergeForm({ [name]: 150 });
+        mergeForm({ [name]: 120 });
       }
     } else if (name === "minAge") {
       if (value === "" || value === null) {
         mergeForm({ [name]: null });
-      } else if (value <= 150) {
+      } else if (value <= 120) {
         mergeForm({ [name]: Number(value) });
       } else {
         mergeForm({ [name]: 0 });
@@ -178,7 +193,13 @@ function getRangeError(start, end) {
       return; // Stop form submission
     }
 
-    if (onSubmit) onSubmit(form);
+    const submittedForm = {
+      ...form,
+      initialStart: form.start,
+      initialEnd: form.end,
+    };
+    setForm(submittedForm);
+    if (onSubmit) onSubmit(submittedForm);
     //handleDisplayCompare();
   }
 
@@ -230,27 +251,25 @@ function getRangeError(start, end) {
     }
 
     if (name === "study" && selection.find((option) => option.value === "all")) {
-      selection = [
-        { value: "plco", label: "PLCO" },
-        { value: "ukbb", label: "UK Biobank" },
-        { value: "biovu", label: "BioVU" },
-      ];
+      selection = StudyOptions.filter((option) => option.value !== "all");
     }
 
     // When study changes, reset platformArray selection
-    if (name === "study") {
-      let newApproach = [];
-      if (selection.length === 1) {
-        if (selection[0].value === "plco") {
-          newApproach = platformArray.slice(0, 4);
-        } else if (selection[0].value === "ukbb") {
-          newApproach = platformArray.slice(4, 6);
-        } else if (selection[0].value === "biovu") {
-          newApproach = platformArray.slice(6, 7);
-        }
-      }
-      mergeForm({ approach: [] }); // Clear previous selection
-    }
+    // if (name === "study") {
+    //   let newApproach = [];
+    //   if (selection.length === 1) {
+    //     if (selection[0].value === "plco") {
+    //       newApproach = platformArray.slice(0, 4);
+    //     } else if (selection[0].value === "ukbb") {
+    //       newApproach = platformArray.slice(4, 6);
+    //     } else if (selection[0].value === "biovu") {
+    //       newApproach = platformArray.slice(6, 7);
+    //     } else if (selection[0].value === "jap") {
+    //       newApproach = platformArray.slice(3, 4);
+    //     }
+    //   }
+    //   mergeForm({ approach: [] }); // Clear previous selection
+    // }
 
     if (name === "chrSingle") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
@@ -354,17 +373,19 @@ function getRangeError(start, end) {
               All chromosomes displays all chromosomes, select chromosome level plot to visualize a single chromosome
             </Tooltip>
           }>
-          <Select
-            aria-label="plotType"
-            placeholder="- Select -"
-            name="plotType"
-            value={form.plotType}
-            onChange={(ev) => handleSelectChange("plotType", ev)}
-            options={[
-              { value: "circos", label: "All chromosomes" },
-              { value: "static", label: "Chromosome level" },
-            ]}
-          />
+          <span className="d-block">
+            <Select
+              aria-label="plotType"
+              placeholder="- Select -"
+              name="plotType"
+              value={form.plotType}
+              onChange={(ev) => handleSelectChange("plotType", ev)}
+              options={[
+                { value: "circos", label: "All chromosomes" },
+                { value: "static", label: "Chromosome level" },
+              ]}
+            />
+          </span>
           {/* {isCircos?<Button></Button>} */}
         </OverlayTrigger>
       </Form.Group>
@@ -438,7 +459,7 @@ function getRangeError(start, end) {
           />
         </Form.Group>
       )}
-      <Form.Group className="mb-3">
+      {/* <Form.Group className="mb-3">
         <Form.Label className="required">Study</Form.Label>
         <Form.Label style={{ color: "red" }}>{form.study.length === 0 ? "Study field is required" : ""}</Form.Label>
         <Select
@@ -455,7 +476,7 @@ function getRangeError(start, end) {
             { value: "biovu", label: "BioVU" },
           ]}
         />
-      </Form.Group>
+      </Form.Group> */}
       <Form.Group className="mb-3">
         <Form.Label className="required">Copy Number State</Form.Label>
         <Form.Label style={{ color: "red" }}>
@@ -477,7 +498,7 @@ function getRangeError(start, end) {
         {/* <Accordion.Item eventKey="0"> */}
 
         <Accordion.Item eventKey="0">
-          <Accordion.Header eventKey="0" style={{ textAlign: "right" }}>
+          <Accordion.Header style={{ textAlign: "right" }}>
             Advanced settings
           </Accordion.Header>
           <Accordion.Body
@@ -488,7 +509,7 @@ function getRangeError(start, end) {
               padding: "10px",
             }}>
             <Form.Group className="mb-3" controlId="approach">
-              <Form.Label>Array Platform</Form.Label>
+              <Form.Label>Detection Approach</Form.Label>
               <Select
                 placeholder="- Select -"
                 name="approach"
@@ -496,17 +517,17 @@ function getRangeError(start, end) {
                 value={form.approach}
                 onChange={(ev) => handleSelectChange("approach", ev)}
                 options={(() => {
-                  if (form.study.length > 0) {
-                    let indices = [];
-                    form.study.forEach((s) => {
-                      if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
-                      if (s.value === "ukbb") indices = indices.concat([4, 5]);
-                      if (s.value === "biovu") indices = indices.concat([6]);
-                    });
-                    // Remove duplicates and sort
-                    indices = Array.from(new Set(indices)).sort((a, b) => a - b);
-                    return indices.map((i) => platformArray[i]);
-                  }
+                  // if (form.study.length > 0) {
+                  //   let indices = [];
+                  //   form.study.forEach((s) => {
+                  //     if (s.value === "plco") indices = indices.concat([0, 1, 2, 3]);
+                  //     if (s.value === "ukbb") indices = indices.concat([4, 5]);
+                  //     if (s.value === "biovu") indices = indices.concat([6]);
+                  //   });
+                  //   // Remove duplicates and sort
+                  //   indices = Array.from(new Set(indices)).sort((a, b) => a - b);
+                  //   return indices.map((i) => platformArray[i]);
+                  // }
                   return platformArray;
                 })()}
                 classNamePrefix="select"
@@ -538,7 +559,9 @@ function getRangeError(start, end) {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Age</Form.Label>
+              <Form.Label>
+                Age
+              </Form.Label>
               <Form.Label style={{ color: "red" }}>
                 {(form.maxAge !== null && form.maxAge !== "" && form.minAge !== null && form.minAge !== "" && parseInt(form.maxAge) <= parseInt(form.minAge))
                   ? "Upper age limit must be greater than lower age limit"
@@ -576,6 +599,15 @@ function getRangeError(start, end) {
                     />
                     {/* <InputGroup.Text></InputGroup.Text> */}
                   </InputGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col>
+                  <span style={{ display: "block", fontSize: "0.8rem", fontWeight: 400 }}>
+                    Age bins are included when individual ages are not available and may extend beyond the
+                    specified age range (e.g., max age of 88 will include 85-89 group for studies that report
+                    age groups).
+                  </span>
                 </Col>
               </Row>
             </Form.Group>

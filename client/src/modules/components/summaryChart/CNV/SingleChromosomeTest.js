@@ -163,11 +163,11 @@ function SingleChromosomeTest(props) {
       },
       hovertext: props.data.map((e) => {
         var text =
-          "Study: " +
-          e.dataset +
-          "<br>Sample ID: " +
-          e.sampleId +
-          "<br>Start: " +
+          // "Study: " +
+          // e.dataset +
+          // "<br>Sample ID: " +
+          // e.sampleId +
+          "Start: " +
           e.start +
           "<br>End: " +
           e.end +

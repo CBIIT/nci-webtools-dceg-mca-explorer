@@ -26,3 +26,67 @@ export function chromosomeFormatter() {
     return value;
   };
 }
+
+export function platformFormatter(platformMap) {
+  return function (value) {
+    return platformMap[value] || value;
+  };
+}
+
+export function ageRangeMidpointFormatter() {
+  return function (value) {
+    if (typeof value === "number") {
+      return value;
+    }
+
+    const ageRange = value?.toString().trim();
+    const closedRange = ageRange?.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (closedRange) {
+      return Math.round((Number(closedRange[1]) + Number(closedRange[2])) / 2);
+    }
+
+    const lowerBound = ageRange?.match(/^(\d+)\+$/);
+    if (lowerBound) {
+      return Number(lowerBound[1]);
+    }
+
+    const upperBound = ageRange?.match(/^<(\d+)$/);
+    if (upperBound) {
+      return Number(upperBound[1]) - 1;
+    }
+
+    return null;
+  };
+}
+
+export function ageRangeMinFormatter() {
+  return function (value) {
+    const ageRange = value?.toString().trim();
+    const closedRange = ageRange?.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (closedRange) return Number(closedRange[1]);
+
+    const lowerBound = ageRange?.match(/^(\d+)\+$/);
+    if (lowerBound) return Number(lowerBound[1]);
+
+    const upperBound = ageRange?.match(/^<(\d+)$/);
+    if (upperBound) return 0;
+
+    return null;
+  };
+}
+
+export function ageRangeMaxFormatter() {
+  return function (value) {
+    const ageRange = value?.toString().trim();
+    const closedRange = ageRange?.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (closedRange) return Number(closedRange[2]);
+
+    const lowerBound = ageRange?.match(/^(\d+)\+$/);
+    if (lowerBound) return 120;
+
+    const upperBound = ageRange?.match(/^<(\d+)$/);
+    if (upperBound) return Number(upperBound[1]) - 1;
+
+    return null;
+  };
+}

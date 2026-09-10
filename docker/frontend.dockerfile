@@ -5,23 +5,34 @@ RUN dnf -y update \
    gcc-c++ \
    httpd \
    make \
-   nodejs \
-   npm \
+   nodejs24 \
    && dnf clean all
+
+# AL2023 ships versioned Node packages; nodejs24 provides Node 24.x and its own bundled npm.
+# That bundled npm still vendors vulnerable transitive deps (tar, brace-expansion, etc.);
+# replace it with the latest release compatible with this image's Node 24.14.0 (npm@latest
+# requires Node >=24.15.0, one minor newer than what nodejs24 currently provides).
+RUN node -v && npm -v
+RUN node -v | grep -qE '^v24\.' && npm install -g npm@11.19.1
 
 RUN mkdir /client
 
 WORKDIR /client
 
 COPY client/package*.json /client/
+COPY client/patches /client/patches
 
 RUN npm install --force
 
 COPY client /client/
 
 ARG APPLICATION_PATH=/
+ARG REACT_APP_VERSION=dev
+ARG REACT_APP_LAST_UPDATED=unknown
 
 ENV APPLICATION_PATH=${APPLICATION_PATH}
+ENV REACT_APP_VERSION=${REACT_APP_VERSION}
+ENV REACT_APP_LAST_UPDATED=${REACT_APP_LAST_UPDATED}
 
 RUN npm run build \
    && mkdir -p /var/www/html/${APPLICATION_PATH} \

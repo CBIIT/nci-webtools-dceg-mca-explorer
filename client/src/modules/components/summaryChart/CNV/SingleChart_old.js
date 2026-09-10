@@ -127,11 +127,11 @@ function SingleChart(props) {
               tooltip.transition().duration(200).style("opacity", 0.9);
               tooltip
                 .html(
-                  "Study: " +
-                    d.data.dataset +
-                    "<br/>Sample Id: " +
-                    d.data.sampleId +
-                    "<br/>Start: " +
+                  // "Study: " +
+                  //   d.data.dataset +
+                    // "<br/>Sample Id: " +
+                    // d.data.sampleId +
+                    "Start: " +
                     d.data.start +
                     "<br/>End: " +
                     d.data.end +
@@ -203,9 +203,9 @@ function SingleChart(props) {
   return (
     <div>
       <div className="mx-5">
-        <a href="javascript:void(0)" onClick={handleDownload} style={{ float: "right", justifyContent: "flex-end" }}>
+        <button type="button" className="btn btn-link p-0" onClick={handleDownload} style={{ float: "right", justifyContent: "flex-end" }}>
           Download
-        </a>
+        </button>
       </div>
       <div>
         <svg ref={ref} width={props.width} height={props.height}></svg>

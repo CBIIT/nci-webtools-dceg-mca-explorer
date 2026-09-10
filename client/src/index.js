@@ -1,17 +1,14 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import "./styles/main.scss";
 //import "./services/main.js"
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
+createRoot(document.getElementById("root")).render(
+  <App />
 );
 
 Array.from(document.querySelectorAll("[react-cloak]")).forEach((node) => node.removeAttribute("react-cloak"));
 
-reportWebVitals(console.log);
+reportWebVitals();
