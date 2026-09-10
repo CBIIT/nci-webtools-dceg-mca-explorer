@@ -31,7 +31,7 @@
     "recoil": "^0.7.6",
     "swagger-ui-react": "^5.29.4",
     "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "overrides": {
     "swagger-ui-react": {
