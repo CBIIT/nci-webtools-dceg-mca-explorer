@@ -13,6 +13,9 @@
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1"
   },
+  "overrides": {
+    "braces": "^3.0.3"
+  },
   "prettier": {
     "printWidth": 120,
     "quoteProps": "consistent",
