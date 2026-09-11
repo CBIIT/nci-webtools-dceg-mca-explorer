@@ -789,7 +789,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 break;
               } else {
                 itemTitle += itemA[i].label;
-                if (i < itemA.length - 1) itemTitle += ",";
+                if (i < itemA.length - 1) itemTitle += ", ";
               }
             }
           } else {
@@ -861,9 +861,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         if (typeof values === "object" && Array.isArray(values) && values.length > 0) {
           title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           values.forEach((s) => {
-            title += s.label + ",";
+            title += s.label + ", ";
           });
-          title = title.slice(0, -1);
+          title = title.slice(0, -2);
         } else if (typeof values === "object" && Array.isArray(values) && values.length === 0) {
           title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": All";
         }
@@ -884,9 +884,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         if (typeof values === "object" && Array.isArray(values) && values.length > 0) {
           title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": ";
           values.forEach((s) => {
-            title += s.label + ",";
+            title += s.label + ", ";
           });
-          title = title.slice(0, -1);
+          title = title.slice(0, -2);
         } else if (typeof values === "object" && Array.isArray(values) && values.length === 0) {
           title += "; " + key.charAt(0).toUpperCase() + key.slice(1) + ": All";
         }

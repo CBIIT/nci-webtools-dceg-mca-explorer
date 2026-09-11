@@ -70,6 +70,8 @@
     "d3-color": "^3.1.0",
     "uuid": "^11.1.1",
     "clean-css": "^5.2.2",
+    "maplibre-gl": "^6.4.1",
+    "js-yaml": "^4.3.2",
     "html-loader": {
       "webpack": {
         "schema-utils": {
