@@ -1,6 +1,6 @@
 import express, { response } from "express";
 import Router from "express-promise-router";
-import { getStatus, getSamples, AncestryOptions } from "./query.js";
+import { AncestryOptions } from "./query.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
 import { createRequire } from "module";
@@ -130,17 +130,9 @@ apiRouter.get("/", (request, response) => {
   response.json(spec);
 });
 
-apiRouter.get("/ping", async (request, response) => {
-  const { connection } = request.app.locals;
-  const status = await getStatus(connection);
-  response.json(status);
-});
-
-apiRouter.post("/query/samples", async (request, response) => {
-  const { connection } = request.app.locals;
-  const query = request.body;
-  const samples = await getSamples(connection, query);
-  response.json(samples);
+// lightweight health check for ECS/ALB - no OpenSearch/DB dependency
+apiRouter.get("/ping", (request, response) => {
+  response.status(200).send("OK");
 });
 
 apiRouter.post("/opensearch/mca", async (request, response) => {
@@ -303,21 +295,15 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
 
   try {
-    const result = await client.search({
-      index: "merged",
-      body: {
-        track_total_hits: true,
-        size: 200000,
-        query: {
-          bool: {
-            must_not: [...searchExclude],
-            must: searchdataset,
-            filter: filterString,
-          },
-        },
+    const mcaQuery = {
+      bool: {
+        must_not: [...searchExclude],
+        must: searchdataset,
+        filter: filterString,
       },
-    });
-    let mcaHits = result.body.hits.hits.map((item) => item._source);
+    };
+    const hits = await fetchAllHitsPaged(client, "merged", mcaQuery, undefined, MCA_PAGE_SIZE);
+    let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
         sex: qsex,
@@ -519,20 +505,14 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   });
 
   try {
-    const result = await client.search({
-      index: "merged",
-      body: {
-        track_total_hits: true,
-        size: 200000,
-        query: {
-          bool: {
-            filter: hasDenominatorFilter ? mcaRangeFilters : [...mcaRangeFilters, ...denominatorFilters],
-            must: queryString,
-          },
-        },
+    const chromosomeQuery = {
+      bool: {
+        filter: hasDenominatorFilter ? mcaRangeFilters : [...mcaRangeFilters, ...denominatorFilters],
+        must: queryString,
       },
-    });
-    let mcaHits = result.body.hits.hits.map((item) => item._source);
+    };
+    const hits = await fetchAllHitsPaged(client, "merged", chromosomeQuery, undefined, MCA_PAGE_SIZE);
+    let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
         sex,
@@ -876,10 +856,15 @@ const mergeLegacyDenominatorRows = async (
   mcaRows,
   { sex, ancestry, smoking, array, priorCancer, hemaCancer, lymCancer, myeCancer, minAge, maxAge }
 ) => {
-  const mcaBySampleId = new Map();
+  // keep ALL mca rows per sample (a sample can have multiple mca events, e.g. an
+  // autosomal chr1-22 event and an mLOX/mLOY event once chrX/chrY is selected) -
+  // collapsing to a single row per sampleId here would silently drop events.
+  const mcaRowsBySampleId = new Map();
   mcaRows.forEach((row) => {
     const sampleId = row?.sampleId;
-    if (sampleId !== undefined && sampleId !== null && !mcaBySampleId.has(sampleId)) mcaBySampleId.set(sampleId, row);
+    if (sampleId === undefined || sampleId === null) return;
+    if (!mcaRowsBySampleId.has(sampleId)) mcaRowsBySampleId.set(sampleId, []);
+    mcaRowsBySampleId.get(sampleId).push(row);
   });
 
   const denominatorHits = await fetchDenominatorBySampleIds(
@@ -901,10 +886,11 @@ const mergeLegacyDenominatorRows = async (
     ]
   );
 
-  return denominatorHits.map((item) => {
+  return denominatorHits.flatMap((item) => {
     const denominatorSource = item._source || {};
-    const mcaSource = mcaBySampleId.get(denominatorSource.sampleId);
-    return mcaSource !== undefined ? { ...denominatorSource, ...mcaSource } : denominatorSource;
+    const mcaSources = mcaRowsBySampleId.get(denominatorSource.sampleId);
+    if (mcaSources === undefined || mcaSources.length === 0) return [denominatorSource];
+    return mcaSources.map((mcaSource) => ({ ...denominatorSource, ...mcaSource }));
   });
 };
 /*

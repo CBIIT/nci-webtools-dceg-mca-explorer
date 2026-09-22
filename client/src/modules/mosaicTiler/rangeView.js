@@ -657,6 +657,9 @@ export default function RangeView(props) {
     let totalLines = 0;
     const linesSummary = {};
     const cellLabels = ["Undetermined", "Loss", "CN-LOH", "Gain"];
+    // matches cellLabels order (and track-0..3) - the DOM always has .block groups per chromosome
+    // even for a type with zero events, so presence has to be checked against the source data instead
+    const trackHasData = [undetermined, loss, loh, gain].map((arr) => arr.length > 0);
     // console.log(circleRef.current,document.getElementById('circosTable').rows.length)
     if (circleRef.current && loaded && document.getElementById("circosTable").getElementsByTagName("tr").length === 0) {
       [".track-0", ".track-1", ".track-2", ".track-3"].forEach((trackClass, index) => {
@@ -734,8 +737,8 @@ export default function RangeView(props) {
       for (let l = 0; l < fourTracks; l++) {
         const trackData = linesSummary[l];
         //  console.log(trackData);
-        const row = tbody.insertRow(-1);
-        if (trackData !== undefined && trackData.length > 0) {
+        if (trackData !== undefined && trackData.length > 0 && trackHasData[l]) {
+          const row = tbody.insertRow(-1);
           trackData.sort((a, b) => parseInt(a.key, 10) - parseInt(b.key, 10));
           const cellLabel = row.insertCell(0);
           cellLabel.innerHTML = cellLabels[l];

@@ -25,16 +25,47 @@ export function denormalizeThickness(value) {
 // fixed pixel size the summary CircosPlot is always rendered at (see CirclePlotTest.js's circleSize)
 export const SUMMARY_CIRCLE_SIZE = 850;
 
-// fractional [innerRadius, outerRadius] of each STACK track, as configured in CirclePlot.js
-const TRACK_BANDS = {
-  undetermined: [0.05, 0.25],
-  loss: [0.25, 0.5],
-  loh: [0.5, 0.75],
-  gain: [0.75, 1],
-};
+// render order of the STACK tracks, innermost to outermost (must match CirclePlot.js's track array)
+const TRACK_ORDER = ["undetermined", "loss", "loh", "gain"];
+
+// full radial range ([0.05, 0.25, 0.5, 0.75, 1] originally) shared out across the present track types
+const BAND_START = 0.05;
+const BAND_END = 1;
+
+// Splits [BAND_START, BAND_END] evenly across only the track types that have data, packing them
+// consecutively in TRACK_ORDER so a type with no events collapses to a zero-width band.
+// Note: empty bands use [BAND_START, BAND_START], NOT [0, 0] - circos's computeRadius() special-cases
+// an exact (0, 0) pair to mean "auto-place this track" (see node_modules/circos/src/config-utils.js),
+// which pushed the empty track out near the outer edge instead of hiding it.
+export function computeTrackBands(hasDataByType) {
+  const presentTypes = TRACK_ORDER.filter((name) => hasDataByType[name]);
+  const bands = {};
+  if (presentTypes.length === 0) {
+    TRACK_ORDER.forEach((name) => (bands[name] = [BAND_START, BAND_START]));
+    return bands;
+  }
+
+  const width = (BAND_END - BAND_START) / presentTypes.length;
+  let cursor = BAND_START;
+  TRACK_ORDER.forEach((name) => {
+    if (!hasDataByType[name]) {
+      bands[name] = [BAND_START, BAND_START];
+      return;
+    }
+    bands[name] = [cursor, cursor + width];
+    cursor += width;
+  });
+  return bands;
+}
 
 // matches the circos Stack track's default radialMargin (CirclePlot.js doesn't override it)
 const RADIAL_MARGIN = 2;
+
+// Beyond this many stacked layers, individual arcs are sub-pixel thin and visually indistinguishable
+// from each other whether they overlap or not - so there's no benefit to shrinking thickness further
+// to guarantee zero overlap for cohort-scale tracks with tens of thousands of events. Value picked
+// empirically: users report ~2200-2300 stacked layers already render as one solid band.
+const MAX_LAYERS_FOR_THICKNESS = 2200;
 
 // Reimplements circos's Stack track layering (see node_modules/circos/src/tracks/Stack.js#buildLayers):
 // events for the same chromosome are sorted by start and greedily packed into the first layer whose
@@ -61,25 +92,39 @@ function getMaxLayers(events) {
   return maxLayers;
 }
 
-// thinnest thickness that still lets `maxLayers` stacked events fit inside `bandPx` without
+// thinnest thickness that still lets `layers` stacked events fit inside `bandPx` without
 // clamping to the track's outer radius (inverse of circos Stack's radial position formula)
-function thicknessForLayers(maxLayers, bandPx) {
-  if (maxLayers <= 1) return THICKEST_THICKNESS;
-  const value = (bandPx - RADIAL_MARGIN * (maxLayers - 1)) / maxLayers;
+function thicknessForLayers(layers, bandPx) {
+  if (layers <= 1) return THICKEST_THICKNESS;
+  const raw = (bandPx - RADIAL_MARGIN * (layers - 1)) / layers;
+  // once thickness >= -1, getStrokeWidth adds a 2px stroke that isn't budgeted for above and
+  // extends each arc slightly past its computed radial footprint - reserve room for it
+  const strokeBudget = raw >= -1 ? getStrokeWidth(raw) : 0;
+  const value = (bandPx - strokeBudget - RADIAL_MARGIN * (layers - 1)) / layers;
   return Math.min(THICKEST_THICKNESS, Math.max(THINNEST_THICKNESS, value));
 }
 
 // Picks one shared thickness (used by all 4 stacked tracks) that fits the densest track's
-// worst-case overlap, based on the actual event counts/positions rather than a fixed default.
+// overlap (capped at MAX_LAYERS_FOR_THICKNESS), based on actual event positions rather than a fixed default.
 export function computeAutoThickness({ gain = [], loss = [], loh = [], undetermined = [], chrx = [], chry = [] }, circleSize = SUMMARY_CIRCLE_SIZE) {
   const layoutInnerRadius = circleSize / 2 - 50;
-  const tracks = { undetermined, loss: loss.concat(chrx, chry), loh, gain };
+  // chrX/chrY (mLOX/mLOY) events are folded into the "loss" track for display, but there can be
+  // tens of thousands of them and they're all "loss" type - keep them in the band-presence/width
+  // calc (so the loss band still renders when only chrX/chrY data is present) but exclude them
+  // from the layer/thickness calc below, since they'd force the shared thickness far thinner than
+  // the actual gain/loss/loh/undetermined data needs.
+  const tracksForBands = { undetermined, loss: loss.concat(chrx, chry), loh, gain };
+  const hasData = Object.fromEntries(TRACK_ORDER.map((name) => [name, tracksForBands[name].length > 0]));
+  const bands = computeTrackBands(hasData);
+  const tracksForLayers = { undetermined, loss, loh, gain };
 
   let thickness = THICKEST_THICKNESS;
-  for (const [name, [innerFraction, outerFraction]] of Object.entries(TRACK_BANDS)) {
+  for (const name of TRACK_ORDER) {
+    const [innerFraction, outerFraction] = bands[name];
+    if (outerFraction <= innerFraction) continue; // empty track has no band to fit into
     const bandPx = (outerFraction - innerFraction) * layoutInnerRadius;
-    const maxLayers = getMaxLayers(tracks[name]);
-    thickness = Math.min(thickness, thicknessForLayers(maxLayers, bandPx));
+    const layers = Math.min(getMaxLayers(tracksForLayers[name]), MAX_LAYERS_FOR_THICKNESS);
+    thickness = Math.min(thickness, thicknessForLayers(layers, bandPx));
   }
   return thickness;
 }

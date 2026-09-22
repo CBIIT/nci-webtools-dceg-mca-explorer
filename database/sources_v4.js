@@ -305,12 +305,12 @@ export const sources = [
     ],
   },
   {
-    sourcePath: "data/raw_v3_20240916/UKBB_denominator_92005app_clean.txt",
+    sourcePath: "data/raw_v3_20240916/UKBB_denominator_92005app_clean_V2_import.csv",
     table: "sample",
     description: "UKBB denominator",
     columns: [
       { sourceName: null, name: "dataset", defaultValue: "UKBB_denominator" },
-      { sourceName: "Sample_ID", name: "sampleId" },
+      { sourceName: "sample_id", name: "sampleId" },
       { sourceName: "age", name: "age" },
       { sourceName: "sex", name: "sex" },
       { sourceName: "smoke_NFC", name: "smokeNFC" },

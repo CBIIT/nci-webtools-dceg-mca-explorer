@@ -62,6 +62,48 @@
         }
       }
     },
+    "/api/opensearch/denominator": {
+      "post": {
+        "tags": ["Denominator"],
+        "summary": "Finds the total number of samples matching the query criteria",
+        "produces": ["application/json"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/definitions/DenominatorRequest"
+              },
+              "example": {
+                "sex": "male",
+                "ancestry": "EUR",
+                "smoking": "yes",
+                "approach": "array_A",
+                "minAge": 40,
+                "maxAge": 60,
+                "study": "plco"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation returning total count of matching samples",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/definitions/DenominatorResponse"
+                },
+                "example": 2500
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters supplied"
+          }
+        }
+      }
+    },
     "/api/opensearch/snpchip": {
       "post": {
         "tags": ["SNP Chip"],
@@ -365,6 +407,55 @@
           ]
         }
       }
+    },
+    "DenominatorRequest": {
+      "type": "object",
+      "properties": {
+        "sex": {
+          "type": "string",
+          "description": "Specifies the sex, e.g., male or female"
+        },
+        "ancestry": {
+          "type": "string",
+          "description": "Specifies the ancestry value"
+        },
+        "smoking": {
+          "type": "string",
+          "description": "Specifies smoking status"
+        },
+        "approach": {
+          "type": "string",
+          "description": "Specifies the platform/approach used"
+        },
+        "minAge": {
+          "type": "integer",
+          "description": "Specifies the minimum age",
+          "default": 0
+        },
+        "maxAge": {
+          "type": "integer",
+          "description": "Specifies the maximum age",
+          "default": 100
+        },
+        "study": {
+          "type": "string",
+          "description": "Specifies the study name, e.g., plco, ukbb"
+        }
+      },
+      "example": {
+        "sex": "male",
+        "ancestry": "EUR",
+        "smoking": "yes",
+        "approach": "array_A",
+        "minAge": 40,
+        "maxAge": 60,
+        "study": "plco"
+      }
+    },
+    "DenominatorResponse": {
+      "type": "integer",
+      "description": "The total number of samples matching the query criteria",
+      "example": 2500
     },
     "SnpChipRequest": {
       "type": "object",
