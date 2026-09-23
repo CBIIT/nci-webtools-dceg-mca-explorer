@@ -56,12 +56,12 @@ export default function About() {
           <ol>
             <li>Terao, C. et al. Chromosomal alterations among age-related haematopoietic clones in Japan. Nature 584, 130–135 (2020).</li>
             <li>Pulley, J., Clayton, E., Bernard, G. R., Roden, D. M. & Masys, D. R. Principles of Human Subjects Protections Applied in an Opt‐Out, De‐identified Biobank. Clin. Transl. Sci. 3, 42–48 (2010).</li>
-            <li><em>[Reference needed]</em></li>
+
             <li>Leitsalu, L. et al. Cohort profile: Estonian biobank of the Estonian genome center, University of Tartu. Int. J. Epidemiol. 44, 1137–1147 (2015).</li>
             <li>Uchiyama, S. et al. Mosaic loss of chromosome Y characterises late-onset rheumatoid arthritis and contrasting associations of polygenic risk score based on age at onset. Ann. Rheum. Dis. 84, 1313–1323 (2025).</li>
-            <li><em>[Reference needed]</em></li>
+  
             <li>Black, A. et al. PLCO: Evolution of an Epidemiologic Resource and Opportunities for Future Studies. Rev. Recent Clin. Trials 10, 238–245 (2015).</li>
-            <li><em>[Reference needed]</em></li>
+    
             <li>
               Trans-Omics for Precision Medicine (TOPMed):
               <ol type="a">
