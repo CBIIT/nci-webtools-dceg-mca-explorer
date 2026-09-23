@@ -37,11 +37,11 @@ export default function About() {
              and statistical enrichment testing. </p>
 
           <p>Presently, mCA Explorer includes data from 765,521 participants across ten studies: BioBank Japan<sup>1</sup>, 
-            BioVU<sup>2</sup>, Colorectal<sup>3</sup>, Estonian Biobank<sup>4</sup>, IORRA (Institute of Rheumatology, Rheumatoid Arthritis)<sup>5</sup>, 
-            Lung<sup>6</sup>, Ovarian Cancer Screening Trial(
+            BioVU<sup>2</sup>, Colorectal, Estonian Biobank<sup>3</sup>, IORRA (Institute of Rheumatology, Rheumatoid Arthritis)<sup>4</sup>, 
+            Lung, Ovarian Cancer Screening Trial(
             <a target="_blank" href="https://exploregwas.cancer.gov/plco-atlas/#/" style={{ fontWeight: "bold" }}>
               PLCO)
-            </a><sup>7</sup>, the Prostate<sup>8</sup>, Trans-Omics for Precision Medicine (TOPMed)<sup>9</sup>, and UK Biobank<sup>10</sup>. </p>
+            </a><sup>5</sup>, the Prostate, Trans-Omics for Precision Medicine (TOPMed)<sup>6</sup>, and UK Biobank<sup>7</sup>. </p>
 
            <p>
            Please submit any questions or comments regarding mCA Explorer to{" "}
@@ -56,12 +56,9 @@ export default function About() {
           <ol>
             <li>Terao, C. et al. Chromosomal alterations among age-related haematopoietic clones in Japan. Nature 584, 130–135 (2020).</li>
             <li>Pulley, J., Clayton, E., Bernard, G. R., Roden, D. M. & Masys, D. R. Principles of Human Subjects Protections Applied in an Opt‐Out, De‐identified Biobank. Clin. Transl. Sci. 3, 42–48 (2010).</li>
-
             <li>Leitsalu, L. et al. Cohort profile: Estonian biobank of the Estonian genome center, University of Tartu. Int. J. Epidemiol. 44, 1137–1147 (2015).</li>
             <li>Uchiyama, S. et al. Mosaic loss of chromosome Y characterises late-onset rheumatoid arthritis and contrasting associations of polygenic risk score based on age at onset. Ann. Rheum. Dis. 84, 1313–1323 (2025).</li>
-  
             <li>Black, A. et al. PLCO: Evolution of an Epidemiologic Resource and Opportunities for Future Studies. Rev. Recent Clin. Trials 10, 238–245 (2015).</li>
-    
             <li>
               Trans-Omics for Precision Medicine (TOPMed):
               <ol type="a">
