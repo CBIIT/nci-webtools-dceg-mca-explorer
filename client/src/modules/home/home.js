@@ -86,6 +86,9 @@ export default function Home({ links }) {
                   </a>
                 </div>
                 <div className="ps-3">
+               <br></br>
+                The following studies have contributed data to this project: BioBank Japan, BioVU, Estonian Biobank, IORRA (Institute of Rheumatology, Rheumatoid Arthritis), The Prostate, Lung, Colorectal, Ovarian Cancer Screening Trial (PLCO), Trans-Omics for Precision Medicine (TOPMed), and UK Biobank.
+                <br></br><br/>
                 mCA Explorer's{" "}
                 <a href="https://github.com/CBIIT/nci-webtools-dceg-plco-atlas" target="_blank" alt="Link to open GitHub">
                   source code
