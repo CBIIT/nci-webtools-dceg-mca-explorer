@@ -54,13 +54,14 @@ export default function About() {
 
           <h5>Data Sources</h5>
           <ol>
-            <li>Terao, C. et al. Chromosomal alterations among age-related haematopoietic clones in Japan. Nature 584, 130–135 (2020).</li>
-            <li>Pulley, J., Clayton, E., Bernard, G. R., Roden, D. M. & Masys, D. R. Principles of Human Subjects Protections Applied in an Opt‐Out, De‐identified Biobank. Clin. Transl. Sci. 3, 42–48 (2010).</li>
-            <li>Leitsalu, L. et al. Cohort profile: Estonian biobank of the Estonian genome center, University of Tartu. Int. J. Epidemiol. 44, 1137–1147 (2015).</li>
-            <li>Uchiyama, S. et al. Mosaic loss of chromosome Y characterises late-onset rheumatoid arthritis and contrasting associations of polygenic risk score based on age at onset. Ann. Rheum. Dis. 84, 1313–1323 (2025).</li>
-            <li>Black, A. et al. PLCO: Evolution of an Epidemiologic Resource and Opportunities for Future Studies. Rev. Recent Clin. Trials 10, 238–245 (2015).</li>
+            <li><strong>BioBank Japan</strong><br />Terao, C. et al. Chromosomal alterations among age-related haematopoietic clones in Japan. Nature 584, 130–135 (2020).</li>
+            <li><strong>BioVU</strong><br />Pulley, J., Clayton, E., Bernard, G. R., Roden, D. M. & Masys, D. R. Principles of Human Subjects Protections Applied in an Opt‐Out, De‐identified Biobank. Clin. Transl. Sci. 3, 42–48 (2010).</li>
+            <li><strong>Estonian Biobank</strong><br />Leitsalu, L. et al. Cohort profile: Estonian biobank of the Estonian genome center, University of Tartu. Int. J. Epidemiol. 44, 1137–1147 (2015).</li>
+            <li><strong>IORRA</strong><br />Uchiyama, S. et al. Mosaic loss of chromosome Y characterises late-onset rheumatoid arthritis and contrasting associations of polygenic risk score based on age at onset. Ann. Rheum. Dis. 84, 1313–1323 (2025).</li>
+            <li><strong>Ovarian Cancer Screening Trial (PLCO)</strong><br />Black, A. et al. PLCO: Evolution of an Epidemiologic Resource and Opportunities for Future Studies. Rev. Recent Clin. Trials 10, 238–245 (2015).</li>
             <li>
-              Trans-Omics for Precision Medicine (TOPMed):
+              <strong>Trans-Omics for Precision Medicine (TOPMed)</strong>
+              <br />
               <ol type="a">
                 <li>Mitchell, B. D. et al. The genetic response to short-term interventions affecting cardiovascular function: rationale and design of the Heredity and Phenotype Intervention (HAPI) Heart Study. Am. Heart J. 155, 823–828 (2008).</li>
                 <li>Hughes, G. H. et al. Recruitment in the Coronary Artery Disease Risk Development in Young Adults (CARDIA) Study. Control. Clin. Trials 8, 68S–73S (1987).</li>
@@ -73,7 +74,7 @@ export default function About() {
                 <li>Jakubek, Y. A. et al. Mosaic chromosomal alterations in blood across ancestries using whole-genome sequencing. Nat. Genet. 55, 1912–1919 (2023).</li>
               </ol>
             </li>
-            <li>Sudlow, C. et al. UK Biobank: An Open Access Resource for Identifying the Causes of a Wide Range of Complex Diseases of Middle and Old Age. PLoS Med. 12, (2015).</li>
+            <li><strong>UK Biobank</strong><br />Sudlow, C. et al. UK Biobank: An Open Access Resource for Identifying the Causes of a Wide Range of Complex Diseases of Middle and Old Age. PLoS Med. 12, (2015).</li>
           </ol>
 
          
