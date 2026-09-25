@@ -30,13 +30,13 @@ jobs:
     environment: ${{ inputs.tier }}
     env:
       AWS_REGION: us-east-1
-      APP: mca
+      APP: mca-explorer
       TIER: ${{ inputs.tier }}
       CICD_REPO: CBIIT/nci-softwaresolutions-CICD
       CICD_REF: master
-      TF_PROJECT_DIR: nci-softwaresolutions-CICD/infrastructure/terraform/mca
+      TF_PROJECT_DIR: nci-softwaresolutions-CICD/infrastructure/terraform/mca-explorer
       CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
-      TF_VARS_FILE: mca-${{ inputs.tier }}.tfvars
+      TF_VARS_FILE: mca-explorer-${{ inputs.tier }}.tfvars
 
     steps:
       - name: Checkout current repository
@@ -89,7 +89,7 @@ jobs:
             TIER_GROUP="prod"
           fi
           cd "${TF_PROJECT_DIR}"
-          terraform init --reconfigure -backend-config="mca-${TIER_GROUP}.tfbackend"
+          terraform init --reconfigure -backend-config="mca-explorer-${TIER_GROUP}.tfbackend"
 
       - name: Terraform workspace
         run: |
