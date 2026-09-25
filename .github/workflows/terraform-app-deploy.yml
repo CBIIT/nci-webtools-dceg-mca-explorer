@@ -33,7 +33,7 @@ jobs:
       APP: mca-explorer
       TIER: ${{ inputs.tier }}
       CICD_REPO: CBIIT/nci-softwaresolutions-CICD
-      CICD_REF: master
+      CICD_REF: mca-judy
       TF_PROJECT_DIR: nci-softwaresolutions-CICD/infrastructure/terraform/mca-explorer
       CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
       TF_VARS_FILE: mca-explorer-${{ inputs.tier }}.tfvars
