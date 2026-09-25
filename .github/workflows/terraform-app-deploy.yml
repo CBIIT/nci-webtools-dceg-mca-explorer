@@ -74,13 +74,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4.0.1
 
-      - name: Place tier tfvars and backend config
-        run: |
-          set -euo pipefail
-          S3_PREFIX="s3://${{ vars.CICD_BUCKET }}/env/${TIER}/${APP}"
-          aws s3 cp "${S3_PREFIX}/${TF_VARS_FILE}" "${TF_PROJECT_DIR}/${TF_VARS_FILE}"
-
-      - name: Terraform init
+      - name: Determine tier group and CICD bucket
         run: |
           set -euo pipefail
           if [[ "${TIER}" == "dev" || "${TIER}" == "qa" ]]; then
@@ -88,6 +82,18 @@ jobs:
           else
             TIER_GROUP="prod"
           fi
+          echo "TIER_GROUP=${TIER_GROUP}" >> "$GITHUB_ENV"
+          echo "CICD_BUCKET=nci-cbiit-cicd-dceg-${TIER_GROUP}" >> "$GITHUB_ENV"
+
+      - name: Place tier tfvars and backend config
+        run: |
+          set -euo pipefail
+          S3_PREFIX="s3://${CICD_BUCKET}/env/${TIER}/${APP}"
+          aws s3 cp "${S3_PREFIX}/${TF_VARS_FILE}" "${TF_PROJECT_DIR}/${TF_VARS_FILE}"
+
+      - name: Terraform init
+        run: |
+          set -euo pipefail
           cd "${TF_PROJECT_DIR}"
           terraform init --reconfigure -backend-config="mca-explorer-${TIER_GROUP}.tfbackend"
 
