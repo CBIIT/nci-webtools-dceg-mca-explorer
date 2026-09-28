@@ -168,7 +168,7 @@
         }
       }
     },
-    "/fishertest": {
+    "/api/fishertest": {
       "post": {
         "tags": ["Statistical Tests"],
         "summary": "Runs a Fisher's exact test on a given matrix",
@@ -609,18 +609,12 @@
     },
     "FisherTestRequest": {
       "type": "array",
-      "description": "A 2x2 or larger matrix (array of arrays) for Fisher's exact test",
+      "description": "A flat array of integers in row-major order representing a 2x2 contingency matrix (e.g. [a, b, c, d] represents [[a, b], [c, d]])",
       "items": {
-        "type": "array",
-        "items": {
-          "type": "integer",
-          "description": "Integer values in the matrix"
-        }
+        "type": "integer",
+        "description": "Integer values in the matrix, in row-major order"
       },
-      "example": [
-        [10, 20],
-        [30, 40]
-      ]
+      "example": [10, 20, 30, 40]
     },
     "FisherTestResponse": {
       "type": "object",
