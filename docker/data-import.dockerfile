@@ -1,12 +1,11 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:2022
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
 RUN dnf -y update \
     && dnf -y install \
     nodejs \
     npm \
+    awscli \
     && dnf clean all
-
-RUN mkdir -p /app/database
 
 WORKDIR /app/database
 
@@ -14,8 +13,8 @@ COPY database/package.json /app/database/
 
 RUN npm install
 
-COPY database /app/opensearch.js
+COPY database /app/database/
 
-COPY database /app/database/import-opensearch.js
+RUN chmod +x reimport-opensearch.sh docker-entrypoint.sh
 
-CMD node opensearch.js && node import-opensearch.js
+CMD ["./docker-entrypoint.sh"]

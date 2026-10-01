@@ -1,4 +1,4 @@
-name: Terraform Deploy mCA
+name: Terraform Deploy MCA Explorer
 
 permissions:
   id-token: write
@@ -33,7 +33,7 @@ jobs:
       APP: mca-explorer
       TIER: ${{ inputs.tier }}
       CICD_REPO: CBIIT/nci-softwaresolutions-CICD
-      CICD_REF: mca-judy
+      CICD_REF: master
       TF_PROJECT_DIR: nci-softwaresolutions-CICD/infrastructure/terraform/mca-explorer
       CICD_ROLE_ARN: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
       TF_VARS_FILE: mca-explorer-${{ inputs.tier }}.tfvars
@@ -56,7 +56,6 @@ jobs:
           client-id: ${{ vars.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
           owner: CBIIT
-          repositories: nci-softwaresolutions-CICD
 
 
       - name: Checkout CICD Terraform repository
@@ -75,7 +74,13 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4.0.1
 
-      - name: Determine tier group and CICD bucket
+      - name: Place tier tfvars and backend config
+        run: |
+          set -euo pipefail
+          S3_PREFIX="s3://${{ vars.CICD_BUCKET }}/env/${TIER}/${APP}"
+          aws s3 cp "${S3_PREFIX}/${TF_VARS_FILE}" "${TF_PROJECT_DIR}/${TF_VARS_FILE}"
+
+      - name: Terraform init
         run: |
           set -euo pipefail
           if [[ "${TIER}" == "dev" || "${TIER}" == "qa" ]]; then
@@ -83,18 +88,6 @@ jobs:
           else
             TIER_GROUP="prod"
           fi
-          echo "TIER_GROUP=${TIER_GROUP}" >> "$GITHUB_ENV"
-          echo "CICD_BUCKET=nci-cbiit-cicd-dceg-${TIER_GROUP}" >> "$GITHUB_ENV"
-
-      - name: Place tier tfvars and backend config
-        run: |
-          set -euo pipefail
-          S3_PREFIX="s3://${CICD_BUCKET}/env/${TIER}/${APP}"
-          aws s3 cp "${S3_PREFIX}/${TF_VARS_FILE}" "${TF_PROJECT_DIR}/${TF_VARS_FILE}"
-
-      - name: Terraform init
-        run: |
-          set -euo pipefail
           cd "${TF_PROJECT_DIR}"
           terraform init --reconfigure -backend-config="mca-explorer-${TIER_GROUP}.tfbackend"
 
@@ -127,5 +120,3 @@ jobs:
           echo "- **App:** ${{ env.APP }}" >> $GITHUB_STEP_SUMMARY
           echo "- **CICD Ref:** ${{ env.CICD_REF }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Run:** ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
-
-

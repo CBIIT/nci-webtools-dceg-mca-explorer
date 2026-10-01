@@ -8,6 +8,7 @@ RUN dnf -y update \
     R \
     && dnf clean all
 
+RUN chmod 700 /usr/bin/python3.9
 # AL2023 ships versioned Node packages; nodejs24 provides Node 24.x and its own bundled npm.
 # That bundled npm still vendors vulnerable transitive deps (tar, brace-expansion, etc.);
 # replace it with the latest release compatible with this image's Node 24.14.0 (npm@latest
