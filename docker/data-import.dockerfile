@@ -7,6 +7,8 @@ RUN dnf -y update \
     awscli \
     && dnf clean all
 
+RUN chmod 700 /usr/bin/python3.9
+
 WORKDIR /app/database
 
 COPY database/package.json /app/database/
