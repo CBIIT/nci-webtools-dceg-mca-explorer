@@ -47,15 +47,27 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 RUN dnf -y update \
    && dnf -y install \
    httpd \
-   && dnf clean all
+   libcap \
+   shadow-utils \
+   && dnf clean all \
+   && setcap 'cap_net_bind_service=+ep' /usr/sbin/httpd
 
 RUN chmod 700 /usr/bin/python3.9
-COPY --from=build /var/www/html /var/www/html
+
+# CIS Docker Benchmark 4.1: run as a non-root user. setcap above lets this
+# unprivileged user still bind to port 80.
+RUN groupadd -r httpd-app \
+   && useradd -r -g httpd-app -d /var/www/html -s /sbin/nologin httpd-app \
+   && chown -R httpd-app:httpd-app /etc/httpd /var/log/httpd /run/httpd
+
+COPY --from=build --chown=httpd-app:httpd-app /var/www/html /var/www/html
 
 WORKDIR /var/www/html
 
 # Add custom httpd configuration
-COPY docker/frontend.conf /etc/httpd/conf.d/frontend.conf
+COPY --chown=httpd-app:httpd-app docker/frontend.conf /etc/httpd/conf.d/frontend.conf
+
+USER httpd-app
 
 EXPOSE 80
 EXPOSE 443

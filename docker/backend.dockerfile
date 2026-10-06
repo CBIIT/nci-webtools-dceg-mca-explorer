@@ -6,6 +6,7 @@ RUN dnf -y update \
     make \
     nodejs24 \
     R \
+    shadow-utils \
     && dnf clean all
     
 RUN chmod 700 /usr/bin/python3.9
@@ -27,5 +28,13 @@ RUN npm install
 
 # copy the rest of the application
 COPY . /deploy/
+
+# CIS Docker Benchmark 4.1: run as a non-root user. Port 9000 is unprivileged,
+# so no extra capabilities are needed to bind it.
+RUN groupadd -r backend-app \
+   && useradd -r -g backend-app -d /deploy -s /sbin/nologin backend-app \
+   && chown -R backend-app:backend-app /deploy
+
+USER backend-app
 
 CMD npm start
