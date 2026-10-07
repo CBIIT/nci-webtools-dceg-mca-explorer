@@ -309,6 +309,11 @@
         },
         "endGrch38": {
           "type": "string"
+        },
+        "cfPercent": {
+          "type": "string",
+          "description": "Cellular fraction rounded to the nearest whole percent (e.g. 1%)",
+          "example": "1%"
         }
       }
     },
