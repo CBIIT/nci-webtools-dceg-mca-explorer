@@ -1156,7 +1156,7 @@ const fetchDenominatorBySampleIds = async (client, resultsIds, baseMust = [], ba
 apiRouter.post("/fishertest", async (request, response) => {
   const matrix = request.body;
   //console.log(matrix);
-  const matrixString = matrix.join(" ");
+  const matrixString = matrix.flat(Infinity).join(" ");
   //console.log(matrixString);
   exec(`Rscript ./services/fisher_test.R ${matrixString}`, (error, stdout, stderr) => {
     if (error) {

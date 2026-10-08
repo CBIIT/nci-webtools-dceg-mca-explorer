@@ -6,13 +6,20 @@ const defaultStudy = [
   { value: "plco", label: "PLCO" },
   { value: "ukbb", label: "UK Biobank" },
   { value: "biovu", label: "BioVU" },
-  "",
-  "",
+  { value: "jap", label: "JAP" },
+  { value: "iorra", label: "IORRA" },
+  { value: "estbb", label: "EstBB" },
+  { value: "topmed", label: "TOPMed" },
 ];
 
 const mcaResponseFields = ["chromosome", "type", "cf", "beginGrch38", "endGrch38", "array"];
 const isMcaEndpoint =
   (url) => typeof url === "string" && (url.includes("/api/opensearch/mca") || url.includes("/api/opensearch/chromosome"));
+
+const formatCellFractionPercent = (cf) => {
+  const num = Number(cf);
+  return Number.isFinite(num) ? Math.round(num * 100) + "%" : cf;
+};
 
 const normalizeStudySelection = (study) => {
   if (!Array.isArray(study)) return [];
@@ -65,6 +72,9 @@ export default function ApiAccess() {
             filtered[field] = source[field];
           }
         });
+        if (filtered.cf !== undefined) {
+          filtered.cf = formatCellFractionPercent(filtered.cf);
+        }
         return filtered;
       });
     };
