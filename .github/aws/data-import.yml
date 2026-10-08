@@ -26,6 +26,8 @@ containerDefinitions:
         value: "${AWS_REGION}"
       - name: TIER
         value: "${TIER}"
+      - name: DATA_S3_URI
+        value: "${DATA_S3_URI}"
     secrets:
       - name: APPLICATION_NAME
         valueFrom: "/analysistools/${TIER}/${APP}/application_name"

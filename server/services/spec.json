@@ -80,8 +80,7 @@
                 "smoking": "yes",
                 "approach": "array_A",
                 "minAge": 40,
-                "maxAge": 60,
-                "study": "plco"
+                "maxAge": 60
               }
             }
           }
@@ -448,8 +447,7 @@
         "smoking": "yes",
         "approach": "array_A",
         "minAge": 40,
-        "maxAge": 60,
-        "study": "plco"
+        "maxAge": 60
       }
     },
     "DenominatorResponse": {

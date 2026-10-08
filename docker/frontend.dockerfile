@@ -1,13 +1,15 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+# Stage 1: build the static assets. node_modules (and its build-tool-only
+# transitive deps, e.g. html-minifier-terser) never leave this stage.
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build
 
 RUN dnf -y update \
    && dnf -y install \
    gcc-c++ \
-   httpd \
    make \
    nodejs24 \
    && dnf clean all
 
+RUN chmod 700 /usr/bin/python3.9
 # AL2023 ships versioned Node packages; nodejs24 provides Node 24.x and its own bundled npm.
 # That bundled npm still vendors vulnerable transitive deps (tar, brace-expansion, etc.);
 # replace it with the latest release compatible with this image's Node 24.14.0 (npm@latest
@@ -38,10 +40,34 @@ RUN npm run build \
    && mkdir -p /var/www/html/${APPLICATION_PATH} \
    && cp -r /client/build/* /var/www/html/${APPLICATION_PATH}
 
+# Stage 2: runtime image. Only compiled static assets and httpd are present;
+# no Node.js, npm, or node_modules ship in the final image.
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+
+RUN dnf -y update \
+   && dnf -y install \
+   httpd \
+   libcap \
+   shadow-utils \
+   && dnf clean all \
+   && setcap 'cap_net_bind_service=+ep' /usr/sbin/httpd
+
+RUN chmod 700 /usr/bin/python3.9
+
+# CIS Docker Benchmark 4.1: run as a non-root user. setcap above lets this
+# unprivileged user still bind to port 80.
+RUN groupadd -r httpd-app \
+   && useradd -r -g httpd-app -d /var/www/html -s /sbin/nologin httpd-app \
+   && chown -R httpd-app:httpd-app /etc/httpd /var/log/httpd /run/httpd
+
+COPY --from=build --chown=httpd-app:httpd-app /var/www/html /var/www/html
+
 WORKDIR /var/www/html
 
 # Add custom httpd configuration
-COPY docker/frontend.conf /etc/httpd/conf.d/frontend.conf
+COPY --chown=httpd-app:httpd-app docker/frontend.conf /etc/httpd/conf.d/frontend.conf
+
+USER httpd-app
 
 EXPOSE 80
 EXPOSE 443

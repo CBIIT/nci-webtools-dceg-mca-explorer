@@ -11,6 +11,10 @@ on:
           - qa
           - stage
           - prod
+      data_s3_uri:
+        description: 'S3 URI of the all.json data file. Leave blank to use s3://nci-cbiit-dceg-data-{nonprod|prod}/mca-explorer/all.json for the selected tier'
+        required: false
+        type: string
 
 jobs:
   data-import:
@@ -41,14 +45,21 @@ jobs:
       - name: Setup environment variables
         run: |
           echo "TIER=${{ inputs.tier }}" >> $GITHUB_ENV
-          echo "TIER_UPPER=$(echo ${{ inputs.tier }} | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
+          echo "ENVIRONMENT_TIER=$(echo ${{ inputs.tier }} | tr '[:lower:]' '[:upper:]')" >> $GITHUB_ENV
           echo "DATETIME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
           echo "APP_GIT_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
           echo "PARAMETER_PATH=/analysistools/${{ inputs.tier }}/${{ env.APP }}" >> $GITHUB_ENV
           if [[ "${{ inputs.tier }}" == "prod" || "${{ inputs.tier }}" == "stage" ]]; then
             echo "IMAGE_TIER=release" >> $GITHUB_ENV
+            echo "TIER_GROUP=prod" >> $GITHUB_ENV
           else
             echo "IMAGE_TIER=development" >> $GITHUB_ENV
+            echo "TIER_GROUP=nonprod" >> $GITHUB_ENV
+          fi
+
+          INPUT_DATA_S3_URI="${{ inputs.data_s3_uri }}"
+          if [[ -n "$INPUT_DATA_S3_URI" ]]; then
+            echo "DATA_S3_URI=${INPUT_DATA_S3_URI}" >> $GITHUB_ENV
           fi
 
       - name: Set Docker registry and repository
@@ -61,6 +72,10 @@ jobs:
           echo "DATA_IMPORT_IMAGE=${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TIER }}-data-import-${{ env.APP_GIT_TAG }}-${{ env.DATETIME }}" >> $GITHUB_ENV
           echo "DATA_IMPORT_IMAGE_LATEST=${{ env.IMAGE_REPOSITORY }}:${{ env.IMAGE_TIER }}-data-import-latest" >> $GITHUB_ENV
 
+      - name: Default data_s3_uri if not provided
+        if: ${{ inputs.data_s3_uri == '' }}
+        run: echo "DATA_S3_URI=s3://nci-cbiit-dceg-data-${TIER_GROUP}/${APP}/all.json" >> $GITHUB_ENV
+
      
       - name: Retrieve SSM parameters
         run: |
@@ -71,7 +86,10 @@ jobs:
             ["ecs_cluster"]="ECS_CLUSTER"
             ["ecs_web_task"]="ECS_WEB_TASK"
             ["ecs_web_service"]="ECS_WEB_SERVICE"
+            ["ecs_data_import_task"]="ECS_DATA_IMPORT_TASK"
             ["role_arn"]="ROLE_ARN"
+            ["subnet_ids"]="SUBNET_IDS"
+            ["security_group_ids"]="SECURITY_GROUP_IDS"
           )
 
           # Retrieve each parameter and export to environment
