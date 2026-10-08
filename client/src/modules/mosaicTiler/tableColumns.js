@@ -30,9 +30,6 @@ export const Columns = [
     id: "value",
     label: "value",
     Header: <b>Cellular Fraction</b>,
-    // display cf as a rounded percentage (e.g. 0.0087 -> "1%"); the underlying
-    // numeric value is left untouched for plotting/export
-    Cell: ({ value }) => (value === "" || value === undefined || value === null || isNaN(Number(value)) ? value : Math.round(Number(value) * 100) + "%"),
   },
   {
     accessor: "start",

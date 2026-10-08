@@ -74,31 +74,16 @@ const setCachedRouteResponse = (key, payload) => {
   pruneRouteResponseCache();
 };
 
-const formatCellFractionPercent = (cf) => {
-  const num = Number(cf);
-  return Number.isFinite(num) ? Math.round(num * 100) + "%" : cf;
-};
-
 const addDerivedMcaLength = (row) => {
   if (!row) return row;
-  let next = row;
-
   const hasLength = row.length !== undefined && row.length !== null && row.length !== "";
-  if (!hasLength) {
-    const start = Number(row.beginGrch38);
-    const end = Number(row.endGrch38);
-    if (Number.isFinite(start) && Number.isFinite(end)) {
-      next = { ...next, length: Math.max(end - start, 0) };
-    }
-  }
+  if (hasLength) return row;
 
-  // cfPercent is a display-only rounded percentage; cf itself stays a raw
-  // decimal fraction since client-side chart math depends on it as a number.
-  if (next.cf !== undefined) {
-    next = { ...next, cfPercent: formatCellFractionPercent(next.cf) };
-  }
+  const start = Number(row.beginGrch38);
+  const end = Number(row.endGrch38);
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return row;
 
-  return next;
+  return { ...row, length: Math.max(end - start, 0) };
 };
 
 const addDerivedMcaLengths = (rows) => rows.map((row) => addDerivedMcaLength(row));
