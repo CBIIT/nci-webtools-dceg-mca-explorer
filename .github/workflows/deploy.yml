@@ -64,6 +64,13 @@ jobs:
           echo "BACKEND_IMAGE_LATEST=$REPO:$IMAGE_TIER-backend-${{ inputs.tier }}-latest" >> $GITHUB_ENV
           echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
 
+          REF_NAME="${{ github.ref_name }}"
+          if [[ "$REF_NAME" =~ ^mca_[0-9]+\.[0-9]+\.[0-9]+(_[0-9]{8})?$ ]]; then
+              echo "REACT_APP_VERSION=$(echo "$REF_NAME" | sed -E 's/_[0-9]{8}$//')" >> $GITHUB_ENV
+          else
+              echo "REACT_APP_VERSION=$TIER" >> $GITHUB_ENV
+          fi
+
           if [[ "$TIER" == "dev" ]]; then
               echo "LOG_LEVEL=debug" >> $GITHUB_ENV
           else
@@ -132,7 +139,7 @@ jobs:
           no-cache: ${{ inputs.no_cache }}
           build-args: |
             APPLICATION_PATH=${{ env.APPLICATION_PATH }}
-            REACT_APP_VERSION=${{ github.ref_name }}
+            REACT_APP_VERSION=${{ env.REACT_APP_VERSION }}
             REACT_APP_LAST_UPDATED=${{ env.DEPLOY_DATE }}
           tags: |
             ${{ env.FRONTEND_IMAGE }}
