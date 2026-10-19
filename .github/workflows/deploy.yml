@@ -65,8 +65,8 @@ jobs:
           echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
 
           REF_NAME="${{ github.ref_name }}"
-          if [[ "$REF_NAME" =~ ^mca_[0-9]+\.[0-9]+\.[0-9]+(_[0-9]{8})?$ ]]; then
-              echo "REACT_APP_VERSION=$(echo "$REF_NAME" | sed -E 's/_[0-9]{8}$//')" >> $GITHUB_ENV
+          if [[ "$REF_NAME" =~ ^(mca_)?[0-9]+\.[0-9]+\.[0-9]+(_[0-9]{8})?$ ]]; then
+              echo "REACT_APP_VERSION=$(echo "$REF_NAME" | sed -E 's/^mca_//; s/_[0-9]{8}$//')" >> $GITHUB_ENV
           else
               echo "REACT_APP_VERSION=$TIER" >> $GITHUB_ENV
           fi
