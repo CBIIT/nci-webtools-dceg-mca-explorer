@@ -42,6 +42,7 @@
     "@babel/traverse": "^7.23.2",
     "@babel/plugin-transform-modules-systemjs": "^7.29.4",
     "shell-quote": "^1.8.4",
+    "proxy-addr": "^2.0.8",
     "websocket-driver": "^0.7.5",
     "flatted": "^3.4.2",
     "rollup": "^2.80.0",

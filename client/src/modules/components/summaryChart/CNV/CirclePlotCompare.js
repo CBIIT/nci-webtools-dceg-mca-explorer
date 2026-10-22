@@ -2,12 +2,13 @@ import Circos, { HIGHLIGHT, STACK } from "react-circos";
 import band from "./band.json";
 import { Container } from "react-bootstrap";
 import { initialData, initialChrX, initialChrY } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth, computeTrackBands } from "./thickness";
+import { THINNEST_THICKNESS, DEFAULT_THICKNESS, getStrokeWidth, computeTrackBands, MAX_XY_EVENTS_FOR_PLOT } from "./thickness";
 
 export default function CircosPlot(props) {
   //return NGCircos01;
   const layoutAll = props.layoutAll;
-  const dataXY = [...props.circle.chrx, ...props.circle.chry];
+  // cap chrX/chrY events fed into the Stack track so adjusting thickness doesn't re-layer tens of thousands of points
+  const dataXY = [...props.circle.chrx.slice(0, MAX_XY_EVENTS_FOR_PLOT), ...props.circle.chry.slice(0, MAX_XY_EVENTS_FOR_PLOT)];
   const isX = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "X");
   const isY = dataXY.some((obj) => obj.hasOwnProperty("block_id") && obj.block_id === "Y");
 
