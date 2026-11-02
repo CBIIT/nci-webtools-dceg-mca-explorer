@@ -22,6 +22,12 @@ export function denormalizeThickness(value) {
   return value * (THICKEST_THICKNESS - THINNEST_THICKNESS) + THINNEST_THICKNESS;
 }
 
+// chrX/chrY (mLOX/mLOY) events can number in the tens of thousands, but the Stack track they're
+// folded into only has pixels to show ~MAX_LAYERS_FOR_THICKNESS distinct layers anyway, so feeding it
+// every event just slows down rendering/thickness recompute without changing what's visible. Cap each
+// of chrX and chrY at this count before they're handed to a circle plot for display.
+export const MAX_XY_EVENTS_FOR_PLOT = 2000;
+
 // fixed pixel size the summary CircosPlot is always rendered at (see CirclePlotTest.js's circleSize)
 export const SUMMARY_CIRCLE_SIZE = 850;
 

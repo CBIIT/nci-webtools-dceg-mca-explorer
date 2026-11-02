@@ -14,7 +14,7 @@ import CircosPlotCompare from "./CirclePlotCompare";
 import * as htmlToImage from "html-to-image";
 import jsPDF from "jspdf";
 import { AncestryOptions, smokeNFC, SexOptions } from "../../../mosaicTiler/constants";
-import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS, normalizeThickness, denormalizeThickness, SUMMARY_CIRCLE_SIZE } from "./thickness";
+import { THINNEST_THICKNESS, THICKEST_THICKNESS, DEFAULT_THICKNESS, normalizeThickness, denormalizeThickness, SUMMARY_CIRCLE_SIZE, MAX_XY_EVENTS_FOR_PLOT } from "./thickness";
 //import { fisherTest } from "../../utils";
 
 //import { LoadingOverlay } from "../../../components/controls/loading-overlay/loading-overlay";
@@ -1527,9 +1527,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   }, [window.innerWidth]);
 
   //console.log(data,dataCompared)
-  //only disply 2000 events for X and Y
-  const maxXYEvents = 2000;
-  const dataXY = [...props.chrx.slice(0, maxXYEvents), ...props.chry.slice(0, maxXYEvents)];
+  const dataXY = [...props.chrx.slice(0, MAX_XY_EVENTS_FOR_PLOT), ...props.chry.slice(0, MAX_XY_EVENTS_FOR_PLOT)];
   //console.log("gain:",props.gain.length,"loh:",props.loh.length,
   //"loss:",props.loss.length,"under:",props.undetermined.length)
   // const linethickness = 0;
