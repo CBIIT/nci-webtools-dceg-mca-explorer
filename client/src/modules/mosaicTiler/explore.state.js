@@ -92,9 +92,9 @@ export async function getData(params) {
     if (d && d.cf !== "nan") {
       d.block_id = d.chromosome.substring(3);
       d.value = d.cf;
-      d.dataset = d.dataset.toUpperCase();
-      d.start = d.beginGrch38;
-      d.end = d.endGrch38;
+      d.start = Number(d.start ?? d.beginGrch38);
+      d.end = Number(d.end ?? d.endGrch38);
+      d.length = Math.max(d.end - d.start, 0);
 
       if (d.chromosome !== "chrX") {
         if (d.type === "Gain") gainTemp.push(d);

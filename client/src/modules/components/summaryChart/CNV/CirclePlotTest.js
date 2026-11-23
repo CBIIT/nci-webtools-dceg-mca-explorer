@@ -711,10 +711,9 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
           // console.log(d)
           d.block_id = d.chromosome.substring(3);
           d.value = d.cf === "NA" ? "" : d.cf;
-          d.dataset = d.dataset.toUpperCase();
-          d.start = Number(d.beginGrch38);
-          d.end = Number(d.endGrch38);
-          d.length = Number(d.length);
+          d.start = Number(d.start ?? d.beginGrch38);
+          d.end = Number(d.end ?? d.endGrch38);
+          d.length = Math.max(d.end - d.start, 0);
           if (d.PopID !== undefined) {
             const dancestry = AncestryOptions.filter((a) => a.value === d.PopID);
             d.PopID = dancestry !== undefined ? dancestry[0].label : "";

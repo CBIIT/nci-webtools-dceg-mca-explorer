@@ -1,6 +1,7 @@
 import express, { response } from "express";
 import Router from "express-promise-router";
 import { AncestryOptions } from "./query.js";
+import { formatMcaResponse } from "./mca-response.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
 import { createRequire } from "module";
@@ -93,9 +94,6 @@ const addDerivedMcaLength = (row) => {
 
 const addDerivedMcaLengths = (rows) => rows.map((row) => addDerivedMcaLength(row));
 
-// Sample identifiers are only needed for server-side joins, never in public responses.
-const omitSampleIds = (rows) => rows.map(({ sampleId, ...row }) => row);
-
 //console.log("opensearch host is:", host);
 
 // log requests
@@ -157,7 +155,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         denominatorRows: Array.isArray(cachedResponse.denominator) ? cachedResponse.denominator.length : 0,
       },
     });
-    response.json(cachedResponse);
+    response.json(formatMcaResponse(cachedResponse));
     return;
   }
   const qdataset = request.body.study;
@@ -335,7 +333,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     });
 
     console.log(mcaHits.length, platformarr);
-    const payload = { merged: omitSampleIds(mcaHits) };
+    const payload = formatMcaResponse({ merged: mcaHits });
     setCachedRouteResponse(cacheKey, payload);
     response.json(payload);
     const afterResponseMs = nowMs();
@@ -420,7 +418,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       ms: { elapsed: nowMs() - requestStartMs },
       counts: { mergedRows: Array.isArray(cachedResponse.merged) ? cachedResponse.merged.length : 0 },
     });
-    response.json(cachedResponse);
+    response.json(formatMcaResponse(cachedResponse));
     return;
   }
 
@@ -544,7 +542,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    const payload = { merged: omitSampleIds(mcaHits) };
+    const payload = formatMcaResponse({ merged: mcaHits });
     setCachedRouteResponse(cacheKey, payload);
     response.json(payload);
     const afterResponseMs = nowMs();

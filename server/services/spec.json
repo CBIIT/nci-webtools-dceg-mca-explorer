@@ -295,20 +295,18 @@
     "SummaryResponse":{
       "type": "object",
       "properties": {
-        "sampleId": {
-          "type": "string"
-        },
-        "computedGender": {
-          "type": "string"
-        },
-        "chromosome": {
-          "type": "string"
-        },
-        "beginGrch38": {
-          "type": "string"
-        },
-        "endGrch38": {
-          "type": "string"
+        "merged": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "chromosome": { "type": "string", "example": "chr9" },
+              "start": { "type": "string", "example": "96851602" },
+              "end": { "type": "string", "example": "107800260" },
+              "type": { "type": "string", "example": "Loss" },
+              "cf": { "type": "string", "description": "Cellular fraction rounded to two decimal places.", "example": "0.12" }
+            }
+          }
         }
       }
     },

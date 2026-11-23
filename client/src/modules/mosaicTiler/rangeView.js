@@ -236,9 +236,9 @@ export default function RangeView(props) {
         const d = { ...r };
         d.block_id = d.chromosome.substring(3);
         d.value = d.cf === "NA" ? "" : d.cf;
-        d.dataset = d.dataset.toUpperCase();
-        d.start = d.beginGrch38;
-        d.end = d.endGrch38;
+        d.start = Number(d.start ?? d.beginGrch38);
+        d.end = Number(d.end ?? d.endGrch38);
+        d.length = Math.max(d.end - d.start, 0);
         if (d.PopID !== undefined) {
           d.PopID = ancestryLabelByValue.get(d.PopID) || "";
         }
