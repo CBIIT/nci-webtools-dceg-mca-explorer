@@ -25,7 +25,7 @@
           documents.push(el.contentDocument);
         }
       } catch(err) {
-        console.log(err)
+
       }
     });
 
@@ -35,7 +35,7 @@
           documents.push(el.contentDocument);
         }
       } catch(err) {
-        console.log(err)
+
       }
     });
 

@@ -69,7 +69,7 @@ function SingleChromosome(props) {
       setXMax(currentView["xaxis.range[1]"]);
       setXMin(currentView["xaxis.range[0]"]);
     }
-    console.log("zoomHistory changed:", zoomHistory);
+
   }, [zoomHistory]);
 
   function handleRelayout(event, name) {
@@ -105,7 +105,7 @@ function SingleChromosome(props) {
       }
     }
     if (event !== undefined && (event["xaxis.autorange"] || event["xaxis.autosize"])) {
-      console.log("reset to initial", zoomHistory.length);
+
       setZoomHistory([]);
       setXMax(undefined);
       setXMin(0);

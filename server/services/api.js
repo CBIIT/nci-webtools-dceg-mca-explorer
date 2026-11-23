@@ -1,6 +1,7 @@
 import express, { response } from "express";
 import Router from "express-promise-router";
 import { AncestryOptions } from "./query.js";
+import { formatMcaResponse } from "./mca-response.js";
 import cors from "cors";
 import { Client } from "@opensearch-project/opensearch";
 import { createRequire } from "module";
@@ -29,6 +30,11 @@ apiRouter.use(express.json());
 //const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
 const host = `https://${OPENSEARCH_ENDPOINT}`;
 const MCA_SOURCE_FIELDS = ["sampleId", "chromosome", "type", "cf", "dataset", "beginGrch38", "endGrch38", "length"];
+// Keep fields consumed by plots/tables and the legacy sample join. OpenSearch
+// can still filter on indexed fields that are excluded from the response.
+const DENOMINATOR_SOURCE_FIELDS = ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"];
+const MERGED_SOURCE_FIELDS = [...new Set([...MCA_SOURCE_FIELDS, ...DENOMINATOR_SOURCE_FIELDS])];
+const GENE_SOURCE_FIELDS = ["name", "strand", "transcriptionStart", "transcriptionEnd", "exonStarts", "exonEnds"];
 const QA_RESULT_CAP = 200000;
 const QUERY_TIMING_ENABLED = ENABLE_QUERY_TIMING === "1" || ENABLE_QUERY_TIMING === "true";
 const inflightPagedSearches = new Map();
@@ -149,7 +155,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         denominatorRows: Array.isArray(cachedResponse.denominator) ? cachedResponse.denominator.length : 0,
       },
     });
-    response.json(cachedResponse);
+    response.json(formatMcaResponse(cachedResponse));
     return;
   }
   const qdataset = request.body.study;
@@ -173,20 +179,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qmyeCancer = request.body.myeCancer;
   // console.log(qsex);
   //console.log(minAge,maxAge)
-  console.log(
-    qdataset,
-    qsex,
-    qmincf,
-    qmaxcf,
-    qmaxcf === "NaN",
-    qancestry,
-    qtype,
-    qstart,
-    qend,
-    qchromosomes,
-    minAge,
-    maxAge
-  );
+
 
   let qfilter = [];
   if (qtype !== undefined) {
@@ -224,7 +217,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
   }
-  console.log("for checking: ", qfilter, searchdataset);
+
   //query sex
   let sexarr = getAttributesArray(qsex, "sex");
 
@@ -292,7 +285,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     forceAgeFilter: hasDenominatorFilter,
   });
   if (!hasDenominatorFilter) filterString.push(...denominatorFilters);
-  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
+
 
   try {
     const mcaQuery = {
@@ -302,7 +295,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         filter: filterString,
       },
     };
-    const hits = await fetchAllHitsPaged(client, "merged", mcaQuery, undefined, MCA_PAGE_SIZE);
+    const hits = await fetchAllHitsPaged(client, "merged", mcaQuery, MERGED_SOURCE_FIELDS, MCA_PAGE_SIZE);
     let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
@@ -326,8 +319,8 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    console.log(mcaHits.length, platformarr);
-    const payload = { merged: mcaHits };
+
+    const payload = formatMcaResponse({ merged: mcaHits });
     setCachedRouteResponse(cacheKey, payload);
     response.json(payload);
     const afterResponseMs = nowMs();
@@ -362,7 +355,8 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
     const result = await client.search({
       index: "combinedgene", //new_geneindex is convert position as number
       body: {
-        track_total_hits: true,
+        _source: GENE_SOURCE_FIELDS,
+        track_total_hits: false,
         size: 10000,
         query: {
           bool: {
@@ -411,7 +405,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       ms: { elapsed: nowMs() - requestStartMs },
       counts: { mergedRows: Array.isArray(cachedResponse.merged) ? cachedResponse.merged.length : 0 },
     });
-    response.json(cachedResponse);
+    response.json(formatMcaResponse(cachedResponse));
     return;
   }
 
@@ -439,7 +433,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   const lymCancer = group.lymCancer;
   const myeCancer = group.myeCancer;
 
-  console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+
   const queryString = [];
   if (chromesome === "Y") {
     queryString.push({ terms: { type: ["mLOY"] } });
@@ -511,7 +505,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         must: queryString,
       },
     };
-    const hits = await fetchAllHitsPaged(client, "merged", chromosomeQuery, undefined, MCA_PAGE_SIZE);
+    const hits = await fetchAllHitsPaged(client, "merged", chromosomeQuery, MERGED_SOURCE_FIELDS, MCA_PAGE_SIZE);
     let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
@@ -535,7 +529,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    const payload = { merged: mcaHits };
+    const payload = formatMcaResponse({ merged: mcaHits });
     setCachedRouteResponse(cacheKey, payload);
     response.json(payload);
     const afterResponseMs = nowMs();
@@ -623,9 +617,9 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
   try {
     const result = await client.search({
       index: "snpchip",
-      _source: "grch38",
+      _source: false,
       body: {
-        track_total_hits: true,
+        track_total_hits: false,
         size: 0,
         query: {
           bool: {
@@ -657,7 +651,7 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
 
 apiRouter.post("/opensearch/denominator", async (request, response) => {
   const query = request.body;
-  console.log("denominator", query);
+
   const sex = query.sex;
   const ancestry = query.ancestry;
   const smoking = query.smoking;
@@ -676,11 +670,11 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
     ...buildOptionalTermsFilter("array.keyword", approach),
   ];
 
-  console.log(datasets, denominatorMust, minAge, maxAge);
+
   try {
     const result = await client.search({
       index: "denominator_age",
-      _source: ["sampleId"],
+      _source: false,
       body: {
         track_total_hits: true,
         size: numsize,
@@ -692,7 +686,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
         },
       },
     });
-    console.log(result.body.hits.total.value);
+
     response.json(result.body.hits.total.value);
   } catch (error) {
     console.error(error);
@@ -872,18 +866,7 @@ const mergeLegacyDenominatorRows = async (
     mcaRows.map((row) => row?.sampleId),
     buildDenominatorAgeFilters({ sex, ancestry, smoking, array, priorCancer, hemaCancer, lymCancer, myeCancer }),
     [buildAgeOverlapFilter(minAge, maxAge)],
-    [
-      "sampleId",
-      "age",
-      "sex",
-      "smokeNFC",
-      "PopID",
-      "array",
-      "priorCancer",
-      "incidentCancerHem",
-      "incidentCancerLymphoid",
-      "incidentCancerMyeloid",
-    ]
+    DENOMINATOR_SOURCE_FIELDS
   );
 
   return denominatorHits.flatMap((item) => {
@@ -965,7 +948,7 @@ const getStudy = (qdataset, qfilter) => {
       : "";
   }
   const filterlist = qfilter;
-  console.log(filterlist);
+
   return { datasets, filterlist };
 };
 

@@ -4960,7 +4960,7 @@ var NGCircos;
                     .attr("fill", function(d,i) { 
   //                    console.log(self.HEATMAP[heatmapi])[0])
                       return HeatmapValue2Color((d.heatmap_value - self.heatmap_value_maxmin(self.HEATMAP[heatmapi])[1])/(self.heatmap_value_maxmin(self.HEATMAP[heatmapi])[0]-self.heatmap_value_maxmin(self.HEATMAP[heatmapi])[1])); })
-                    .attr("d", function(d,i) { console.log(self.HEATMAPsettings.totalLayer);if(d.heatmap_layer == undefined){return heatmap(d,i);}else{
+                    .attr("d", function(d,i) { if(d.heatmap_layer == undefined){return heatmap(d,i);}else{
                        var heatmap2 = d3.svg.arc().innerRadius(self.HEATMAPsettings.innerRadius+(self.HEATMAPsettings.outerRadius-self.HEATMAPsettings.innerRadius)*((d.heatmap_layer-1)/self.HEATMAPsettings.totalLayer)).outerRadius(self.HEATMAPsettings.innerRadius+(self.HEATMAPsettings.outerRadius-self.HEATMAPsettings.innerRadius)*(d.heatmap_layer/self.HEATMAPsettings.totalLayer));
                       return heatmap2(d,i)} })
                     .attr("transform", "translate(" + compareMoveDistance + "," + 0 + ")");
@@ -6245,7 +6245,7 @@ var NGCircos;
                         .attr("transform",function(d) {                   
                                 d.innerRadius = 0;
                                 d.outerRadius = self.settings.SNPMouseCombinationGraphPieSize;
-                                console.log(pieCombination.centroid(d))
+
                                 return "translate(" + pieCombination.centroid(d) + ")";        
                               })
                         .attr("fill",self.settings.SNPMouseCombinationTextColor)
@@ -6626,7 +6626,7 @@ var NGCircos;
                             .attr("transform",function(d) {                   
                                     d.innerRadius = 0;
                                     d.outerRadius = self.settings.SNPMouseCombinationGraphPieSize;
-                                    console.log(pieCombination.centroid(d))
+
                                     return "translate(" + pieCombination.centroid(d) + ")";        
                                   })
                             .attr("fill",self.settings.SNPMouseCombinationTextColor)

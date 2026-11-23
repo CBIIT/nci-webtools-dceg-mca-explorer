@@ -28,8 +28,8 @@ const sources = [
 ];
 runImport(client, sources)
   .then((totalImported) => {
-    console.log(`\n=== IMPORT COMPLETE ===`);
-    console.log(`Total documents imported: ${totalImported}`);
+
+
   })
   .catch(console.error)
   .finally(() => {

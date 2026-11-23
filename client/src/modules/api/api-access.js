@@ -12,13 +12,13 @@ const defaultStudy = [
   { value: "topmed", label: "TOPMed" },
 ];
 
-const mcaResponseFields = ["chromosome", "type", "cf", "beginGrch38", "endGrch38", "array"];
+const mcaResponseFields = ["chromosome", "start", "end", "type", "cf"];
 const isMcaEndpoint =
   (url) => typeof url === "string" && (url.includes("/api/opensearch/mca") || url.includes("/api/opensearch/chromosome"));
 
-const formatCellFractionPercent = (cf) => {
+const formatCellFraction = (cf) => {
   const num = Number(cf);
-  return Number.isFinite(num) ? Math.round(num * 100) + "%" : cf;
+  return cf !== null && cf !== undefined && cf !== "" && Number.isFinite(num) ? num.toFixed(2) : cf;
 };
 
 const normalizeStudySelection = (study) => {
@@ -73,7 +73,7 @@ export default function ApiAccess() {
           }
         });
         if (filtered.cf !== undefined) {
-          filtered.cf = formatCellFractionPercent(filtered.cf);
+          filtered.cf = formatCellFraction(filtered.cf);
         }
         return filtered;
       });

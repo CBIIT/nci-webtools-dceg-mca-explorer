@@ -69,12 +69,6 @@ export const Columns = [
   //   label: "Age",
   //   Header: <b>Age</b>,
   // },
-  {
-    accessor: "array",
-    id: "array",
-    label: "Array",
-    Header: <b>Detection Approach</b>,
-  },
   // {
   //   accessor: "smokeNFC",
   //   id: "smoke",
@@ -134,7 +128,6 @@ export function exportTable(tableData) {
           // { value: e.PopID },
           // { value: e.sex },
           // { value: e.age },
-          { value: e.array },
           // { value: e.smokeNFC },
         ];
       }),

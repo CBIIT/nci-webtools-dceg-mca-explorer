@@ -51,7 +51,7 @@ async function parseFile(filename, delimitter) {
     var jsonLine = {};
     applyDefaultColumns(jsonLine, columns);
     for (let i = 0; i < contentCells.length; i++) {
-      if (!columns.find((e) => e.sourceName === headers[i])) console.log(headers[i]);
+      if (!columns.find((e) => e.sourceName === headers[i])) {}
 
       const header = columns.find((e) => e.sourceName === headers[i]);
       //console.log(header);
@@ -78,13 +78,13 @@ async function parseCSVFile(filename, delimitter) {
 
   for (let i = 0; i < data.length; i++) {
     if (/^\s*$/.test(data[i])) continue;
-    if (i % 1000000 === 0) console.log(i);
+    if (i % 1000000 === 0) {}
     const contentCells = data[i].split(",");
 
     var jsonLine = {};
     applyDefaultColumns(jsonLine, columns);
     for (let i = 0; i < contentCells.length; i++) {
-      if (!columns.find((e) => e.sourceName === headers[i])) console.log(headers[i]);
+      if (!columns.find((e) => e.sourceName === headers[i])) {}
 
       const header = columns.find((e) => e.sourceName === headers[i]);
       //console.log(header);
@@ -144,7 +144,7 @@ function writeBulkJson(filename, records, startId) {
     fs.closeSync(fd);
   }
 
-  console.log(`Finish ${filename} import to ${outputJsonName}`);
+
   return id;
 }
 
@@ -171,7 +171,7 @@ function removeNewlines(obj) {
       const records = await parseSourceFile(sourceFile);
       id = writeBulkJson(sourceFile, records, id);
     } catch (err) {
-      console.log(`${sourceFile}: ${err}`);
+
     }
   }
 })();

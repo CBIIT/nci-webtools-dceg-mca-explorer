@@ -12,7 +12,7 @@ const client = new Client({
   },
 });
 const args = process.argv;
-console.log(args[2]);
+
 const sources = [
   // { path: "data/plcoAuto.json", index: "mcaexplorer" },
   // { path: "data/plcoDenominator.json", index: "mcaexplorer" },

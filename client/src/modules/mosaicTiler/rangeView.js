@@ -126,7 +126,7 @@ export default function RangeView(props) {
     await waitForNextPaint();
     // setForm({ ...form, chrX: false, chrY: false });
     //setLoading(true)
-    console.log(qform);
+
     const query = {
       study: qdataset,
       sex: qform.sex,
@@ -236,9 +236,9 @@ export default function RangeView(props) {
         const d = { ...r };
         d.block_id = d.chromosome.substring(3);
         d.value = d.cf === "NA" ? "" : d.cf;
-        d.dataset = d.dataset.toUpperCase();
-        d.start = d.beginGrch38;
-        d.end = d.endGrch38;
+        d.start = Number(d.start ?? d.beginGrch38);
+        d.end = Number(d.end ?? d.endGrch38);
+        d.length = Math.max(d.end - d.start, 0);
         if (d.PopID !== undefined) {
           d.PopID = ancestryLabelByValue.get(d.PopID) || "";
         }
@@ -290,7 +290,7 @@ export default function RangeView(props) {
       .concat(nextPlotData.undetermined)
       .concat(nextPlotData.chrX)
       .concat(nextPlotData.chrY);
-    console.log(nextPlotData.gain.length);
+
     timing.transformMs = Math.round(performance.now() - transformStartMs);
     const stateStartMs = performance.now();
     queryInFlightRef.current = false;
@@ -314,8 +314,7 @@ export default function RangeView(props) {
     timing.improvementVsOriginalApprox = `${(timing.previousBaselineMs.originalApprox / Math.max(timing.totalMs, 1)).toFixed(1)}x faster`;
     timing.improvementVsPreMergedApiExample = `${(timing.previousBaselineMs.preMergedApiExample / Math.max(timing.apiMs, 1)).toFixed(1)}x API faster`;
     latestQueryTimingRef.current = timing;
-    console.log(`[rangeView timing summary]\n${JSON.stringify(timing, null, 2)}`);
-    console.table({ rangeViewTiming: timing });
+
   }
 
   useEffect(() => {
@@ -350,7 +349,7 @@ export default function RangeView(props) {
   useEffect(() => {
     var chromoIdString = chromoId + "";
     const clickedValues = allValues.filter((v) => v.block_id === chromoIdString);
-    console.log(allValues, chromoId, clickedValues);
+
     setAllValue([...clickedValues]);
     //this is for single chromosome
   }, [chromoId]);
@@ -512,7 +511,7 @@ export default function RangeView(props) {
         },
       },
     ];
-    console.log(violinData);
+
     setViolinData(violinDataSource);
     return violinData;
   }
@@ -635,13 +634,7 @@ export default function RangeView(props) {
   };
   //get data by different filters and render in the table
   const handleDataChange = (data) => {
-    const handoffTiming = latestQueryTimingRef.current;
-    console.log(`[rangeView table handoff]\n${JSON.stringify({
-      rows: data.length,
-      queryTotalMs: handoffTiming?.totalMs,
-      apiMs: handoffTiming?.apiMs,
-      responseShape: handoffTiming?.responseShape,
-    }, null, 2)}`);
+
     setTableData(data);
     getViolinData(data);
   };

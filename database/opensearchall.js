@@ -63,7 +63,7 @@ function normalizeCellValue(value) {
 function applySourceColumnValues(jsonLine, columns, sourceName, value, filename) {
   const headers = columns.filter((column) => column.sourceName === sourceName);
   if (headers.length === 0) {
-    console.log(`${filename}: missing column mapping for ${sourceName}`);
+
     return;
   }
 
@@ -115,7 +115,7 @@ async function parseFile(filename, delimitter) {
     applyDefaultColumns(jsonLine, columns);
     for (let i = 0; i < contentCells.length; i++) {
       if (!headers[i]) {
-        console.log(`${filename}: missing column mapping for undefined`);
+
         continue;
       }
       applySourceColumnValues(jsonLine, columns, headers[i], contentCells[i], filename);
@@ -141,14 +141,14 @@ async function parseCSVFile(filename, delimitter) {
 
   for (let i = 0; i < data.length; i++) {
     if (/^\s*$/.test(data[i])) continue;
-    if (i % 1000000 === 0) console.log(i);
+    if (i % 1000000 === 0) {}
     const contentCells = data[i].split(",");
 
     var jsonLine = {};
     applyDefaultColumns(jsonLine, columns);
     for (let i = 0; i < contentCells.length; i++) {
       if (!headers[i]) {
-        console.log(`${filename}: missing column mapping for undefined`);
+
         continue;
       }
       applySourceColumnValues(jsonLine, columns, headers[i], contentCells[i], filename);
@@ -244,7 +244,7 @@ function buildDenominatorBySampleId(denominatorRecords) {
   });
 
   if (duplicateSampleIds > 0) {
-    console.log(`Skipped ${duplicateSampleIds} duplicate denominator sampleId rows while building merged index`);
+
   }
 
   return denominatorBySampleId;
@@ -306,7 +306,7 @@ function validateChromosomeBoundaries(filename, records) {
 function appendBulkJson(fd, filename, records, nextIds) {
   const indexName = getIndexName(filename);
   appendRecordsForIndex(fd, indexName, records, nextIds);
-  console.log(`Finish ${filename} import: ${records.length} rows`);
+
 }
 
 function appendMergedBulkJson(fd, filename, records, denominatorBySampleId, nextIds) {
@@ -314,7 +314,7 @@ function appendMergedBulkJson(fd, filename, records, denominatorBySampleId, next
 
   const mergedRecords = records.map((record) => copyDenominatorFields(record, denominatorBySampleId.get(record.sampleId)));
   appendRecordsForIndex(fd, "merged", mergedRecords, nextIds);
-  console.log(`Finish ${filename} merged import: ${mergedRecords.length} rows`);
+
   return mergedRecords.length;
 }
 
@@ -351,11 +351,11 @@ function removeNewlines(obj) {
         const records = await parseSourceFile(sourceFile);
         records.forEach((record) => denominatorRecords.push(record));
       } catch (err) {
-        console.log(`${sourceFile}: ${err}`);
+
       }
     }
     const denominatorBySampleId = buildDenominatorBySampleId(denominatorRecords);
-    console.log(`Prepared denominator lookup for merged index: ${denominatorBySampleId.size} sampleIds`);
+
 
     for (const sourceFile of sourceFiles) {
       try {
@@ -365,14 +365,14 @@ function removeNewlines(obj) {
         totalMergedRows += appendMergedBulkJson(fd, sourceFile, records, denominatorBySampleId, nextIds);
         totalRows += records.length;
       } catch (err) {
-        console.log(`${sourceFile}: ${err}`);
+
       }
     }
   } finally {
     fs.closeSync(fd);
   }
 
-  console.log(`Finish all imports to ${outputJsonName}`);
-  console.log(`Total rows: ${totalRows}`);
-  console.log(`Total merged rows: ${totalMergedRows}`);
+
+
+
 })();

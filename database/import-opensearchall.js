@@ -47,7 +47,7 @@ if (opensearchUsername && opensearchPassword) {
 
 const client = new Client(clientOptions);
 const args = process.argv;
-console.log(args[2]);
+
 const sources = [
   { path: "data/all.json" },
 ];
