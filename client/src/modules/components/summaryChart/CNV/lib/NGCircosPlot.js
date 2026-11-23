@@ -895,7 +895,7 @@ export function NGCircos (){
              var b=zoompos2 + height / 2
             svg.attr("transform", "translate("+ a +","+ b 
                         + ")scale(" + 1.2*clicktimes + ")");
-             console.log("zoom in "+d3.event.x+" a: "+a);
+
             //  d3.event.x = a;
             //  d3.event.y = b;
           });
@@ -907,7 +907,7 @@ export function NGCircos (){
             if (clicktimes <=0) clicktimes = 0;
             svg.attr("transform", "translate("+ a +","+ b 
                         + ")scale(" + clicktimes + ")");
-             console.log("zoom out "+clicktimes);
+
           });
           }
 
@@ -2359,13 +2359,13 @@ export function NGCircos (){
 //
 //        }
 //    }
-    console.log(svg)
+
     const backgroundClick = svg.selectAll("path");
     //var   a=d3.event.translate[0]+circleCenter / 2
     //var   b=d3.event.translate[1]+height / 2
     //svg.attr("transform", "translate(" + a +","+ b + ")scale(" + d3.event.scale + ")");
     backgroundClick.on("click",function(d){
-      console.log("click",d)
+
       //d3.behavior.zoom()
             //console.log(d3.event.scale)
       var   svg = d3.select(self.target).append("svg")

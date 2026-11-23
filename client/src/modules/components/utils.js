@@ -45,13 +45,13 @@ export function fisherTest(a, b, c, d) {
   const row2Total = bigc + bigd;
   const col1Total = biga + bigc;
   const col2Total = bigb + bigd;
-  console.log(a, b, c, d, total, row2Total);
+
 
   let observedP = math.divide(
     math.multiply(math.combinations(row1Total, a), math.combinations(row2Total, c)),
     math.combinations(total, col1Total)
   );
-  console.log(observedP);
+
   let p = 0;
   const lowerBound = Math.max(0, col1Total - row2Total);
   const upperBound = Math.min(row1Total, col1Total);

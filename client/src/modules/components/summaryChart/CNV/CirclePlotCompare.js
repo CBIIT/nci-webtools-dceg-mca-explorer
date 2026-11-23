@@ -243,7 +243,7 @@ export default function CircosPlot(props) {
 
                     events: {
                       click: function (d, i, nodes, event) {
-                        console.log("clicking ", d);
+
                       },
                       mouseover: function (d, i, nodes, event) {
                         //console.log(d.block_id);

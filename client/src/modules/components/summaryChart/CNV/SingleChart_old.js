@@ -195,11 +195,11 @@ function SingleChart(props) {
     svg.call(brush);
   }, [props, brushExtent]);
 
-  console.log(brushExtent);
+
   // Filter data based on brush extent
   const filteredData = brushExtent ? data.filter((d) => d.start >= brushExtent[0] && d.end <= brushExtent[1]) : data;
 
-  console.log(filteredData);
+
   return (
     <div>
       <div className="mx-5">

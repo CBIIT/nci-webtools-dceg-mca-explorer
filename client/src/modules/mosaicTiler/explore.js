@@ -48,7 +48,7 @@ export default function Explore() {
   }
 
   function handleFilter(event) {
-    console.log("filter:", event);
+
     if (
       event.plotType.value !== "static" ||
       (event.plotType.value === "static" && (event.chrSingle !== "" || event.chrCompare !== ""))
@@ -78,7 +78,7 @@ export default function Explore() {
     setForm({ ...event });
     setClear((prev) => prev + 1);
 
-    console.log("filterclear", event);
+
     //setForm({ ...event, submitted: false });
   }
   useEffect(() => {
@@ -91,18 +91,18 @@ export default function Explore() {
       // groupB: [],
       counterCompare: 0,
     });
-    console.log("clear...", form);
+
   }, [clear]);
 
   function handleReset(event) {
     //setForm(event);
     setForm(defaultFormState);
-    console.log("reset", form);
+
   }
 
   function handleClick(value) {
     //setIsOpenCompare(true);
-    console.log("in explore", value, form);
+
     if (typeof value === "string") {
       setRangeLabel(value);
     } else if (value && typeof value === "object") {

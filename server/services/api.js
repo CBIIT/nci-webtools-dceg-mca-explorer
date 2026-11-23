@@ -179,20 +179,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
   const qmyeCancer = request.body.myeCancer;
   // console.log(qsex);
   //console.log(minAge,maxAge)
-  console.log(
-    qdataset,
-    qsex,
-    qmincf,
-    qmaxcf,
-    qmaxcf === "NaN",
-    qancestry,
-    qtype,
-    qstart,
-    qend,
-    qchromosomes,
-    minAge,
-    maxAge
-  );
+
 
   let qfilter = [];
   if (qtype !== undefined) {
@@ -230,7 +217,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       qfilter = qchromosomes.value === "chrX" ? ["mLOX"] : ["mLOY"];
     }
   }
-  console.log("for checking: ", qfilter, searchdataset);
+
   //query sex
   let sexarr = getAttributesArray(qsex, "sex");
 
@@ -298,7 +285,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     forceAgeFilter: hasDenominatorFilter,
   });
   if (!hasDenominatorFilter) filterString.push(...denominatorFilters);
-  console.log("must", searchdataset, " exlcude: ", searchExclude, " filter: ", filterString, qfilter, qstart, qend);
+
 
   try {
     const mcaQuery = {
@@ -332,7 +319,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    console.log(mcaHits.length, platformarr);
+
     const payload = formatMcaResponse({ merged: mcaHits });
     setCachedRouteResponse(cacheKey, payload);
     response.json(payload);
@@ -446,7 +433,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
   const lymCancer = group.lymCancer;
   const myeCancer = group.myeCancer;
 
-  console.log("381: query string:", study, platfomrarray, sex, ancestry, smokeNFC, chromesome, minAge, maxAge);
+
   const queryString = [];
   if (chromesome === "Y") {
     queryString.push({ terms: { type: ["mLOY"] } });
@@ -664,7 +651,7 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
 
 apiRouter.post("/opensearch/denominator", async (request, response) => {
   const query = request.body;
-  console.log("denominator", query);
+
   const sex = query.sex;
   const ancestry = query.ancestry;
   const smoking = query.smoking;
@@ -683,7 +670,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
     ...buildOptionalTermsFilter("array.keyword", approach),
   ];
 
-  console.log(datasets, denominatorMust, minAge, maxAge);
+
   try {
     const result = await client.search({
       index: "denominator_age",
@@ -699,7 +686,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
         },
       },
     });
-    console.log(result.body.hits.total.value);
+
     response.json(result.body.hits.total.value);
   } catch (error) {
     console.error(error);
@@ -961,7 +948,7 @@ const getStudy = (qdataset, qfilter) => {
       : "";
   }
   const filterlist = qfilter;
-  console.log(filterlist);
+
   return { datasets, filterlist };
 };
 

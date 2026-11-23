@@ -7,10 +7,10 @@ function deleteFileIfExists(filePath) {
   try {
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
-      console.log(`Deleted existing file: ${filePath}`);
+
     }
   } catch (err) {
-    console.log(`Error deleting file ${filePath}: ${err}`);
+
   }
 }
 
@@ -22,7 +22,7 @@ async function parseFile(filename, delimitter = "\r\n", columnSeparator = "\t") 
   
   const columns = sourceConfig?.columns;
   if (!columns) {
-    console.log(`No source definition found for: ${fullPath}`);
+
     return [];
   }
   
@@ -40,7 +40,7 @@ async function parseFile(filename, delimitter = "\r\n", columnSeparator = "\t") 
     for (let i = 0; i < contentCells.length; i++) {
       const header = columns.find((e) => e.sourceName === headers[i]);
       if (!header) {
-        console.log(`Warning: No column mapping found for header: "${headers[i]}"`);
+
         continue;
       }
       
@@ -72,12 +72,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
 
   for (let i = 0; i < data.length; i++) {
     if (/^\s*$/.test(data[i])) continue;
-    if (i % 1000000 === 0) console.log(i);
+    if (i % 1000000 === 0) {}
     const contentCells = data[i].split(",");
 
     var jsonLine = {};
     for (let i = 0; i < contentCells.length; i++) {
-      if (!columns.find((e) => e.sourceName === headers[i])) console.log(headers[i]);
+      if (!columns.find((e) => e.sourceName === headers[i])) {}
 
       const header = columns.find((e) => e.sourceName === headers[i]);
       //console.log(header);
@@ -117,9 +117,9 @@ function removeNewlines(obj) {
   var id = 686880;
 
   // Process BioVU denominator data
-  console.log("Processing BioVU denominator data...");
+
   const biovuDenominator = await parseFile("biovu/BioVU_denominator_clean_02052025.txt", "\n", "\t");
-  console.log(`Found ${biovuDenominator.length} records in BioVU denominator data`);
+
   
   const denominatorFilePath = path.resolve("data", "biovudenominator.json");
   deleteFileIfExists(denominatorFilePath);
@@ -143,16 +143,16 @@ function removeNewlines(obj) {
       id++;
     });
   } catch (err) {
-    console.log(`Error processing BioVU denominator: ${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish BioVU denominator import`);
+
   }
 
   // Process BioVU autosomal mCAs data
-  console.log("Processing BioVU autosomal mCAs data...");
+
   const biovuAuto = await parseFile("biovu/BioVU_autosomalmcas_clean_02052025.txt", "\n", " ");
   
   const autoFilePath = path.resolve("data", "biovuAuto.json");
@@ -177,16 +177,16 @@ function removeNewlines(obj) {
       id++;
     });
   } catch (err) {
-    console.log(`Error processing BioVU autosomal: ${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish BioVU autosomal mCAs import`);
+
   }
 
   // Process BioVU mLOX data
-  console.log("Processing BioVU mLOX data...");
+
   const biovuLox = await parseFile("biovu/BioVU_mlox_clean_02052025.txt", "\n", " ");
   
   const loxFilePath = path.resolve("data", "biovumLOX.json");
@@ -211,16 +211,16 @@ function removeNewlines(obj) {
       id++;
     });
   } catch (err) {
-    console.log(`Error processing BioVU mLOX: ${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish BioVU mLOX import`);
+
   }
 
   // Process BioVU mLOY data
-  console.log("Processing BioVU mLOY data...");
+
   const biovuLoy = await parseFile("biovu/BioVU_mloy_clean_02052025.txt", "\n", " ");
   
   const loyFilePath = path.resolve("data", "biovumLOY.json");
@@ -245,11 +245,11 @@ function removeNewlines(obj) {
       id++;
     });
   } catch (err) {
-    console.log(`Error processing BioVU mLOY: ${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish BioVU mLOY import`);
+
   }
 })();

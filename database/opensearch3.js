@@ -21,7 +21,7 @@ async function parseFile(filename, delimitter = "\r\n") {
 
     var jsonLine = {};
     for (let i = 0; i < contentCells.length; i++) {
-      if (!columns.find((e) => e.sourceName === headers[i])) console.log(headers[i]);
+      if (!columns.find((e) => e.sourceName === headers[i])) {}
 
       const header = columns.find((e) => e.sourceName === headers[i]);
       //console.log(header);
@@ -47,12 +47,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
 
   for (let i = 0; i < data.length; i++) {
     if (/^\s*$/.test(data[i])) continue;
-    if (i % 1000000 === 0) console.log(i);
+    if (i % 1000000 === 0) {}
     const contentCells = data[i].split(",");
 
     var jsonLine = {};
     for (let i = 0; i < contentCells.length; i++) {
-      if (!columns.find((e) => e.sourceName === headers[i])) console.log(headers[i]);
+      if (!columns.find((e) => e.sourceName === headers[i])) {}
 
       const header = columns.find((e) => e.sourceName === headers[i]);
       //console.log(header);
@@ -103,12 +103,12 @@ function removeNewlines(obj) {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish UKBB denominator import`);
+
   }
   const plcodenominator = await parseFile("data/raw_v3_20240916/UKBB_PLCO_V3/PLCO_denominator_clean.txt", "\r");
   try {
@@ -131,11 +131,11 @@ function removeNewlines(obj) {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish PLCO denominator import`);
+
   }
 })();

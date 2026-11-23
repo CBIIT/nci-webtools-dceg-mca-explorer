@@ -13,13 +13,13 @@ var alltracks = new Map([
   for (let entry of alltracks.entries()){
     const track = entry[0];
     const tracks = entry[1];
-    console.log(track)
+
     track.forEach((b,index) => b.addEventListener('mouseover', () => {
-       console.log('clicked',b.__data__.key);//b.__data__.key is the chromesome id 
+       //b.__data__.key is the chromesome id
        tracks.forEach(t => changeBackground(t,b.__data__.key,"aqua"))
     }));
     track.forEach((b,index) => b.addEventListener('mouseout', () => {
-      console.log(track)
+
        //tracks.forEach(t => changeBackground(t,b.__data__.key,"red"))
     }));
   }

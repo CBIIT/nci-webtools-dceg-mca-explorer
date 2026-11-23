@@ -303,7 +303,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       var track3 = document.querySelectorAll(".track-3 .block");
       //var trackxy = circleRef.current.querySelectorAll('#chrxy .track-0');
       var alltracks = [track0, track1, track2, track3];
-      console.log(alltracks.length);
+
       alltracks.forEach((track) => {
         track.forEach((b) => {
           const bck = b.querySelector(".background");
@@ -321,7 +321,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
             // else alltracks.forEach((t) => changeBackground(t, b.__data__.key, 0));
           });
           bck.addEventListener("click", () => {
-            console.log("click", b.__data__.key);
+
             setShowChart(true);
             setShowTitle(false);
             props.onClickedChr(true);
@@ -409,7 +409,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
   const handleCircosCompareBack = () => {
     setShowChart(false);
     setChromesomeId(0);
-    console.log(form);
+
     setForm({
       ...form,
       plotType: { value: "circos", label: "Circos" },
@@ -418,7 +418,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     //console.log(circleA);
     setZoomRangeA(null);
     setZoomRangeB(null);
-    console.log("back", form);
+
   };
 
   const handleZoomChange = (event, group, lastView) => {
@@ -435,10 +435,10 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   async function handleFisherTest(a, b, c, d) {
     const matrix = [a, b - a, c, d - c];
-    console.log(matrix);
+
     if (b >= a && d >= c) {
       const pvalue = await axios.post("api/fishertest", matrix);
-      console.log(pvalue.data);
+
       setPfisher(pvalue.data.pValue);
     }
   }
@@ -462,7 +462,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
       setGroupA([]);
       setGroupB([]);
-      console.log(form);
+
       setIsLoadedA(false);
       setIsLoadedB(false);
       if (form.counterCompare > 0) {
@@ -606,7 +606,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
     if (true) {
       if (chromesomeId > 0 || chromesomeId === "X" || chromesomeId === "Y") {
-        console.log(chromesomeId);
+
         query = {
           ...group,
           chr: chromesomeId,
@@ -632,7 +632,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         ]);
         // console.log(responseDeno.data);
       } else {
-        console.log("do query...", form.counterCompare, group);
+
         //const dataset = group.study;
         const sex = group.sex;
         //{ dataset: qdataset, sex: qsex }
@@ -804,7 +804,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
     let agecfA = groupAgeTitle(form.groupA);
     let agecfB = groupAgeTitle(form.groupB);
-    console.log(form.groupA, form.groupA.minAge, agecfA, agecfB);
+
     if (agecfA === agecfB)
       titleGroup += form.groupA.hasOwnProperty("minAge") && agecfA.length === 0 ? "; Age: 0-100" : agecfA;
     else {
@@ -853,7 +853,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   const groupTitle = (group) => {
     let title = "";
-    console.log(group);
+
     for (let key in group) {
       const values = group[key];
       if (values !== undefined) {
@@ -1016,7 +1016,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
       if (snp.querySelectorAll("svg")[0] !== undefined) imagesnp = snp;
     }
     var gene = document.getElementById("geneplots");
-    console.log("GENNNEEE ", gene);
+
     // if (gene !== null) imagegene = gene.querySelectorAll("svg")[0];
     if (gene !== null) {
       if (gene.querySelectorAll("svg")[0] !== undefined) imagegene = gene;
@@ -1068,7 +1068,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                     const scaleplot = Math.min((width - imageSpacing) / pngWidth, height / pngHeight);
                     const plotheight = pngHeight * scaleplot;
                     const plotwidth = pngWidth * scaleplot;
-                    console.log(width, height, pngHeight, pngWidth, plotheight, snpHeight, scaleplot);
+
 
                     pdf.setFillColor(0, 128, 0);
                     pdf.rect(legendX, legendY, legendSize, legendSize, "F");
@@ -1130,7 +1130,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                       pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
                       pdf.addImage(dataUrl4, "PNG", width, y, geneImageWidth * scale, geneImageHeight * scale);
                       //pdf.addImage(dataUrl4, "PNG", imageSpacing, y, geneImageWidth * scale, geneImageHeight * scale);
-                      console.log(geneImageWidth, scaleplot);
+
                     }
 
                     pdf.save(downloadname);
@@ -1154,7 +1154,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
     var imageBs = document.getElementById("B");
     var imageB = imageBs.querySelectorAll("svg")[0];
     //initial
-    console.log(imageA, imageB);
+
     const initalY = 15;
     const legendSize = 2;
     const legendY = 5;
@@ -1357,7 +1357,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 const imageSpacing = 10; // Adjust as needed
                 const scaleplot = Math.min((width - 2 * imageSpacing) / pngWidth, height / pngHeight);
                 const plotheight = pngHeight * scaleplot;
-                console.log(width, height, pngHeight, pngWidth, plotheight, plotheight, snpHeight, scaleplot);
+
 
                 pdf.setFillColor(0, 128, 0);
                 pdf.rect(legendX, legendY, legendSize, legendSize, "F");
@@ -1395,7 +1395,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
                 pdf.addImage(dataUrl1, "PNG", imageSpacing, y0, pngWidth * scaleplot, pngHeight * scaleplot);
                 pdf.addImage(dataUrl3, "PNG", imageSpacing, y, pngWidth * scaleplot, snpHeight * scaleplot);
                 //pdf.addImage(dataUrl4, "PNG", imageSpacing, width * 0.5 + 20 + imageSpacing, imageWidth, imageHeight);
-                console.log("geneImageHeight --- ", geneImageHeight);
+
 
                 if (chromesomeId) pdf.text(rangeLabel, width * 0.5, plotheight + 38, { align: "center" });
 
@@ -1624,7 +1624,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
         rangeMax = Number(rangeMax);
         rangeMin = Number(rangeMin);
         const zoomedTabledata = data.filter((d) => !(d.start > rangeMax || d.end < rangeMin));
-        console.log(zoomedTabledata.length);
+
         setSingleZoomLength(zoomedTabledata.length);
         if (!form.compare) props.getData(zoomedTabledata);
       } else {
@@ -1636,7 +1636,7 @@ const CirclePlotTest = React.forwardRef((props, refSingleCircos) => {
 
   useEffect(() => {
     if (form.plotType.value === "static" && form.counterCompare > 0) {
-      console.log(rangeLabel);
+
       if (rangeLabel.length > 0) {
         let rangeMin = rangeLabel.split("-")[0].split(":")[1].replace(/,/g, "");
         let rangeMax = rangeLabel.split("-")[1].replace(/,/g, "");

@@ -1849,7 +1849,7 @@
             : ((e) => "NavItemLink" === e.type)(e) && e.link.removeEventListener("click", e.linkListener);
         }
         initialize() {
-          console.log(this);
+
           //  const e = this.element.querySelectorAll(".nci-header-nav__primary-link");
           (this.navItems = Array.from(e).map((e) => {
             const t = this.createNavButton(e);

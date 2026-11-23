@@ -11,7 +11,7 @@ async function parseFile(filename, delimitter = "\r\n") {
   //console.log(columns)
   const data = raw.split(delimitter);
   const headers = data.shift().split("\t");
-  console.log(headers);
+
   var json = [];
 
   for (let i = 0; i < data.length; i++) {
@@ -21,7 +21,7 @@ async function parseFile(filename, delimitter = "\r\n") {
 
     var jsonLine = {};
     for (let i = 0; i < contentCells.length; i++) {
-      if (!columns.find((e) => e.sourceName === headers[i])) console.log(headers[i]);
+      if (!columns.find((e) => e.sourceName === headers[i])) {}
 
       const header = columns.find((e) => e.sourceName === headers[i]);
 
@@ -47,12 +47,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
 
   for (let i = 0; i < data.length; i++) {
     if (/^\s*$/.test(data[i])) continue;
-    if (i % 1000000 === 0) console.log(i);
+    if (i % 1000000 === 0) {}
     const contentCells = data[i].split(",");
 
     var jsonLine = {};
     for (let i = 0; i < contentCells.length; i++) {
-      if (!columns.find((e) => e.sourceName === headers[i])) console.log(headers[i]);
+      if (!columns.find((e) => e.sourceName === headers[i])) {}
 
       const header = columns.find((e) => e.sourceName === headers[i]);
       //console.log(header);
@@ -91,12 +91,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish PLCO Autosomal import`);
+
   }
 
   const plcoDenominator = await parseFile("raw_v3_20240916/PLCO_denominator_clean.txt");
@@ -123,12 +123,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish PLCO Denominator import`);
+
   }
 
   const plcomLOX = await parseFile("raw_v3_20240916/PLCO_GSA_blood_mLOX.txt");
@@ -155,12 +155,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish PLCO mLOX import`);
+
   }
 
   const plcomLOY = await parseFile("raw_v3_20240916/PLCO_GSA_blood_mLOY.txt");
@@ -187,12 +187,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish PLCO mLOY import`);
+
   }
 
   const ukbbmLOX = await parseFile("raw_v3_20240916/UKBB_mLOX_mCA_92005app_clean.txt");
@@ -220,12 +220,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish UKBB ukbbmLOX import`);
+
   }
 
   const ukbbmLOY = await parseFile("raw_v3_20240916/UKBB_mLOY_mCA_92005app_clean.txt");
@@ -252,12 +252,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish UKBB ukbbmLOY import`);
+
   }
 
   const ukbbAuto = await parseFile("raw_v3_20240916/UKBB_autosomal_mCA_92005app_clean.txt", "\r");
@@ -284,12 +284,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish UKBB ukbbAuto import`);
+
   }
 
   const ukbbdenominator = await parseFile("raw_v3_20240916/UKBB_denominator_92005app_clean.txt", "\r");
@@ -316,12 +316,12 @@ async function parseCSVFile(filename, delimitter = "\r\n") {
       id++;
     });
   } catch (err) {
-    console.log(`${err}`);
+
   } finally {
     if (fd) {
       fs.closeSync(fd);
     }
-    console.log(`Finish UKBB denominator import`);
+
   }
 
   // const combinedData = await parseFile("Combined_Gene_Dataset.tsv", "\n");

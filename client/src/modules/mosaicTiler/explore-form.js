@@ -53,7 +53,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
 
   useEffect(() => {
     var chrSelected = form.chrSingle && form.chrSingle.value;
-    console.log(chrSelected, form.chrX);
+
     if (!form.chrX && !form.chrY) {
       setDisabledType([]);
       if (chrSelected === "chrX" || chrSelected === "chrY") {
@@ -91,7 +91,7 @@ export default function ExploreForm({ onSubmit, onReset, onClear, onFilter, isOp
   function handleChange(event) {
     const { name, value } = event.target;
     if (name === "chrX") {
-      console.log("clicking X");
+
       setIsX(event.target.checked);
       mergeForm({ [name]: event.target.checked });
       if (event.target.checked || isY) {
@@ -245,7 +245,7 @@ function getRangeError(start, end) {
     }
 
     if (name === "types") {
-      console.log(selection);
+
       const notForXY = selection.find((option) => option.value === "loss" || option.value === "all");
       setShowXY(notForXY !== undefined && selection.length === 1);
     }
@@ -284,7 +284,7 @@ function getRangeError(start, end) {
     if (name === "plotType") {
       if (selection.value === "circos") {
         if (form.chrSingle !== "") {
-          console.log("reseting");
+
           setIsX(false);
           setIsY(false);
           setResetCircos(true);
@@ -349,7 +349,7 @@ function getRangeError(start, end) {
   }
 
   const handleFilterClear = (event) => {
-    console.log("filterclear");
+
     setCompareChecks(compareArray);
 
     onClear({ ...form, groupA: [], groupB: [], counterCompare: counter + 1 });

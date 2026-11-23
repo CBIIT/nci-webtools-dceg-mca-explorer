@@ -15,7 +15,7 @@ const client = new Client({
   },
 });
 const args = process.argv;
-console.log(args[2]);
+
 const sources = [
    { path: "data/plcoAuto.json", index: "mcaexplorer" },
    { path: "data/plcoDenominator.json", index: "mcaexplorer" },
@@ -70,7 +70,7 @@ async function runImport(client, sources, logger = console) {
           temp.push(p.platform);
         });
         datasource.push({ id, chr37: d[0], chr38: d[1], grch37: Number(d[2]), grch38: Number(d[3]), platforms: temp });
-        if (id % 5000000 == 0) console.log(id);
+        if (id % 5000000 == 0) {}
       }
       id++;
       if (id > endid) break;

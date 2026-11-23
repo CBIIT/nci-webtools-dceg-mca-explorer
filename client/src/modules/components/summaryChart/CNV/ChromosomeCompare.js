@@ -26,7 +26,7 @@ function ChromosomeCompare(props) {
   const [xMin, setXMin] = useState();
 
   const [loading, setLoading] = useState(false);
-  console.log(dataA);
+
   return (
     <>
       <Row className="justify-content-center">

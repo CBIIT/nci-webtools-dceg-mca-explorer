@@ -48,7 +48,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
 
   function handleChange(event) {
     const { name, value } = event.target;
-    console.log(form, name, value);
+
     if (name === "chrX") {
       setIsX(event.target.checked);
       mergeForm({ [name]: event.target.checked });
@@ -76,23 +76,13 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
   function handleSubmit(event) {
     event.preventDefault();
     setSubmitClicked(true);
-    console.log("[compare-form][handleSubmit] before payload", {
-      start: form.start,
-      end: form.end,
-      initialStart: form.initialStart,
-      initialEnd: form.initialEnd,
-    });
+
     const submittedForm = {
       ...form,
       initialStart: form.start,
       initialEnd: form.end,
     };
-    console.log("[compare-form][handleSubmit] submitted payload", {
-      start: submittedForm.start,
-      end: submittedForm.end,
-      initialStart: submittedForm.initialStart,
-      initialEnd: submittedForm.initialEnd,
-    });
+
     setForm(submittedForm);
     if (onSubmit) onSubmit(submittedForm);
     //handleDisplayCompare();
@@ -112,7 +102,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
   }
 
   function handleSelectChange(name, selection = []) {
-    console.log(name, selection, form);
+
     if (name === "chrCompare") {
       const selectedChromo = chromolimit.filter((c) => c.id === selection.label + "");
       setEnd(selectedChromo[0].len + "");
@@ -157,7 +147,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
       setIsX(false);
       setIsY(false);
       //handleFilterClear();
-      console.log(selection);
+
       if (selection.value === "circos") {
         handleFilterClear();
         onFilter({ ...form });
@@ -205,14 +195,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
     //update the compare variable and run the filter function to do compare
 
     let isValid = true;
-    console.log("[compare-form][handleFilter] before validation", {
-      start: form.start,
-      end: form.end,
-      initialStart: form.initialStart,
-      initialEnd: form.initialEnd,
-      plotType: form.plotType,
-      chrCompare: form.chrCompare,
-    });
+
     // Check for age limitation
     if (form.groupA.maxAge && form.groupA.minAge && parseInt(form.groupA.maxAge) <= parseInt(form.groupA.minAge)) {
       isValid = false;
@@ -244,7 +227,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
     }
 
     if (form.plotType.value !== "static" || (form.plotType.value === "static" && form.chrCompare !== "")) {
-      console.log("[compare-form][handleFilter] comparing...", form);
+
       const submittedForm = {
         ...form,
         initialStart: form.start,
@@ -252,15 +235,8 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
         compare: true,
         counterCompare: (form.counterCompare || 0) + 1,
       };
-      console.log("[compare-form][handleFilter] submitted payload", {
-        start: submittedForm.start,
-        end: submittedForm.end,
-        initialStart: submittedForm.initialStart,
-        initialEnd: submittedForm.initialEnd,
-        compare: submittedForm.compare,
-        counterCompare: submittedForm.counterCompare,
-      });
-      console.log("comparing...", form);
+
+
       //const submittedForm = { ...form, compare: true, counterCompare: (form.counterCompare || 0) + 1 };
       setForm(submittedForm);
       onFilter(submittedForm);
@@ -269,7 +245,7 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
   }
 
   const handleFilterClear = (event) => {
-    console.log("filter clear...", form);
+
     setSubmitClicked(false);
     setCompareChecks(CompareArray);
     updateGroup();
@@ -290,12 +266,12 @@ export default function CompareForm({ onSubmit, onReset, onClear, onFilter, rang
   };
 
   const handlegroupChange = (value, gname) => {
-    console.log("compare group:", value, gname);
+
     if (value !== undefined) {
       if (gname === "A") setForm((prevForm) => ({ ...prevForm, groupA: value }));
       else if (gname === "B") setForm((prevForm) => ({ ...prevForm, groupB: value }));
     }
-    console.log(form);
+
   };
   const handleCompareCheckboxChange = (id) => {
     const updatedComparecheck = compareChecks.map((ck) => {

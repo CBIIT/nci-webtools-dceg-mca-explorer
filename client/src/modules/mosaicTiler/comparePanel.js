@@ -76,7 +76,7 @@ export default function ComparePanel(props) {
   }, [form.chrCompare]);
 
   useEffect(() => {
-    console.log("this is compareform:",compareform);
+
     setCompareForm({ study: StudyOptions, types: [TypeStateOptions[0]] });
     setResetpanel(true);
   }, [props.onReset]);
@@ -113,7 +113,7 @@ export default function ComparePanel(props) {
     // console.log(name, selection);
     if (props.compareItem[4].isChecked && name === "study") {
       setStudy(selection);
-      console.log(name, selection);
+
     }
     //mergeForm({ [name]: selection });
 
@@ -157,7 +157,7 @@ export default function ComparePanel(props) {
       setTypes(setAllOption(selection));
       const notForXY = selection.find((option) => option.value === "loss" || option.value === "all");
       props.setShowXY(notForXY !== undefined && selection.length);
-      console.log(selection);
+
     }
 
     if (props.compareItem[9].isChecked && name === "priorCancer") {
@@ -194,7 +194,7 @@ export default function ComparePanel(props) {
   }
   //any click on form's group attributes values, pass groups filter values to compareform
   useEffect(() => {
-    console.log("UpdateForm ", compareform);
+
 
     if (compareform !== undefined) {
       props.onCompareChange(compareform, props.name);
@@ -205,7 +205,7 @@ export default function ComparePanel(props) {
   //based on if attributes checkbox, clean the selection
   useEffect(() => {
     //updateForm();
-    console.log("this is compare filter", compareform, resetpanel);
+
     const updatedcompareform = resetpanel
       ? {
           study: StudyOptions,
