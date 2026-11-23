@@ -29,6 +29,11 @@ apiRouter.use(express.json());
 //const host = `https://${OPENSEARCH_USERNAME}:${OPENSEARCH_PASSWORD}@${OPENSEARCH_ENDPOINT}`;
 const host = `https://${OPENSEARCH_ENDPOINT}`;
 const MCA_SOURCE_FIELDS = ["sampleId", "chromosome", "type", "cf", "dataset", "beginGrch38", "endGrch38", "length"];
+// Keep fields consumed by plots/tables and the legacy sample join. OpenSearch
+// can still filter on indexed fields that are excluded from the response.
+const DENOMINATOR_SOURCE_FIELDS = ["sampleId", "age", "sex", "smokeNFC", "PopID", "array"];
+const MERGED_SOURCE_FIELDS = [...new Set([...MCA_SOURCE_FIELDS, ...DENOMINATOR_SOURCE_FIELDS])];
+const GENE_SOURCE_FIELDS = ["name", "strand", "transcriptionStart", "transcriptionEnd", "exonStarts", "exonEnds"];
 const QA_RESULT_CAP = 200000;
 const QUERY_TIMING_ENABLED = ENABLE_QUERY_TIMING === "1" || ENABLE_QUERY_TIMING === "true";
 const inflightPagedSearches = new Map();
@@ -87,6 +92,9 @@ const addDerivedMcaLength = (row) => {
 };
 
 const addDerivedMcaLengths = (rows) => rows.map((row) => addDerivedMcaLength(row));
+
+// Sample identifiers are only needed for server-side joins, never in public responses.
+const omitSampleIds = (rows) => rows.map(({ sampleId, ...row }) => row);
 
 //console.log("opensearch host is:", host);
 
@@ -302,7 +310,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
         filter: filterString,
       },
     };
-    const hits = await fetchAllHitsPaged(client, "merged", mcaQuery, undefined, MCA_PAGE_SIZE);
+    const hits = await fetchAllHitsPaged(client, "merged", mcaQuery, MERGED_SOURCE_FIELDS, MCA_PAGE_SIZE);
     let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
@@ -327,7 +335,7 @@ apiRouter.post("/opensearch/mca", async (request, response) => {
     });
 
     console.log(mcaHits.length, platformarr);
-    const payload = { merged: mcaHits };
+    const payload = { merged: omitSampleIds(mcaHits) };
     setCachedRouteResponse(cacheKey, payload);
     response.json(payload);
     const afterResponseMs = nowMs();
@@ -362,7 +370,8 @@ apiRouter.post("/opensearch/gene", async (request, response) => {
     const result = await client.search({
       index: "combinedgene", //new_geneindex is convert position as number
       body: {
-        track_total_hits: true,
+        _source: GENE_SOURCE_FIELDS,
+        track_total_hits: false,
         size: 10000,
         query: {
           bool: {
@@ -511,7 +520,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
         must: queryString,
       },
     };
-    const hits = await fetchAllHitsPaged(client, "merged", chromosomeQuery, undefined, MCA_PAGE_SIZE);
+    const hits = await fetchAllHitsPaged(client, "merged", chromosomeQuery, MERGED_SOURCE_FIELDS, MCA_PAGE_SIZE);
     let mcaHits = hits.map((item) => item._source);
     if (hasDenominatorFilter) {
       mcaHits = await mergeLegacyDenominatorRows(client, mcaHits, {
@@ -535,7 +544,7 @@ apiRouter.post("/opensearch/chromosome", async (request, response) => {
       ms: { elapsed: afterMcaMs - requestStartMs },
     });
 
-    const payload = { merged: mcaHits };
+    const payload = { merged: omitSampleIds(mcaHits) };
     setCachedRouteResponse(cacheKey, payload);
     response.json(payload);
     const afterResponseMs = nowMs();
@@ -623,9 +632,9 @@ apiRouter.post("/opensearch/snpchip", async (request, response) => {
   try {
     const result = await client.search({
       index: "snpchip",
-      _source: "grch38",
+      _source: false,
       body: {
-        track_total_hits: true,
+        track_total_hits: false,
         size: 0,
         query: {
           bool: {
@@ -680,7 +689,7 @@ apiRouter.post("/opensearch/denominator", async (request, response) => {
   try {
     const result = await client.search({
       index: "denominator_age",
-      _source: ["sampleId"],
+      _source: false,
       body: {
         track_total_hits: true,
         size: numsize,
@@ -872,18 +881,7 @@ const mergeLegacyDenominatorRows = async (
     mcaRows.map((row) => row?.sampleId),
     buildDenominatorAgeFilters({ sex, ancestry, smoking, array, priorCancer, hemaCancer, lymCancer, myeCancer }),
     [buildAgeOverlapFilter(minAge, maxAge)],
-    [
-      "sampleId",
-      "age",
-      "sex",
-      "smokeNFC",
-      "PopID",
-      "array",
-      "priorCancer",
-      "incidentCancerHem",
-      "incidentCancerLymphoid",
-      "incidentCancerMyeloid",
-    ]
+    DENOMINATOR_SOURCE_FIELDS
   );
 
   return denominatorHits.flatMap((item) => {
